@@ -12,6 +12,7 @@ import Subscriptions from "./Pages/Subscriptions/Subscriptions.jsx";
 import ViewContent from "./Pages/ViewContent/ViewContent.jsx";
 import Header from "./Pages/Shared/Header/Header.jsx";
 import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
+import Error404 from "./Pages/Error/Error404.jsx";
 
 function App() {
     return (
@@ -27,9 +28,11 @@ function App() {
                         <Route path="PersonalAccount/PersonalReviewsTab" element={GeneralPart(PersonalReviewsTab)} />
                         <Route path="PersonalAccount/SubscriptionsTab" element={GeneralPart(SubscriptionsTab)} />
                         <Route path="SelectionContent" element={SelectionContent()} />
+                        {/*Здесь должен быть Route для админовской части*/}
                         <Route path="SignUpSignIn" element={SignUpSignIn()} />
                         <Route path="Subscriptions" element={Subscriptions()} />
-                        <Route path="ViewContent" element={ViewContent()} />
+                        <Route path="ViewContent/:id" element={ViewContent()} />
+                        <Route path="*" element={Error404()}/>
                     </Routes>
                 </BrowserRouter>
             </aside>
