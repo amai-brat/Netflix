@@ -1,4 +1,4 @@
-﻿namespace ClassLibrary1;
+﻿namespace Domain;
 
 public class ContentBase
 {
@@ -14,8 +14,5 @@ public class ContentBase
     public TrailerInfo? TrailerInfo { get; set; }
     public List<Genre> Genres { get; set; }
     public CurrencyValue? Budget { get; set; }
-    // TODO: как хранить постер большой в главной странице контента, мб что-то с logo связано в кинопоиске
-    // TODO: Избранное
-    // TODO: Рецензии
-    // TODO: комменты и лайки
+    public List<Review>? Reviews { get; set; }
 }
