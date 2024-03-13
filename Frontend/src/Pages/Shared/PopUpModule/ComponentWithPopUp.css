@@ -1,0 +1,6 @@
+.pop-up-parent{
+    position: relative;
+}
+.pop-up{
+    position: absolute;
+}
