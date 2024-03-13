@@ -7,7 +7,7 @@ const ClientPopUpPanel = ({user}) => {
     }
     return(
         <div id="client-pop-up-panel">
-            <label>{user.name}</label>
+            <label>{!(user === null || user === undefined) ? user.name : null}</label>
             <label className="separator"></label>
             <label onClick={() => {
                 navigateToPersonalAccount("PersonalInfoTab")
