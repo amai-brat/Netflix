@@ -1,5 +1,4 @@
-import {Component, useState} from 'react'
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import Main from "./Pages/Main/Main.jsx";
 import MainContent from "./Pages/MainContent/MainContent.jsx";
 import PersonalInfoTab from "./Pages/PersonalAccount/PersonalInfoTab/PersonalInfoTab.jsx";
@@ -19,22 +18,20 @@ function App() {
         <>
             <Header />
             <aside>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={Main()} />
-                        <Route path="MainContent" element={MainContent()} />
-                        <Route path="PersonalAccount/PersonalInfoTab" element={GeneralPart(PersonalInfoTab)} />
-                        <Route path="PersonalAccount/FavouritesTab" element={GeneralPart(FavouritesTab)} />
-                        <Route path="PersonalAccount/PersonalReviewsTab" element={GeneralPart(PersonalReviewsTab)} />
-                        <Route path="PersonalAccount/SubscriptionsTab" element={GeneralPart(SubscriptionsTab)} />
-                        <Route path="SelectionContent" element={SelectionContent()} />
-                        {/*Здесь должен быть Route для админовской части*/}
-                        <Route path="SignUpSignIn" element={SignUpSignIn()} />
-                        <Route path="Subscriptions" element={Subscriptions()} />
-                        <Route path="ViewContent/:id" element={ViewContent()} />
-                        <Route path="*" element={Error404()}/>
-                    </Routes>
-                </BrowserRouter>
+                <Routes>
+                    <Route path="/" element={Main()} />
+                    <Route path="MainContent" element={MainContent()} />
+                    <Route path="PersonalAccount/PersonalInfoTab" element={GeneralPart(PersonalInfoTab)} />
+                    <Route path="PersonalAccount/FavouritesTab" element={GeneralPart(FavouritesTab)} />
+                    <Route path="PersonalAccount/PersonalReviewsTab" element={GeneralPart(PersonalReviewsTab)} />
+                    <Route path="PersonalAccount/SubscriptionsTab" element={GeneralPart(SubscriptionsTab)} />
+                    <Route path="SelectionContent" element={SelectionContent()} />
+                    {/*Здесь должен быть Route для админовской части*/}
+                    <Route path="SignUpSignIn" element={SignUpSignIn()} />
+                    <Route path="Subscriptions" element={Subscriptions()} />
+                    <Route path="ViewContent/:id" element={ViewContent()} />
+                    <Route path="*" element={Error404()}/>
+                </Routes>
             </aside>
         </>
     )
