@@ -21,13 +21,13 @@ const Header = () => {
                 const response = await fetch("https://localhost:5000/GetCurrentUserData")
                 if(response.ok){
                     const userData = await response.json()
-                    setUser(null)
+                    setUser({name: userData.Nickname, icon: userData.ProfilePictureUrl })
                 }else{
                     setUser(null)
                 }
             }
             catch (error){
-                setUser({name: "d", icon:"d"})
+                setUser(null)
                 console.error(error)
             }
         }
