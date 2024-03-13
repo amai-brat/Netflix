@@ -3,6 +3,6 @@
 //Owned
 public class YearRange
 {
-    public int Start { get; set; }
-    public int End { get; set; }
+    public DateOnly Start { get; set; }
+    public DateOnly End { get; set; }
 }

@@ -3,13 +3,13 @@
 public class User
 {
     public int Id { get; set; }
-    public string Nickname { get; set; }
+    public string Nickname { get; set; } = null!;
     public string? ProfilePictureUrl { get; set; }
     public DateTime? BirthDay { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } = null!;
     public List<Review>? Reviews { get; set; }
-    public List<Review>? LikedReviews { get; set; }
-    public List<Comment>? LikedComments { get; set; }
+    public List<Comment>? Comments { get; set; }
+    public List<Comment>? ScoredComments { get; set; }
     public List<FavouriteContent>? FavouriteContent { get; set; }
 }
