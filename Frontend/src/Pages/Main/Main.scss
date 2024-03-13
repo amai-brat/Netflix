@@ -1,0 +1,106 @@
+$red: #E50914;
+$grey: #414141;
+
+body {
+  margin: 0;
+  background: black;
+}
+
+button {
+  border-radius: 1em;
+  background-color: $red;
+  color: white;
+  padding: 1em;
+  align-self: center;
+  border: 0;
+  margin: 1em;
+  font-weight: 700;
+  
+  &:hover {
+    background: #F51924;
+  }
+}
+
+div#top {
+  background-image: url("../../../public/poster_main.png");
+  background-size: 100% auto;
+  height: 90vh;
+  overflow: auto;
+  flex: 1;
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+  
+    img {
+      margin: 1em;
+    }
+  }
+  
+  div {
+    display: flex;
+    justify-content: center;
+    margin: 20vh auto auto;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    
+    h1 {
+      font-weight: 700;
+      text-align: center;
+      overflow: auto;
+    }
+  }
+}
+
+div#bottom {
+  display: flex;
+  justify-content: left;
+  #faq {
+   margin: 1em 0 1em 10%;
+  }
+  
+  .accordions {
+    .accordion-item {
+      width: 50vw;
+      margin-bottom: 0.5em;
+      .accordion-title {
+        display: flex;
+        justify-content: space-between;
+        background: $grey;
+        padding: 0.5em 1em;
+        margin-bottom: 0.2em;
+        
+        &:hover {
+          background: #515151;
+        }
+      }
+      
+      .accordion-content {
+        background: #313131;
+        padding: 0.5em 1em;
+      }
+    }
+  }
+}
+
+footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+  margin: 1em;
+  
+  a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  p {
+    margin: 0 1em;
+  }
+}
