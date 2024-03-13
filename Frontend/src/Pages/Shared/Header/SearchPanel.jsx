@@ -8,7 +8,7 @@ const SearchPanel = () => {
         setSearchContentName(e.target.value)
     }
     const navigateToSelectionContent = (filter) => {
-        navigate("/MainContent", {state: {filter: filter}})
+        navigate("/SelectionContent", {state: {filter: filter}})
     }
     
     return (
