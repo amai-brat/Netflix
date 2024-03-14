@@ -1,10 +1,6 @@
 $red: #E50914;
 $grey: #414141;
 
-body {
-  margin: 0;
-  background: black;
-}
 
 button {
   border-radius: 1em;
@@ -22,7 +18,7 @@ button {
 }
 
 div#top {
-  background-image: url("../../../public/poster_main.png");
+  background-image: url("../../assets/poster_main.png");
   background-size: 100% auto;
   height: 90vh;
   overflow: auto;
