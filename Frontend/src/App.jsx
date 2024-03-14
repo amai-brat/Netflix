@@ -12,6 +12,7 @@ import ViewContent from "./Pages/ViewContent/ViewContent.jsx";
 import Header from "./Pages/Shared/Header/Header.jsx";
 import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
 import Error404 from "./Pages/Error/Error404.jsx";
+import "/src/Pages/Shared/Styles/App.css";
 
 function App() {
     return (

@@ -5,7 +5,7 @@ import NavigatePanel from "./NavigatePanel.jsx"
 import SearchPanel from "./SearchPanel.jsx"
 import ClientPanel from "./ClientPanel.jsx"
 import ComponentWithPopUp from "../PopUpModule/ComponentWithPopUp.jsx"
-import "/src/Pages/Shared/Header/Header.css"
+import "/src/Pages/Shared/Header/Styles/Header.css"
 import NotificationPanel from "./NotificationPanel.jsx";
 import NotificationPopUpPanel from "./NotificationPopUpPanel.jsx";
 import * as signalR from "@microsoft/signalr";
@@ -15,6 +15,7 @@ const Header = () => {
     const [user, setUser] = useState(undefined)
     
     useEffect(() => {
+        let isUserAuth = false
         const getCurrentUserDataAsync = async () => {
             try{
                 //TODO: Указать действительный url запроса и body с query при необходимости
@@ -22,6 +23,7 @@ const Header = () => {
                 if(response.ok){
                     const userData = await response.json()
                     setUser({name: userData.Nickname, icon: userData.ProfilePictureUrl })
+                    isUserAuth = true
                 }else{
                     setUser(null)
                 }
@@ -32,7 +34,7 @@ const Header = () => {
             }
         }
         getCurrentUserDataAsync().then(()=>{
-                if(user === null || user === undefined){
+                if(!isUserAuth){
                     return
                 }
                 //Todo: Установить действительный url
@@ -59,20 +61,24 @@ const Header = () => {
         <header>
             <NavigatePanel/>
             <SearchPanel/>
-            <div id="sign-up-header-button" style={{display: user === null ? "block" : "none"}}>
-                <input type="button" value="Войти" onClick={navigateToSignUpSignIn}/>
-            </div>
-            <div style={{display: user === null || user === undefined ? "none" : "block"}}>
-                <div onClick={() => {setAlarmed(false)}}>
+            <div id="client-info-panel-and-sign-up-button-container">
+                <input id="sign-up-header-button" type="button" value="Войти" onClick={navigateToSignUpSignIn} style={
+                    {display: user === null ? "block" : "none"}
+                }/>
+                <div id="client-info-panel" style={{display: user === null || user === undefined ? "none" : "flex"}}>
+                    <div id="notification-panel-wrapper" onClick={() => {setAlarmed(false)}}>
+                        <ComponentWithPopUp
+                            Component = {() => <NotificationPanel alarmed={alarmed}/>}
+                            PopUp = {() => <NotificationPopUpPanel notifications={notifications}/>}
+                            id = {"pop-up-notification"}
+                        />
+                    </div>
                     <ComponentWithPopUp
-                        Component = {() => <NotificationPanel alarmed={alarmed}/>}
-                        PopUp = {() => <NotificationPopUpPanel notifications={notifications}/>}
+                        Component = {() => <ClientPanel user={user}/>}
+                        PopUp = {() => <ClientPopUpPanel user={user}/>}
+                        id = {"pop-up-client"}
                     />
                 </div>
-                <ComponentWithPopUp
-                    Component = {() => <ClientPanel user={user}/>}
-                    PopUp = {() => <ClientPopUpPanel user={user}/>}
-                />
             </div>
         </header>
     )

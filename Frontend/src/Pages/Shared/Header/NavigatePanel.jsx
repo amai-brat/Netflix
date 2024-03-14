@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-
+import "/src/Pages/Shared/Header/Styles/NavigatePanel.css";
 const NavigatePanel = () => {
     const navigate = useNavigate()
     const navigateToMainContent = () => {
@@ -11,14 +11,14 @@ const NavigatePanel = () => {
     
     return(
         <div id="navigate-panel">
-            <img src="/src/assets/NetflixLogo.svg" alt="Netflix" onClick={navigateToMainContent}/>
-            <label onClick={() => {
+            <img id="navigate-panel-logo" className="navigate-panel-element" src="/src/assets/NetflixLogo.svg" alt="Netflix" onClick={navigateToMainContent}/>
+            <label className="navigate-panel-element" onClick={() => {
                 navigateToSelectionContent({type: "film"})
             }}>Фильмы</label>
-            <label onClick={() => {
+            <label className="navigate-panel-element" onClick={() => {
                 navigateToSelectionContent({type: "cartoon"})
             }}>Мультфильмы</label>
-            <label onClick={() => {
+            <label className="navigate-panel-element" onClick={() => {
                 navigateToSelectionContent({type: "serial"})
             }}>Сериалы</label>
         </div>
