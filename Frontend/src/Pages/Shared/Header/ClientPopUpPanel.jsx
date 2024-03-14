@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-
+import "/src/Pages/Shared/Header/Styles/ClientPopUpPanel.css";
 const ClientPopUpPanel = ({user}) => {
     const navigate = useNavigate()
     const navigateToPersonalAccount = (tabName) => {
@@ -7,22 +7,22 @@ const ClientPopUpPanel = ({user}) => {
     }
     return(
         <div id="client-pop-up-panel">
-            <label>{!(user === null || user === undefined) ? user.name : null}</label>
+            <label id="client-name" className="client-pop-up-panel-label">{!(user === null || user === undefined) ? user.name : null}</label>
             <label className="separator"></label>
-            <label onClick={() => {
+            <label className="client-pop-up-panel-label" onClick={() => {
                 navigateToPersonalAccount("PersonalInfoTab")
             }}>Личные данные</label>
-            <label onClick={() => {
+            <label className="client-pop-up-panel-label" onClick={() => {
                 navigateToPersonalAccount("PersonalReviewsTab")
             }}>Рецензии</label>
-            <label onClick={() => {
+            <label className="client-pop-up-panel-label" onClick={() => {
                 navigateToPersonalAccount("FavouritesTab")
             }}>Избранное</label>
-            <label onClick={() => {
+            <label className="client-pop-up-panel-label" onClick={() => {
                 navigateToPersonalAccount("SubscriptionsTab")
             }}>Подписки</label>
             <label className="separator"></label>
-            <input type="button" value="Выйти"></input>
+            <input id="client-pop-up-panel-sign-out-btn" type="button" value="Выйти"></input>
         </div>
     )
 }

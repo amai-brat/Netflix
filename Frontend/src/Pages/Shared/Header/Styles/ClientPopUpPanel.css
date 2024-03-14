@@ -1,0 +1,54 @@
+.separator{
+    display: block;
+    border-bottom: 2px solid;
+    border-bottom-color: white;
+}
+
+.client-pop-up-panel-label{
+    display: block;
+    width: inherit;
+    height: 40px;
+    line-height: 40px;
+    font-size: 18px;
+    font-weight: normal;
+    font-family: "Helvetica", serif;
+    color: var(--secondary-text-color);
+    margin: 4px 0 4px 0;
+}
+
+.client-pop-up-panel-label:hover {
+    color: var(--main-text-color);
+}
+
+#client-name,
+#client-name:hover{
+    font-size: 20px;
+    color:var(--main-text-color);
+}
+
+#client-pop-up-panel-sign-out-btn{
+    width: 136px;
+    height: 46px;
+    background: var(--logo-color);
+    border:none;
+    color: var(--main-text-color);
+    font-size: 18px;
+    font-family: "Helvetica", serif;
+    font-weight: bold;
+    text-shadow: black 1px -1px 3px;
+    border-radius: 12px;
+    margin-top: 14px;
+    margin-bottom: 10px;
+}
+
+#client-pop-up-panel{
+    width: 232px;
+    height: inherit;
+    background-color: var(--main-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    padding: 4px 16px 4px 16px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
