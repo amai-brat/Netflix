@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import logo from './logo.svg';
+import plus from '../../assets/plus.svg';
 import {useNavigate} from "react-router-dom";
 import './Main.scss';
 
@@ -65,7 +66,7 @@ const Accordion = ({title, content}) => {
         <div className="accordion-item">
             <div className="accordion-title" onClick={() => setIsActive(!isActive)}>
                 <p>{title}</p>
-                <img src={"plus.svg"} alt={"plus"} style={isActive ? {transform: "rotate(45deg)"} : {}}/>
+                <img src={plus} alt={"plus"} style={isActive ? {transform: "rotate(45deg)"} : {}}/>
             </div>
             {isActive && <div className="accordion-content">{content}</div>}
         </div>
