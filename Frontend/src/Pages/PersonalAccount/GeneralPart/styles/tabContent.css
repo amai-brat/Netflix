@@ -1,0 +1,12 @@
+﻿.tabContent {
+    position: absolute;
+    left: 300px;
+    top: 64px;
+    width: calc(100% - 400px);
+    height: calc(100% - 100px);
+    background-color: #000;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    overflow: auto;
+    border-radius: 10px;
+}
