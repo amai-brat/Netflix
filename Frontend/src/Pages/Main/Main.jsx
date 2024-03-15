@@ -32,7 +32,7 @@ const Main = () => {
                     <img src={logo} alt={"logo"} width={120} height={40}/>
                     <button onClick={handleSignInButtonClick}>Войти</button>
                 </header>
-                <div>
+                <div className={"message-wrapper"}>
                     <h1>
                         Неограниченное количество фильмов и сериалов<br/>
                         Смотрите в любом месте и в любое время
@@ -45,7 +45,7 @@ const Main = () => {
                     <h3>Часто задаваемые вопросы</h3>
                     <div className={"accordions"}>
                         {faq.map((tuple) => 
-                            <Accordion title={tuple.title} content={tuple.content}/> )}
+                            <Accordion key={tuple.title} title={tuple.title} content={tuple.content}/> )}
                     </div>
                 </div>
             </div>
