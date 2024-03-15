@@ -1,6 +1,9 @@
 $red: #E50914;
 $grey: #414141;
 
+* {
+  color: white;
+}
 
 button {
   border-radius: 1em;
@@ -22,24 +25,26 @@ div#top {
   background-size: 100% auto;
   height: 90vh;
   overflow: auto;
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   
   header {
     display: flex;
     justify-content: space-between;
-  
+    flex: 0 0 auto;
+    
     img {
       margin: 1em;
     }
   }
   
-  div {
+  div.message-wrapper {
     display: flex;
     justify-content: center;
-    margin: 20vh auto auto;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
+    flex: 1 1 auto;
     
     h1 {
       font-weight: 700;
