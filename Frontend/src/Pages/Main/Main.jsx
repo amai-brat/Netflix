@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import logo from './logo.svg';
 import plus from '../../assets/plus.svg';
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import './Main.scss';
 
 const Main = () => {
@@ -29,7 +29,9 @@ const Main = () => {
         <>
             <div id={"top"}>
                 <header>
-                    <img src={logo} alt={"logo"} width={120} height={40}/>
+                    <Link to={"/MainContent"}>
+                        <img src={logo} alt={"logo"} width={150} height={50}/>
+                    </Link>
                     <button onClick={handleSignInButtonClick}>Войти</button>
                 </header>
                 <div className={"message-wrapper"}>
