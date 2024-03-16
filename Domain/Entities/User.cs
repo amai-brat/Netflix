@@ -5,7 +5,7 @@ public class User
     public int Id { get; set; }
     public string Nickname { get; set; } = null!;
     public string? ProfilePictureUrl { get; set; }
-    public DateTime? BirthDay { get; set; }
+    public DateOnly? BirthDay { get; set; }
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
     public List<Review>? Reviews { get; set; }

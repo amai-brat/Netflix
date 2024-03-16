@@ -1,6 +1,8 @@
-﻿namespace Domain;
+﻿using Microsoft.EntityFrameworkCore;
 
-//Owned
+namespace Domain;
+
+[Owned]
 public class Ratings
 {
     public float? KinopoiskRating { get; set; }
