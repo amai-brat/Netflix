@@ -6,26 +6,27 @@
 
 .navigation {
     background-color: rgba(0, 0, 0, 0.8);
+    overflow-y: auto;
     width: 250px;
     position: absolute;
     top: 50%;
     left: 50px;
     transform: translateY(-50%);
     box-sizing: border-box;
-    padding: 20px;
     height: auto;
     max-height: 90%;
     border-radius: 5px;
     border-color: red;
     border-style: solid;
     border-width: 1px;
+    text-decoration: none;
 }
 
 .tab {
-    margin-bottom: 10px;
+    display: block;
     color: white;
-    padding: 10px;
     cursor: pointer;
+    text-decoration: none;
 }
 .tab:hover {
     background-color: #300;
@@ -40,3 +41,11 @@
 .tabContent {
     margin-left: 50px;
 }
+
+.tab a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+}
+
