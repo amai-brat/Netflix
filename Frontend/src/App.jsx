@@ -22,10 +22,12 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Main />} />
                         <Route path="MainContent" element={<MainContent />} />
-                        <Route path="PersonalAccount/PersonalInfoTab" element={<GeneralPart component={PersonalInfoTab} />} />
-                        <Route path="PersonalAccount/FavouritesTab" element={<GeneralPart component={FavouritesTab} />} />
-                        <Route path="PersonalAccount/PersonalReviewsTab" element={<GeneralPart component={PersonalReviewsTab} />} />
-                        <Route path="PersonalAccount/SubscriptionsTab" element={<GeneralPart component={SubscriptionsTab} />} />
+                        <Route path="PersonalAccount" element={<GeneralPart/>}>
+                            <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
+                            <Route path="FavouritesTab" element={<FavouritesTab/>}/>
+                            <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
+                            <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                        </Route>
                         <Route path="SelectionContent" element={<SelectionContent />} />
                         {/*Здесь должен быть Route для админовской части*/}
                         <Route path="SignUpSignIn" element={<SignUpSignIn />} />

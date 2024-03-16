@@ -1,19 +1,22 @@
 import {useEffect, useState} from 'react'
 import './styles/background.css'
-import {useLocation} from "react-router-dom";
+import {NavLink, Outlet, useLocation} from "react-router-dom";
 import './styles/content.css'
 import './styles/tabContent.css'
 
 const GeneralPart = ({component: Component}) => {
     const [currentTab, setCurrentTab] = useState(0);
-    const tabs = ["Личные данные", "Избранное", "Подписки", "Рецензии"];
+    const tabs = [
+        {name: "Личные данные", link: "PersonalInfoTab"},
+        {name: "Избранное", link: "FavouritesTab"},
+        {name: "Рецензии", link: "PersonalReviewsTab"},
+        {name: "Подписки", link: "SubscriptionsTab"}
+    ];
     const location = useLocation();
     const setInitialTab = () => {
         const pathSegments = location.pathname.split('/');
         const accountSection = pathSegments[pathSegments.indexOf('PersonalAccount') + 1];
-        const tabNames = ["PersonalInfoTab", "FavouritesTab", "SubscriptionsTab", "PersonalReviewsTab"];
-
-        const tabIndex = tabNames.findIndex(name => name.toLowerCase() === accountSection?.toLowerCase());
+        const tabIndex = tabs.findIndex(tab => tab.link.toLowerCase() === accountSection?.toLowerCase());
         if (tabIndex !== -1) {
             setCurrentTab(tabIndex);
         }
@@ -32,12 +35,12 @@ const GeneralPart = ({component: Component}) => {
                         {tabs.map((tab, index) =>
                             <div className={`tab ${index === currentTab ? 'active' : ''}`}
                                  onClick={() => tabClicked(index)}>
-                                {tab}
+                                <NavLink to={tab.link} key={tab.link}>{tab.name}</NavLink>
                             </div>
                         )}
                     </div>
                     <div className={"tabContent"}>
-                        <Component/>
+                        <Outlet></Outlet>
                     </div>
                 </div>
             </div>
