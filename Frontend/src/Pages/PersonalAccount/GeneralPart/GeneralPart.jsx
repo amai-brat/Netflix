@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
-import './styles/background.css'
+import background from './styles/background.module.css'
 import {NavLink, Outlet, useLocation} from "react-router-dom";
-import './styles/content.css'
-import './styles/tabContent.css'
+import content from './styles/content.module.css'
+import tabContent from './styles/tabContent.module.css'
 
 const GeneralPart = ({component: Component}) => {
     const [currentTab, setCurrentTab] = useState(0);
@@ -29,17 +29,18 @@ const GeneralPart = ({component: Component}) => {
     }
     return (
         <>
-            <div className={"background"}>
-                <div className={"content"}>
-                    <div className={"navigation"}>
+            <div className={background.background}>
+                <div className={content.content}>
+                    <div className={content.navigation}>
                         {tabs.map((tab, index) =>
-                            <div className={`tab ${index === currentTab ? 'active' : ''}`}
+                            <div key={tab.link}
+                                 className={`${content.tab} ${index === currentTab ? content.active : ''}`}
                                  onClick={() => tabClicked(index)}>
                                 <NavLink to={tab.link} key={tab.link}>{tab.name}</NavLink>
                             </div>
                         )}
                     </div>
-                    <div className={"tabContent"}>
+                    <div className={tabContent.tabContent}>
                         <Outlet></Outlet>
                     </div>
                 </div>
