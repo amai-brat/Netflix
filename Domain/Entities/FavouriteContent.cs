@@ -2,8 +2,11 @@
 
 public class FavouriteContent
 {
-    public int Id { get; set; }
-    public int UserId { get; set; }
-    public int ContentId { get; set; }
-    public DateTime AddedAt { get; set; }
+    public User User { get; set; } = null!;
+    public long UserId { get; set; }
+
+    public ContentBase Content { get; set; } = null!;
+    public long ContentId { get; set; }
+
+    public DateTimeOffset AddedAt { get; set; }
 }
