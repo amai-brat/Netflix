@@ -18,24 +18,24 @@ function App() {
     return (
         <>
             <Header />
-            <aside>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={Main()} />
-                        <Route path="MainContent" element={MainContent()} />
-                        <Route path="PersonalAccount/PersonalInfoTab" element={GeneralPart(PersonalInfoTab)} />
-                        <Route path="PersonalAccount/FavouritesTab" element={GeneralPart(FavouritesTab)} />
-                        <Route path="PersonalAccount/PersonalReviewsTab" element={GeneralPart(PersonalReviewsTab)} />
-                        <Route path="PersonalAccount/SubscriptionsTab" element={GeneralPart(SubscriptionsTab)} />
-                        <Route path="SelectionContent" element={SelectionContent()} />
+                        <Route path="/" element={<Main />} />
+                        <Route path="MainContent" element={<MainContent />} />
+                        <Route path="PersonalAccount" element={<GeneralPart/>}>
+                            <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
+                            <Route path="FavouritesTab" element={<FavouritesTab/>}/>
+                            <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
+                            <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                        </Route>
+                        <Route path="SelectionContent" element={<SelectionContent />} />
                         {/*Здесь должен быть Route для админовской части*/}
-                        <Route path="SignUpSignIn" element={SignUpSignIn()} />
-                        <Route path="Subscriptions" element={Subscriptions()} />
-                        <Route path="ViewContent/:id" element={ViewContent()} />
-                        <Route path="*" element={Error404()}/>
+                        <Route path="SignUpSignIn" element={<SignUpSignIn />} />
+                        <Route path="Subscriptions" element={<Subscriptions />} />
+                        <Route path="ViewContent/:id" element={<ViewContent />} />
+                        <Route path="*" element={<Error404 />}/>
                     </Routes>
                 </BrowserRouter>
-            </aside>
         </>
     )
 }
