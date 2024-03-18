@@ -1,4 +1,5 @@
-import {Route, Routes} from "react-router-dom";
+import {Component, useState} from 'react'
+import {Route, Routes, useLocation} from "react-router-dom";
 import Main from "./Pages/Main/Main.jsx";
 import MainContent from "./Pages/MainContent/MainContent.jsx";
 import PersonalInfoTab from "./Pages/PersonalAccount/PersonalInfoTab/PersonalInfoTab.jsx";
@@ -15,8 +16,11 @@ import Error404 from "./Pages/Error/Error404.jsx";
 import "/src/Pages/Shared/Styles/App.css";
 
 function App() {
+    const location = useLocation();
+    
     return (
         <>
+            {location.pathname !== "/" && <Header />}
             <Header />
                 <BrowserRouter>
                     <Routes>
