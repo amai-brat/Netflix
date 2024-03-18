@@ -34,6 +34,7 @@ namespace DataAccess
 			modelBuilder.ApplyConfiguration(new CommentEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new ContentBaseEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new ContentTypeEntityConfiguration());
+			modelBuilder.ApplyConfiguration(new EpisodeEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new FavouriteContentEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new MovieContentEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new PersonInContentEntityConfiguration());

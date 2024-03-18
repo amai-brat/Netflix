@@ -130,11 +130,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("text")
                         .HasColumnName("slogan");
 
-                    b.Property<string>("VideoUrl")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("video_url");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ContentTypeId")
@@ -167,6 +162,37 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_content_types_content_type_name");
 
                     b.ToTable("content_types", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Episode", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("EpisodeNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("episode_number");
+
+                    b.Property<int>("SeasonInfoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("season_info_id");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("video_url");
+
+                    b.HasKey("Id")
+                        .HasName("pk_episode");
+
+                    b.HasIndex("SeasonInfoId")
+                        .HasDatabaseName("ix_episode_season_info_id");
+
+                    b.ToTable("episode", (string)null);
                 });
 
             modelBuilder.Entity("Domain.FavouriteContent", b =>
@@ -329,10 +355,6 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EpisodesCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("episodes_count");
-
                     b.Property<int>("SeasonNumber")
                         .HasColumnType("integer")
                         .HasColumnName("season_number");
@@ -450,6 +472,11 @@ namespace DataAccess.Migrations
                     b.Property<DateOnly>("ReleaseDate")
                         .HasColumnType("date")
                         .HasColumnName("release_date");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("video_url");
 
                     b.ToTable("movie_contents", (string)null);
                 });
@@ -635,6 +662,18 @@ namespace DataAccess.Migrations
                     b.Navigation("TrailerInfo");
                 });
 
+            modelBuilder.Entity("Domain.Episode", b =>
+                {
+                    b.HasOne("Domain.SeasonInfo", "SeasonInfo")
+                        .WithMany("Episodes")
+                        .HasForeignKey("SeasonInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_episode_season_infos_season_info_id");
+
+                    b.Navigation("SeasonInfo");
+                });
+
             modelBuilder.Entity("Domain.FavouriteContent", b =>
                 {
                     b.HasOne("Domain.ContentBase", "Content")
@@ -811,6 +850,11 @@ namespace DataAccess.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("RatedByUsers");
+                });
+
+            modelBuilder.Entity("Domain.SeasonInfo", b =>
+                {
+                    b.Navigation("Episodes");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
