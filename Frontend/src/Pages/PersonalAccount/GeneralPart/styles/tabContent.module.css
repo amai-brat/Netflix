@@ -1,7 +1,6 @@
 ﻿.tabContent {
     position: absolute;
     left: 300px;
-    top: 64px;
     width: calc(100% - 400px);
     min-width: 400px;
     height: calc(100% - 100px);

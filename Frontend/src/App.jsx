@@ -1,5 +1,5 @@
 import {Component, useState} from 'react'
-import {Route, Routes, useLocation} from "react-router-dom";
+import {BrowserRouter, Route, Routes, useLocation} from "react-router-dom";
 import Main from "./Pages/Main/Main.jsx";
 import MainContent from "./Pages/MainContent/MainContent.jsx";
 import PersonalInfoTab from "./Pages/PersonalAccount/PersonalInfoTab/PersonalInfoTab.jsx";
@@ -21,8 +21,6 @@ function App() {
     return (
         <>
             {location.pathname !== "/" && <Header />}
-            <Header />
-                <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Main />} />
                         <Route path="MainContent" element={<MainContent />} />
@@ -39,7 +37,6 @@ function App() {
                         <Route path="ViewContent/:id" element={<ViewContent />} />
                         <Route path="*" element={<Error404 />}/>
                     </Routes>
-                </BrowserRouter>
         </>
     )
 }

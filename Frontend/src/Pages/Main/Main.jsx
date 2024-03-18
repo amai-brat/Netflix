@@ -4,8 +4,6 @@ import plus from '../../assets/plus.svg';
 import {Link, useNavigate} from "react-router-dom";
 import './Main.scss';
 
-=======
-import styles from './styles.module.css'
 const Main = () => {
     const navigate = useNavigate();
     function handleSignInButtonClick() {
