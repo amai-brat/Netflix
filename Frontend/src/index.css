@@ -8,8 +8,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+/*css reset*/
+html, body, div, span, h1, h2, h3, p {
 
 body {
-  margin: 0;
   background: black;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+body{
+  min-width: 320px;
+  min-height: 100vh;
 }

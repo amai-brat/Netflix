@@ -1,0 +1,40 @@
+.notification-message{
+    display: block;
+    width: inherit;
+    height: 30px;
+    line-height: 40px;
+    font-size: 18px;
+    font-weight: normal;
+    font-family: "Helvetica", serif;
+    color: var(--main-text-color);
+    margin: 4px 0 4px 0;
+}
+
+.notification-date{
+    display: block;
+    width: inherit;
+    font-size: 10px;
+    font-weight: normal;
+    font-family: "Helvetica", serif;
+    color: var(--main-text-color);
+    border-bottom: #1A1A1A solid;
+}
+
+.notification-info{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+#notification-pop-up-panel{
+    width: 232px;
+    min-height: 314px;
+    max-height: 314px;
+    background-color: var(--main-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    padding: 4px 16px 4px 16px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
