@@ -10,14 +10,12 @@
 }
 /*css reset*/
 html, body, div, span, h1, h2, h3, p {
-
-body {
-  background: black;
   margin: 0;
   padding: 0;
   border: 0;
 }
 body{
+  background: black;
   min-width: 320px;
   min-height: 100vh;
 }
