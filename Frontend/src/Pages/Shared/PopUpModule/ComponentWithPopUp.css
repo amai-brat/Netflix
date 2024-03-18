@@ -1,0 +1,22 @@
+.pop-up-parent{
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 0;
+    width: 0;
+    align-self: end;
+}
+
+.pop-up{
+    position: absolute;
+    transform: translate(-100%,50%);
+}
+
+.pop-up-and-component-container{
+    display: flex;
+    height: 100%;
+}
+
+.component{
+    height: 100%;
+}

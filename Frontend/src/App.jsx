@@ -1,5 +1,4 @@
-import {Component, useState} from 'react'
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import Main from "./Pages/Main/Main.jsx";
 import MainContent from "./Pages/MainContent/MainContent.jsx";
 import PersonalInfoTab from "./Pages/PersonalAccount/PersonalInfoTab/PersonalInfoTab.jsx";
@@ -13,6 +12,7 @@ import ViewContent from "./Pages/ViewContent/ViewContent.jsx";
 import Header from "./Pages/Shared/Header/Header.jsx";
 import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
 import Error404 from "./Pages/Error/Error404.jsx";
+import "/src/Pages/Shared/Styles/App.css";
 
 function App() {
     return (
