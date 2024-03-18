@@ -1,5 +1,5 @@
 :root {
-  font-family: Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,6 +11,8 @@
 /*css reset*/
 html, body, div, span, h1, h2, h3, p {
 
+body {
+  background: black;
   margin: 0;
   padding: 0;
   border: 0;
