@@ -6,7 +6,7 @@ public class UsersReviews
     public long UserId { get; set; }
 
     public Review Review { get; set; } = null!;
-	public long ReviewId { get; set; }
-
-	public bool IsLiked { get; set; }
+    public long ReviewId { get; set; }
+    
+    public bool IsLiked { get; set; }
 }
