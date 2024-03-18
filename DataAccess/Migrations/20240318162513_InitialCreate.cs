@@ -80,7 +80,6 @@ namespace DataAccess.Migrations
                     description = table.Column<string>(type: "text", nullable: false),
                     slogan = table.Column<string>(type: "text", nullable: true),
                     poster_url = table.Column<string>(type: "text", nullable: false),
-                    video_url = table.Column<string>(type: "text", nullable: false),
                     age_ratings_age = table.Column<int>(type: "integer", nullable: true),
                     age_ratings_age_mpaa = table.Column<string>(type: "text", nullable: true),
                     content_type_id = table.Column<int>(type: "integer", nullable: false),
@@ -183,6 +182,7 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false),
                     movie_length = table.Column<long>(type: "bigint", nullable: false),
+                    video_url = table.Column<string>(type: "text", nullable: false),
                     release_date = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
@@ -337,9 +337,8 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    serial_content_id = table.Column<long>(type: "bigint", nullable: false),
                     season_number = table.Column<int>(type: "integer", nullable: false),
-                    episodes_count = table.Column<int>(type: "integer", nullable: false)
+                    serial_content_id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -376,6 +375,27 @@ namespace DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "episode",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    episode_number = table.Column<int>(type: "integer", nullable: false),
+                    video_url = table.Column<string>(type: "text", nullable: false),
+                    season_info_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_episode", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_episode_season_infos_season_info_id",
+                        column: x => x.season_info_id,
+                        principalTable: "season_infos",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_comment_user_scored_comments_id",
                 table: "comment_user",
@@ -406,6 +426,11 @@ namespace DataAccess.Migrations
                 table: "content_types",
                 column: "content_type_name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_episode_season_info_id",
+                table: "episode",
+                column: "season_info_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_favourite_contents_content_id",
@@ -464,6 +489,9 @@ namespace DataAccess.Migrations
                 name: "content_base_subscription");
 
             migrationBuilder.DropTable(
+                name: "episode");
+
+            migrationBuilder.DropTable(
                 name: "favourite_contents");
 
             migrationBuilder.DropTable(
@@ -476,9 +504,6 @@ namespace DataAccess.Migrations
                 name: "person_in_contents");
 
             migrationBuilder.DropTable(
-                name: "season_infos");
-
-            migrationBuilder.DropTable(
                 name: "users_reviews");
 
             migrationBuilder.DropTable(
@@ -488,19 +513,22 @@ namespace DataAccess.Migrations
                 name: "subscriptions");
 
             migrationBuilder.DropTable(
-                name: "professions");
+                name: "season_infos");
 
             migrationBuilder.DropTable(
-                name: "serial_contents");
+                name: "professions");
 
             migrationBuilder.DropTable(
                 name: "reviews");
 
             migrationBuilder.DropTable(
-                name: "content_bases");
+                name: "serial_contents");
 
             migrationBuilder.DropTable(
                 name: "users");
+
+            migrationBuilder.DropTable(
+                name: "content_bases");
 
             migrationBuilder.DropTable(
                 name: "content_types");

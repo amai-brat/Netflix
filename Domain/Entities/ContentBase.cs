@@ -7,7 +7,6 @@ public class ContentBase
 	public string Description { get; set; } = null!;
 	public string? Slogan { get; set; }
 	public string PosterUrl { get; set; } = null!;
-	public string VideoUrl { get; set; } = null!;
 
 	public AgeRatings? AgeRatings { get; set; }
 	public ContentType ContentType { get; set; } = null!;

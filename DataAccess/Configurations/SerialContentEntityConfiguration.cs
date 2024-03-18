@@ -10,7 +10,7 @@ namespace DataAccess.Configurations
 		{
 			builder.ToTable("serial_contents");
 
-			builder.OwnsOne(s => s.YearRange);
+			builder.OwnsOne(s => s.YearRange).WithOwner();
 
 			builder.HasMany(s => s.SeasonInfos)
 				.WithOne(si => si.SerialContent);

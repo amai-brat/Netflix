@@ -12,6 +12,7 @@ namespace DataAccess.Configurations
 
 			builder.Property(m => m.MovieLength).IsRequired();
 			builder.Property(m => m.ReleaseDate).IsRequired();
+			builder.Property(m => m.VideoUrl).IsRequired();
 		}
 	}
 }
