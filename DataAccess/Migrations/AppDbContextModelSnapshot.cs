@@ -432,6 +432,13 @@ namespace DataAccess.Migrations
                         .HasColumnType("text")
                         .HasColumnName("profile_picture_url");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("user")
+                        .HasColumnName("role");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 

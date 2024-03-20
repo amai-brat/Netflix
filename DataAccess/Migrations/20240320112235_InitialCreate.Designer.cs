@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240318162513_InitialCreate")]
+    [Migration("20240320112235_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -434,6 +434,13 @@ namespace DataAccess.Migrations
                     b.Property<string>("ProfilePictureUrl")
                         .HasColumnType("text")
                         .HasColumnName("profile_picture_url");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("user")
+                        .HasColumnName("role");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
