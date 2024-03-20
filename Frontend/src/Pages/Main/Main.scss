@@ -5,23 +5,6 @@ $grey: #414141;
   color: white;
 }
 
-button {
-  border-radius: 1em;
-  background-color: $red;
-  color: white;
-  padding: 0.75em;
-  align-self: center;
-  border: 0;
-  margin: 1em;
-  font-weight: 700;
-  font-size: 1.25em;
-  
-  &:hover {
-    background: #F51924;
-    cursor: pointer;
-  }
-}
-
 div#top {
   background-image: url("../../assets/poster_main.png");
   background-size: 100% auto;
@@ -30,6 +13,23 @@ div#top {
   display: flex;
   flex-direction: column;
   
+  button {
+    border-radius: 1em;
+    background-color: $red;
+    color: white;
+    padding: 0.75em;
+    align-self: center;
+    border: 0;
+    margin: 1em;
+    font-weight: 700;
+    font-size: 1.25em;
+
+    &:hover {
+      background: #F51924;
+      cursor: pointer;
+    }
+  }
+
   header {
     display: flex;
     justify-content: space-between;
