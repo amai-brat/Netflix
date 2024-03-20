@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240320112235_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240320174151_SeedTestData")]
+    partial class SeedTestData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,25 +42,65 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_comment_user_scored_comments_id");
 
                     b.ToTable("comment_user", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ScoredByUsersId = -1L,
+                            ScoredCommentsId = -1L
+                        });
+                });
+
+            modelBuilder.Entity("ContentBaseGenre", b =>
+                {
+                    b.Property<int>("GenreId")
+                        .HasColumnType("integer")
+                        .HasColumnName("genre_id");
+
+                    b.Property<long>("ContentBaseId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("content_base_id");
+
+                    b.HasKey("GenreId", "ContentBaseId")
+                        .HasName("pk_content_base_genre");
+
+                    b.HasIndex("ContentBaseId")
+                        .HasDatabaseName("ix_content_base_genre_content_base_id");
+
+                    b.ToTable("content_base_genre", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            GenreId = -1,
+                            ContentBaseId = -1L
+                        });
                 });
 
             modelBuilder.Entity("ContentBaseSubscription", b =>
                 {
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("subscription_id");
+
                     b.Property<long>("AccessibleContentId")
                         .HasColumnType("bigint")
                         .HasColumnName("accessible_content_id");
 
-                    b.Property<int>("AllowedSubscriptionsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("allowed_subscriptions_id");
-
-                    b.HasKey("AccessibleContentId", "AllowedSubscriptionsId")
+                    b.HasKey("SubscriptionId", "AccessibleContentId")
                         .HasName("pk_content_base_subscription");
 
-                    b.HasIndex("AllowedSubscriptionsId")
-                        .HasDatabaseName("ix_content_base_subscription_allowed_subscriptions_id");
+                    b.HasIndex("AccessibleContentId")
+                        .HasDatabaseName("ix_content_base_subscription_accessible_content_id");
 
                     b.ToTable("content_base_subscription", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            SubscriptionId = 1,
+                            AccessibleContentId = -1L
+                        });
                 });
 
             modelBuilder.Entity("Domain.Comment", b =>
@@ -99,6 +139,16 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_comments_user_id");
 
                     b.ToTable("comments", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            ReviewId = -1L,
+                            Text = "Полностью согласен",
+                            UserId = -2L,
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 20, 20, 51, 50, 857, DateTimeKind.Unspecified).AddTicks(7584), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.ContentBase", b =>
@@ -165,6 +215,23 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_content_types_content_type_name");
 
                     b.ToTable("content_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            ContentTypeName = "Фильм"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            ContentTypeName = "Сериал"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            ContentTypeName = "Мультфильм"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Episode", b =>
@@ -219,33 +286,51 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_favourite_contents_content_id");
 
                     b.ToTable("favourite_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = -1L,
+                            ContentId = -1L,
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 3, 20, 20, 11, 50, 857, DateTimeKind.Unspecified).AddTicks(7565), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.Genre", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<long>("ContentsId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("contents_id");
-
-                    b.Property<string>("GenresName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("genres_name");
-
-                    b.HasKey("Name")
+                    b.HasKey("Id")
                         .HasName("pk_genres");
 
-                    b.HasIndex("ContentsId")
-                        .HasDatabaseName("ix_genres_contents_id");
-
-                    b.HasIndex("GenresName")
-                        .HasDatabaseName("ix_genres_genres_name");
-
                     b.ToTable("genres", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name = "триллер"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Name = "драма"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Name = "триминал"
+                        });
                 });
 
             modelBuilder.Entity("Domain.PersonInContent", b =>
@@ -277,10 +362,25 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_person_in_contents_content_id");
 
                     b.HasIndex("ProfessionId")
-                        .IsUnique()
                         .HasDatabaseName("ix_person_in_contents_profession_id");
 
                     b.ToTable("person_in_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            ContentId = -1L,
+                            Name = "Брэд Питт",
+                            ProfessionId = -1
+                        },
+                        new
+                        {
+                            Id = -2,
+                            ContentId = -1L,
+                            Name = "Эдвард Нортон",
+                            ProfessionId = -1
+                        });
                 });
 
             modelBuilder.Entity("Domain.Profession", b =>
@@ -301,6 +401,13 @@ namespace DataAccess.Migrations
                         .HasName("pk_professions");
 
                     b.ToTable("professions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            ProfessionName = "Актер"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Review", b =>
@@ -347,6 +454,18 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_reviews_user_id");
 
                     b.ToTable("reviews", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            ContentId = -1L,
+                            IsPositive = true,
+                            Score = 9,
+                            Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
+                            UserId = -1L,
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 20, 20, 41, 50, 857, DateTimeKind.Unspecified).AddTicks(7574), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.SeasonInfo", b =>
@@ -384,14 +503,6 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("BoughtAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("bought_at");
-
-                    b.Property<DateTimeOffset>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -401,6 +512,23 @@ namespace DataAccess.Migrations
                         .HasName("pk_subscriptions");
 
                     b.ToTable("subscriptions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Фильмы"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Сериалы"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Мультфильмы"
+                        });
                 });
 
             modelBuilder.Entity("Domain.User", b =>
@@ -446,6 +574,64 @@ namespace DataAccess.Migrations
                         .HasName("pk_users");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            BirthDay = new DateOnly(2004, 3, 20),
+                            Email = "testEmail@gmail.com",
+                            Nickname = "testUser",
+                            Password = "testPassword228;",
+                            ProfilePictureUrl = "https://i.pinimg.com/originals/2b/64/2f/2b642f9183fa80b8c47a9d8f8971eb4d.jpg",
+                            Role = "user"
+                        },
+                        new
+                        {
+                            Id = -2L,
+                            BirthDay = new DateOnly(1999, 3, 20),
+                            Email = "testEmail2@gmail.com",
+                            Nickname = "testUser2",
+                            Password = "testPassword1337;",
+                            ProfilePictureUrl = "https://st.kp.yandex.net/images/actor_iphone/iphone360_25584.jpg",
+                            Role = "user"
+                        });
+                });
+
+            modelBuilder.Entity("Domain.UserSubscription", b =>
+                {
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("subscription_id");
+
+                    b.Property<DateTimeOffset>("BoughtAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("bought_at");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.HasKey("UserId", "SubscriptionId")
+                        .HasName("pk_user_subscriptions");
+
+                    b.HasIndex("SubscriptionId")
+                        .HasDatabaseName("ix_user_subscriptions_subscription_id");
+
+                    b.ToTable("user_subscriptions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = -1L,
+                            SubscriptionId = 1,
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 3, 18, 20, 41, 50, 857, DateTimeKind.Unspecified).AddTicks(7365), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 4, 19, 20, 41, 50, 857, DateTimeKind.Unspecified).AddTicks(7403), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.UsersReviews", b =>
@@ -469,6 +655,14 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_users_reviews_review_id");
 
                     b.ToTable("users_reviews", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = -1L,
+                            ReviewId = -1L,
+                            IsLiked = true
+                        });
                 });
 
             modelBuilder.Entity("Domain.MovieContent", b =>
@@ -489,6 +683,20 @@ namespace DataAccess.Migrations
                         .HasColumnName("video_url");
 
                     b.ToTable("movie_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            ContentTypeId = -1,
+                            Description = "Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.\n\nПроходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.",
+                            Name = "Бойцовский клуб",
+                            PosterUrl = "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig",
+                            Slogan = "Интриги. Хаос. Мыло",
+                            MovieLength = 139L,
+                            ReleaseDate = new DateOnly(1999, 9, 10),
+                            VideoUrl = "https://localhost:7173/videostream/"
+                        });
                 });
 
             modelBuilder.Entity("Domain.SerialContent", b =>
@@ -515,6 +723,23 @@ namespace DataAccess.Migrations
                         .HasConstraintName("fk_comment_user_comments_scored_comments_id");
                 });
 
+            modelBuilder.Entity("ContentBaseGenre", b =>
+                {
+                    b.HasOne("Domain.ContentBase", null)
+                        .WithMany()
+                        .HasForeignKey("ContentBaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_content_base_genre_content_bases_content_base_id");
+
+                    b.HasOne("Domain.Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_content_base_genre_genres_genre_id");
+                });
+
             modelBuilder.Entity("ContentBaseSubscription", b =>
                 {
                     b.HasOne("Domain.ContentBase", null)
@@ -526,10 +751,10 @@ namespace DataAccess.Migrations
 
                     b.HasOne("Domain.Subscription", null)
                         .WithMany()
-                        .HasForeignKey("AllowedSubscriptionsId")
+                        .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_content_base_subscription_subscriptions_allowed_subscriptio");
+                        .HasConstraintName("fk_content_base_subscription_subscriptions_subscription_id");
                 });
 
             modelBuilder.Entity("Domain.Comment", b =>
@@ -583,6 +808,14 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    Age = 18,
+                                    AgeMpaa = "R"
+                                });
                         });
 
                     b.OwnsOne("Domain.Budget", "Budget", b1 =>
@@ -607,6 +840,14 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    BudgetCurrencyName = "$",
+                                    BudgetValue = 63000000
+                                });
                         });
 
                     b.OwnsOne("Domain.Ratings", "Ratings", b1 =>
@@ -634,6 +875,15 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    ImdbRating = 8.8f,
+                                    KinopoiskRating = 8.668f,
+                                    LocalRating = 0f
+                                });
                         });
 
                     b.OwnsOne("Domain.TrailerInfo", "TrailerInfo", b1 =>
@@ -659,6 +909,14 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    Name = "Theatrical Trailer(HD Fan Remaster)",
+                                    Url = "https://www.youtube.com/embed/6JnN1DmbqoU"
+                                });
                         });
 
                     b.Navigation("AgeRatings");
@@ -705,23 +963,6 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Genre", b =>
-                {
-                    b.HasOne("Domain.ContentBase", null)
-                        .WithMany()
-                        .HasForeignKey("ContentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_genres_content_bases_contents_id");
-
-                    b.HasOne("Domain.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenresName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_genres_genres_genres_name");
-                });
-
             modelBuilder.Entity("Domain.PersonInContent", b =>
                 {
                     b.HasOne("Domain.ContentBase", "Content")
@@ -732,8 +973,8 @@ namespace DataAccess.Migrations
                         .HasConstraintName("fk_person_in_contents_content_bases_content_id");
 
                     b.HasOne("Domain.Profession", "Profession")
-                        .WithOne()
-                        .HasForeignKey("Domain.PersonInContent", "ProfessionId")
+                        .WithMany()
+                        .HasForeignKey("ProfessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_person_in_contents_professions_profession_id");
@@ -774,6 +1015,27 @@ namespace DataAccess.Migrations
                         .HasConstraintName("fk_season_infos_serial_contents_serial_content_id");
 
                     b.Navigation("SerialContent");
+                });
+
+            modelBuilder.Entity("Domain.UserSubscription", b =>
+                {
+                    b.HasOne("Domain.Subscription", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_subscriptions_subscriptions_subscription_id");
+
+                    b.HasOne("Domain.User", "User")
+                        .WithMany("UserSubscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_subscriptions_users_user_id");
+
+                    b.Navigation("Subscription");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.UsersReviews", b =>
@@ -876,6 +1138,8 @@ namespace DataAccess.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("ScoredReviews");
+
+                    b.Navigation("UserSubscriptions");
                 });
 
             modelBuilder.Entity("Domain.SerialContent", b =>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Domain;
 using DataAccess.Configurations;
+using DataAccess.Extensions;
 
 namespace DataAccess
 {
@@ -26,7 +27,7 @@ namespace DataAccess
 		public DbSet<Comment> Comments => Set<Comment>();
 
 		public DbSet<Subscription> Subscriptions => Set<Subscription>();
-
+		public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +43,9 @@ namespace DataAccess
 			modelBuilder.ApplyConfiguration(new SerialContentEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UsersReviewsEntityConfiguration());
+			modelBuilder.ApplyConfiguration(new UserSubsciptionConfiguration());
+
+			modelBuilder.SeedWithTestData();
 
 			base.OnModelCreating(modelBuilder);
 		}

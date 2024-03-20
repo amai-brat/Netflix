@@ -26,6 +26,19 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "genres",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_genres", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "professions",
                 columns: table => new
                 {
@@ -44,9 +57,7 @@ namespace DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    expires_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    bought_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,9 +92,9 @@ namespace DataAccess.Migrations
                     description = table.Column<string>(type: "text", nullable: false),
                     slogan = table.Column<string>(type: "text", nullable: true),
                     poster_url = table.Column<string>(type: "text", nullable: false),
+                    content_type_id = table.Column<int>(type: "integer", nullable: false),
                     age_ratings_age = table.Column<int>(type: "integer", nullable: true),
                     age_ratings_age_mpaa = table.Column<string>(type: "text", nullable: true),
-                    content_type_id = table.Column<int>(type: "integer", nullable: false),
                     ratings_kinopoisk_rating = table.Column<float>(type: "real", nullable: true),
                     ratings_imdb_rating = table.Column<float>(type: "real", nullable: true),
                     ratings_local_rating = table.Column<float>(type: "real", nullable: true),
@@ -104,15 +115,65 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "content_base_subscription",
+                name: "user_subscriptions",
                 columns: table => new
                 {
-                    accessible_content_id = table.Column<long>(type: "bigint", nullable: false),
-                    allowed_subscriptions_id = table.Column<int>(type: "integer", nullable: false)
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    subscription_id = table.Column<int>(type: "integer", nullable: false),
+                    expires_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    bought_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_content_base_subscription", x => new { x.accessible_content_id, x.allowed_subscriptions_id });
+                    table.PrimaryKey("pk_user_subscriptions", x => new { x.user_id, x.subscription_id });
+                    table.ForeignKey(
+                        name: "fk_user_subscriptions_subscriptions_subscription_id",
+                        column: x => x.subscription_id,
+                        principalTable: "subscriptions",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_user_subscriptions_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "content_base_genre",
+                columns: table => new
+                {
+                    genre_id = table.Column<int>(type: "integer", nullable: false),
+                    content_base_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_content_base_genre", x => new { x.genre_id, x.content_base_id });
+                    table.ForeignKey(
+                        name: "fk_content_base_genre_content_bases_content_base_id",
+                        column: x => x.content_base_id,
+                        principalTable: "content_bases",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_content_base_genre_genres_genre_id",
+                        column: x => x.genre_id,
+                        principalTable: "genres",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "content_base_subscription",
+                columns: table => new
+                {
+                    subscription_id = table.Column<int>(type: "integer", nullable: false),
+                    accessible_content_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_content_base_subscription", x => new { x.subscription_id, x.accessible_content_id });
                     table.ForeignKey(
                         name: "fk_content_base_subscription_content_bases_accessible_content_",
                         column: x => x.accessible_content_id,
@@ -120,8 +181,8 @@ namespace DataAccess.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_content_base_subscription_subscriptions_allowed_subscriptio",
-                        column: x => x.allowed_subscriptions_id,
+                        name: "fk_content_base_subscription_subscriptions_subscription_id",
+                        column: x => x.subscription_id,
                         principalTable: "subscriptions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -149,31 +210,6 @@ namespace DataAccess.Migrations
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "genres",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "text", nullable: false),
-                    contents_id = table.Column<long>(type: "bigint", nullable: false),
-                    genres_name = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_genres", x => x.name);
-                    table.ForeignKey(
-                        name: "fk_genres_content_bases_contents_id",
-                        column: x => x.contents_id,
-                        principalTable: "content_bases",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_genres_genres_genres_name",
-                        column: x => x.genres_name,
-                        principalTable: "genres",
-                        principalColumn: "name",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -413,9 +449,14 @@ namespace DataAccess.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_content_base_subscription_allowed_subscriptions_id",
+                name: "ix_content_base_genre_content_base_id",
+                table: "content_base_genre",
+                column: "content_base_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_content_base_subscription_accessible_content_id",
                 table: "content_base_subscription",
-                column: "allowed_subscriptions_id");
+                column: "accessible_content_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_content_bases_content_type_id",
@@ -439,16 +480,6 @@ namespace DataAccess.Migrations
                 column: "content_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_genres_contents_id",
-                table: "genres",
-                column: "contents_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_genres_genres_name",
-                table: "genres",
-                column: "genres_name");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_person_in_contents_content_id",
                 table: "person_in_contents",
                 column: "content_id");
@@ -456,8 +487,7 @@ namespace DataAccess.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_person_in_contents_profession_id",
                 table: "person_in_contents",
-                column: "profession_id",
-                unique: true);
+                column: "profession_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_reviews_content_id",
@@ -475,6 +505,11 @@ namespace DataAccess.Migrations
                 column: "serial_content_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_user_subscriptions_subscription_id",
+                table: "user_subscriptions",
+                column: "subscription_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_users_reviews_review_id",
                 table: "users_reviews",
                 column: "review_id");
@@ -487,6 +522,9 @@ namespace DataAccess.Migrations
                 name: "comment_user");
 
             migrationBuilder.DropTable(
+                name: "content_base_genre");
+
+            migrationBuilder.DropTable(
                 name: "content_base_subscription");
 
             migrationBuilder.DropTable(
@@ -496,13 +534,13 @@ namespace DataAccess.Migrations
                 name: "favourite_contents");
 
             migrationBuilder.DropTable(
-                name: "genres");
-
-            migrationBuilder.DropTable(
                 name: "movie_contents");
 
             migrationBuilder.DropTable(
                 name: "person_in_contents");
+
+            migrationBuilder.DropTable(
+                name: "user_subscriptions");
 
             migrationBuilder.DropTable(
                 name: "users_reviews");
@@ -511,13 +549,16 @@ namespace DataAccess.Migrations
                 name: "comments");
 
             migrationBuilder.DropTable(
-                name: "subscriptions");
+                name: "genres");
 
             migrationBuilder.DropTable(
                 name: "season_infos");
 
             migrationBuilder.DropTable(
                 name: "professions");
+
+            migrationBuilder.DropTable(
+                name: "subscriptions");
 
             migrationBuilder.DropTable(
                 name: "reviews");
