@@ -15,8 +15,8 @@ namespace DataAccess.Configurations
 				.HasForeignKey(p => p.ContentId);
 
 			builder.HasOne(p => p.Profession)
-				.WithOne()
-				.HasForeignKey<PersonInContent>(p => p.ProfessionId);
+				.WithMany()
+				.HasForeignKey(p => p.ProfessionId);
 		}
 	}
 }

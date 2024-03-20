@@ -8,8 +8,10 @@ public class ContentBase
 	public string? Slogan { get; set; }
 	public string PosterUrl { get; set; } = null!;
 
-	public AgeRatings? AgeRatings { get; set; }
+	public int ContentTypeId { get; set; }
 	public ContentType ContentType { get; set; } = null!;
+
+	public AgeRatings? AgeRatings { get; set; }
 	public Ratings? Ratings { get; set; }
 	public TrailerInfo? TrailerInfo { get; set; }
 	public Budget? Budget { get; set; }

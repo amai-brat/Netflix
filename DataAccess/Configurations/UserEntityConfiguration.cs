@@ -24,7 +24,15 @@ namespace DataAccess.Configurations
 				.HasForeignKey(c => c.UserId);
 
 			builder.HasMany(u => u.ScoredComments)
-				.WithMany(c => c.ScoredByUsers);
+				.WithMany(c => c.ScoredByUsers)
+				.UsingEntity<Dictionary<string, object>>(
+					"CommentUser",
+					l => l.HasOne<Comment>().WithMany().HasForeignKey("ScoredCommentsId"),
+					r => r.HasOne<User>().WithMany().HasForeignKey("ScoredByUsersId"),
+					je =>
+					{
+						je.HasKey("ScoredByUsersId", "ScoredCommentsId");
+					}); ;
 		}
 	}
 }

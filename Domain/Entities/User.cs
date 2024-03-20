@@ -16,4 +16,6 @@ public class User
     public List<Comment>? Comments { get; set; }
     public List<Comment>? ScoredComments { get; set; }
     public List<FavouriteContent>? FavouriteContents { get; set; }
+
+    public List<UserSubscription>? UserSubscriptions { get; set; }
 }

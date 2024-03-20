@@ -20,21 +20,34 @@ namespace DataAccess.Configurations
 			builder.Property(c => c.PosterUrl).IsRequired();
 
 			builder.HasOne(c => c.ContentType)
-				.WithMany(content => content.ContentsWithType);
+				.WithMany(content => content.ContentsWithType)
+				.HasForeignKey(c => c.ContentTypeId);
 
 			builder.HasMany(c => c.Genres)
 				.WithMany(g => g.Contents)
-				.UsingEntity<Genre>(
-					gt => gt
-					.HasKey(g => g.Name)
-				);
+				.UsingEntity<Dictionary<string, object>>(
+					"ContentBaseGenre",
+					r => r.HasOne<Genre>().WithMany().HasForeignKey("GenreId"),
+					l => l.HasOne<ContentBase>().WithMany().HasForeignKey("ContentBaseId"),
+					je =>
+					{
+						je.HasKey("GenreId", "ContentBaseId");
+					});
 
 			builder.HasMany(c => c.Reviews)
 				.WithOne(r => r.Content)
 				.HasForeignKey(r => r.ContentId);
 
 			builder.HasMany(c => c.AllowedSubscriptions)
-				.WithMany(s => s.AccessibleContent);
+				.WithMany(s => s.AccessibleContent)
+				.UsingEntity<Dictionary<string, object>>(
+					"ContentBaseSubscription",
+					r => r.HasOne<Subscription>().WithMany().HasForeignKey("SubscriptionId"),
+					l => l.HasOne<ContentBase>().WithMany().HasForeignKey("AccessibleContentId"),
+					je =>
+					{
+						je.HasKey("SubscriptionId", "AccessibleContentId");
+					});
 		}
 	}
 }
