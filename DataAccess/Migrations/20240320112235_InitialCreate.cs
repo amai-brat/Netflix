@@ -60,6 +60,7 @@ namespace DataAccess.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     nickname = table.Column<string>(type: "text", nullable: false),
+                    role = table.Column<string>(type: "text", nullable: false, defaultValue: "user"),
                     profile_picture_url = table.Column<string>(type: "text", nullable: true),
                     birth_day = table.Column<DateOnly>(type: "date", nullable: true),
                     email = table.Column<string>(type: "text", nullable: false),
