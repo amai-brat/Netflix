@@ -16,19 +16,21 @@ const customStyles = {
         backgroundColor: 'rgba(0, 0, 0, 0.8)'
     }
 };
-const ConfirmationModal = ({ isOpen, onRequestClose}) => {
+const ConfirmationModal = ({ isOpen, onRequestClose, onConfirm, isDataFetching, response}) => {
     return (
         <Modal
             isOpen={isOpen}
             style={customStyles}
             onRequestClose={onRequestClose}
-            contentLabel="Example Modal"
+            onConfirm={onConfirm}
         >
             <div className={styles.modalContent}>
                 <h2>Точно отписаться?</h2>
+                {isDataFetching && <p>Отписываемся...</p>}
+                {response && <p>{response}</p>}
                 <div className={styles.modalButtons}>
-                    <button onClick={onRequestClose} className={styles.cancelButton}>Cancel</button>
-                    <button onClick={onRequestClose} className={styles.confirmButton}>Confirm
+                    <button onClick={onRequestClose} className={styles.cancelButton}>Назад</button>
+                    <button onClick={onConfirm} className={styles.confirmButton}>Да
                     </button>
                 </div>
             </div>

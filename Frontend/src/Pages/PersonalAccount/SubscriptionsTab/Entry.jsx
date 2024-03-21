@@ -5,23 +5,44 @@ import ConfirmationModal from "./ConfirmationModal.jsx";
 const Entry = ({data}) => {
     const [isOpened, setIsOpened] = useState(false)
     const [modalIsOpen, setIsOpen] = React.useState(false);
-
+    const [dataFetching, setDataFetching] = React.useState(false);
+    const [response, setResponse] = React.useState(null);
+    const stateStyles = {
+        transform: `rotate(${isOpened ? 180 : 0}deg)`
+    }
     function openModal() {
         setIsOpen(true);
     }
 
     function closeModal() {
+        setResponse(null)
         setIsOpen(false);
+        setDataFetching(false)
     }
-
-    const stateStyles = {
-        transform: `rotate(${isOpened ? 180 : 0}deg)`
-    }
-
+    
     function openSubscription() {
         setIsOpened(!isOpened)
     }
-
+    async function cancelSubscription(subscriptionName) {
+        setDataFetching(true);
+        try {
+            const response = await fetch('http://localhost:5000/unsubscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ subscriptionName }),
+            });
+            if (response.ok) {
+                setResponse(`Успех`);
+            } else {
+                setResponse(`Ошибка: ${response.statusText}`);
+            }
+        } catch (error) {
+            setDataFetching(false);
+            setResponse(error.message);
+        }
+    }
     return (
         <>
             <div className={styles.folded}>
@@ -45,6 +66,9 @@ const Entry = ({data}) => {
                 <ConfirmationModal
                     isOpen={modalIsOpen}
                     onRequestClose={closeModal}
+                    onConfirm={() => cancelSubscription(data.name)}
+                    isDataFetching={dataFetching}
+                    response={response}
                 ></ConfirmationModal>
             </div>
         </>
