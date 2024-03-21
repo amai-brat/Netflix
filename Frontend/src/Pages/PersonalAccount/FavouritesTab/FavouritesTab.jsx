@@ -49,6 +49,7 @@ const FavouritesTab = () => {
                     setFilteredFavourites(null)
                 }
             }catch(error){
+                var d = {}
                 setFavourites(null)
                 setFilteredFavourites(null)
                 console.error(error)
@@ -78,8 +79,11 @@ const FavouritesTab = () => {
                 <FavouritesContent/>
             </div>
             <div>
-                {filteredFavourites.length > cardPerPage && (
-                    Array.from({ length: Math.ceil(filteredFavourites.length / cardPerPage) }, (_, index) => (
+                { 
+                    favourites !== null && 
+                    favourites !== undefined && 
+                    filteredFavourites.length > cardPerPage && 
+                    (Array.from({ length: Math.ceil(filteredFavourites.length / cardPerPage) }, (_, index) => (
                         <button key={index} onClick={() => setCurrentPage(index + 1)}>{index + 1}</button>
                     )))
                 }

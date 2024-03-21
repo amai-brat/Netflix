@@ -35,17 +35,20 @@ const FavouritesFilterPopUp = ({favourites, setFavourites}) => {
     return(
         <div id="favourites-filter-pop-up">
             <div className="favourites-filter-pop-up-filter">
+                <label htmlFor="favourites-filter-pop-up-filter-name"></label>
                 <input id="favourites-filter-pop-up-filter-name" type="checkbox" checked={filterName} onClick={()=>{
                     setFavourites(filterFavouritesByRule("name"))
                 }}/>
             </div>
             <div className="favourites-filter-pop-up-filter">
-                <input id="favourites-filter-pop-up-filter-score" type="checkbox" checked={filterScore} onClick={()=>{
+                <label htmlFor="favourites-filter-pop-up-filter-score"></label>
+                <input id="favourites-filter-pop-up-filter-score" type="checkbox" checked={filterScore} onClick={() => {
                     setFavourites(filterFavouritesByRule("score"))
                 }}/>
             </div>
             <div className="favourites-filter-pop-up-filter">
-                <input id="favourites-filter-pop-up-filter-date" type="checkbox" checked={filterDate} onClick={()=>{
+                <label htmlFor="favourites-filter-pop-up-filter-date"></label>
+                <input id="favourites-filter-pop-up-filter-date" type="checkbox" checked={filterDate} onClick={() => {
                     setFavourites(filterFavouritesByRule("date"))
                 }}/>
             </div>
