@@ -1,0 +1,12 @@
+#favourites-filter-pop-up{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--main-color);
+    border-radius: 4px;
+    width: 140px;
+    height: 120px;
+}
+
+.favourites-filter-pop-up-filter{
+    margin: 8px 2px 8px 2px;
+}
