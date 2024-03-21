@@ -1,13 +1,10 @@
 import {useEffect, useState} from 'react'
-import {useLocation} from "react-router-dom";
-import * as signalR from "@microsoft/signalr";
 import FavouriteTabSearchPanel from "./FavouriteTabSearchPanel.jsx";
 import ComponentWithPopUp from "../../Shared/PopUpModule/ComponentWithPopUp.jsx";
-import ClientPanel from "../../Shared/Header/ClientPanel.jsx";
-import ClientPopUpPanel from "../../Shared/Header/ClientPopUpPanel.jsx";
 import FavouritesFilterButton from "./FavouritesFilterButton.jsx";
 import FavouritesFilterPopUp from "./FavouritesFilterPopUp.jsx";
 import FavouriteContentCard from "./FavouriteContentCard.jsx";
+import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTab.css";
 
 const FavouritesTab = () => {
     const cardPerPage = 5;
@@ -16,7 +13,7 @@ const FavouritesTab = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const FavouritesContent = () => {
         if(favourites === undefined){
-            return <label className="favourite-info-label">Ищем</label>
+            return <label className="favourite-info-label">Ищем . . .</label>
         } else if(favourites === null){
             return <label className="favourite-info-label">Что-то не так, мы ничего не нашли</label>
         } else if(favourites.length === 0){
@@ -49,7 +46,6 @@ const FavouritesTab = () => {
                     setFilteredFavourites(null)
                 }
             }catch(error){
-                var d = {}
                 setFavourites(null)
                 setFilteredFavourites(null)
                 console.error(error)
@@ -59,8 +55,8 @@ const FavouritesTab = () => {
     }, []);
     
     return (
-        <div>
-            <div>
+        <div id="favourite-tab">
+            <div id="favourite-search-and-filter-panel">
                 <FavouriteTabSearchPanel
                     favourites = {favourites}
                     setFavourites = {setFilteredFavourites}
@@ -75,16 +71,16 @@ const FavouritesTab = () => {
                     id = {"pop-up-favourite-filter"}
                 />
             </div>
-            <div>
+            <div id="favourites-content">
                 <FavouritesContent/>
             </div>
-            <div>
+            <div id="favourite-navigate-panel">
                 { 
                     favourites !== null && 
                     favourites !== undefined && 
                     filteredFavourites.length > cardPerPage && 
                     (Array.from({ length: Math.ceil(filteredFavourites.length / cardPerPage) }, (_, index) => (
-                        <button key={index} onClick={() => setCurrentPage(index + 1)}>{index + 1}</button>
+                        <label key={index} className="favourite-navigation-digit" onClick={() => setCurrentPage(index + 1)}>{index + 1}</label>
                     )))
                 }
             </div>
