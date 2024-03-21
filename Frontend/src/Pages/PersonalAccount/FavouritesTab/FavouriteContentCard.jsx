@@ -3,7 +3,7 @@ import {useState} from "react";
 
 const FavouriteContentCard = ({content, userScore, addedAt}) => {
     const navigate = useNavigate()
-    const [contentImg, setContentImg] = useState(content.icon.toString())
+    const [contentImg, setContentImg] = useState(content.PosterUrl.toString())
 
     const setDefaultContentImg = () => {
         setContentImg("/src/assets/NoImage.svg")
