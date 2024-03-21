@@ -1,8 +1,11 @@
-import { useState } from 'react'
-import './PersonalReviewsTab.scss'
-import sortIcon from '../../../assets/SortIcon.svg';
+import { useState } from 'react';
 import searchIcon from '../../../assets/Search.svg';
-import {createTheme, MenuItem, Pagination, Select, ThemeProvider} from "@mui/material";
+import searchStyle from './styles/search.module.scss';
+import reviewStyle from "./styles/review.module.scss";
+import paginationStyle from './styles/pagination.module.scss';
+import {ReviewAccordion} from "./components/ReviewAccordion.jsx";
+import {ReviewsPagination} from "./components/ReviewsPagination.jsx";
+import {ReviewSortSelect} from "./components/ReviewSortSelect.jsx";
 const PersonalReviewsTab = () => {
     // TODO: ajax запрос
     const reviews = [
@@ -40,26 +43,37 @@ const PersonalReviewsTab = () => {
     ];
 
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortType, setSortType] = useState("rating");
     
-    return (
-        <div className={"reviews-tab-wrapper"}>
-            <div className={"search-filter-box"}>
-              <form id={"search-form"}>
-                <input id={"search-input"} placeholder={"Поиск по слову"} type={"text"} name={"search"}/>
-                <input type={"image"} src={searchIcon} width={45} height={45} alt={"Submit"}/>
-                <img src={sortIcon} width={45} height={45} alt={"Sort"}/>
-                <Select defaultValue={"rating"} label={"Sort"}>
-                  <MenuItem value={"date-updated"}>По дате обновления</MenuItem>
-                  <MenuItem value={"rating"}>По оценке</MenuItem>
-                </Select>
+    function handleSearchSubmit(event) {
+        event.preventDefault();
+        const fd = new FormData(event.target);
+        fd.append("sort", sortType);
+        
+        // TODO: запрос
+    }
+
+  return (
+        <div>
+            <div className={searchStyle.searchFilterBox}>
+              <form className={searchStyle.searchForm} onSubmit={handleSearchSubmit}>
+                <div className={searchStyle.searchInputWrapper}>
+                  <input className={searchStyle.searchInput} placeholder={"Поиск по слову"} type={"text"}
+                          name={"search"}/>
+                  <input type={"image"} src={searchIcon} width={45} height={45} alt={"Submit"}/>
+                </div>
+                <div className={searchStyle.sortSelectWrapper}>
+                  <p className={searchStyle.sortLabel}>Сортировать по:</p>
+                  <ReviewSortSelect setSortType={setSortType}/>
+                </div>
               </form>
             </div>
-            <div className={"reviews-box"}>
+            <div className={reviewStyle.reviewsBox}>
                 {reviews[currentPage - 1].map(review => (
                   <ReviewAccordion key={review.id} review={review}></ReviewAccordion>
                 ))}
             </div>
-            <div className={"pagination"}>
+            <div className={paginationStyle.pagination}>
                 <ReviewsPagination pageCount={reviews.length} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
             </div>
         </div>
@@ -67,75 +81,3 @@ const PersonalReviewsTab = () => {
 }
 
 export default PersonalReviewsTab
-
-const ReviewAccordion = ({review}) => {
-    const [isActive, setIsActive] = useState(false);
-    
-    return (
-        <div className={"accordion-item " + (isActive ? "review-block-opened" : "review-block")} data-id={review.id}>
-            <div className={"accordion-title"} onClick={() => setIsActive(!isActive)}>
-                <div className={"rating " + (review.isPositive ? "positive" : "negative")}>
-                    <p>{review.rating}</p>
-                </div>
-                <div className={"review-info"}>
-                    <p className={"content-name"}>{review.contentName}</p>
-                    <p className={"review-name"}>{review.name}</p>
-                    <p className={"date"}>{review.updatedAt}</p>
-                </div>
-                {!isActive && <p className={"review-text-beginning"}>{review.text.slice(0, 150) + (review.text.length > 150 ? "..." : "")}</p>}
-            </div>
-            {isActive && <div className={"accordion-content"}>
-                <p className={"review-text"}>{review.text}</p>
-            </div>}
-        </div>
-    );
-}
-
-const ReviewsPagination = ({pageCount, currentPage, setCurrentPage}) => {
-    const theme = createTheme({
-        palette: {
-            netflix: {
-                main: '#E50914',
-                light: '#F51924',
-                dark: '#C50004',
-                contrastText: '#FFFFFF',
-            },
-        },
-        components: {
-            MuiPagination: {
-                styleOverrides: {
-                    root: {
-                        button: {
-                            color: "#fff"
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    const paginationStyle = {
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        marginLeft: "auto",
-        marginRight: "auto",
-        width: "fit-content",
-        padding: "1em",
-        backgroundColor: "black",
-        borderRadius: "1.2em"
-    };
-    
-    function handlePageChange(event, page) {
-        setCurrentPage(page);
-    }
-
-    return (
-      <ThemeProvider theme={theme}>
-          <Pagination count={pageCount} color={"netflix"} size={"large"} 
-                      page={currentPage} onChange={handlePageChange} 
-                      style={paginationStyle}/>
-      </ThemeProvider>
-    );
-}
