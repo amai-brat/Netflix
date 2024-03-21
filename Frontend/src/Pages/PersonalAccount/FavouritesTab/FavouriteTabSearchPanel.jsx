@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
-
+import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTabSearchPanel.css";
 const FavouriteTabSearchPanel = ({favourites, setFavourites}) => {
     const [searchContentName, setSearchContentName] = useState("")
     const handleChangeSearchBar = (e) => {
@@ -9,9 +9,9 @@ const FavouriteTabSearchPanel = ({favourites, setFavourites}) => {
     const filterFavouritesByName = () => favourites.filter((content) => content.Name.contains(searchContentName))
     
     return (
-        <div id="search-panel">
-            <input id="search-panel-search-bar" type="text" placeholder="Поиск по названию" onChange={handleChangeSearchBar}/>
-            <img id="search-panel-search-icon" src="/src/assets/Vector.svg" alt="Search" onClick={() => {
+        <div id="favourite-search-panel">
+            <input id="favourite-search-panel-search-bar" type="text" placeholder="Поиск по названию" onChange={handleChangeSearchBar}/>
+            <img id="favourite-search-panel-search-icon" src="/src/assets/Vector.svg" alt="Search" onClick={() => {
                 setFavourites(filterFavouritesByName())
             }}/>
         </div>

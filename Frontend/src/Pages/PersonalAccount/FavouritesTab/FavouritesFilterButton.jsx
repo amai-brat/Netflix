@@ -1,6 +1,8 @@
+import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouritesFilterButton.css";
+
 const FavouritesFilterButton = () => {
     return(
-        <input id="favourites-filter-button" type="button" value="Фильтр"/>
+        <label id="favourites-filter-button">Фильтр</label>
     )
 }
 export default FavouritesFilterButton;

@@ -1,4 +1,5 @@
 import {useState} from "react";
+import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouritesFilterPopUp.css";
 
 const FavouritesFilterPopUp = ({favourites, setFavourites}) => {
     const [filterName, setFilterName] = useState(false)
@@ -35,22 +36,23 @@ const FavouritesFilterPopUp = ({favourites, setFavourites}) => {
     return(
         <div id="favourites-filter-pop-up">
             <div className="favourites-filter-pop-up-filter">
-                <label htmlFor="favourites-filter-pop-up-filter-name"></label>
-                <input id="favourites-filter-pop-up-filter-name" type="checkbox" checked={filterName} onChange={()=>{
+                <input id="favourites-filter-pop-up-filter-name" type="checkbox" checked={filterName} onChange={() => {
                     setFavourites(filterFavouritesByRule("name"))
                 }}/>
+                <label htmlFor="favourites-filter-pop-up-filter-name">По названию</label>
             </div>
             <div className="favourites-filter-pop-up-filter">
-                <label htmlFor="favourites-filter-pop-up-filter-score"></label>
-                <input id="favourites-filter-pop-up-filter-score" type="checkbox" checked={filterScore} onChange={() => {
-                    setFavourites(filterFavouritesByRule("score"))
-                }}/>
+                <input id="favourites-filter-pop-up-filter-score" type="checkbox" checked={filterScore}
+                       onChange={() => {
+                           setFavourites(filterFavouritesByRule("score"))
+                       }}/>
+                <label htmlFor="favourites-filter-pop-up-filter-score">По оценке</label>
             </div>
             <div className="favourites-filter-pop-up-filter">
-                <label htmlFor="favourites-filter-pop-up-filter-date"></label>
                 <input id="favourites-filter-pop-up-filter-date" type="checkbox" checked={filterDate} onChange={() => {
                     setFavourites(filterFavouritesByRule("date"))
                 }}/>
+                <label htmlFor="favourites-filter-pop-up-filter-date">По дате</label>
             </div>
         </div>
     )
