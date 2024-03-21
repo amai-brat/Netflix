@@ -47,7 +47,6 @@
     }
   }
   
-  
   .reviews-box {
     display: flex;
     flex-direction: column;
@@ -59,6 +58,7 @@
       width: 100%;
       
       .accordion-title {
+        cursor: pointer;
         box-sizing: border-box;
         display: grid;
         grid-template-columns: 1fr 5fr 7fr;
@@ -86,6 +86,7 @@
       width: 100%;
       
       .accordion-title {
+        cursor: pointer;
         box-sizing: border-box;
         display: grid;
         grid-template-columns: 1fr 12fr;
@@ -136,5 +137,36 @@
   .MuiPaginationItem-ellipsis {
     color: white;
   }
+  
+  .search-filter-box {
+    #search-form {
+      padding: 1em;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    
+    #search-input {
+      all: unset;
+      background: #414141;
+      border: none;
+      height: 2em;
+      padding: 1em;
+      border-radius: 0.5em;
+      margin: 0 0.5em;
+      width: 75%;
+    }
+    
+    .MuiInputBase-root {
+      span {
+        color: white;
+      }
+    }
+  }
+  
+  
 }
 
+.MuiSelect-select {
+  background: #676767;
+}

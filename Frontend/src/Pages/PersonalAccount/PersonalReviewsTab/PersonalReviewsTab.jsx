@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './PersonalReviewsTab.scss'
-import {createTheme, Pagination, ThemeProvider} from "@mui/material";
+import sortIcon from '../../../assets/SortIcon.svg';
+import searchIcon from '../../../assets/Search.svg';
+import {createTheme, MenuItem, Pagination, Select, ThemeProvider} from "@mui/material";
 const PersonalReviewsTab = () => {
     // TODO: ajax запрос
     const reviews = [
@@ -42,11 +44,15 @@ const PersonalReviewsTab = () => {
     return (
         <div className={"reviews-tab-wrapper"}>
             <div className={"search-filter-box"}>
-                <form id={"search-form"}>
-                    <input placeholder={"Поиск по слову"} type={"text"} name={"search"}/>
-                    <input type={"image"} alt={"Submit"}/>
-                </form>
-                <button id={"filter-btn"}>Фильтры</button>
+              <form id={"search-form"}>
+                <input id={"search-input"} placeholder={"Поиск по слову"} type={"text"} name={"search"}/>
+                <input type={"image"} src={searchIcon} width={45} height={45} alt={"Submit"}/>
+                <img src={sortIcon} width={45} height={45} alt={"Sort"}/>
+                <Select defaultValue={"rating"} label={"Sort"}>
+                  <MenuItem value={"date-updated"}>По дате обновления</MenuItem>
+                  <MenuItem value={"rating"}>По оценке</MenuItem>
+                </Select>
+              </form>
             </div>
             <div className={"reviews-box"}>
                 {reviews[currentPage - 1].map(review => (
