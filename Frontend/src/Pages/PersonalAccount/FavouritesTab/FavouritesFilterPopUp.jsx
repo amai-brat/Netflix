@@ -2,57 +2,35 @@ import {useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouritesFilterPopUp.css";
 
 const FavouritesFilterPopUp = ({favourites, setFavourites}) => {
-    const [filterName, setFilterName] = useState(false)
-    const [filterDate, setFilterDate] = useState(false)
-    const [filterScore, setFilterScore] = useState(false)
-    const filters = [
-        {rule:"score", set: setFilterScore},
-        {rule:"date", set: setFilterDate},
-        {rule:"name", set: setFilterName}
-    ]
     const filterFavouritesByRule = (rule) => {
-        setCheckboxByRule(rule)
         switch (rule){
             case "score":
-                return favourites.sort((a,b) => a.Score - b.Score)
+                return favourites.slice().sort((a,b) => b.UserScore - a.UserScore);
             case "date":
-                return favourites.sort((a,b) => a.AddedAt - b.AddedAt)
+                return favourites.slice().sort((a,b) => new Date(b.AddedAt) - new Date(a.AddedAt))
             case "name":
-                return favourites.sort((a,b) => a.Name.localeCompare(b.Name))
+                return favourites.slice().sort((a,b) => a.ContentBase.Name.localeCompare(b.ContentBase.Name))
             default:
-                return favourites
+                return favourites.slice()
         }
-    }
-    const setCheckboxByRule = (rule) => {
-        filters.forEach((filter) => {
-            if(filter.rule !== rule){
-                filter.set(false)
-            }else{
-                filter.set(true)
-            }
-        }) 
     }
     
     return(
         <div id="favourites-filter-pop-up">
             <div className="favourites-filter-pop-up-filter">
-                <input id="favourites-filter-pop-up-filter-name" type="checkbox" checked={filterName} onChange={() => {
+                <label className="favourites-filter-pop-up-filter-rule" onClick={() => {
                     setFavourites(filterFavouritesByRule("name"))
-                }}/>
-                <label htmlFor="favourites-filter-pop-up-filter-name">По названию</label>
+                }}>По названию</label>
             </div>
             <div className="favourites-filter-pop-up-filter">
-                <input id="favourites-filter-pop-up-filter-score" type="checkbox" checked={filterScore}
-                       onChange={() => {
-                           setFavourites(filterFavouritesByRule("score"))
-                       }}/>
-                <label htmlFor="favourites-filter-pop-up-filter-score">По оценке</label>
+                <label className="favourites-filter-pop-up-filter-rule" onClick={() => {
+                    setFavourites(filterFavouritesByRule("score"))
+                }}>По оценке</label>
             </div>
             <div className="favourites-filter-pop-up-filter">
-                <input id="favourites-filter-pop-up-filter-date" type="checkbox" checked={filterDate} onChange={() => {
+                <label className="favourites-filter-pop-up-filter-rule" onClick={() => {
                     setFavourites(filterFavouritesByRule("date"))
-                }}/>
-                <label htmlFor="favourites-filter-pop-up-filter-date">По дате</label>
+                }}>По дате</label>
             </div>
         </div>
     )
