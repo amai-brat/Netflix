@@ -1,10 +1,11 @@
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteContentCard.css";
 
 const FavouriteContentCard = ({content, userScore, addedAt}) => {
     const navigate = useNavigate()
     const [contentImg, setContentImg] = useState(content.PosterUrl.toString())
+    const [displayed, setDisplayed] = useState(true)
 
     const setDefaultContentImg = () => {
         setContentImg("/src/assets/NoImage.svg")
@@ -13,8 +14,24 @@ const FavouriteContentCard = ({content, userScore, addedAt}) => {
         navigate("/ViewContent/" + id)
     }
     
+    const handleRemove = () => {
+        setDisplayed(false)
+        removeContentFromFavourites()
+    }
+    const removeContentFromFavourites = async () => {
+        try{
+            //TODO: Указать действительный url запроса
+            const response = await fetch("https://localhost:5000/RemoveUserFavouritesContentById?id=" + content.Id)
+            if(!response.ok){
+                setDisplayed(true)
+            }
+        }catch(error){
+            setDisplayed(true)
+        }
+    }
+    
     return(
-        <div className="favourite-content-card">
+        <div className="favourite-content-card" style={{display: displayed ? "flex" : "none"}}>
             <img className="favourite-content-card-poster" src={contentImg} alt="Poster" onError={setDefaultContentImg} onClick={() => {navigateToViewContent(content.Id)}}/>
             <div className="favourite-content-card-data" onClick={() => {navigateToViewContent(content.Id)}}>
                 <label className="favourite-content-card-data-name">{content.Name}</label>
@@ -24,7 +41,7 @@ const FavouriteContentCard = ({content, userScore, addedAt}) => {
                 </div>
             </div>
             <div className="favourite-content-card-remove-block">
-                <img className="favourite-content-card-remove" src="/src/assets/Cross.svg" alt="Remove"/>
+                <img className="favourite-content-card-remove" src="/src/assets/Cross.svg" alt="Remove" onClick={handleRemove}/>
             </div>
         </div>
     )
