@@ -6,7 +6,7 @@ const SubscriptionsTab = () => {
     //TODO: сделать запрос на получение подписок
     const subscriptions = [
         {
-            name: "Netflix Premium",
+            name: "Netflix Premium1",
             expiresAt: "2022-07-01",
             boughtAt: "2021-07-01",
             info: [
@@ -16,7 +16,7 @@ const SubscriptionsTab = () => {
             ]
         },
         {
-            name: "Netflix Premium",
+            name: "Netflix Premium2",
             expiresAt: "2022-07-01",
             boughtAt: "2021-07-01",
             info: [
@@ -26,7 +26,7 @@ const SubscriptionsTab = () => {
             ]
         },
         {
-            name: "Netflix Premium",
+            name: "Netflix Premium3",
             expiresAt: "2022-07-01",
             boughtAt: "2021-07-01",
             info: [

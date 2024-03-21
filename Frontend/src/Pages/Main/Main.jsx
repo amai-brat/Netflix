@@ -2,7 +2,7 @@ import { useState } from 'react'
 import logo from './logo.svg';
 import plus from '../../assets/plus.svg';
 import {Link, useNavigate} from "react-router-dom";
-import './Main.scss';
+// import './Main.scss';
 
 const Main = () => {
     const navigate = useNavigate();
