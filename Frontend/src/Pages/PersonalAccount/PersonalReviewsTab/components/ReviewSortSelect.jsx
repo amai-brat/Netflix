@@ -7,7 +7,7 @@ export const ReviewSortSelect = ({setSortType}) => {
         styleOverrides: {
           root: {
             color: "white",
-            fontSize: "1.3em",
+            fontSize: "1.2em",
             marginLeft: "0.5em"
           },
           select: {
@@ -37,7 +37,7 @@ export const ReviewSortSelect = ({setSortType}) => {
             }
           },
           gutters: {
-            fontSize: "1.3em",
+            fontSize: "1.2em",
             "&:hover": {
               "backgroundColor": "#515151"
             },

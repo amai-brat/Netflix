@@ -28,13 +28,12 @@
   .sortSelectWrapper {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
     margin-left: 1em;
     
     .sortLabel {
       white-space: nowrap;
-      font-size: 1.3em;
-      padding-bottom: 0.3em;
+      font-size: 1.2em;
     }
   }
 }
