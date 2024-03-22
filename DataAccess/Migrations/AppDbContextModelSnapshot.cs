@@ -39,6 +39,13 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_comment_user_scored_comments_id");
 
                     b.ToTable("comment_user", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ScoredByUsersId = -1L,
+                            ScoredCommentsId = -1L
+                        });
                 });
 
             modelBuilder.Entity("ContentBaseGenre", b =>
@@ -58,6 +65,13 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_content_base_genre_content_base_id");
 
                     b.ToTable("content_base_genre", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            GenreId = -1,
+                            ContentBaseId = -1L
+                        });
                 });
 
             modelBuilder.Entity("ContentBaseSubscription", b =>
@@ -77,6 +91,13 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_content_base_subscription_accessible_content_id");
 
                     b.ToTable("content_base_subscription", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            SubscriptionId = 1,
+                            AccessibleContentId = -1L
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Comment", b =>
@@ -115,6 +136,16 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_comments_user_id");
 
                     b.ToTable("comments", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            ReviewId = -1L,
+                            Text = "Полностью согласен",
+                            UserId = -2L,
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 22, 21, 39, 51, 403, DateTimeKind.Unspecified).AddTicks(5002), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.ContentBase", b =>
@@ -181,6 +212,23 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_content_types_content_type_name");
 
                     b.ToTable("content_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            ContentTypeName = "Фильм"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            ContentTypeName = "Сериал"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            ContentTypeName = "Мультфильм"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Episode", b =>
@@ -235,6 +283,14 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_favourite_contents_content_id");
 
                     b.ToTable("favourite_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = -1L,
+                            ContentId = -1L,
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 3, 22, 20, 59, 51, 403, DateTimeKind.Unspecified).AddTicks(4984), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Genre", b =>
@@ -255,6 +311,23 @@ namespace DataAccess.Migrations
                         .HasName("pk_genres");
 
                     b.ToTable("genres", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name = "триллер"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Name = "драма"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Name = "криминал"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.PersonInContent", b =>
@@ -289,6 +362,22 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_person_in_contents_profession_id");
 
                     b.ToTable("person_in_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            ContentId = -1L,
+                            Name = "Брэд Питт",
+                            ProfessionId = -1
+                        },
+                        new
+                        {
+                            Id = -2,
+                            ContentId = -1L,
+                            Name = "Эдвард Нортон",
+                            ProfessionId = -1
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Profession", b =>
@@ -309,6 +398,13 @@ namespace DataAccess.Migrations
                         .HasName("pk_professions");
 
                     b.ToTable("professions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            ProfessionName = "Актер"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Review", b =>
@@ -355,6 +451,18 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_reviews_user_id");
 
                     b.ToTable("reviews", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            ContentId = -1L,
+                            IsPositive = true,
+                            Score = 9,
+                            Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
+                            UserId = -1L,
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 22, 21, 29, 51, 403, DateTimeKind.Unspecified).AddTicks(4991), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.SeasonInfo", b =>
@@ -406,6 +514,26 @@ namespace DataAccess.Migrations
                         .HasName("pk_subscriptions");
 
                     b.ToTable("subscriptions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки",
+                            Name = "Фильмы"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Все сериалы только в этой подписке",
+                            Name = "Сериалы"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Мультфильмы для всех возрастов только в данной подписке",
+                            Name = "Мультфильмы"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -451,6 +579,28 @@ namespace DataAccess.Migrations
                         .HasName("pk_users");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            BirthDay = new DateOnly(2004, 3, 22),
+                            Email = "testEmail@gmail.com",
+                            Nickname = "testUser",
+                            Password = "testPassword228;",
+                            ProfilePictureUrl = "https://i.pinimg.com/originals/2b/64/2f/2b642f9183fa80b8c47a9d8f8971eb4d.jpg",
+                            Role = "user"
+                        },
+                        new
+                        {
+                            Id = -2L,
+                            BirthDay = new DateOnly(1999, 3, 22),
+                            Email = "testEmail2@gmail.com",
+                            Nickname = "testUser2",
+                            Password = "testPassword1337;",
+                            ProfilePictureUrl = "https://st.kp.yandex.net/images/actor_iphone/iphone360_25584.jpg",
+                            Role = "user"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.UserSubscription", b =>
@@ -478,6 +628,15 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_user_subscriptions_subscription_id");
 
                     b.ToTable("user_subscriptions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = -1L,
+                            SubscriptionId = 1,
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 3, 20, 21, 29, 51, 403, DateTimeKind.Unspecified).AddTicks(4783), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 4, 21, 21, 29, 51, 403, DateTimeKind.Unspecified).AddTicks(4819), new TimeSpan(0, 3, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.UsersReviews", b =>
@@ -501,6 +660,14 @@ namespace DataAccess.Migrations
                         .HasDatabaseName("ix_users_reviews_review_id");
 
                     b.ToTable("users_reviews", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = -1L,
+                            ReviewId = -1L,
+                            IsLiked = true
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.MovieContent", b =>
@@ -521,6 +688,20 @@ namespace DataAccess.Migrations
                         .HasColumnName("video_url");
 
                     b.ToTable("movie_contents", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            ContentTypeId = -1,
+                            Description = "Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.\n\nПроходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.",
+                            Name = "Бойцовский клуб",
+                            PosterUrl = "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig",
+                            Slogan = "Интриги. Хаос. Мыло",
+                            MovieLength = 139L,
+                            ReleaseDate = new DateOnly(1999, 9, 10),
+                            VideoUrl = "https://localhost:7173/videostream/"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.SerialContent", b =>
@@ -632,6 +813,14 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    Age = 18,
+                                    AgeMpaa = "R"
+                                });
                         });
 
                     b.OwnsOne("Domain.Entities.Budget", "Budget", b1 =>
@@ -656,6 +845,14 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    BudgetCurrencyName = "$",
+                                    BudgetValue = 63000000
+                                });
                         });
 
                     b.OwnsOne("Domain.Entities.Ratings", "Ratings", b1 =>
@@ -683,6 +880,15 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    ImdbRating = 8.8f,
+                                    KinopoiskRating = 8.668f,
+                                    LocalRating = 0f
+                                });
                         });
 
                     b.OwnsOne("Domain.Entities.TrailerInfo", "TrailerInfo", b1 =>
@@ -708,6 +914,14 @@ namespace DataAccess.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
                                 .HasConstraintName("fk_content_bases_content_bases_id");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ContentBaseId = -1L,
+                                    Name = "Theatrical Trailer(HD Fan Remaster)",
+                                    Url = "https://www.youtube.com/embed/6JnN1DmbqoU"
+                                });
                         });
 
                     b.Navigation("AgeRatings");
