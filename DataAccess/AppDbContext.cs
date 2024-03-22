@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Domain;
+using Domain.Entities;
 using DataAccess.Configurations;
 using DataAccess.Extensions;
 
