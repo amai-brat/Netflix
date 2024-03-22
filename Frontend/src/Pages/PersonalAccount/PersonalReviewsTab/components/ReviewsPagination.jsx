@@ -24,14 +24,9 @@ export const ReviewsPagination = ({pageCount, currentPage, setCurrentPage}) => {
   });
 
   const paginationStyle = {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
     marginLeft: "auto",
     marginRight: "auto",
     width: "fit-content",
-    padding: "1em",
     backgroundColor: "black",
     borderRadius: "1.2em"
   };

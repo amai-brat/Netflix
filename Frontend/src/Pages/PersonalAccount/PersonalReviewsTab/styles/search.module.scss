@@ -9,6 +9,7 @@
 
   .searchInputWrapper{
     display: flex;
+    width: 100%;
     flex-direction: row;
     align-items: center;
     
@@ -20,7 +21,7 @@
       padding: 1em;
       border-radius: 0.5em;
       margin: 0 0.5em;
-      width: 50vw;
+      width: 100%;
     }
   }
   
@@ -28,8 +29,10 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-left: 1em;
     
     .sortLabel {
+      white-space: nowrap;
       font-size: 1.3em;
       padding-bottom: 0.3em;
     }

@@ -3,6 +3,7 @@ import searchIcon from '../../../assets/Search.svg';
 import searchStyle from './styles/search.module.scss';
 import reviewStyle from "./styles/review.module.scss";
 import paginationStyle from './styles/pagination.module.scss';
+import reviewTabStyle from './styles/reviewTab.module.scss';
 import {ReviewAccordion} from "./components/ReviewAccordion.jsx";
 import {ReviewsPagination} from "./components/ReviewsPagination.jsx";
 import {ReviewSortSelect} from "./components/ReviewSortSelect.jsx";
@@ -54,7 +55,7 @@ const PersonalReviewsTab = () => {
     }
 
   return (
-        <div>
+        <div className={reviewTabStyle.reviewTab}>
             <div className={searchStyle.searchFilterBox}>
               <form className={searchStyle.searchForm} onSubmit={handleSearchSubmit}>
                 <div className={searchStyle.searchInputWrapper}>
