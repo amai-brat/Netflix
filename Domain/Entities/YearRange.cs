@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Domain;
+namespace Domain.Entities;
 
 [Owned]
 public class YearRange
