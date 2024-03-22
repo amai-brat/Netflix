@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240320174038_InitialCreate")]
+    [Migration("20240322175555_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -82,7 +82,7 @@ namespace DataAccess.Migrations
                     b.ToTable("content_base_subscription", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Comment", b =>
+            modelBuilder.Entity("Domain.Entities.Comment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,7 +120,7 @@ namespace DataAccess.Migrations
                     b.ToTable("comments", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.ContentBase", b =>
+            modelBuilder.Entity("Domain.Entities.ContentBase", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +162,7 @@ namespace DataAccess.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("Domain.ContentType", b =>
+            modelBuilder.Entity("Domain.Entities.ContentType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,7 +186,7 @@ namespace DataAccess.Migrations
                     b.ToTable("content_types", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Episode", b =>
+            modelBuilder.Entity("Domain.Entities.Episode", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -217,7 +217,7 @@ namespace DataAccess.Migrations
                     b.ToTable("episode", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.FavouriteContent", b =>
+            modelBuilder.Entity("Domain.Entities.FavouriteContent", b =>
                 {
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
@@ -240,7 +240,7 @@ namespace DataAccess.Migrations
                     b.ToTable("favourite_contents", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Genre", b =>
+            modelBuilder.Entity("Domain.Entities.Genre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -260,7 +260,7 @@ namespace DataAccess.Migrations
                     b.ToTable("genres", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.PersonInContent", b =>
+            modelBuilder.Entity("Domain.Entities.PersonInContent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -294,7 +294,7 @@ namespace DataAccess.Migrations
                     b.ToTable("person_in_contents", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Profession", b =>
+            modelBuilder.Entity("Domain.Entities.Profession", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -314,7 +314,7 @@ namespace DataAccess.Migrations
                     b.ToTable("professions", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Review", b =>
+            modelBuilder.Entity("Domain.Entities.Review", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -360,7 +360,7 @@ namespace DataAccess.Migrations
                     b.ToTable("reviews", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.SeasonInfo", b =>
+            modelBuilder.Entity("Domain.Entities.SeasonInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -386,7 +386,7 @@ namespace DataAccess.Migrations
                     b.ToTable("season_infos", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Subscription", b =>
+            modelBuilder.Entity("Domain.Entities.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -394,6 +394,11 @@ namespace DataAccess.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -406,7 +411,7 @@ namespace DataAccess.Migrations
                     b.ToTable("subscriptions", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.User", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -451,7 +456,7 @@ namespace DataAccess.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.UserSubscription", b =>
+            modelBuilder.Entity("Domain.Entities.UserSubscription", b =>
                 {
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
@@ -478,7 +483,7 @@ namespace DataAccess.Migrations
                     b.ToTable("user_subscriptions", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.UsersReviews", b =>
+            modelBuilder.Entity("Domain.Entities.UsersReviews", b =>
                 {
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
@@ -501,9 +506,9 @@ namespace DataAccess.Migrations
                     b.ToTable("users_reviews", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.MovieContent", b =>
+            modelBuilder.Entity("Domain.Entities.MovieContent", b =>
                 {
-                    b.HasBaseType("Domain.ContentBase");
+                    b.HasBaseType("Domain.Entities.ContentBase");
 
                     b.Property<long>("MovieLength")
                         .HasColumnType("bigint")
@@ -521,23 +526,23 @@ namespace DataAccess.Migrations
                     b.ToTable("movie_contents", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.SerialContent", b =>
+            modelBuilder.Entity("Domain.Entities.SerialContent", b =>
                 {
-                    b.HasBaseType("Domain.ContentBase");
+                    b.HasBaseType("Domain.Entities.ContentBase");
 
                     b.ToTable("serial_contents", (string)null);
                 });
 
             modelBuilder.Entity("CommentUser", b =>
                 {
-                    b.HasOne("Domain.User", null)
+                    b.HasOne("Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("ScoredByUsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_comment_user_users_scored_by_users_id");
 
-                    b.HasOne("Domain.Comment", null)
+                    b.HasOne("Domain.Entities.Comment", null)
                         .WithMany()
                         .HasForeignKey("ScoredCommentsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -547,14 +552,14 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ContentBaseGenre", b =>
                 {
-                    b.HasOne("Domain.ContentBase", null)
+                    b.HasOne("Domain.Entities.ContentBase", null)
                         .WithMany()
                         .HasForeignKey("ContentBaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_content_base_genre_content_bases_content_base_id");
 
-                    b.HasOne("Domain.Genre", null)
+                    b.HasOne("Domain.Entities.Genre", null)
                         .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -564,14 +569,14 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ContentBaseSubscription", b =>
                 {
-                    b.HasOne("Domain.ContentBase", null)
+                    b.HasOne("Domain.Entities.ContentBase", null)
                         .WithMany()
                         .HasForeignKey("AccessibleContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_content_base_subscription_content_bases_accessible_content_");
 
-                    b.HasOne("Domain.Subscription", null)
+                    b.HasOne("Domain.Entities.Subscription", null)
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -579,16 +584,16 @@ namespace DataAccess.Migrations
                         .HasConstraintName("fk_content_base_subscription_subscriptions_subscription_id");
                 });
 
-            modelBuilder.Entity("Domain.Comment", b =>
+            modelBuilder.Entity("Domain.Entities.Comment", b =>
                 {
-                    b.HasOne("Domain.Review", "Review")
+                    b.HasOne("Domain.Entities.Review", "Review")
                         .WithMany("Comments")
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_comments_reviews_review_id");
 
-                    b.HasOne("Domain.User", "User")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -600,16 +605,16 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.ContentBase", b =>
+            modelBuilder.Entity("Domain.Entities.ContentBase", b =>
                 {
-                    b.HasOne("Domain.ContentType", "ContentType")
+                    b.HasOne("Domain.Entities.ContentType", "ContentType")
                         .WithMany("ContentsWithType")
                         .HasForeignKey("ContentTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_content_bases_content_types_content_type_id");
 
-                    b.OwnsOne("Domain.AgeRatings", "AgeRatings", b1 =>
+                    b.OwnsOne("Domain.Entities.AgeRatings", "AgeRatings", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -632,7 +637,7 @@ namespace DataAccess.Migrations
                                 .HasConstraintName("fk_content_bases_content_bases_id");
                         });
 
-                    b.OwnsOne("Domain.Budget", "Budget", b1 =>
+                    b.OwnsOne("Domain.Entities.Budget", "Budget", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -656,7 +661,7 @@ namespace DataAccess.Migrations
                                 .HasConstraintName("fk_content_bases_content_bases_id");
                         });
 
-                    b.OwnsOne("Domain.Ratings", "Ratings", b1 =>
+                    b.OwnsOne("Domain.Entities.Ratings", "Ratings", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -683,7 +688,7 @@ namespace DataAccess.Migrations
                                 .HasConstraintName("fk_content_bases_content_bases_id");
                         });
 
-                    b.OwnsOne("Domain.TrailerInfo", "TrailerInfo", b1 =>
+                    b.OwnsOne("Domain.Entities.TrailerInfo", "TrailerInfo", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -719,9 +724,9 @@ namespace DataAccess.Migrations
                     b.Navigation("TrailerInfo");
                 });
 
-            modelBuilder.Entity("Domain.Episode", b =>
+            modelBuilder.Entity("Domain.Entities.Episode", b =>
                 {
-                    b.HasOne("Domain.SeasonInfo", "SeasonInfo")
+                    b.HasOne("Domain.Entities.SeasonInfo", "SeasonInfo")
                         .WithMany("Episodes")
                         .HasForeignKey("SeasonInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -731,16 +736,16 @@ namespace DataAccess.Migrations
                     b.Navigation("SeasonInfo");
                 });
 
-            modelBuilder.Entity("Domain.FavouriteContent", b =>
+            modelBuilder.Entity("Domain.Entities.FavouriteContent", b =>
                 {
-                    b.HasOne("Domain.ContentBase", "Content")
+                    b.HasOne("Domain.Entities.ContentBase", "Content")
                         .WithMany()
                         .HasForeignKey("ContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_favourite_contents_content_bases_content_id");
 
-                    b.HasOne("Domain.User", "User")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("FavouriteContents")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -752,16 +757,16 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.PersonInContent", b =>
+            modelBuilder.Entity("Domain.Entities.PersonInContent", b =>
                 {
-                    b.HasOne("Domain.ContentBase", "Content")
+                    b.HasOne("Domain.Entities.ContentBase", "Content")
                         .WithMany("PersonsInContent")
                         .HasForeignKey("ContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_person_in_contents_content_bases_content_id");
 
-                    b.HasOne("Domain.Profession", "Profession")
+                    b.HasOne("Domain.Entities.Profession", "Profession")
                         .WithMany()
                         .HasForeignKey("ProfessionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -773,16 +778,16 @@ namespace DataAccess.Migrations
                     b.Navigation("Profession");
                 });
 
-            modelBuilder.Entity("Domain.Review", b =>
+            modelBuilder.Entity("Domain.Entities.Review", b =>
                 {
-                    b.HasOne("Domain.ContentBase", "Content")
+                    b.HasOne("Domain.Entities.ContentBase", "Content")
                         .WithMany("Reviews")
                         .HasForeignKey("ContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_reviews_content_bases_content_id");
 
-                    b.HasOne("Domain.User", "User")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -794,9 +799,9 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.SeasonInfo", b =>
+            modelBuilder.Entity("Domain.Entities.SeasonInfo", b =>
                 {
-                    b.HasOne("Domain.SerialContent", "SerialContent")
+                    b.HasOne("Domain.Entities.SerialContent", "SerialContent")
                         .WithMany("SeasonInfos")
                         .HasForeignKey("SerialContentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -806,16 +811,16 @@ namespace DataAccess.Migrations
                     b.Navigation("SerialContent");
                 });
 
-            modelBuilder.Entity("Domain.UserSubscription", b =>
+            modelBuilder.Entity("Domain.Entities.UserSubscription", b =>
                 {
-                    b.HasOne("Domain.Subscription", "Subscription")
+                    b.HasOne("Domain.Entities.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_subscriptions_subscriptions_subscription_id");
 
-                    b.HasOne("Domain.User", "User")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("UserSubscriptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -827,16 +832,16 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.UsersReviews", b =>
+            modelBuilder.Entity("Domain.Entities.UsersReviews", b =>
                 {
-                    b.HasOne("Domain.Review", "Review")
+                    b.HasOne("Domain.Entities.Review", "Review")
                         .WithMany("RatedByUsers")
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_users_reviews_reviews_review_id");
 
-                    b.HasOne("Domain.User", "User")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("ScoredReviews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -848,26 +853,26 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.MovieContent", b =>
+            modelBuilder.Entity("Domain.Entities.MovieContent", b =>
                 {
-                    b.HasOne("Domain.ContentBase", null)
+                    b.HasOne("Domain.Entities.ContentBase", null)
                         .WithOne()
-                        .HasForeignKey("Domain.MovieContent", "Id")
+                        .HasForeignKey("Domain.Entities.MovieContent", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_movie_contents_content_bases_id");
                 });
 
-            modelBuilder.Entity("Domain.SerialContent", b =>
+            modelBuilder.Entity("Domain.Entities.SerialContent", b =>
                 {
-                    b.HasOne("Domain.ContentBase", null)
+                    b.HasOne("Domain.Entities.ContentBase", null)
                         .WithOne()
-                        .HasForeignKey("Domain.SerialContent", "Id")
+                        .HasForeignKey("Domain.Entities.SerialContent", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_serial_contents_content_bases_id");
 
-                    b.OwnsOne("Domain.YearRange", "YearRange", b1 =>
+                    b.OwnsOne("Domain.Entities.YearRange", "YearRange", b1 =>
                         {
                             b1.Property<long>("SerialContentId")
                                 .HasColumnType("bigint")
@@ -894,31 +899,31 @@ namespace DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.ContentBase", b =>
+            modelBuilder.Entity("Domain.Entities.ContentBase", b =>
                 {
                     b.Navigation("PersonsInContent");
 
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("Domain.ContentType", b =>
+            modelBuilder.Entity("Domain.Entities.ContentType", b =>
                 {
                     b.Navigation("ContentsWithType");
                 });
 
-            modelBuilder.Entity("Domain.Review", b =>
+            modelBuilder.Entity("Domain.Entities.Review", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("RatedByUsers");
                 });
 
-            modelBuilder.Entity("Domain.SeasonInfo", b =>
+            modelBuilder.Entity("Domain.Entities.SeasonInfo", b =>
                 {
                     b.Navigation("Episodes");
                 });
 
-            modelBuilder.Entity("Domain.User", b =>
+            modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Comments");
 
@@ -931,7 +936,7 @@ namespace DataAccess.Migrations
                     b.Navigation("UserSubscriptions");
                 });
 
-            modelBuilder.Entity("Domain.SerialContent", b =>
+            modelBuilder.Entity("Domain.Entities.SerialContent", b =>
                 {
                     b.Navigation("SeasonInfos");
                 });
