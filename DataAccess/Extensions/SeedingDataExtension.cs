@@ -9,9 +9,9 @@ namespace DataAccess.Extensions
 		{
 			var subscriptions = new List<Subscription>()
 			{
-				new Subscription() { Id = 1, Name = "Фильмы" },
-				new Subscription() { Id = 2, Name = "Сериалы" },
-				new Subscription() { Id = 3, Name = "Мультфильмы" }
+				new Subscription() { Id = 1, Name = "Фильмы", Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки" },
+				new Subscription() { Id = 2, Name = "Сериалы", Description = "Все сериалы только в этой подписке" },
+				new Subscription() { Id = 3, Name = "Мультфильмы", Description = "Мультфильмы для всех возрастов только в данной подписке" }
 			};
 
 			var contentTypes = new List<ContentType>()
@@ -25,7 +25,7 @@ namespace DataAccess.Extensions
 			{
 				new Genre() { Id = -1, Name = "триллер" },
 				new Genre() { Id = -2, Name = "драма" },
-				new Genre() { Id = -3, Name = "триминал"}
+				new Genre() { Id = -3, Name = "криминал"}
 			};
 
 			var testUser = new User()
