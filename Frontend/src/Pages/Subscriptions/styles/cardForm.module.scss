@@ -1,0 +1,56 @@
+.bankCardForm {
+  overflow: visible;
+  text-align: center;
+  border-radius: 0.5em;
+  border: #555555 solid 1px;
+  background: rgba(0, 0, 0, 0.75);
+  flex: 0 0 auto;
+  margin: 1em;
+  color: white;
+
+  span {
+    color: #d01c10;
+  }
+  
+  .inputWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 1em;
+    
+    input {
+      all: unset;
+      width: 100%;
+      box-sizing: border-box;
+      background: #414141;
+      border: none;
+      height: 2em;
+      padding: 1em;
+      border-radius: 0.5em;
+    }
+  }
+  
+  
+  .expiresAndCvcWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  
+  .submitButton {
+    border-radius: 1em;
+    background-color: #E50914;
+    color: white;
+    padding: 0.75em;
+    align-self: center;
+    border: 0;
+    margin: 1em;
+    font-weight: 700;
+    font-size: 1.25em;
+
+    &:hover {
+      background: #F51924;
+      cursor: pointer;
+    }
+  }
+}
