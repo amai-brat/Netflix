@@ -1,0 +1,24 @@
+.subscriptionsPageWrapper {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  height: calc(100vh - 64px);
+  justify-content: center;
+  align-items: center;
+  background-image: url("../images/background.png");
+  background-size: 100% auto;
+  overflow: auto;
+  
+  .subscriptionList {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+.modalText {
+  color: white;
+  margin: 0 1em;
+}
