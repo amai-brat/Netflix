@@ -130,6 +130,7 @@
     width: 40%;
     height: 30px;
     border-radius: 10px;
+    color: var(--main-text-color);
     background-color: var(--third-color);
     border: 0;
     padding-left: 10px;
@@ -165,7 +166,7 @@
     background-color: var(--third-color);
 }
 
-#selection-content-filter-panel-reset-button,
-#selection-content-filter-panel-apply-button{
+#selection-content-filter-panel-reset-button:hover,
+#selection-content-filter-panel-apply-button:hover{
     cursor: pointer;
 }
