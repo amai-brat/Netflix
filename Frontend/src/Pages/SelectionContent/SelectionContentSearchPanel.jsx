@@ -1,5 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
+import "/src/Pages/SelectionContent/Styles/SelectionContentSearchPanel.css";
 
 const SelectionContentSearchPanel = ({filter, setFilter}) => {
     const navigate = useNavigate()
@@ -9,10 +10,10 @@ const SelectionContentSearchPanel = ({filter, setFilter}) => {
     }
     
     return (
-        <div id="search-panel">
-            <input id="search-panel-search-bar" type="text" placeholder="Поиск по названию" onChange={handleChangeSearchBar}/>
-            <img id="search-panel-search-icon" src="/src/assets/Vector.svg" alt="Search" onClick={() => {
-                navigateToSelectionContent({name: searchContentName})
+        <div id="selection-content-search-panel">
+            <input id="selection-content-search-panel-search-bar" type="text" placeholder="Поиск по названию" onChange={handleChangeSearchBar}/>
+            <img id="selection-content-search-panel-search-icon" src="/src/assets/Vector.svg" alt="Search" onClick={() => {
+
             }}/>
         </div>
     )

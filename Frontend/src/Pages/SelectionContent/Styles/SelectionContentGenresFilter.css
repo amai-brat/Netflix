@@ -1,0 +1,16 @@
+.selection-content-filter-panel-genre-name,
+.selection-content-info-label{
+    color: var(--main-text-color);
+    font-size: 18px;
+    font-family: "Helvetica", serif;
+    font-weight: 100;
+}
+
+.selection-content-filter-panel-genre-name{
+    margin-left: 10px;
+}
+
+.selection-content-filter-panel-genre-name-cb{
+    height: 16px;
+    width: 16px;
+}
