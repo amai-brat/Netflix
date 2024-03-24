@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import SelectionContentGenresFilter from "/SelectionContentGenresFilter.jsx";
 import SelectionContentContentTypeFilter from "./SelectionContentContentTypeFilter.jsx";
+import SelectionContentGenresFilter from "./SelectionContentGenresFilter.jsx";
 
 const SelectionContentFilterPanel = ({filter, setFilter}) => {
     const [selectedGenres, setSelectedGenres] = useState([])
@@ -76,7 +76,6 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                 <div id="selection-content-filter-panel-country">
                     <label htmlFor="selection-content-filter-panel-country-select" className="selection-content-filter-panel-filter-name">Страна</label>
                     <select id="selection-content-filter-panel-country-select">
-                        <!-- Не нашёл в domain страну производства-->
                         <option value={1}>США</option>
                         <option value={2}>Россия</option>
                         <option value={3}>Китай</option>
@@ -124,6 +123,7 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                     <input id="selection-content-filter-panel-reset-button" type="button" value="Сбросить"
                            onClick={() => {
                                setFilter({
+                                   name: filter.name,
                                    types: [],
                                    genres: [],
                                    releaseYearFrom: null,
