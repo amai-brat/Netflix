@@ -1,5 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
+import "/src/Pages/SelectionContent/Styles/SelectionContentCard.css";
 
 const SelectionContentCard = ({content}) => {
     const navigate = useNavigate()
@@ -12,8 +13,8 @@ const SelectionContentCard = ({content}) => {
         navigate("/ViewContent/" + content.Id)
     }
     return(
-        <div key={content.Id} className="selection-content-card" onClick={navigateToViewContent}>
-            <img className="selection-content-card-poster" src={poster} alt="Poster" onError={setPosterDefault} style={{backgroundColor:"white"}}/>
+        <div className="selection-content-card" onClick={navigateToViewContent}>
+            <img className="selection-content-card-poster" src={poster} alt="Poster" onError={setPosterDefault}/>
             <label className="selection-content-card-name">{content.Name}</label>
         </div>
     )
