@@ -18,9 +18,13 @@ export const DataField = ({label, data, handleDataChange}) => {
                         color: "#B3B3B3"
                     }}>{data}</Typography>
                 </div>
-                <Button variant="outlined" onClick={() => setOpen(true)}>Изменить</Button>
+                
+                {label != "Никнейм" && 
+                    <Button variant="outlined" onClick={() => setOpen(true)}>Изменить</Button>
+                }
             </div>
             
+            {label != "Никнейм" && 
             <Modal open={open} onClose={() => setOpen(false)}  sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -58,6 +62,7 @@ export const DataField = ({label, data, handleDataChange}) => {
                     </Alert>
                 </div>
             </Modal>
+            }
         </>
     );
 }

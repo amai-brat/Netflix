@@ -65,7 +65,7 @@ const PersonalInfoTab = () => {
                 <UserAvatar pictureUrl={user.ProfilePictureUrl ?? DefaultUserIcon} onAvatarClick = {handleAvatarClick}/>
 
                 <div className = {"userForm"}>
-                    <DataField data={user.Nickname} label={"Никнейм"} handleDataChange={handleDataChange}></DataField>
+                    <DataField data={user.Nickname} label={"Никнейм"}></DataField>
                     <Divider sx={{ borderBottomWidth: "4px", background: "black"}}></Divider>
 
                     <DataField data={user.Email} label={"Почта"} handleDataChange={handleDataChange}></DataField>
