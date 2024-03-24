@@ -4,7 +4,7 @@ import SelectionContentGenresFilter from "./SelectionContentGenresFilter.jsx";
 import "/src/Pages/SelectionContent/Styles/SelectionContentFilterPanel.css";
 import {contentTypesData, genresData} from "./TestData.jsx";
 
-const SelectionContentFilterPanel = ({filter, setFilter}) => {
+const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
     const [selectedGenres, setSelectedGenres] = useState([])
     const [genresDisplayed, setGenresDisplayed] = useState(false)
     const [contentTypes, setContentTypes] = useState(undefined)
@@ -22,6 +22,7 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                 }
             }
             catch (error){
+                //TODO: изменить на null после разработки API
                 setContentTypes(contentTypesData)
                 console.error(error)
             }
@@ -37,6 +38,7 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                 }
             }
             catch (error){
+                //TODO: изменить на null после разработки API
                 setGenres(genresData)
                 console.error(error)
             }
@@ -50,6 +52,7 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
             <div id="selection-content-filter-panel-genres-only" style={{display: genresDisplayed ? "flex": "none"}}>
                 <div id="selection-content-filter-panel-genres-only-control">
                     <label className="selection-content-filter-panel-genres-only-back" onClick={() => {
+                        setSelectedGenres(filter.genres.map((id) => genres.find((genre) => genre.Id === id).Name))
                         setGenresDisplayed(false)
                     }}>
                         <img className="selection-content-filter-panel-genres-only-forward"
@@ -57,7 +60,11 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                              alt="Forward"/>
                         Жанры
                     </label>
-                    <label className="selection-content-filter-panel-genres-only-reset">Сборосить</label>
+                    <label className="selection-content-filter-panel-genres-only-reset" onClick={() => {
+                        filter.genres = []
+                        setSelectedGenres([])
+                        setGenresDisplayed(false)
+                    }}>Сборосить</label>
                 </div>
                 <SelectionContentGenresFilter
                     filter={filter}
@@ -90,8 +97,14 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                 </div>
                 <div id="selection-content-filter-panel-country">
                     <label htmlFor="selection-content-filter-panel-country-select" className="selection-content-filter-panel-filter-name">Страна</label>
-                    <select id="selection-content-filter-panel-country-select">
-                        <option className="selection-content-filter-panel-country-select-option" value={null}>Любая</option>
+                    <select id="selection-content-filter-panel-country-select" onChange={(e) => {
+                        if (e.target.value === "-1") {
+                            filter.country = null
+                        } else {
+                            filter.country = parseInt(e.target.value)
+                        }
+                    }}>
+                        <option className="selection-content-filter-panel-country-select-option" value={-1}>Любая</option>
                         <option className="selection-content-filter-panel-country-select-option" value={1}>США</option>
                         <option className="selection-content-filter-panel-country-select-option" value={2}>Россия</option>
                         <option className="selection-content-filter-panel-country-select-option" value={3}>Китай</option>
@@ -141,6 +154,7 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                     <input id="selection-content-filter-panel-apply-button" type="button" value="Применить"
                            onClick={() => {
                                setFilter(filter)
+                               onFilterApply()
                            }} />
                     <input id="selection-content-filter-panel-reset-button" type="button" value="Сбросить"
                            onClick={() => {
@@ -148,11 +162,13 @@ const SelectionContentFilterPanel = ({filter, setFilter}) => {
                                    name: filter.name,
                                    types: [],
                                    genres: [],
+                                   country: null,
                                    releaseYearFrom: null,
                                    releaseYearTo: null,
                                    ratingFrom: null,
                                    ratingTo: null
                                })
+                               onFilterApply()
                            }}/>
                 </div>
             </div>

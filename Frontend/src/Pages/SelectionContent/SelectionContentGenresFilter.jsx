@@ -1,4 +1,5 @@
 import "/src/Pages/SelectionContent/Styles/SelectionContentGenresFilter.css";
+import {useState} from "react";
 const SelectionContentGenresFilter = ({filter, genres}) => {
     const GenresFilter = () => {
         if(genres === undefined){
@@ -7,14 +8,15 @@ const SelectionContentGenresFilter = ({filter, genres}) => {
             return <label className="selection-content-info-label">Что-то пошло не так</label>
         } else{
             return genres.map((genre, index) => {
-                    const genresIds = filter.genres.map((genre) => genre.Id)
+                    const [checked, setChecked] = useState(filter.genres.includes(genre.Id))
                     return (
                         <div key={index}>
-                            <input className="selection-content-filter-panel-genre-name-cb" type="checkbox" checked={genresIds.includes(genre.Id)} onChange={(e) => {
+                            <input className="selection-content-filter-panel-genre-name-cb" type="checkbox" checked={checked} onChange={(e) => {
+                                setChecked(!checked)
                                 if(e.target.checked) {
-                                    filter.genres.append(genre.Id)
+                                    filter.genres.push(genre.Id)
                                 }else {
-                                    filter.genres.remove(genre.Id)
+                                    filter.genres = filter.genres.filter((id) => id !== genre.Id)
                                 }
                             }}/>
                             <label className="selection-content-filter-panel-genre-name">{genre.Name}</label>
