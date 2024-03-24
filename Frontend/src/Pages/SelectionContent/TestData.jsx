@@ -50,7 +50,7 @@ export const contentTypesData = [
         ContentType: "Сериал"
     }
 ]
-export const contents = [
+export const contentsData = [
     {
         Id: 1,
         Name: 'Фильм',
