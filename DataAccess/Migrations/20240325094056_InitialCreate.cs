@@ -93,6 +93,7 @@ namespace DataAccess.Migrations
                     description = table.Column<string>(type: "text", nullable: false),
                     slogan = table.Column<string>(type: "text", nullable: true),
                     poster_url = table.Column<string>(type: "text", nullable: false),
+                    country = table.Column<string>(type: "text", nullable: true),
                     content_type_id = table.Column<int>(type: "integer", nullable: false),
                     age_ratings_age = table.Column<int>(type: "integer", nullable: true),
                     age_ratings_age_mpaa = table.Column<string>(type: "text", nullable: true),

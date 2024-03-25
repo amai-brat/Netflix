@@ -144,7 +144,7 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 22, 21, 39, 51, 403, DateTimeKind.Unspecified).AddTicks(5002), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 25, 12, 51, 22, 134, DateTimeKind.Unspecified).AddTicks(9994), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -160,6 +160,10 @@ namespace DataAccess.Migrations
                     b.Property<int>("ContentTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("content_type_id");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("text")
+                        .HasColumnName("country");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -289,7 +293,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 3, 22, 20, 59, 51, 403, DateTimeKind.Unspecified).AddTicks(4984), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 3, 25, 12, 11, 22, 134, DateTimeKind.Unspecified).AddTicks(9973), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -461,7 +465,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 22, 21, 29, 51, 403, DateTimeKind.Unspecified).AddTicks(4991), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 25, 12, 41, 22, 134, DateTimeKind.Unspecified).AddTicks(9984), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -584,7 +588,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
-                            BirthDay = new DateOnly(2004, 3, 22),
+                            BirthDay = new DateOnly(2004, 3, 25),
                             Email = "testEmail@gmail.com",
                             Nickname = "testUser",
                             Password = "testPassword228;",
@@ -594,7 +598,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -2L,
-                            BirthDay = new DateOnly(1999, 3, 22),
+                            BirthDay = new DateOnly(1999, 3, 25),
                             Email = "testEmail2@gmail.com",
                             Nickname = "testUser2",
                             Password = "testPassword1337;",
@@ -634,8 +638,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 3, 20, 21, 29, 51, 403, DateTimeKind.Unspecified).AddTicks(4783), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 4, 21, 21, 29, 51, 403, DateTimeKind.Unspecified).AddTicks(4819), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 3, 23, 12, 41, 22, 134, DateTimeKind.Unspecified).AddTicks(9768), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 4, 24, 12, 41, 22, 134, DateTimeKind.Unspecified).AddTicks(9806), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -694,6 +698,7 @@ namespace DataAccess.Migrations
                         {
                             Id = -1L,
                             ContentTypeId = -1,
+                            Country = "США",
                             Description = "Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.\n\nПроходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.",
                             Name = "Бойцовский клуб",
                             PosterUrl = "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig",
