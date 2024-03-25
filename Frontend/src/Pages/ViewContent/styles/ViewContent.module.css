@@ -1,0 +1,12 @@
+﻿.wholePageContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 1280px;
+  width:100%;
+}
+.generalContainer{
+  display:flex;
+  justify-content: center;
+}
