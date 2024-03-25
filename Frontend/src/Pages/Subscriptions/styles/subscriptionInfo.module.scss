@@ -1,0 +1,82 @@
+.subscriptionWrapper {
+  overflow: auto;
+  text-align: center;
+  border-radius: 0.5em;
+  border: #555555 solid 1px;
+  background: rgba(0, 0, 0, 0.75);
+  flex: 0 0 auto;
+  margin: 1em;
+  
+  .header {
+    border-bottom: #555555 solid 1px;
+    padding: 1em;
+    .name {
+      color: #E50914;
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+    
+    .line {
+      box-sizing: border-box;
+      border: #555555 1px solid;
+      margin-bottom: 0.5rem;
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .price {
+      color: white;
+      font-size: 1.2em;
+      font-weight: 600;
+      padding-bottom: 0.3em;
+    }
+  }
+  
+  .infos {
+    padding: 1em;
+    margin: 1em;
+    
+    .info {
+      flex-direction: row;
+      align-items: center;
+      padding: 0.2em;
+      display: grid;
+      grid-template-columns: 5fr 1fr;
+      justify-items: center;
+      
+      .infoText {
+        color: white;
+      }
+      
+      .checkMark {
+        margin: 0 0.5em;
+      }
+    }
+  }
+  
+  .footer {
+    color: white;
+    border-radius: 0.5em;
+    font-size: 1.2em;
+    padding: 0.4em;
+    
+    &.purchased {
+      background: #0bb000;
+      
+      &:hover {
+        background: #1bc010;
+      }
+    }
+    
+    &.notPurchased {
+      background: #E50914;
+      
+      &:hover {
+        background: #F51924;
+        cursor: pointer;
+      }
+    }
+    
+  }
+}
