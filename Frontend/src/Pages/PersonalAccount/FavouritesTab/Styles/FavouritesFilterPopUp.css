@@ -1,0 +1,32 @@
+#favourites-filter-pop-up{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--main-color);
+    border-radius: 4px;
+    width: 140px;
+    height: 140px;
+}
+
+.favourites-filter-pop-up-filter{
+    margin: 8px 10px 8px 10px;
+    padding-left: 8px;
+    height: 40px;
+    border-radius: 8px;
+}
+
+.favourites-filter-pop-up-filter-rule {
+    text-align: left;
+    font-size: 16px;
+    font-weight: 100;
+    font-family: "Helvetica", serif;
+    color: var(--main-text-color);
+}
+
+.favourites-filter-pop-up-filter:hover{
+    background-color: var(--secondary-color);
+    cursor: pointer;
+}
+
+.favourites-filter-pop-up-filter-rule:hover{
+    cursor: pointer;
+}

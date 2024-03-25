@@ -1,0 +1,122 @@
+.reviewInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 9px 1px;
+  gap: 10px;
+  flex-grow: 0;
+
+  .contentName {
+    font-weight: 900;
+    font-size: 1.1em;
+  }
+  .reviewName {
+    font-weight: 500;
+    font-size: 1.1em;
+  }
+  .date {
+    font-weight: 400;
+    font-size: 0.8em;
+  }
+}
+
+.rating {
+  justify-self: center;
+  flex: 1 0 auto;
+  border-radius: 0.5em;
+  font-weight: 900;
+  font-size: 3em;
+  max-width: 10em;
+  max-height: 10em;
+  width: 2.5em;
+  height: 2.5em;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.positiveReview {
+  background: #0cc000;
+}
+
+.negativeReview {
+  background: #c00c00;
+}
+
+.reviewBlock {
+  width: 100%;
+
+  .accordionTitle {
+    cursor: pointer;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 5fr 7fr;
+    align-items: center;
+    padding: 1em 1.5em;
+    gap: 1em;
+
+    background: #414141;
+    border: 2px solid #414141;
+    border-radius: 1.5em;
+
+    &:hover {
+      background-color: #676767;
+    }
+
+    .reviewTextBeginning {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.reviewBlockOpened {
+  width: 100%;
+
+  .accordionTitle {
+    cursor: pointer;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 12fr;
+
+    align-items: center;
+    padding: 1em 1.5em;
+    gap: 1em;
+
+    background: #414141;
+    border: 2px solid #414141;
+    border-radius: 1.5em;
+    &:hover {
+      background-color: #676767;
+    }
+  }
+  .reviewInfo {
+    text-align: center;
+  }
+  .reviewText {
+    grid-column: span 2;
+    font-size: 1.1em;
+  }
+}
+
+.accordionItem {
+  background: #313131;
+  border-radius: 1.5em;
+}
+
+.accordionContent {
+  padding: 1.5em;
+}
+
+.reviewsBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 19px;
+  gap: 0.25em;
+  overflow: auto;
+}
