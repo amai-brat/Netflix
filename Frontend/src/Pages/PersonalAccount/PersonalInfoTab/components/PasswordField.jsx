@@ -34,7 +34,7 @@ export const PasswordField = () => {
                 <div className = "modalContainer">
                     <Typography variant="h6" gutterBottom sx={{
                         color: "white"
-                    }}>{"Изменить информацию"}</Typography>
+                    }}>{"Смена пароля"}</Typography>
                     
                     <PasswordTextField label="Пароль" marginBottom={"2%"}></PasswordTextField>
                     
