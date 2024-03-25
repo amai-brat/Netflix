@@ -126,6 +126,10 @@
     background-color: var(--third-color);
 }
 
+#selection-content-filter-panel-country-select:hover{
+    cursor: pointer;
+}
+
 .selection-content-filter-panel-filter-input{
     width: 40%;
     height: 30px;

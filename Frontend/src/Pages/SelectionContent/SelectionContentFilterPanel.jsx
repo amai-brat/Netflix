@@ -158,6 +158,9 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                            }} />
                     <input id="selection-content-filter-panel-reset-button" type="button" value="Сбросить"
                            onClick={() => {
+                               document.querySelector("#selection-content-filter-panel-country-select").value = -1
+                               document.querySelectorAll(".selection-content-filter-panel-filter-input")
+                                   .forEach((input) => input.value = "")
                                setFilter({
                                    name: filter.name,
                                    types: [],
