@@ -7,6 +7,7 @@ public class ContentBase
 	public string Description { get; set; } = null!;
 	public string? Slogan { get; set; }
 	public string PosterUrl { get; set; } = null!;
+	public string? Country { get; set; }
 
 	public int ContentTypeId { get; set; }
 	public ContentType ContentType { get; set; } = null!;
