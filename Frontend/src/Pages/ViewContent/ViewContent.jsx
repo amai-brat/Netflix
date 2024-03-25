@@ -357,6 +357,7 @@ const ViewContent = () => {
             <div className={styles.generalContainer}>
                 <div className={styles.wholePageContainer}>
                     <ContentInfo contentData={contentData}/>
+                    
                 </div>
             </div>
         </>

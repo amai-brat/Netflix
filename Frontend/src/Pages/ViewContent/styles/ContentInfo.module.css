@@ -7,7 +7,7 @@
     margin-top: 2rem;
     width:100%;
 }
-.posterTeaser{
+.posterTrailer{
     position: sticky;
     top: 0;
     display:flex;
@@ -15,12 +15,42 @@
     margin: 0 3rem 10px 10px;
     flex: 1;
     align-self: flex-start;
-}
-.poster{
-    max-width: 300px;
-    height: 450px;
-    border-radius: 5px;
-    margin-bottom: 15px;
+    .poster{
+        max-width: 300px;
+        height: 450px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    .trailer{
+        position: relative;
+        h3{
+            display: block;
+            font-size: 1.2rem;
+            overflow-wrap: anywhere;
+            margin-bottom: 5px;
+            font-family: fantasy;
+        }
+        a{
+            text-decoration: none;
+        }
+        a:hover::before{
+            content:"";
+            position: absolute;
+            left:50%;
+            top:50%;
+            width: 50px;
+            height: 50px;
+            transform: translate(-50%);
+            border-radius: 1000px;
+            background-image: url(../Images/icon-play-button-icons-and-png-backgrounds-20.png);
+            background-size: cover;
+        }
+        .trailerEmbed{
+            width: 300px;
+            height:200px;
+            border: 0;
+        }
+    }
 }
 .contentInfo{
     display:flex;
@@ -83,35 +113,5 @@
         strong{
             align-self: flex-start;
         }
-    }
-}
-.trailerEmbed{
-    width: 300px;
-    height:200px;
-    border: 0;    
-}
-.trailer{
-    position: relative;
-    h3{
-        display: block;
-        font-size: 1.2rem;
-        overflow-wrap: anywhere;
-        margin-bottom: 5px;
-        font-family: fantasy;
-    }
-    a{
-        text-decoration: none;
-    }
-    a:hover::before{
-        content:"";
-        position: absolute;
-        left:50%;
-        top:50%;
-        width: 50px;
-        height: 50px;
-        transform: translate(-50%);
-        border-radius: 1000px;
-        background-image: url(../Images/icon-play-button-icons-and-png-backgrounds-20.png);
-        background-size: cover;
     }
 }

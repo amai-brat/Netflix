@@ -51,7 +51,7 @@ function ContentInfo({contentData}) {
     return (
         <>
             <div className={styles.container}>
-                <div className={styles.posterTeaser}>
+                <div className={styles.posterTrailer}>
                     <img src={contentData.poster} alt="poster" className={styles.poster}/>
                     <div className={styles.trailer}>
                         <h3>{contentData.trailerInfo.name}</h3>
