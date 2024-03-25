@@ -13,13 +13,13 @@ const NavigatePanel = () => {
         <div id="navigate-panel">
             <img id="navigate-panel-logo" className="navigate-panel-element" src="/src/assets/NetflixLogo.svg" alt="Netflix" onClick={navigateToMainContent}/>
             <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: "film"})
+                navigateToSelectionContent({type: 1})
             }}>Фильмы</label>
             <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: "cartoon"})
+                navigateToSelectionContent({type: 2})
             }}>Мультфильмы</label>
             <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: "serial"})
+                navigateToSelectionContent({type: 3})
             }}>Сериалы</label>
         </div>
     )
