@@ -3,7 +3,13 @@ import { useState } from "react";
 
 export const DataField = ({label, data, handleDataChange}) => {
     const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
     const [response, setResponse] = useState(null);
+
+    const handleInputChange = (e) => {
+        const { value } = e.target;
+        setValue(value);
+    }
     
     return (
         <>
@@ -41,6 +47,7 @@ export const DataField = ({label, data, handleDataChange}) => {
                         variant="filled"
                         fullWidth
                         label={label}
+                        value={value}
                         margin="normal"
                         sx={{
                             color: "white",
@@ -48,8 +55,9 @@ export const DataField = ({label, data, handleDataChange}) => {
                             borderRadius: "10px",
                             marginBottom: "3%"
                         }}
+                        onChange = {handleInputChange}
                     />
-                    <Button variant="contained" onClick={() => handleDataChange(setResponse, label)}>Сохранить</Button>
+                    <Button variant="contained" onClick={() => handleDataChange(setResponse, label, value)}>Сохранить</Button>
 
                     <Alert severity={response != null && response.Success ? "success" : "error"} 
                         onClose = {() => setResponse(null)}

@@ -47,13 +47,34 @@ const PersonalInfoTab = () => {
 
     const handleAvatarChange = () => {
         //TODO сделать запрос к серверу на изменение фотографии
-        alert("фотография изменена");
+        alert("Фотография изменена");
     }
 
-    const handleDataChange = (setResponse, label) => {
-        //Fetch, в зависимости от label - свой endpoint. Затем изменить User для отображения. 
-        //Можно в ответе с сервера отправлять json юзера и соответственно тут установить setUser
-        setResponse({Success: true, Message: "Все хорошо"})
+    const handleDataChange = async (setResponse, label, data) => {
+        const urlLabel = label == "Почта" ? "email" : "birthDay";
+        
+        try {
+            const response = await fetch(`https://localhost:5000/user/change_${urlLabel}`, {
+                method: "post",
+                headers:{
+                    "Accept": "application/json"
+                },
+                body: data
+            });
+
+            if (response.ok){
+                let updatedUser = await response.json();
+                setUser(updatedUser);
+                setResponse({Success: true, Message: "Данные успешно обновлены"});
+            }
+            else {
+                let errorText = await response.text();
+                setResponse({Success: false, Message: errorText})
+            }
+        }
+        catch (error) {
+            setResponse({Success: false, Message: "Произошла ошибка при изменении информации пользователя"})
+        }
     }
 
     return (
