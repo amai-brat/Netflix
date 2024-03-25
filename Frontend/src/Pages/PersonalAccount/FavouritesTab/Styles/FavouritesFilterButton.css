@@ -1,0 +1,25 @@
+#favourites-filter-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 40px;
+    outline: none;
+    color: var(--secondary-text-color);
+    font-size: 16px;
+    font-family: "Helvetica", serif;
+    font-weight: 100;
+    text-shadow: black 1px -1px 3px;
+    appearance: none;
+    border: solid;
+    border-width: 1px;
+    border-color: var(--secondary-text-color);
+    background-color: transparent;
+    border-radius: 8px;
+}
+
+#favourites-filter-button:hover{
+    color: var(--main-text-color);
+    border-color: var(--main-text-color);
+    cursor: pointer;
+}
