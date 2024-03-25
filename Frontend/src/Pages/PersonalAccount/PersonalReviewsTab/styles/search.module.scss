@@ -1,0 +1,39 @@
+.searchFilterBox {
+  .searchForm {
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .searchInputWrapper{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    
+    .searchInput {
+      all: unset;
+      background: #414141;
+      border: none;
+      height: 2em;
+      padding: 1em;
+      border-radius: 0.5em;
+      margin: 0 0.5em;
+      width: 100%;
+    }
+  }
+  
+  .sortSelectWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    margin-left: 1em;
+    
+    .sortLabel {
+      white-space: nowrap;
+      font-size: 1.2em;
+    }
+  }
+}
