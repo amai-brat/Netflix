@@ -1,0 +1,176 @@
+#selection-content-filter-panel-all,
+#selection-content-filter-panel-genres-only,
+#selection-content-filter-panel{
+    display: flex;
+    flex-direction: column;
+}
+
+#selection-content-filter-panel-genres-only{
+    overflow: auto;
+}
+
+#selection-content-filter-panel-genres,
+#selection-content-filter-panel-type,
+#selection-content-filter-panel-country,
+#selection-content-filter-panel-year,
+#selection-content-filter-panel-rating
+{
+    display: flex;
+    margin-bottom: 16px;
+}
+
+#selection-content-filter-panel-type{
+    flex-direction: column;
+}
+
+#selection-content-filter-panel-country{
+    justify-content: space-between;
+}
+
+#selection-content-filter-panel-rating,
+#selection-content-filter-panel-year{
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#selection-content-filter-panel-year-range,
+#selection-content-filter-panel-rating-range
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+#selection-content-filter-panel-apply-and-reset{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#selection-content-filter-panel-genres-only-control{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.selection-content-filter-panel-genres-only-back,
+.selection-content-filter-panel-filter-name{
+    color: var(--main-text-color);
+    font-size: 20px;
+    font-family: "Helvetica", serif;
+    font-weight: normal;
+}
+
+.selection-content-filter-panel-genres-only-back{
+    display: flex;
+    align-items: center;
+}
+
+.selection-content-filter-panel-genres-only-reset,
+.selection-content-filter-panel-genres-names{
+    display: flex;
+    color: var(--secondary-text-color);
+    font-size: 14px;
+    font-family: "Helvetica", serif;
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+#selection-content-filter-panel-genres{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selection-content-filter-panel-genres-only-forward,
+.selection-content-filter-panel-genres-forward{
+    height: 20px;
+    width: 20px;
+    opacity: 60%;
+}
+
+.selection-content-filter-panel-genres-only-forward{
+    transform: scaleX(-1);
+    opacity: 100%;
+}
+
+.selection-content-filter-panel-genres-only-reset:hover,
+.selection-content-filter-panel-genres-only-back:hover,
+.selection-content-filter-panel-genres-only-forward:hover,
+.selection-content-filter-panel-genres-forward:hover,
+.selection-content-filter-panel-genres-names:hover{
+    color: var(--main-text-color);
+    cursor: pointer;
+    opacity: 100%;
+}
+
+#selection-content-filter-panel-country-select{
+    display: flex;
+    align-items: end;
+    background-color: transparent;
+    border: 0;
+    outline: none;
+    color: var(--main-text-color);
+    font-size: 18px;
+    font-family: "Helvetica", serif;
+    font-weight: normal;
+    width: 40%;
+}
+
+.selection-content-filter-panel-country-select-option{
+    background-color: var(--third-color);
+}
+
+#selection-content-filter-panel-country-select:hover{
+    cursor: pointer;
+}
+
+.selection-content-filter-panel-filter-input{
+    width: 40%;
+    height: 30px;
+    border-radius: 10px;
+    color: var(--main-text-color);
+    background-color: var(--third-color);
+    border: 0;
+    padding-left: 10px;
+    font-size: 14px;
+}
+
+.selection-content-filter-panel-sep{
+    height: 0;
+    width: 10%;
+    display: block;
+    border: 1px solid;
+    border-color: var(--main-text-color);
+}
+
+#selection-content-filter-panel-reset-button,
+#selection-content-filter-panel-apply-button{
+    width: 140px;
+    height: 40px;
+    border: 0;    
+    color: var(--main-text-color);
+    font-size: 20px;
+    font-family: "Helvetica", serif;
+    font-weight: normal;
+    border-radius: 10px;
+    margin: 4px;
+}
+
+#selection-content-filter-panel-apply-button{
+    background-color: var(--main-btn-color);
+}
+
+#selection-content-filter-panel-reset-button{
+    background-color: var(--third-color);
+}
+
+#selection-content-filter-panel-reset-button:hover,
+#selection-content-filter-panel-apply-button:hover{
+    cursor: pointer;
+}

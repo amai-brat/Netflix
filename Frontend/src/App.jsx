@@ -24,7 +24,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
-                <Route path="PersonalAccount" element={<GeneralPart/>}>
+                <Route path="PersonalAccount" element={<GeneralPart/> }>
                     <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
                     <Route path="FavouritesTab" element={<FavouritesTab/>}/>
                     <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
