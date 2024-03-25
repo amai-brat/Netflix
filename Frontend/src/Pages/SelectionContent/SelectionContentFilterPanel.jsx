@@ -64,7 +64,7 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                         filter.genres = []
                         setSelectedGenres([])
                         setGenresDisplayed(false)
-                    }}>Сборосить</label>
+                    }}>Сбросить</label>
                 </div>
                 <SelectionContentGenresFilter
                     filter={filter}
@@ -158,6 +158,7 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                            }} />
                     <input id="selection-content-filter-panel-reset-button" type="button" value="Сбросить"
                            onClick={() => {
+                               setSelectedGenres([])
                                document.querySelector("#selection-content-filter-panel-country-select").value = -1
                                document.querySelectorAll(".selection-content-filter-panel-filter-input")
                                    .forEach((input) => input.value = "")
