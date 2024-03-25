@@ -1,0 +1,27 @@
+.selection-content-card{
+    display: flex;
+    flex-direction: column;
+}
+
+.selection-content-card-poster{
+    width: 160px;
+    height: 214px;
+    border-radius: 8px;
+    border: 2px solid;
+    border-color:var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+.selection-content-card-name{
+    color: var(--main-text-color);
+    font-size: 18px;
+    font-family: "Helvetica", serif;
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+.selection-content-card:hover,
+.selection-content-card-name:hover,
+.selection-content-card-poster:hover{
+    cursor: pointer;
+}

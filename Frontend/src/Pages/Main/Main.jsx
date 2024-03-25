@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import logo from './logo.svg';
+import logo from '../../assets/NetflixLogo.svg';
 import plus from '../../assets/plus.svg';
 import {Link, useNavigate} from "react-router-dom";
-import './Main.scss';
+import button from './styles/button.module.scss';
+import sections from './styles/sections.module.scss';
 
 const Main = () => {
     const navigate = useNavigate();
@@ -27,31 +28,31 @@ const Main = () => {
     ];
     return (
         <>
-            <div id={"top"}>
+            <div className={sections.top}>
                 <header>
                     <Link to={"/MainContent"}>
                         <img src={logo} alt={"logo"} width={150} height={50}/>
                     </Link>
-                    <button onClick={handleSignInButtonClick}>Войти</button>
+                    <button className={button.redButton} onClick={handleSignInButtonClick}>Войти</button>
                 </header>
-                <div className={"message-wrapper"}>
+                <div className={sections.messageWrapper}>
                     <h1>
                         Неограниченное количество фильмов и сериалов<br/>
                         Смотрите в любом месте и в любое время
                     </h1>
-                    <button onClick={handleSignUpButtonClick}>Начать</button>
+                    <button className={button.redButton} onClick={handleSignUpButtonClick}>Начать</button>
                 </div>
             </div>
-            <div id={"bottom"}>
-                <div id={"faq"}>
-                    <h3>Часто задаваемые вопросы</h3>
-                    <div className={"accordions"}>
+            <div className={sections.bottom}>
+                <div className={sections.faq}>
+                    <h3 className={sections.faqTitle}>Часто задаваемые вопросы</h3>
+                    <div className={sections.accordions}>
                         {faq.map((tuple) => 
                             <Accordion key={tuple.title} title={tuple.title} content={tuple.content}/> )}
                     </div>
                 </div>
             </div>
-            <footer>
+            <footer className={sections.mainPageFooter}>
                 <p><a href={"https://discord.gg/d9wRhhYNzG"}>Контакты</a></p>
                 <p>© Copyright. Молокососы. 2024</p>
             </footer>
@@ -65,12 +66,12 @@ const Accordion = ({title, content}) => {
     const [isActive, setIsActive] = useState(false);
 
     return (
-        <div className="accordion-item">
-            <div className="accordion-title" onClick={() => setIsActive(!isActive)}>
+        <div className={sections.accordionItem}>
+            <div className={sections.accordionTitle} onClick={() => setIsActive(!isActive)}>
                 <p>{title}</p>
                 <img src={plus} alt={"plus"} style={isActive ? {transform: "rotate(45deg)"} : {}}/>
             </div>
-            {isActive && <div className="accordion-content">{content}</div>}
+            {isActive && <div className={sections.accordionContent}>{content}</div>}
         </div>
     );
 };
