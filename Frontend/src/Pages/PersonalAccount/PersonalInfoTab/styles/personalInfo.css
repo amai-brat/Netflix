@@ -1,0 +1,39 @@
+.profileDataBlock{
+    margin: 5%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.avatarContainer{
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    position: relative;
+}
+
+.userForm {
+    color: #26292a;
+    background-color: #181A1B;
+    width: 85%; 
+    height: 100%; 
+    margin-top: 1.5%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 30px;
+    padding: 4%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+.dataField{
+    display: flex; 
+    align-items: center;
+    margin-bottom: 10px; 
+    margin-top: 10px;
+}
+
+.modalContainer{
+    background-color: #26292a;
+    border-radius: 30px;
+    padding: 2%;
+}
