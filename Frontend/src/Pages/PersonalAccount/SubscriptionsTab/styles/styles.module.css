@@ -1,0 +1,73 @@
+.folded{
+    position: relative;
+    span{
+        display:block;
+    }
+    label{
+        position: absolute;
+        top: 50%;
+        right: 3%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        span.buttonUnfold::before{
+            content: "";
+            border: 2px solid white;
+            border-radius: 10px;
+            height: 2.5rem;
+            width: 2.5rem;
+            background-image: url(../images/icons8-expand-arrow-50.png);
+            background-repeat: no-repeat;
+            background-size: contain;
+            display: block;
+        }
+        
+    }
+    input{
+        display: none;
+    }
+}
+.top{
+    margin-bottom: 1.5rem;
+    font-size: x-large;
+}
+.bottom{
+    
+}
+.subscriptionBlock{
+    margin: 1rem;
+    background: #181A1B;
+    border: 2px #B3B3B3 solid;
+    border-radius: 10px;
+    padding: 1rem;
+}
+.container{
+    overflow-y: auto;
+}
+.unfolded{
+    position: relative;
+    padding-top: 2rem;
+}
+.line{
+    box-sizing: border-box;
+    border: 1px solid white;
+    margin-bottom: 2rem;
+}
+.denyButton{
+    position: relative;
+    margin: 0;
+    border-radius: 0.5rem;
+    border: 2px solid orange;
+    padding: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: red;
+}
+.denyButton:hover{
+    cursor: pointer;
+}
+.subscriptionsLoading{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
