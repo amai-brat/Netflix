@@ -60,8 +60,8 @@ export const DataField = ({label, data, handleDataChange}) => {
                     <Button variant="contained" onClick={() => handleDataChange(setResponse, label, value)}>Сохранить</Button>
 
                     <Alert severity={response != null && response.Success ? "success" : "error"} 
+                        variant="filled"
                         onClose = {() => setResponse(null)}
-                        icon={false}
                         sx={{
                             marginTop: "4%", 
                             display: response != null ? "flex" : "none"
