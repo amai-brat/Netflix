@@ -1,0 +1,5 @@
+#selection-content-grid{
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
