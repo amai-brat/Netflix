@@ -29,7 +29,7 @@ export const CustomForm = ({formType}) => {
             errors.login = 'Минимальная длина логина - 4 символов';
         } else if (values.login.length > 25){
             errors.login = 'Максимальная длина логина - 25 символов'
-        } else if (!/^[a-zA-Z0-9_]$/.test(values.login)){
+        } else if (!/^[a-zA-Z0-9_]+$/.test(values.login)){
             errors.login = "Запрещенные символы";
         }
 
@@ -45,7 +45,7 @@ export const CustomForm = ({formType}) => {
             errors.password = "Минимальная длина пароля - 8 символов";
         } else if (values.password.length > 30) {
             errors.password = "Максимальная длина пароля - 30 символов"
-        } else if (/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@;.,$!%*?&])$/.test(values.password)) {
+        } else if (/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@;.,$!%*?&]).+$/.test(values.password)) {
             errors.password = "Пароль должен содержать букву, цифру и спецсимвол";
         }
       
@@ -88,8 +88,8 @@ export const CustomForm = ({formType}) => {
             setResponse({Success: false, Message: "Произошла ошибка при отправке запроса"})
         }
 
+        //TODO убрать перед деплоем
         const formResults = JSON.stringify(values);
-        console.log(values.login.length);
         console.log(formResults);
     };
 
