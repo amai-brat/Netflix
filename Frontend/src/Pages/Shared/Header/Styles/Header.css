@@ -1,0 +1,48 @@
+header{
+    display: flex;
+    flex-direction: row;
+    height: 64px;
+    background-color: var(--main-color);
+    width: 100%;
+    top: 0;
+}
+
+#client-info-panel-and-sign-up-button-container{
+    display: flex;
+    flex-direction: row;
+    width: inherit;
+    align-items: center;
+    justify-content: end;
+    padding-right: 16px;
+}
+
+#sign-up-header-button{
+    width: 136px;
+    height: 40px;
+    background: var(--logo-color);
+    border:none;
+    color: var(--main-text-color);
+    font-size: 20px;
+    font-family: "Helvetica", serif;
+    font-weight: bold;
+    text-shadow: black 1px -1px 3px;
+    border-radius: 12px;
+}
+
+#sign-up-header-button:hover{
+    cursor: pointer;
+    background:#F51924;
+}
+
+#client-info-panel{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    z-index: 1000;
+}
+
+#notification-panel-wrapper{
+    margin-right: 20px;
+    height: 100%;
+}

@@ -1,0 +1,30 @@
+#navigate-panel{
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    height: inherit;
+    align-items: center;
+}
+
+#navigate-panel-logo{
+    width: 136px;
+    height: 40px;
+    margin-left: 30px;
+}
+
+.navigate-panel-element{
+    width: 136px;
+    height: auto;
+    margin-left: 4px;
+    margin-right: 4px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: "Helvetica", serif;
+    color: var(--secondary-text-color);
+}
+
+.navigate-panel-element:hover{
+    color: var(--main-text-color);
+    cursor: pointer;
+}

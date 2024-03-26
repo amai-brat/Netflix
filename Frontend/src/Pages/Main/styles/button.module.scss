@@ -1,0 +1,16 @@
+.redButton {
+  border-radius: 1em;
+  background-color: #E50914;
+  color: white;
+  padding: 0.75em;
+  align-self: center;
+  border: 0;
+  margin: 1em;
+  font-weight: 700;
+  font-size: 1.25em;
+
+  &:hover {
+    background: #F51924;
+    cursor: pointer;
+  }
+}

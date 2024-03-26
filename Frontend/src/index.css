@@ -1,0 +1,24 @@
+:root {
+  font-family: Roboto, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+* {
+  color: white;
+}
+/*css reset*/
+html, body, div, span, h1, h2, h3, p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+body{
+  background: black;
+  min-width: 320px;
+  min-height: 100vh;
+}

@@ -1,0 +1,20 @@
+﻿.background {
+    position: absolute;
+    width: calc(100% - 64px);
+    height: calc(100% - 64px);
+    overflow: auto;
+}
+
+.background::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url(../images/POSTER.jpg);
+    background-size: cover;
+    background-position: center center;
+    filter: brightness(25%);
+    z-index: -1;
+}
