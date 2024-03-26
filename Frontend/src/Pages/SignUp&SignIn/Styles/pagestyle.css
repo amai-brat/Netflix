@@ -60,6 +60,8 @@
 .inputWrapper>span{
     color:red;
     padding: 0.5em;
+    display: block;
+    padding-bottom: 0%;
 }
 
 .submitButton {
@@ -100,7 +102,7 @@
 }
 
 .redirect {
-    margin-top: 4%;
+    margin-top: 7%;
     display: flex;
 }
 

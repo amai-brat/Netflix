@@ -45,8 +45,8 @@ export const CustomForm = ({formType}) => {
             errors.password = "Минимальная длина пароля - 8 символов";
         } else if (values.password.length > 30) {
             errors.password = "Максимальная длина пароля - 30 символов"
-        } else if (/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@;.,$!%*?&]).+$/.test(values.password)) {
-            errors.password = "Пароль должен содержать букву, цифру и спецсимвол";
+        } else if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@;.,$!%*?&]).+$/.test(values.password)) {
+            errors.password = "Пароль должен содержать хотя бы одну букву, цифру и спецсимвол";
         }
       
         return errors;
