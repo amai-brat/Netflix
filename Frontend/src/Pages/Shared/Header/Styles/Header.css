@@ -29,6 +29,11 @@ header{
     border-radius: 12px;
 }
 
+#sign-up-header-button:hover{
+    cursor: pointer;
+    background:#F51924;
+}
+
 #client-info-panel{
     display: flex;
     flex-direction: row;
