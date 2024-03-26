@@ -26,4 +26,5 @@
 
 .navigate-panel-element:hover{
     color: var(--main-text-color);
+    cursor: pointer;
 }
