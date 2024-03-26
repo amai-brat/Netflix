@@ -6,13 +6,29 @@ import { Link } from 'react-router-dom';
 export const CustomForm = ({formType}) => {
     const [response, setResponse] = useState(null);
 
-    const validate = (values) => {
+    const validateSignin = (values) => {
+        const errors = {};
+
+        if (!values.login) {
+            errors.login = 'Обязательное поле';
+        }
+
+        if (!values.password) {
+            errors.password = "Обязательное поле";
+        }
+
+        return errors;
+    }
+
+    const validateSignup = (values) => {
         const errors = {};
         
         if (!values.login){
             errors.login = 'Обязательное поле';
-        } else if (values.login.length < 4 && values.login.length > 32){
-            errors.login = 'Минимальная длина логина - 4, максимальная - 32';
+        } else if (values.login.length < 4){
+            errors.login = 'Минимальная длина логина - 4 символов';
+        } else if (values.login.length > 25){
+            errors.login = 'Максимальная длина логина - 25 символов'
         } else if (!/^[a-zA-Z0-9_]$/.test(values.login)){
             errors.login = "Запрещенные символы";
         }
@@ -25,6 +41,10 @@ export const CustomForm = ({formType}) => {
 
         if (!values.password) {
             errors.password = "Обязательное поле";
+        } else if(values.password.length < 8) {
+            errors.password = "Минимальная длина пароля - 8 символов";
+        } else if (values.password.length > 30) {
+            errors.password = "Максимальная длина пароля - 30 символов"
         } else if (/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@;.,$!%*?&])$/.test(values.password)) {
             errors.password = "Пароль должен содержать букву, цифру и спецсимвол";
         }
@@ -77,7 +97,7 @@ export const CustomForm = ({formType}) => {
         <Formik 
             initialValues={formType == "signup" ? initialSignupValues : initialSigninValues} 
             onSubmit={handleSubmit} 
-            validate={formType=="signup"? validate : null}
+            validate={formType=="signup"? validateSignup: validateSignin}
         >
             <Form id="form">
                 <div className="inputWrapper">
