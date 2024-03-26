@@ -20,7 +20,8 @@ function App() {
 
     return (
         <>
-            {location.pathname !== "/" && <Header/>}
+            {location.pathname !== "/" && location.pathname !== "/signin" 
+                && location.pathname !== "/signup" && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
@@ -32,7 +33,8 @@ function App() {
                 </Route>
                 <Route path="SelectionContent" element={<SelectionContent/>}/>
                 {/*Здесь должен быть Route для админовской части*/}
-                <Route path="SignUpSignIn" element={<SignUpSignIn/>}/>
+                <Route path="signup" element={<SignUpSignIn formType="signup"/>}/>
+                <Route path="signin" element={<SignUpSignIn formType="signin"/>}/>
                 <Route path="Subscriptions" element={<Subscriptions/>}/>
                 <Route path="ViewContent/:id" element={<ViewContent/>}/>
                 <Route path="*" element={<Error404/>}/>
