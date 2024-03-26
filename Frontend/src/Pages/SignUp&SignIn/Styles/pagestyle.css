@@ -1,0 +1,117 @@
+.page {
+    background-image: url("../../../assets/DefaultBgPoster.png");
+    background-size: 100% auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.logoContainer{
+    float: left;
+    padding-left: 1rem;
+    padding-top: 1rem;
+}
+
+.formContainer {
+    min-height: 70%;
+    width: 23%;
+    background-color: rgba(0, 0, 0, 0.8);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 3rem;
+    padding-top: 1rem;
+    word-break: break-word;
+}
+
+.formHeader {
+    font-size: 2em;
+    color: white;
+    font-weight: 700;
+}
+
+.servicesContainer {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.divider {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 1%;
+    font-weight: 200;
+}
+
+.inputWrapper{
+    margin-top: 1.2rem;
+}
+
+.inputWrapper>input{
+    width: 100%;
+    background: #414141;
+    border: none;
+    height: 3em;
+    padding: 0.7em;
+    border-radius: 0.8rem;
+    opacity: 1;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.inputWrapper>span{
+    color:red;
+    padding: 0.5em;
+}
+
+.submitButton {
+    border-radius: 0.8rem;
+    background-color: #E50914;
+    color: white;
+    padding: 1rem;
+    width: 100%;
+    border: 0;
+    font-weight: 600;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.submitButton:hover {
+    cursor: pointer;
+    background: #F51924;
+}
+
+.submitButton:active{
+    background-color: #E50914;
+}
+
+.rememberCheckbox {
+    margin-top: 2.5%;
+    vertical-align: center;
+}
+
+.rememberCheckbox > label {
+    font-weight: 100;
+    font-size: 1.1rem;
+    margin-left: 1%;
+}
+
+.rememberCheckbox > input {
+    height: 15px;
+    width: 15px;
+}
+
+.redirect {
+    margin-top: 4%;
+    display: flex;
+}
+
+.redirect > p {
+    font-weight: 200;
+    font-size: 1.1rem;
+}
+
+.redirect > a {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-left: 3%;
+    text-decoration: none;
+}
