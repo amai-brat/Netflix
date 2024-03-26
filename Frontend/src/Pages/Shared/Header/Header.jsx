@@ -53,8 +53,8 @@ const Header = () => {
     }, []);
     
     const navigate = useNavigate()
-    const navigateToSignUpSignIn = () => {
-        navigate("/SignUpSignIn")
+    const navigateToSignIn = () => {
+        navigate("/signin");
     }
     
     return (
@@ -62,8 +62,8 @@ const Header = () => {
             <NavigatePanel/>
             <SearchPanel/>
             <div id="client-info-panel-and-sign-up-button-container">
-                <input id="sign-up-header-button" type="button" value="Войти" onClick={navigateToSignUpSignIn} style={
-                    {display: user === null ? "block" : "none"}
+                <input id="sign-up-header-button" type="button" value="Войти" onClick={navigateToSignIn} style={
+                    {display: user === null || user === undefined ? "block" : "none"}
                 }/>
                 <div id="client-info-panel" style={{display: user === null || user === undefined ? "none" : "flex"}}>
                     <div id="notification-panel-wrapper" onClick={() => {setAlarmed(false)}}>
