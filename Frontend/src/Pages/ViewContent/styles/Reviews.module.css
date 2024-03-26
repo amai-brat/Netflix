@@ -1,0 +1,22 @@
+﻿.reviews{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    .writeReview{
+        margin-top: 20px;
+        padding: 10px;
+        width: fit-content;
+        background: linear-gradient(90deg, rgba(75,1,221,1) 4%, rgba(218,7,21,1) 100%);
+        border-radius: 10px;
+    }
+    .writeReview:hover{
+        cursor: pointer;
+    }
+    .reviewList{
+        display:flex;
+        justify-content: center;
+        margin-top: 20px;
+        font-size: 125%;
+    }
+}

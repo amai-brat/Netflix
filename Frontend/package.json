@@ -16,9 +16,11 @@
     "formik": "^2.4.5",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "express": "^4.19.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
+    "react-player": "^2.15.1",
     "react-router-dom": "^6.22.3",
     "sass": "^1.71.1"
   },

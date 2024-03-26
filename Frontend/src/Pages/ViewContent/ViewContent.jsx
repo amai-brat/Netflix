@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import ContentInfo from "./ContentInfo.jsx";
 import styles from './styles/ViewContent.module.css';
+import ContentPlayer from "./contentPlayer.jsx";
+import Reviews from "./Reviews.jsx";
 const contentData =
     {
+        id: 1,
         title: "Пираты Карибского моря: Проклятие Черной жемчужины (2003)",
         description: "Жизнь харизматичного авантюриста, капитана Джека Воробья, полная увлекательных приключений, резко меняется, когда его заклятый враг капитан Барбосса похищает корабль Джека Черную Жемчужину, а затем нападает на Порт Ройал и крадет прекрасную дочь губернатора Элизабет Свонн.\n" +
             "\n" +
@@ -357,7 +360,8 @@ const ViewContent = () => {
             <div className={styles.generalContainer}>
                 <div className={styles.wholePageContainer}>
                     <ContentInfo contentData={contentData}/>
-                    
+                    <ContentPlayer contentId={contentData.id}/>
+                    <Reviews reviews={reviews}/>
                 </div>
             </div>
         </>

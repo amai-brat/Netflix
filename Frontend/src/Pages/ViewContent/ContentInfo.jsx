@@ -52,9 +52,12 @@ function ContentInfo({contentData}) {
         <>
             <div className={styles.container}>
                 <div className={styles.posterTrailer}>
-                    <img src={contentData.poster} alt="poster" className={styles.poster}/>
+                    <div className={styles.poster}>
+                        <div className={styles.favourite} title={"В избранное"}></div>
+                        <img src={contentData.poster} alt="poster" className={styles.poster}/>
+                    </div>
                     <div className={styles.trailer}>
-                        <h3>{contentData.trailerInfo.name}</h3>
+                    <h3>{contentData.trailerInfo.name}</h3>
                         <iframe className={styles.trailerEmbed}
                                 allowFullScreen={true}
                                 src={contentData.trailerInfo.url}>
@@ -79,14 +82,14 @@ function ContentInfo({contentData}) {
                         <span className={styles.ratingImdb}>IMDb: {contentData.ratings.imdb}</span>
                         <span className={styles.ratingKinopoisk}>Кинопоиск: {contentData.ratings.kinopoisk}</span>
                         <span className={styles.ratingLocal}>Локальный: {contentData.ratings.local}</span></span>
-                    <h2>В фильме снимались: </h2>
+                    <h2>В фильме снимались</h2>
                     <span>{printAllPersonsByRole("актеры")}</span>
                     <h2>Над фильмом также работали</h2>
                     {Object.keys(groupedByRole).map((role) => {
                         if (role === "актеры") {
                             return;
                         }
-                        return <span><strong>{capitalizeFirstLetter(role)}</strong> {printAllPersonsByRole(role)}</span>
+                        return <span><strong>{capitalizeFirstLetter(role) + ": "}</strong> {printAllPersonsByRole(role)}</span>
 
                     })}
                 </div>
