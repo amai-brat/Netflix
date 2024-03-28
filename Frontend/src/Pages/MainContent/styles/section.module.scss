@@ -1,0 +1,77 @@
+.pageSection {
+  margin: 1em 0;
+
+  .pageSectionContainer {
+    margin-left: auto;
+    margin-right: auto;
+    width: 85vw;
+
+    .link {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 1em;
+
+
+      &:link {
+        text-decoration: none;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:hover .arrow {
+        translate: 0.5em 0;
+      }
+
+      .sectionName {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 1.5em;
+        margin-right: 0.5em;
+      }
+
+      .arrow {
+        transition: translate 0.5s;
+      }
+    }
+
+    .swiperWrapper {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      align-items: center;
+
+      swiper-container {
+        width: 100%;
+      }
+      swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: visible;
+        width: auto;
+      }
+
+      swiper-slide img {
+        display: block;
+        object-fit: cover;
+        border-radius: 0.5em 0.5em 0 0;
+        margin: 0.3em;
+      }
+    }
+
+    .card {
+      background: #16191a;
+      border-radius: 0.5em;
+      text-decoration: none;
+
+      &:hover {
+        background: #36393a;
+        text-decoration: underline;
+      }
+    }
+  }
+}

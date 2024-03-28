@@ -1,0 +1,39 @@
+.pageWrapper {
+  .promoSlider {
+
+  }
+
+  .sectionsList {
+
+  }
+
+  .mapWrapper {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    margin-top: 2em;
+
+    .innerWrapper {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+
+      p {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 1.5em;
+        margin-right: 0.5em;
+        margin-bottom: 1em;
+      }
+
+      iframe {
+        width: 80%;
+        height: 80vh;
+      }
+    }
+  }
+}
