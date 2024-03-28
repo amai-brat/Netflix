@@ -1,14 +1,14 @@
-import { useState } from 'react'
 import styles from './styles/page.module.scss';
 import {Section} from "./components/Section.jsx";
 import { register } from 'swiper/element/bundle';
 import {PromoSlider} from "./components/PromoSlider.jsx";
+import {useEffect, useState} from "react";
 register();
 
 
 const MainContent = () => {
 
-    const sectionDatas = [
+    const [sectionsData, setSectionsData] = useState([
         {
             name: "Фильмы",
             contents: [
@@ -100,15 +100,25 @@ const MainContent = () => {
                 }
             ]
         }
-    ];
+    ]);
+
+    useEffect(() => {
+        // TODO: настоящий url запроса
+        (async () => {
+            const response = await fetch('http://localhost:8080/getSectionsOfContent');
+            if (response.ok)
+            {
+                setSectionsData(await response.json());
+            }
+        })()
+
+    }, []);
 
     return (
         <div className={styles.pageWrapper}>
-            <div className={styles.promoSlider}>
-                <PromoSlider></PromoSlider>
-            </div>
+            <PromoSlider></PromoSlider>
             <div className={styles.sectionsList}>
-                {sectionDatas.map(((sectionData, index) => (
+                {sectionsData.map(((sectionData, index) => (
                     <Section sectionData={sectionData} key={index}/>
                 )))}
             </div>
@@ -117,7 +127,7 @@ const MainContent = () => {
                     <p>Доступные кинотеатры</p>
                     <iframe
                         src="https://yandex.ru/map-widget/v1/?ll=49.136538%2C55.786424&mode=poi&poi%5Bpoint%5D=49.123375%2C55.791550&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1763683699&z=13.54"
-                        frameBorder="1" allowFullScreen="true"
+                        allowFullScreen="true"
                     ></iframe>
                 </div>
             </div>

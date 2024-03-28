@@ -1,0 +1,33 @@
+.promoSlider {
+  margin-bottom: 2em;
+  .promoSliderContainer {
+    margin-left: auto;
+    margin-right: auto;
+    width: 85vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    swiper-container {
+      width: 100%;
+      max-width: 80vw;
+    }
+
+    swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: visible;
+      width: 80vw;
+
+      img {
+        max-width: 80vw;
+        height: 50vh;
+        border-radius: 2em;
+      }
+    }
+  }
+}
+
