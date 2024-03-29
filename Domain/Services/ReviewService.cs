@@ -11,14 +11,21 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class ReviewService(IReviewRepository reviewRepository) : IReviewService
+    public class ReviewService(
+        IReviewRepository reviewRepository,
+        IContentRepository contentRepository
+        ) : IReviewService
     {
         private readonly IReviewRepository _reviewRepository = reviewRepository;
+        private readonly IContentRepository _contentRepository = contentRepository;
 
         public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
         {
             if(!IsValidReview(review, out var errorMessage, out var param))
                 throw new ReviewServiceArgumentException(errorMessage!, param!);
+
+            if (await _contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
+                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
 
             await _reviewRepository.AssignReviewAsync(new Review()
             {
@@ -35,6 +42,9 @@ namespace Domain.Services
         {
             if (!IsValidReview(review, out var errorMessage, out var param))
                 throw new ReviewServiceArgumentException(errorMessage!, param!);
+
+            if (await _contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
+                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
 
             await _reviewRepository.AssignReviewAsync(new Review()
             {

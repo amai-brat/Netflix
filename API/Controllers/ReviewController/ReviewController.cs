@@ -19,20 +19,14 @@ namespace API.Controllers.ReviewController
         [HttpGet("{contentId}")]
         public async Task<IActionResult> GetReviewsByContentId(long contentId, [FromQuery] int offset, [FromQuery] int limit, [FromQuery] string sort)
         {
-            if(_contentService.GetContentByIdAsync(contentId) is null) 
-                return BadRequest(ErrorMessages.NotFoundContentError(contentId));
-
             var reviews = await _reviewService.GetReviewsByContentIdAsync(contentId, sort, offset, limit);
             return Ok(reviews);
         }
 
-        [HttpPost("/assign")]
+        [HttpPost("assign")]
         [Authorize]
         public async Task<IActionResult> AssignReviewAsync([FromQuery] bool withScore, [FromBody] ReviewAssignDto review)
         {
-            if(await _contentService.GetContentByIdAsync(review.ContentId) is null)
-                return BadRequest(ErrorMessages.NotFoundContentError(review.ContentId));
-
             if (withScore)
                 await _reviewService.AssignReviewWithRatingAsync(review, long.Parse(User.FindFirst("Id")!.Value));
             else

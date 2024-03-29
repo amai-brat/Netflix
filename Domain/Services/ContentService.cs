@@ -1,6 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Dtos;
 using Domain.Entities;
+using Domain.Services.ServiceExceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -20,6 +21,9 @@ namespace Domain.Services
 
         public async Task AddFavouriteAsync(long contentId, long userId)
         {
+            if(await GetContentByIdAsync(contentId) is  null)
+                throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{contentId}");
+
             await _favouriteContentRepository.AddFavouriteContnentAsync(contentId, userId);
         }
 
@@ -37,6 +41,9 @@ namespace Domain.Services
 
         public async Task RemoveFavouriteAsync(long contentId, long userId)
         {
+            if (await GetContentByIdAsync(contentId) is null)
+                throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{contentId}");
+
             await _favouriteContentRepository.RemoveFavouriteContnentAsync(contentId, userId);
         }
 

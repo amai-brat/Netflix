@@ -1,5 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.Dtos;
+using Domain.Services.ServiceExceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -20,7 +21,7 @@ namespace API.Controllers.ContentController
             var content = await _contentService.GetContentByIdAsync(id);
 
             if (content is null)
-                return BadRequest(ErrorMessages.NotFoundContentError(id));
+                return BadRequest(ErrorMessages.NotFoundContent);
 
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)
                 .SelectMany(p => p.Take(Consts.MaxReturnPersonPerRole))
@@ -40,9 +41,6 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> AddContentFavouriteAsync([FromBody] long contentId)
         {
-            if (await _contentService.GetContentByIdAsync(contentId) is null)
-                return BadRequest(ErrorMessages.NotFoundContentError(contentId));
-
             await _contentService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
@@ -51,9 +49,6 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> RemoveContentFavouriteAsync([FromBody] long contentId)
         {
-            if(await _contentService.GetContentByIdAsync(contentId) is null)
-                return BadRequest(ErrorMessages.NotFoundContentError(contentId));
-
             await _contentService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }

@@ -12,5 +12,6 @@ namespace Domain.Services.ServiceExceptions
         public const string ScoreMustBeValid = "Оценка должна быть от 0 до 10";
         public const string ArgumentsMustBePositive = "Аргументы должны быть целыми неотрицательными числами";
         public const string IncorrectSortType = "Указана неизвестная сортировка";
+        public const string NotFoundContent = "Контента с указанным id не существует";
     }
 }
