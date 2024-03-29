@@ -28,7 +28,6 @@ const contentPlayer = ({contentId}) => {
         }
         fetchData();
     }, [contentId, resolution]);
-    // TODO: авторизация
     return (
         <>
             {dataFetching && <img src={gif} alt="я джифка" className={styles.loading}></img>}

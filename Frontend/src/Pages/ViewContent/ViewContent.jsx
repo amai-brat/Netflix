@@ -12,6 +12,7 @@ const ViewContent = () => {
     useEffect(() => {
         async function fetchData() {
             try {
+                //TODO: правильный юрл
                 const resp = await fetch(`http://localhost:5000/api/content/${id}`);
                 const body = await resp.json();
                 if (resp.ok) {

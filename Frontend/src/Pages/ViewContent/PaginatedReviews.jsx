@@ -4,425 +4,102 @@ import ReactPaginate from "react-paginate";
 import styles from './styles/paginatedReview.module.css';
 const testReviews =  [
     {
-        id:1,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
+        id: 1,
+        user: {
+            id: 1,
+            avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+            name: "Артурия Пендрагон"
+        },
+        score: 5,
+        writtenAt: "2021-10-10",
+        likesScore: 10,
+        text: "Отличный фильм",
         isPositive: true,
-        likes: 100,
         comments: [
             {
-                id:1,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
+                id: 1,
+                user: {
+                    id: 2,
+                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+                    name: "Александр"
+                },
+                text: "Согласен",
+                writtenAt: "2021-10-10"
             },
             {
-                id:2,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
+                id: 2,
+                user: {
+                    id: 2,
+                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+                    name: "Александр"
+                },
+                text: "Согласен",
+                writtenAt: "2021-10-10"
             },
             {
-                id:3,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
-            },
-            {
-                id:4,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
-            },
-            {
-                id:5,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
+                id: 3,
+                user: {
+                    id: 2,
+                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+                    name: "Александр"
+                },
+                text: "Согласен",
+                writtenAt: "2021-10-10"
             }
         ]
-    },{
-        id:2,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: true,
-        likes: 100,
+    },
+    {
+        id: 2,
+        user: {
+            id: 1,
+            avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+            name: "Артурия Пендрагон"
+        },
+        score: 5,
+        writtenAt: "2021-10-10",
+        likesScore: 10,
+        isPositive: false,
+        text: "Отличный фильм",
         comments: [
             {
-                id:6,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
-            },
-            {
-                id:7,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
-            },
-            {
-                id:8,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
-            },
-            {
-                id:9,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
-            },
-            {
-                id:10,
-                name: "Ilnur",
-                text: "my answer",
-                writtenAt: "2021-09-01",
-                likes: 100
+                id: 1,
+                user: {
+                    id: 2,
+                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+                    name: "Александр"
+                },
+                text: "Согласен",
+                writtenAt: "2021-10-10"
             }
         ]
-    },{
-        id:3,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
+    },
+    {
+        id: 3,
+        user: {
+            id: 1,
+            avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+            name: "Артурия Пендрагон"
+        },
+        score: 5,
+        writtenAt: "2021-10-10",
+        likesScore: 10,
         isPositive: true,
-        likes: 100,
-        comments: []
-    },
-    {
-        id:14,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: true,
-        likes: 100,
-        comments: []
-    },
-    {
-        id:15,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: true,
-        likes: 100,
-        comments: []
-    },
-    {
-        id:16,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },
-    {
-        id:18,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },
-    {
-        id:17,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:20,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:21,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:22,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:23,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:24,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:25,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:26,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:27,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:28,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:29,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:30,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:31,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:32,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:444,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:353,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:313,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:833,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:373,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:433,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:323,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:332,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:3654,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:3354,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:35343,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:3573,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:3863,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:33765,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:345323,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2021-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:31113,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2019-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },{
-        id:32223,
-        name: "Almaz",
-        text: "my commet",
-        score: 8,
-        writtenAt: "2020-09-01",
-        isPositive: false,
-        likes: 100,
-        comments: []
-    },
+        text: "Отличный фильм",
+        comments: [
+            {
+                id: 1,
+                user: {
+                    id: 2,
+                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
+                    name: "Александр"
+                },
+                text: "Согласен",
+                writtenAt: "2021-10-10"
+            }
+        ]
+    }
+    
+    
 ]
 function Items({newItems}) {
     return (

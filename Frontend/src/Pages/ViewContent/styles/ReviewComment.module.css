@@ -1,12 +1,14 @@
-.reviewItem{
+﻿.reviewItem{
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 10px;
-    height: 150px;
-    width: 75%;
+    height: fit-content;
+    width: 100%;
+    font-size: 125%;
+    background-color: gray;
     overflow-wrap: anywhere;
     .reviewHeader{
         border-bottom: 2px solid white;
@@ -67,7 +69,7 @@
             max-height: 100%;
         }
         .text{
-            
+
         }
         .score{
             min-width: fit-content;
@@ -100,20 +102,4 @@
             cursor: pointer;
         }
     }
-    h2{
-        text-align: center;
-    }
-}
-.sendReview{
-    margin-top: 40px;
-    padding: 10px 40px;
-    background: #ff2400;
-    border-radius: 10px;
-    border: transparent;
-    color: white;
-    width: fit-content;
-    align-self: center;
-}
-.sendReview:hover{
-    cursor: pointer;
 }
