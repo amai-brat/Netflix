@@ -1,4 +1,5 @@
 ﻿.reviews{
+    position: relative;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -9,14 +10,79 @@
         width: fit-content;
         background: linear-gradient(90deg, rgba(75,1,221,1) 4%, rgba(218,7,21,1) 100%);
         border-radius: 10px;
+        
     }
     .writeReview:hover{
         cursor: pointer;
     }
     .reviewList{
         display:flex;
-        justify-content: center;
+        width:100%;
+        flex-direction: column;
+        align-items: center;
         margin-top: 20px;
         font-size: 125%;
+        h2{
+            margin-top:40px;
+        }
     }
+    .filterContainer{
+        position: absolute;
+        display: flex;
+        right: 0;
+        .filter{
+            height: min-content;
+            margin-top:20px;
+            padding: 8px;
+            border: 1px solid white;
+            border-radius: 10px;
+        }
+        .filterOptions{
+            list-style-type: none;
+            padding: 5px;
+            border: 1px solid white;
+            border-radius: 10px;
+            background-color: black;
+        }
+        .filter:hover{
+            background-color: gray;
+            cursor: pointer;
+        }
+        li{
+            padding: 3px;
+        }
+        li:hover{
+            background-color: gray;
+            cursor: pointer;
+        }
+        h2{
+            align-self: center;
+        }
+    }
+    
+}
+.active{
+    color:blue;
+}
+.closeModal{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background-image: url('../Images/icons8-close-96.svg');
+    padding: 10px;
+    background-color: transparent;
+    border: transparent;
+    margin: 15px;
+    background-size: cover;
+}
+.closeModal:hover{
+    cursor: pointer;
+}
+.stars{
+    display: flex;
+}
+.star:hover{
+    cursor: pointer;
 }

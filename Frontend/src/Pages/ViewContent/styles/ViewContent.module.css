@@ -5,6 +5,7 @@
   justify-content: flex-start;
   max-width: 1280px;
   width:100%;
+  font-size: 125%;
 }
 .generalContainer{
   display:flex;
