@@ -12,7 +12,7 @@ namespace DataAccess.Repositories
 {
     public class FavouriteContentRepository (AppDbContext appDbContext): IFavouriteContentRepository
     {
-        public async Task AddFavouriteContnentAsync(long contentId, long userId)
+        public async Task AddFavouriteContentAsync(long contentId, long userId)
         {
             await appDbContext.FavouriteContents.AddAsync(new FavouriteContent() 
             {
@@ -27,7 +27,7 @@ namespace DataAccess.Repositories
             await appDbContext.FavouriteContents.Where(filter)
                 .ToListAsync();
 
-        public async Task RemoveFavouriteContnentAsync(long contentId, long userId)
+        public async Task RemoveFavouriteContentAsync(long contentId, long userId)
         {
             var favouriteContent = (await GetFavouriteContentsByFilterAsync(f => f.UserId == userId && f.ContentId == contentId)).Single();
             appDbContext.FavouriteContents.Remove(favouriteContent);

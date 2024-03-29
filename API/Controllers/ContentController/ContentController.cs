@@ -11,9 +11,13 @@ namespace API.Controllers.ContentController
 {
     [Route("content")]
     [ApiController]
-    public class ContentController(IContentService contentService) : ControllerBase
+    public class ContentController(
+        IContentService contentService,
+        IFavouriteService favouriteService
+        ) : ControllerBase
     {
         private readonly IContentService _contentService = contentService;
+        private readonly IFavouriteService _favouriteService = favouriteService;
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
@@ -41,7 +45,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> AddContentFavouriteAsync([FromBody] long contentId)
         {
-            await _contentService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            await _favouriteService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
 
@@ -49,7 +53,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> RemoveContentFavouriteAsync([FromBody] long contentId)
         {
-            await _contentService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            await _favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
     }

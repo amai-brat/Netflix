@@ -13,5 +13,6 @@ namespace Domain.Services.ServiceExceptions
         public const string ArgumentsMustBePositive = "Аргументы должны быть целыми неотрицательными числами";
         public const string IncorrectSortType = "Указана неизвестная сортировка";
         public const string NotFoundContent = "Контента с указанным id не существует";
+        public const string NotFoundUser = "Пользователя с указанным id не существует";
     }
 }

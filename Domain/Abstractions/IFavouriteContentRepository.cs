@@ -11,7 +11,7 @@ namespace Domain.Abstractions
     public interface IFavouriteContentRepository
     {
         Task<List<FavouriteContent>> GetFavouriteContentsByFilterAsync(Expression<Func<FavouriteContent, bool>> filter);
-        Task AddFavouriteContnentAsync(long contentId, long userId);
-        Task RemoveFavouriteContnentAsync(long contentId, long userId);
+        Task AddFavouriteContentAsync(long contentId, long userId);
+        Task RemoveFavouriteContentAsync(long contentId, long userId);
     }
 }

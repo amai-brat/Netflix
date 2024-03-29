@@ -12,20 +12,10 @@ using System.Threading.Tasks;
 namespace Domain.Services
 {
     public class ContentService(
-        IContentRepository contentRepository,
-        IFavouriteContentRepository favouriteContentRepository
+        IContentRepository contentRepository
         ): IContentService
     {
         private readonly IContentRepository _contentRepository = contentRepository;
-        private readonly IFavouriteContentRepository _favouriteContentRepository = favouriteContentRepository;
-
-        public async Task AddFavouriteAsync(long contentId, long userId)
-        {
-            if(await GetContentByIdAsync(contentId) is  null)
-                throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{contentId}");
-
-            await _favouriteContentRepository.AddFavouriteContnentAsync(contentId, userId);
-        }
 
         public async Task<ContentBase?> GetContentByIdAsync(long id) => 
             await _contentRepository.GetContentByFilterAsync(c => c.Id == id);
@@ -38,14 +28,6 @@ namespace Domain.Services
                 IsContentYearBetween(content, filter) &&
                 IsContentRatingBetween(content, filter)
             );
-
-        public async Task RemoveFavouriteAsync(long contentId, long userId)
-        {
-            if (await GetContentByIdAsync(contentId) is null)
-                throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{contentId}");
-
-            await _favouriteContentRepository.RemoveFavouriteContnentAsync(contentId, userId);
-        }
 
         private bool IsContentNameContain(ContentBase content, Filter filter) => 
             filter.Name == null || content.Name.Contains(filter.Name);
@@ -67,6 +49,7 @@ namespace Domain.Services
             else
                 return true;
         }
+
         private bool IsContentRatingBetween(ContentBase content, Filter filter) =>
             (filter.ReleaseYearFrom == null || filter.ReleaseYearFrom.Value <= (content.Ratings?.KinopoiskRating ?? -1)) &&
             (filter.ReleaseYearTo == null || filter.ReleaseYearTo.Value >= (content.Ratings?.KinopoiskRating ?? -1));

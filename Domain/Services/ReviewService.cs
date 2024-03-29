@@ -13,11 +13,13 @@ namespace Domain.Services
 {
     public class ReviewService(
         IReviewRepository reviewRepository,
-        IContentRepository contentRepository
+        IContentRepository contentRepository,
+        IUserRepository userRepository
         ) : IReviewService
     {
         private readonly IReviewRepository _reviewRepository = reviewRepository;
         private readonly IContentRepository _contentRepository = contentRepository;
+        private readonly IUserRepository _userRepository = userRepository;
 
         public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
         {
@@ -27,34 +29,24 @@ namespace Domain.Services
             if (await _contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
                 throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
 
+            if (await _userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
+                throw new FavouriteServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
+
             await _reviewRepository.AssignReviewAsync(new Review()
             {
                 UserId = userId,
                 ContentId = review.ContentId,
                 Text = review.Text,
                 IsPositive = review.IsPositive,
-                Score = review.Score,
+                Score = review.Score ?? -1,
                 WrittenAt = DateTimeOffset.UtcNow
             });
         }
 
         public async Task AssignReviewAsync(ReviewAssignDto review, long userId)
         {
-            if (!IsValidReview(review, out var errorMessage, out var param))
-                throw new ReviewServiceArgumentException(errorMessage!, param!);
-
-            if (await _contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
-                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
-
-            await _reviewRepository.AssignReviewAsync(new Review()
-            {
-                UserId = userId,
-                ContentId = review.ContentId,
-                Text = review.Text,
-                IsPositive = review.IsPositive,
-                Score = -1,
-                WrittenAt = DateTimeOffset.UtcNow
-            });
+            review.Score = null;
+            await AssignReviewWithRatingAsync(review, userId);
         }
 
         public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId) =>
@@ -93,7 +85,7 @@ namespace Domain.Services
                 errorMessage = ErrorMessages.ReviewMustHaveText;
                 param = nameof(review.Text);
             }
-            else if (review.Score < 0 || review.Score > 10)
+            else if (review.Score is not null && (review.Score < 0 || review.Score > 10))
             {
                 errorMessage = ErrorMessages.ScoreMustBeValid;
                 param = nameof(review.Score);

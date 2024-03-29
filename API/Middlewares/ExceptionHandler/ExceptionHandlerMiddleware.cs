@@ -11,7 +11,7 @@ namespace API.Middlewares
             {
                 await next.Invoke(context);
             }
-            catch(ArgumentException ex) when (ex is ReviewServiceArgumentException || ex is ContentServiceArgumentException)
+            catch(ArgumentException ex) when (ex is ReviewServiceArgumentException || ex is FavouriteServiceArgumentException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync($"{ex.Message}. {ex.ParamName}");

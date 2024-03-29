@@ -12,7 +12,5 @@ namespace Domain.Abstractions
     {
         Task<ContentBase?> GetContentByIdAsync(long id);
         Task<List<ContentBase>> GetContentsByFilterAsync(Filter filter);
-        Task AddFavouriteAsync(long contentId, long userId);
-        Task RemoveFavouriteAsync(long contentId, long userId);
     }
 }
