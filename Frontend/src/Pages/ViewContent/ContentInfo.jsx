@@ -68,7 +68,7 @@ function ContentInfo({contentData}){
                 notifyAboutResult(false, body.message);
             }
         } catch (e) {
-            notifyAboutResult(false, "Произошла ошибка при добавлении в избранное");
+            notifyAboutResult(false, e.message);
         }
     }
     function notifyAboutResult(isSuccess, message){
@@ -146,7 +146,6 @@ function ContentInfo({contentData}){
                     <h2>В главных ролях:</h2>
                     <span>{printAllPersonsByRole("актеры")}</span>
                     <h2>Также работали</h2>
-                    {/*перепиши код ниже чтобы там был keys*/}
                     {Object.keys(groupedByRole).map((role) => {
                         if (role === "актеры") {
                             return;

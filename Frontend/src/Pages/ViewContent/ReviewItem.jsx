@@ -94,7 +94,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                 })
             }
         } catch (e){
-            toast.error("Почему-то не получилось поставить лайк, попробуйте позже", {
+            toast.error(e.message, {
                 position: "bottom-center"
             })
         }
@@ -134,7 +134,6 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                           <h1>Детали ревью</h1>
                           <img src={closeCross} alt={"Закрыть"} className={styles.closeCross} onClick={closeModal}/>
                       </div>
-                      {/*как убрать cursor: pointer с текста???*/}
                       <ReviewItem review={review}
                                   customStyles={{width: "100%", height: "fit-content", fontSize: "150%",}}
                                   notOpenModal={true}
@@ -145,7 +144,6 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                           )
                       })}
                       <h2>Оставить комментарий</h2>
-                      {/*TODO: как увеличить высоту textarea??? height не работает*/}
                       <textarea
                                 placeholder="Ответить в комментарии"
                                 className={styles.commentForm} onChange={handleTextChange}

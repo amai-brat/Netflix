@@ -77,7 +77,7 @@ const Reviews = ({contentId}) => {
                 notifyAboutResult(false, body.message);
             }
         } catch (e){
-            notifyAboutResult(false, "Произошла ошибка при отправке рецензии");
+            notifyAboutResult(false, e.message);
         } finally {
             closeModal();
         }
