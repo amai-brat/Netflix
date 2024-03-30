@@ -118,6 +118,7 @@
     cursor: pointer;
 }
 .commentForm{
+    display: table;
     width: 70%;
     align-self: center;
 }

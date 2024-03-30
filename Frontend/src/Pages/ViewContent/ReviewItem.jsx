@@ -145,9 +145,10 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                       })}
                       <h2>Оставить комментарий</h2>
                       <textarea
-                                placeholder="Ответить в комментарии"
-                                className={styles.commentForm} onChange={handleTextChange}
-                      rows={10}></textarea>
+                          placeholder="Ответить в комментарии"
+                          className={styles.commentForm} onChange={handleTextChange}
+                          rows={10}>
+                      </textarea>
                       <button className={styles.sendReview} onClick={sendComment}>Отправить</button>
                   </div>
               </Modal>
