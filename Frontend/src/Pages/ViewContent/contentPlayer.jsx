@@ -44,20 +44,19 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                             <div className={styles.resAndSeasons}>
                                 {contentType === "сериал" &&
                                     <div className={styles.episodeSettings}>
-                                        <select onChange={(e) => {
+                                        <select value={currentEpisode} onChange={(e) => {
                                             const selectedOption = e.target.value.split('-');
                                             setCurrentSeason(parseInt(selectedOption[0]));
                                             setCurrentEpisode(parseInt(selectedOption[1]));
                                         }}>
                                             {seasonInfos.map(season => {
                                                 return (
-                                                    <optgroup label={"Сезон " + (season.seasonNumber)} >
+                                                    <optgroup key={season.id} label={"Сезон " + (season.seasonNumber)} >
                                                         {season.episodes.map(episode => {
                                                             return (
                                                                 <option 
                                                                     key={`${season.seasonNumber}-${episode.episodeNumber}`}
                                                                     value={`${season.seasonNumber}-${episode.episodeNumber}`}
-                                                                    selected={currentEpisode === episode.episodeNumber && currentSeason === season.seasonNumber}
                                                                     className={currentEpisode === episode.episodeNumber && currentSeason === season.seasonNumber?
                                                                                 styles.active : ""}>
                                                                     {episode.episodeNumber}
@@ -71,11 +70,11 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                     </div>
                                 }
                                 <div className={styles.resolutionSettings}>
-                                    <select>
-                                        <option selected={resolution === 360} onClick={() => setResolution(360)}>360p</option>
-                                        <option selected={resolution === 480} onClick={() => setResolution(480)}>480p</option>
-                                        <option selected={resolution === 720} onClick={() => setResolution(720)}>720p</option>
-                                        <option selected={resolution === 1080} onClick={() => setResolution(1080)}>1080p</option>
+                                    <select value={resolution}  onChange={e => setResolution(parseInt(e.target.value))}>
+                                        <option>360p</option>
+                                        <option>480p</option>
+                                        <option>720p</option>
+                                        <option>1080p</option>
                                     </select>
                                 </div>
                             </div>

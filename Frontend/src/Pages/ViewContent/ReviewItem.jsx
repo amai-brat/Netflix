@@ -36,7 +36,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     }
     const stylesCombined = {
         ...customStyles,
-        backgroundColor: review.isPositive? "#30cf5d": "#d20720"
+        backgroundColor: review.isPositive? "#09830b": "#c00c00"
     }
     const closeModal = () => {
         setModalOpen(false)
@@ -141,14 +141,15 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                       ></ReviewItem>
                       {review.comments.map((comment) => {
                           return (
-                              <ReviewComment comment={comment}></ReviewComment>
+                              <ReviewComment key={comment.id} comment={comment}></ReviewComment>
                           )
                       })}
                       <h2>Оставить комментарий</h2>
                       {/*TODO: как увеличить высоту textarea??? height не работает*/}
                       <textarea
                                 placeholder="Ответить в комментарии"
-                                className={styles.commentForm} onChange={handleTextChange}></textarea>
+                                className={styles.commentForm} onChange={handleTextChange}
+                      rows={10}></textarea>
                       <button className={styles.sendReview} onClick={sendComment}>Отправить</button>
                   </div>
               </Modal>

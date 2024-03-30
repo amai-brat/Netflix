@@ -146,11 +146,12 @@ function ContentInfo({contentData}){
                     <h2>В главных ролях:</h2>
                     <span>{printAllPersonsByRole("актеры")}</span>
                     <h2>Также работали</h2>
+                    {/*перепиши код ниже чтобы там был keys*/}
                     {Object.keys(groupedByRole).map((role) => {
                         if (role === "актеры") {
                             return;
                         }
-                        return <span><strong>{capitalizeFirstLetter(role) + ": "}</strong> {printAllPersonsByRole(role)}</span>
+                        return <span key={role}><strong>{capitalizeFirstLetter(role) + ": "}</strong> {printAllPersonsByRole(role)}</span>
 
                     })}
                 </div>
