@@ -368,9 +368,12 @@ app.get("/api/content/:id", function (req, res) {
     res.send(contentData);
 });
 app.get("/video/:id", function (req, res) {
-    res.sendStatus(201)
+    setTimeout(() => {
+        res.sendStatus(204)
+    },1000)
+    
     }
 )
-app.listen(5000, function () {
-    console.log("Listening on port 8030!");
+app.listen(5001, function () {
+    console.log("Listening on port 5001!");
 });

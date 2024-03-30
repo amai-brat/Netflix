@@ -10,7 +10,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [currentSeason, setCurrentSeason] = useState(1)
     const getUrl = () => {
         // TODO: написать url на сервер правильный
-        return "http://localhost:5000/video/" + contentId + "?res=" + resolution +
+        return "http://localhost:5001/video/" + contentId + "?res=" + resolution +
             (contentType === "сериал"? `&episode=${currentEpisode}&season=${currentSeason}` : ``)
     }
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
@@ -30,7 +30,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
             }
         }
         fetchData();
-    }, [contentId, resolution, currentEpisode, currentSeason]);
+    }, [resolution, currentEpisode, currentSeason]);
     return (
         <>
             {dataFetching && <img src={gif} alt="грузится" className={styles.loading}></img>}
@@ -44,15 +44,22 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                             <div className={styles.resAndSeasons}>
                                 {contentType === "сериал" &&
                                     <div className={styles.episodeSettings}>
-                                        <select>
+                                        <select onChange={(e) => {
+                                            const selectedOption = e.target.value.split('-');
+                                            setCurrentSeason(parseInt(selectedOption[0]));
+                                            setCurrentEpisode(parseInt(selectedOption[1]));
+                                        }}>
                                             {seasonInfos.map(season => {
                                                 return (
-                                                    <optgroup label={"Сезон " + (season.seasonNumber)}>
+                                                    <optgroup label={"Сезон " + (season.seasonNumber)} >
                                                         {season.episodes.map(episode => {
                                                             return (
-                                                                <option onClick={() => {
-                                                                    setCurrentSeason(season.seasonNumber)
-                                                                    setCurrentEpisode(episode.episodeNumber)}}>
+                                                                <option 
+                                                                    key={`${season.seasonNumber}-${episode.episodeNumber}`}
+                                                                    value={`${season.seasonNumber}-${episode.episodeNumber}`}
+                                                                    selected={currentEpisode === episode.episodeNumber && currentSeason === season.seasonNumber}
+                                                                    className={currentEpisode === episode.episodeNumber && currentSeason === season.seasonNumber?
+                                                                                styles.active : ""}>
                                                                     {episode.episodeNumber}
                                                                 </option>
                                                             )
