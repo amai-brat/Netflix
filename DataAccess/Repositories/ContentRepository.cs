@@ -14,6 +14,7 @@ namespace DataAccess.Repositories
     {
         public async Task<ContentBase?> GetContentByFilterAsync(Expression<Func<ContentBase, bool>> filter) =>
             await appDbContext.ContentBases.Include(c => c.ContentType)
+                .Include(c => c.Genres)
                 .Include(c => c.PersonsInContent)
                     .ThenInclude(p => p.Profession)
                 .SingleOrDefaultAsync(filter);

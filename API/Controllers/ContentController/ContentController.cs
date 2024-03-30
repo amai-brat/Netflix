@@ -89,7 +89,17 @@ namespace API.Controllers.ContentController
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)
                 .SelectMany(p => p.Take(Consts.MaxReturnPersonPerRole))
                 .ToList();
+            SetUpContent(content);
             return content;
-        }   
+        }
+
+        private void SetUpContent(ContentBase content)
+        {
+            content.Genres?.ForEach(g => g.Contents = null!);
+            if(content.ContentType != null)
+                content.ContentType.ContentsWithType = null;
+            content.PersonsInContent?.ForEach(p => p.Content = null!);
+            content.AllowedSubscriptions?.ForEach(a => a.AccessibleContent = null!);
+        }
     }
 }

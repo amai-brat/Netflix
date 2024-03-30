@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,13 +29,13 @@ namespace Domain.Services
             await _contentRepository.GetSerialContentByFilterAsync(c => c.Id == id);
 
         public async Task<List<ContentBase>> GetContentsByFilterAsync(Filter filter) =>
-            await _contentRepository.GetContentsByFilterAsync(content =>
-                IsContentNameContain(content, filter) &&
-                IsContentTypesContain(content, filter) &&
-                IsCountryContain(content, filter) &&
-                IsContentGenresContains(content, filter) &&
-                IsContentYearBetween(content, filter) &&
-                IsContentRatingBetween(content, filter)
+            await _contentRepository.GetContentsByFilterAsync(
+                IsContentNameContain(filter)
+                .CombineExpressions(IsContentTypesContain(filter))
+                .CombineExpressions(IsCountryContain(filter))
+                .CombineExpressions(IsContentGenresContains(filter))
+                .CombineExpressions(IsContentYearBetween(filter))
+                .CombineExpressions(IsContentRatingBetween(filter))
             );
 
         public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, int subscriptionId)
@@ -77,32 +78,31 @@ namespace Domain.Services
                 .Replace("resolution", resolution.ToString());
         }
 
-        private bool IsContentNameContain(ContentBase content, Filter filter) => 
-            filter.Name == null || content.Name.ToLower().Contains(filter.Name.ToLower());
+        private Expression<Func<ContentBase, bool>> IsContentNameContain(Filter filter) => 
+            content => filter.Name == null || content.Name.ToLower().Contains(filter.Name.ToLower());
 
-        private bool IsContentTypesContain(ContentBase content, Filter filter) =>
-            filter.Types == null || filter.Types.Any(id => id == content.ContentTypeId);
+        private Expression<Func<ContentBase, bool>> IsContentTypesContain(Filter filter) =>
+            content => filter.Types == null || filter.Types.Count == 0 || filter.Types.Any(id => id == content.ContentTypeId);
 
-        private bool IsCountryContain(ContentBase content, Filter filter) =>
-            filter.Country == null || (content.Country != null && content.Country.ToLower() == filter.Country.ToLower());
+        private Expression<Func<ContentBase, bool>> IsCountryContain(Filter filter) =>
+            content => filter.Country == null || (content.Country != null && content.Country.ToLower() == filter.Country.ToLower());
 
-        private bool IsContentGenresContains(ContentBase content, Filter filter) =>
-            filter.Genres == null || filter.Genres.All(id => content.Genres.FirstOrDefault(g => g.Id == id) != null);
+        private Expression<Func<ContentBase, bool>> IsContentGenresContains(Filter filter) =>
+            content => filter.Genres == null || filter.Genres.Count == 0 || filter.Genres.All(id => content.Genres.FirstOrDefault(g => g.Id == id) != null);
 
-        private bool IsContentYearBetween(ContentBase content, Filter filter)
-        {
-            if (content is MovieContent movie)
-                return (!filter.ReleaseYearFrom.HasValue || filter.ReleaseYearFrom.Value <= movie.ReleaseDate.Year) &&
-                    (!filter.ReleaseYearTo.HasValue || filter.ReleaseYearTo.Value >= movie.ReleaseDate.Year);
-            else if (content is SerialContent serial)
-                return (!filter.ReleaseYearFrom.HasValue || filter.ReleaseYearFrom.Value <= serial.YearRange.Start.Year) &&
-                    (!filter.ReleaseYearTo.HasValue || filter.ReleaseYearTo.Value >= serial.YearRange.End.Year);
-            else
-                return true;
-        }
+        private Expression<Func<ContentBase, bool>> IsContentYearBetween(Filter filter) =>
+            content => content is MovieContent ? 
+                            (!filter.ReleaseYearFrom.HasValue || filter.ReleaseYearFrom.Value <= ((MovieContent)content).ReleaseDate.Year) &&
+                            (!filter.ReleaseYearTo.HasValue || filter.ReleaseYearTo.Value >= ((MovieContent)content).ReleaseDate.Year) :
+                        content is SerialContent ?
+                            (!filter.ReleaseYearFrom.HasValue || filter.ReleaseYearFrom.Value <= ((SerialContent)content).YearRange.Start.Year) &&
+                            (!filter.ReleaseYearTo.HasValue || filter.ReleaseYearTo.Value >= ((SerialContent)content).YearRange.End.Year) :
+                        true;
+        
 
-        private bool IsContentRatingBetween(ContentBase content, Filter filter) =>
-            (filter.RatingFrom == null || filter.RatingFrom.Value <= (content.Ratings?.KinopoiskRating ?? 0)) &&
-            (filter.RatingTo == null || filter.RatingTo.Value >= (content.Ratings?.KinopoiskRating ?? 0));
+        private Expression<Func<ContentBase, bool>> IsContentRatingBetween(Filter filter) => 
+            content =>
+                (filter.RatingFrom == null || filter.RatingFrom.Value <= (content.Ratings == null ? 0 : content.Ratings.KinopoiskRating)) &&
+                (filter.RatingTo == null || filter.RatingTo.Value >= (content.Ratings == null ? 0 : content.Ratings.KinopoiskRating));
     }
 }

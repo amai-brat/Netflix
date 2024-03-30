@@ -20,7 +20,11 @@ namespace DataAccess.Repositories
 
         public async Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter) =>
             await appDbContext.Reviews.Where(filter)
+                .Include(r => r.User)
                 .Include(r => r.Comments)
+                    .ThenInclude(r => r.User)
+                 .Include(r => r.Comments)
+                    .ThenInclude(r => r.ScoredByUsers)
                 .Include(r => r.RatedByUsers)
                 .ToListAsync();
     }
