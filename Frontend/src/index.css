@@ -8,9 +8,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-* {
-  color: white;
-}
 /*css reset*/
 html, body, div, span, h1, h2, h3, p {
   margin: 0;
@@ -22,4 +19,5 @@ body{
   min-width: 320px;
   min-height: 100vh;
   color:white;
+  color: white;
 }
