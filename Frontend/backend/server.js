@@ -8,6 +8,28 @@ const contentData =
     {
         id: 1,
         title: "Пираты Карибского моря: Проклятие Черной жемчужины (2003)",
+        releaseYears: {
+            start: "2006",
+            end:"2011"
+        },
+        seasonInfos: [
+            {
+                id: 1,
+                seasonNumber: 1,
+                episodes: [
+                    {id: 1, episodeNumber: 1},
+                    {id: 2, episodeNumber: 2},
+                ]
+            },
+            {
+                id: 2,
+                seasonNumber: 2,
+                episodes: [
+                    {id: 3, episodeNumber: 1},
+                    {id: 4, episodeNumber: 2}
+                ]
+            },
+        ],
         description: "Жизнь харизматичного авантюриста, капитана Джека Воробья, полная увлекательных приключений, резко меняется, когда его заклятый враг капитан Барбосса похищает корабль Джека Черную Жемчужину, а затем нападает на Порт Ройал и крадет прекрасную дочь губернатора Элизабет Свонн.\n" +
             "\n" +
             "Друг детства Элизабет Уилл Тернер вместе с Джеком возглавляет спасательную экспедицию на самом быстром корабле Британии, чтобы вызволить девушку и заодно отобрать у злодея Черную Жемчужину. Вслед за этой парочкой отправляется амбициозный коммодор Норрингтон, который к тому же числится женихом Элизабет.\n" +
@@ -18,7 +40,7 @@ const contentData =
         poster: "https://www.kinopoisk.ru/images/film_big/4374.jpg",
         releaseDate: 2003,
         movieLength: 144,
-        contentType: "фильм",
+        contentType: "сериал",
         ageRating: {
             "age" : 12,
             "ageMpaa": "PG-13"
@@ -345,7 +367,10 @@ const contentData =
 app.get("/api/content/:id", function (req, res) {
     res.send(contentData);
 });
-app.post("/")
+app.get("/video/:id", function (req, res) {
+    res.sendStatus(201)
+    }
+)
 app.listen(5000, function () {
     console.log("Listening on port 8030!");
 });

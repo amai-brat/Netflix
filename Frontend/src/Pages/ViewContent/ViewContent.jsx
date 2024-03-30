@@ -35,7 +35,8 @@ const ViewContent = () => {
             <div className={styles.generalContainer}>
                 <div className={styles.wholePageContainer}>
                     <ContentInfo contentData={contentData}/>
-                    <ContentPlayer contentId={id}/>
+                    <ContentPlayer contentId={id} contentType={contentData.contentType}
+                                   seasonInfos={contentData.seasonInfos} />
                     <Reviews contentId={id}/>
                 </div>
             </div>

@@ -2,13 +2,16 @@
 import React, {useEffect, useState} from 'react';
 import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
-const contentPlayer = ({contentId}) => {
+const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(720)
     const [error, setError] = useState(null)
     const [dataFetching, setDataFetching] = useState(false)
+    const [currentEpisode, setCurrentEpisode] = useState(1)
+    const [currentSeason, setCurrentSeason] = useState(1)
     const getUrl = () => {
         // TODO: написать url на сервер правильный
-        return "http://localhost:8030/video/" + contentId + "?res=" + resolution
+        return "http://localhost:5000/video/" + contentId + "?res=" + resolution +
+            (contentType === "сериал"? `&episode=${currentEpisode}&season=${currentSeason}` : ``)
     }
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
     useEffect(() => {
@@ -27,10 +30,10 @@ const contentPlayer = ({contentId}) => {
             }
         }
         fetchData();
-    }, [contentId, resolution]);
+    }, [contentId, resolution, currentEpisode, currentSeason]);
     return (
         <>
-            {dataFetching && <img src={gif} alt="я джифка" className={styles.loading}></img>}
+            {dataFetching && <img src={gif} alt="грузится" className={styles.loading}></img>}
             {error && <div className={styles.error}>
                 {error}
             </div>}
@@ -38,13 +41,36 @@ const contentPlayer = ({contentId}) => {
                 <>
                     <div className={styles.playerWindow}>
                         <div className={styles.player}>
-                            <div className={styles.resolutionSettings}>
-                                <select>
-                                    <option onClick={() => setResolution(360)}>360p</option>
-                                    <option onClick={() => setResolution(480)}>480p</option>
-                                    <option selected={true} onClick={() => setResolution(720)}>720p</option>
-                                    <option onClick={() => setResolution(1080)}>1080p</option>
-                                </select>
+                            <div className={styles.resAndSeasons}>
+                                {contentType === "сериал" &&
+                                    <div className={styles.episodeSettings}>
+                                        <select>
+                                            {seasonInfos.map(season => {
+                                                return (
+                                                    <optgroup label={"Сезон " + (season.seasonNumber)}>
+                                                        {season.episodes.map(episode => {
+                                                            return (
+                                                                <option onClick={() => {
+                                                                    setCurrentSeason(season.seasonNumber)
+                                                                    setCurrentEpisode(episode.episodeNumber)}}>
+                                                                    {episode.episodeNumber}
+                                                                </option>
+                                                            )
+                                                        })}
+                                                    </optgroup>
+                                                )
+                                            })}
+                                        </select>
+                                    </div>
+                                }
+                                <div className={styles.resolutionSettings}>
+                                    <select>
+                                        <option selected={resolution === 360} onClick={() => setResolution(360)}>360p</option>
+                                        <option selected={resolution === 480} onClick={() => setResolution(480)}>480p</option>
+                                        <option selected={resolution === 720} onClick={() => setResolution(720)}>720p</option>
+                                        <option selected={resolution === 1080} onClick={() => setResolution(1080)}>1080p</option>
+                                    </select>
+                                </div>
                             </div>
                             <ReactPlayer
                                 url={getUrl()}

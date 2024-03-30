@@ -113,6 +113,11 @@ function ContentInfo({contentData}){
                     {contentData.genres && 
                         <span><strong>Жанры:</strong> {contentData.genres.join(", ")}</span>
                     }
+                    {contentData.releaseYears && 
+                        <span><strong>Годы выхода:</strong> {contentData.releaseYears.start + " - " + contentData.releaseYears.end}</span>
+                    }
+                    {contentData.seasonInfos && 
+                        <span><strong>Количество сезонов: </strong> {contentData.seasonInfos.length}</span>}
                     {contentData.contentType && 
                         <span><strong>Тип контента:</strong> {contentData.contentType}</span>
                     }
@@ -138,9 +143,9 @@ function ContentInfo({contentData}){
                         {contentData.ratings.imdb && <span className={styles.ratingImdb}>IMDb: {contentData.ratings.imdb}</span>}
                         {contentData.ratings.kinopoisk && <span className={styles.ratingKinopoisk}>Кинопоиск: {contentData.ratings.kinopoisk}</span>}
                         <span className={styles.ratingLocal}>Локальный: {contentData.ratings.local == null? "недостаточно оценок": contentData.ratings.local}</span></span>
-                    <h2>В фильме снимались</h2>
+                    <h2>В главных ролях:</h2>
                     <span>{printAllPersonsByRole("актеры")}</span>
-                    <h2>Над фильмом также работали</h2>
+                    <h2>Также работали</h2>
                     {Object.keys(groupedByRole).map((role) => {
                         if (role === "актеры") {
                             return;
