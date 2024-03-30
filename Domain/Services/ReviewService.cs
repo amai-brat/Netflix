@@ -30,7 +30,7 @@ namespace Domain.Services
                 throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
 
             if (await _userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
-                throw new FavouriteServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
+                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
 
             await _reviewRepository.AssignReviewAsync(new Review()
             {
@@ -59,8 +59,8 @@ namespace Domain.Services
                 ("scoredesc", var reviews) => reviews.OrderByDescending(r => r.Score),
                 ("oldest", var reviews) => reviews.OrderBy(r => r.WrittenAt),
                 ("newest", var reviews) => reviews.OrderByDescending(r => r.WrittenAt),
-                ("positive", var reviews) => reviews.Where(r => r.IsPositive),
-                ("negative", var reviews) => reviews.Where(r => !r.IsPositive),
+                ("positive", var reviews) => reviews.OrderBy(r => r.IsPositive),
+                ("negative", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
                 ("likes", var reviews) => reviews.OrderBy(r => r.RatedByUsers?.Count(r => r.IsLiked) ?? 0),
                 ("likesdesc", var reviews) => reviews.OrderByDescending(r => r.RatedByUsers?.Count(r => r.IsLiked) ?? 0),
                 (_, var reviews) => throw new ReviewServiceArgumentException(ErrorMessages.IncorrectSortType, sort)

@@ -14,5 +14,12 @@ namespace Domain.Services.ServiceExceptions
         public const string IncorrectSortType = "Указана неизвестная сортировка";
         public const string NotFoundContent = "Контента с указанным id не существует";
         public const string NotFoundUser = "Пользователя с указанным id не существует";
+        public const string AlreadyFavourite = "Контент уже в избранном";
+        public const string NotInFavourite = "Контент уже не входит в избранное";
+        public const string NotFoundResolution = "Указанного разрешения нет";
+        public const string UserDoesNotHaveSubscription = "Нельзя смотреть контент без подписки";
+        public const string UserDoesNotHavePermissionBySubscription = "Контент не доступен с текущей подпиской";
+        public const string NotFoundSeason = "Указан неверный сезон";
+        public const string NotFoundEpisode = "Указан неверный эпизод";
     }
 }

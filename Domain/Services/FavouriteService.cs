@@ -26,6 +26,9 @@ namespace Domain.Services
             if (await _contentRepository.GetContentByFilterAsync(c => c.Id == contentId) is null)
                 throw new FavouriteServiceArgumentException(ErrorMessages.NotFoundContent, $"{contentId}");
 
+            if ((await _favouriteContentRepository.GetFavouriteContentsByFilterAsync(f => f.UserId == userId && f.ContentId == contentId)).Count != 0)
+                throw new FavouriteServiceArgumentException(ErrorMessages.AlreadyFavourite, $"{contentId}");
+
             await _favouriteContentRepository.AddFavouriteContentAsync(contentId, userId);
         }
 
@@ -36,6 +39,9 @@ namespace Domain.Services
 
             if (await _contentRepository.GetContentByFilterAsync(c => c.Id == contentId) is null)
                 throw new FavouriteServiceArgumentException(ErrorMessages.NotFoundContent, $"{contentId}");
+
+            if ((await _favouriteContentRepository.GetFavouriteContentsByFilterAsync(f => f.UserId == userId && f.ContentId == contentId)).Count == 0)
+                throw new FavouriteServiceArgumentException(ErrorMessages.NotInFavourite, $"{contentId}");
 
             await _favouriteContentRepository.RemoveFavouriteContentAsync(contentId, userId);
         }

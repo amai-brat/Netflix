@@ -11,10 +11,18 @@ namespace API.Middlewares
             {
                 await next.Invoke(context);
             }
-            catch(ArgumentException ex) when (ex is ReviewServiceArgumentException || ex is FavouriteServiceArgumentException)
+            catch(ArgumentException ex) when (
+            ex is ReviewServiceArgumentException ||
+            ex is FavouriteServiceArgumentException ||
+            ex is ContentServiceArgumentException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync($"{ex.Message}. {ex.ParamName}");
+            }
+            catch (ContentServiceNotPermittedException ex)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(ex.Message);
             }
         }
     }

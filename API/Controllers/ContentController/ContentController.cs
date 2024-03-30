@@ -1,5 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.Dtos;
+using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,15 +24,15 @@ namespace API.Controllers.ContentController
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
             var content = await _contentService.GetContentByIdAsync(id);
-
             if (content is null)
                 return BadRequest(ErrorMessages.NotFoundContent);
 
-            content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)
-                .SelectMany(p => p.Take(Consts.MaxReturnPersonPerRole))
-                .ToList();
-
-            return Ok(content);
+            if (content is SerialContent)
+                return Ok(SetConstraintOnPersonCount((await _contentService.GetSerialContentByIdAsync(id))!));
+            else if(content is MovieContent)
+                return Ok(SetConstraintOnPersonCount((await _contentService.GetMovieContentByIdAsync(id))!));
+            else 
+                return Ok(SetConstraintOnPersonCount(content));
         }
 
         [HttpPost("filter")]
@@ -56,5 +57,39 @@ namespace API.Controllers.ContentController
             await _favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
+
+        [HttpGet("movie/video/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetContentVideo(long id, [FromQuery] int resolution)
+        {
+            var subscribeId = User.FindFirst("SubscribeId")?.Value;
+            if (subscribeId is null)
+                return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
+
+            var url = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
+
+            return Ok(url);
+        }
+
+        [HttpGet("serial/{season}/{episode}/video/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetContentVideo(int season, int episode, long id, [FromQuery] int resolution)
+        {
+            var subscribeId = User.FindFirst("SubscribeId")?.Value;
+            if (subscribeId is null)
+                return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
+
+            var url = await _contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
+
+            return Ok(url);
+        }
+
+        private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
+        {
+            content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)
+                .SelectMany(p => p.Take(Consts.MaxReturnPersonPerRole))
+                .ToList();
+            return content;
+        }   
     }
 }
