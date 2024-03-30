@@ -79,9 +79,6 @@
             margin-left: 5px;
         }
     }
-    .reviewText:hover{
-        cursor: pointer;
-    }
 }
 .modalReview{
     display: flex;
