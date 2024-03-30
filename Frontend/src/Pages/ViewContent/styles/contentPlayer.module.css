@@ -23,6 +23,7 @@
             flex-direction: row;
             position: absolute;
             right:0;
+            z-index: 1;
             .resolutionSettings{
                 padding: 5px;
                 select{

@@ -17,9 +17,11 @@ const modalStyles = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        zIndex: '1000'
     },
     overlay:{
         backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        zIndex: '1000'
     }
 }
 const Reviews = ({contentId}) => {
