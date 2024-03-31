@@ -67,8 +67,8 @@ namespace API.Controllers.ContentController
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
             var url = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
-
-            return Ok(url);
+            await HttpContext.Response.SendFileAsync(url);
+            return Ok();
         }
 
         [HttpGet("serial/{season}/{episode}/video/{id}")]
@@ -80,8 +80,8 @@ namespace API.Controllers.ContentController
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
             var url = await _contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
-
-            return Ok(url);
+            await HttpContext.Response.SendFileAsync(url);
+            return Ok();
         }
 
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
