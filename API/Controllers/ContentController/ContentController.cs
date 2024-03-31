@@ -35,8 +35,8 @@ namespace API.Controllers.ContentController
                 return Ok(SetConstraintOnPersonCount(content));
         }
 
-        [HttpPost("filter")]
-        public async Task<IActionResult> GetContentsByFilterAsync([FromBody] Filter filter)
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
         {
             var contents = await _contentService.GetContentsByFilterAsync(filter);
             return Ok(contents);
