@@ -191,43 +191,49 @@ namespace Tests.ContentAPITests
             Assert.Contains(errorMsg, ex.Message);
         }
 
-        [Fact]
-        public async Task GetMovieContentUrlWithInCorrectSubIdShouldThrowNotPermittedException()
+        [Theory]
+        [InlineData(480, -1)]
+        [InlineData(2160, 1)]
+        public async Task GetMovieContentUrlWithInCorrectSubIdOrResShouldThrowNotPermittedException(int resolution, int subId)
         {
             //Arrange
             var contents = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().ToList();
-            var _contentId = contents[Random.Shared.Next(0, contents.Count)].Id;
-            var subId = -1;
-            var resolution = 480;
+            var contentId = contents[Random.Shared.Next(0, contents.Count)].Id;
+            contents.First(x => x.Id == contentId).AllowedSubscriptions.First().MaxResolution = 1080;
+            var _subId = subId == -1 ? subId : contents.First(x => x.Id == contentId).AllowedSubscriptions.First().Id;
+            var _resolution = resolution;
 
             //Act
             _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
             var service = new ContentService(_mockContent.Object);
-            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetMovieContentVideoUrlAsync(_contentId, resolution, subId); });
+            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetMovieContentVideoUrlAsync(contentId, _resolution, _subId); });
 
             //Assert
             Assert.Contains(ErrorMessages.UserDoesNotHavePermissionBySubscription, ex.Message);
         }
 
-        [Fact]
-        public async Task GetSerialContentUrlWithInCorrectSubIdShouldThrowNotPermittedException()
+        [Theory]
+        [InlineData(480, -1)]
+        [InlineData(2160, 1)]
+        public async Task GetSerialContentUrlWithInCorrectSubIdOrResShouldThrowNotPermittedException(int resolution, int subId)
         {
             //Arrange
             var contents = BuildDefaultSerialContentBaseListWithAllowedSub().Cast<SerialContent>().ToList();
             var contentId = contents[Random.Shared.Next(0, contents.Count)].Id;
-            var subId = -1;
+            contents.First(x => x.Id == contentId).AllowedSubscriptions.First().MaxResolution = 1080;
+            var _subId = subId == -1 ? subId : contents.First(x => x.Id == contentId).AllowedSubscriptions.First().Id;
             var season = 1;
             var episode = 2;
-            var resolution = 480;
+            var _resolution = resolution;
 
             //Act
             _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
             var service = new ContentService(_mockContent.Object);
-            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetSerialContentVideoUrlAsync(contentId, season, episode, resolution, subId); });
+            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetSerialContentVideoUrlAsync(contentId, season, episode, _resolution, _subId); });
 
             //Assert
             Assert.Contains(ErrorMessages.UserDoesNotHavePermissionBySubscription, ex.Message);
@@ -336,11 +342,15 @@ namespace Tests.ContentAPITests
             return serials.Cast<ContentBase>().ToList();
         }
 
-        private List<Subscription> BuildDefaultAllowedSub() =>
-            _fixture.Build<Subscription>()
+        private List<Subscription> BuildDefaultAllowedSub()
+        {
+            var allowed = _fixture.Build<Subscription>()
                 .Without(s => s.AccessibleContent)
                 .CreateMany(10)
                 .ToList();
+            allowed.ForEach(a => { a.MaxResolution = 2160; });
+            return allowed;
+        }
 
         private List<ContentBase> BuildFilteredMovieContentBaseList(Filter filter)
         {

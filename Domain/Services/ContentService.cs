@@ -45,7 +45,8 @@ namespace Domain.Services
                 throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{movieId}");
             if (!resolutions.Contains(resolution))
                 throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
-            if (!movie.AllowedSubscriptions.Select(s => s.Id).Contains(subscriptionId))
+            if (!movie.AllowedSubscriptions.Select(s => s.Id)
+                .Contains(subscriptionId) || movie.AllowedSubscriptions.First(s => s.Id == subscriptionId).MaxResolution < resolution)
                 throw new ContentServiceNotPermittedException(ErrorMessages.UserDoesNotHavePermissionBySubscription);
             
             return movie.VideoUrl.Replace("resolution", resolution.ToString());
@@ -70,7 +71,7 @@ namespace Domain.Services
                 throw new ContentServiceArgumentException(ErrorMessages.NotFoundEpisode, $"{episode}");
 
             if (!serial.AllowedSubscriptions.Select(s => s.Id)
-                .Contains(subscriptionId))
+                .Contains(subscriptionId) || serial.AllowedSubscriptions.First(s => s.Id == subscriptionId).MaxResolution < resolution)
                 throw new ContentServiceNotPermittedException(ErrorMessages.UserDoesNotHavePermissionBySubscription);
 
             return serial.SeasonInfos.Single(s => s.SeasonNumber == season).Episodes
@@ -99,7 +100,6 @@ namespace Domain.Services
                             (!filter.ReleaseYearTo.HasValue || filter.ReleaseYearTo.Value >= ((SerialContent)content).YearRange.End.Year) :
                         true;
         
-
         private Expression<Func<ContentBase, bool>> IsContentRatingBetween(Filter filter) => 
             content =>
                 (filter.RatingFrom == null || filter.RatingFrom.Value <= (content.Ratings == null ? 0 : content.Ratings.KinopoiskRating)) &&

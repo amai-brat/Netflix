@@ -9,9 +9,9 @@ namespace DataAccess.Extensions
 		{
 			var subscriptions = new List<Subscription>()
 			{
-				new Subscription() { Id = 1, Name = "Фильмы", Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки" },
-				new Subscription() { Id = 2, Name = "Сериалы", Description = "Все сериалы только в этой подписке" },
-				new Subscription() { Id = 3, Name = "Мультфильмы", Description = "Мультфильмы для всех возрастов только в данной подписке" }
+				new Subscription() { Id = 1, Name = "Фильмы", MaxResolution = 2160, Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки" },
+				new Subscription() { Id = 2, Name = "Сериалы", MaxResolution = 1080, Description = "Все сериалы только в этой подписке" },
+				new Subscription() { Id = 3, Name = "Мультфильмы", MaxResolution = 720, Description = "Мультфильмы для всех возрастов только в данной подписке" }
 			};
 
 			var contentTypes = new List<ContentType>()
