@@ -32,5 +32,10 @@ namespace DataAccess.Repositories
                 .Include(s => s.SeasonInfos)
                     .ThenInclude(s => s.Episodes)
                 .SingleOrDefaultAsync(filter);
+
+        public async Task<ContentBase?> GetContentByIdAsync(int id)
+        {
+            return await appDbContext.ContentBases.FindAsync(id);
+        }
     }
 }
