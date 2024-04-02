@@ -14,6 +14,6 @@ namespace Domain.Abstractions
         Task<List<ContentBase>> GetContentsByFilterAsync(Expression<Func<ContentBase, bool>> filter);
         Task<MovieContent?> GetMovieContentByFilterAsync(Expression<Func<MovieContent, bool>> filter);
         Task<SerialContent?> GetSerialContentByFilterAsync(Expression<Func<SerialContent, bool>> filter);
-        Task<ContentBase?> GetContentByIdAsync(int id);
+        Task<ContentBase?> GetContentByIdAsync(long id);
     }
 }

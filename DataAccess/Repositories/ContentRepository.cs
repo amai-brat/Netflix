@@ -33,7 +33,7 @@ namespace DataAccess.Repositories
                     .ThenInclude(s => s.Episodes)
                 .SingleOrDefaultAsync(filter);
 
-        public async Task<ContentBase?> GetContentByIdAsync(int id)
+        public async Task<ContentBase?> GetContentByIdAsync(long id)
         {
             return await appDbContext.ContentBases.FindAsync(id);
         }

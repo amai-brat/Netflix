@@ -21,8 +21,12 @@ public class SubscriptionService(
         foreach (var contentId in dto.AccessibleContentIds)
         {
             var content = await contentRepository.GetContentByIdAsync(contentId);
-            if (content is not null) 
-                contents.Add(content);
+            if (content is null)
+                throw new SubscriptionServiceArgumentException(
+                    SubscriptionErrorMessages.GivenIdOfNonExistingContent,
+                    nameof(dto.AccessibleContentIds));
+            
+            contents.Add(content);
         }
 
         var result = await subRepository.AddAsync(new Subscription
@@ -69,16 +73,26 @@ public class SubscriptionService(
             throw new SubscriptionServiceArgumentException(error, paramName);
         }
 
+        if (dto.NewName is not null)
+            subscription.Name = dto.NewName;
+
+        if (dto.NewDescription is not null)
+            subscription.Description = dto.NewDescription;
+
+        if (dto.NewMaxResolution is not null)
+            subscription.MaxResolution = dto.NewMaxResolution.Value;
+        
         if (dto.AccessibleContentIdsToAdd != null)
         {
             foreach (var contentId in dto.AccessibleContentIdsToAdd)
             {
                 var content = await contentRepository.GetContentByIdAsync(contentId);
-                if (content is not null)
-                {
-                    subscription.AccessibleContent.Add(content);
-                    // await subRepository.AddContentToSubscriptionAsync(subscription, content);
-                }
+                if (content is null)
+                    throw new SubscriptionServiceArgumentException(
+                        SubscriptionErrorMessages.GivenIdOfNonExistingContent,
+                        nameof(dto.AccessibleContentIdsToAdd));
+
+                subscription.AccessibleContent.Add(content);
             }
         }
 
@@ -87,11 +101,12 @@ public class SubscriptionService(
             foreach (var contentId in dto.AccessibleContentIdsToRemove)
             {
                 var content = await contentRepository.GetContentByIdAsync(contentId);
-                if (content is not null)
-                {
-                    subscription.AccessibleContent.Remove(content);
-                    // await subRepository.RemoveContentFromSubscriptionAsync(subscription, content);
-                }
+                if (content is null)
+                    throw new SubscriptionServiceArgumentException(
+                        SubscriptionErrorMessages.GivenIdOfNonExistingContent,
+                        nameof(dto.AccessibleContentIdsToRemove));
+
+                subscription.AccessibleContent.Remove(content);
             }
         }
 
@@ -157,7 +172,7 @@ public class SubscriptionService(
 
     private static bool IsEmptyOrWhiteSpace(string str) => str.Length == 0 || str.All(char.IsWhiteSpace);
     private static bool ValidateName(string name) => !IsEmptyOrWhiteSpace(name) &&
-                                              Regex.IsMatch(name, "[А-Яа-яA-Za-z0-9-_ ]+");
+                                              Regex.IsMatch(name, "^[А-Яа-яA-Za-z0-9-_ ]+$");
     private static bool ValidateDescription(string description) => !IsEmptyOrWhiteSpace(description);
     private static bool ValidateMaxResolution(int resolution) => resolution > 0;
 
