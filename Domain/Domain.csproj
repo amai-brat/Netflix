@@ -9,12 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\" />
-      <Folder Include="Abstractions\" />
-      <Folder Include="Dtos\" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     </ItemGroup>
 
 </Project>
