@@ -247,6 +247,95 @@ public class SubscriptionServiceTests
         // assert
         Assert.Contains(SubscriptionErrorMessages.SubscriptionNotFound, exception.Message);
     }
+
+    [Theory]
+    [InlineData("", "a", 480, SubscriptionErrorMessages.NotValidSubscriptionName)]
+    [InlineData("NETFLIX(!)", "a", 480, SubscriptionErrorMessages.NotValidSubscriptionName)]
+    [InlineData("a", "", 480, SubscriptionErrorMessages.NotValidSubscriptionDescription)]
+    [InlineData("a", "a", 0, SubscriptionErrorMessages.NotValidSubscriptionMaxResolution)]
+    [InlineData("a", "a", -1080, SubscriptionErrorMessages.NotValidSubscriptionMaxResolution)]
+
+    public async Task EditSubscription_InvalidDtoGiven_ExceptionThrown(string name, string desc, int maxResolution, string errorMsg)
+    {
+        // arrange
+        var dto = _fixture.Build<EditSubscriptionDto>()
+            .With(x => x.NewName, name)
+            .With(x => x.NewDescription, desc)
+            .With(x => x.NewMaxResolution, maxResolution)
+            .Without(x => x.AccessibleContentIdsToAdd)
+            .Without(x => x.AccessibleContentIdsToRemove)
+            .Create();
+
+        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Subscription() { Id = id });
+        
+        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        
+        // act
+        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
+            async () => await service.EditSubscriptionAsync(dto));
+        
+        // assert
+        Assert.Contains(errorMsg, exception.Message);
+    }
+    
+    [Fact]
+    public async Task EditSubcription_NonExistingContentToAddIdGiven_ExceptionThrown()
+    {
+        // arrange
+        var content = _fixture.Build<ContentBase>()
+            .With(x => x.Id, 0)
+            .OmitAutoProperties()
+            .CreateMany(5);
+        
+        var dto = _fixture.Build<EditSubscriptionDto>()
+            .With(x => x.AccessibleContentIdsToAdd, [1])
+            .Without(x => x.AccessibleContentIdsToRemove)
+            .Create();
+
+        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Subscription() { Id = id });
+        _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
+            .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));
+        
+        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        
+        // act
+        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
+            async () => await service.EditSubscriptionAsync(dto));
+        
+        // assert
+        Assert.Contains(SubscriptionErrorMessages.GivenIdOfNonExistingContent, exception.Message);
+    }
+    
+    [Fact]
+    public async Task EditSubcription_NonExistingContentToRemoveIdGiven_ExceptionThrown()
+    {
+        // arrange
+        var content = _fixture.Build<ContentBase>()
+            .With(x => x.Id, 0)
+            .OmitAutoProperties()
+            .CreateMany(5);
+        
+        var dto = _fixture.Build<EditSubscriptionDto>()
+            .With(x => x.AccessibleContentIdsToRemove, [2])
+            .Without(x => x.AccessibleContentIdsToAdd)
+            .Create();
+
+        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Subscription() { Id = id });
+        _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
+            .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));
+        
+        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        
+        // act
+        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
+            async () => await service.EditSubscriptionAsync(dto));
+        
+        // assert
+        Assert.Contains(SubscriptionErrorMessages.GivenIdOfNonExistingContent, exception.Message);
+    }
     
     private List<ContentBase> GetContents(int count)
     {
