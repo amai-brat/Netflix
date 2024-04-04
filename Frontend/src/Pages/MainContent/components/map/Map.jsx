@@ -1,8 +1,10 @@
-import React, {useEffect, useMemo, useState} from "react";
-import ReactDOM from "react-dom";
+import React, {useEffect, useMemo, useState} from "react"
+import ReactDOM from "react-dom"
 
 const Map = () => {
     const [data, setData] = useState({ymaps3: null, reactify: null})
+    const [cinemas, setCinemas] = useState([])
+    const [currentPos, setCurrentPos] = useState([55.47, 49.6])
 
     const getMapComponents = async () => {
         await ymaps3.ready;
@@ -15,27 +17,50 @@ const Map = () => {
             reactify: reactify
         })
     }
+
+    const getCurrentPos = async () => {
+        const pos = await ymaps3.geolocation.getPosition()
+        setCurrentPos(pos.coords)
+        return pos.coords
+    }
+
+    const getCinemas = async () => {
+        const currentPos = await getCurrentPos();
+        const bottomLeft = [currentPos[0] - 0.1, currentPos[1] - 0.1]
+        const topRight = [currentPos[0] + 0.1, currentPos[1] + 0.1]
+
+        const cinemas = await ymaps3.search({text: "Кинотеатр", center: currentPos, offset: 0, limit: 20, bounds: [bottomLeft, topRight]})
+        setCinemas(cinemas)
+    }
     
     useEffect(() => {
-        getMapComponents()
-    }, []);
+        getMapComponents().then(() => {
+            getCinemas()    
+        })
+    }, [])
 
     if(data.ymaps3 === null){
         return null
     }
-
-    const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = data.reactify.module(data?.ymaps3)
     
+    const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker} = data.reactify.module(data?.ymaps3)
+
     return(
-        <YMap location={{center: [25.229762, 55.289311], zoom: 9}} mode="vector" >
+        <YMap 
+            location={{center: currentPos, zoom: 13}} 
+            mode="vector"
+        >
             <YMapDefaultSchemeLayer />
             <YMapDefaultFeaturesLayer />
-
-            <YMapMarker coordinates={[25.229762, 55.289311]} draggable={true}>
-                <section>
-                    <h1 style={{color:"white"}}>You can drag this header</h1>
-                </section>
-            </YMapMarker>
+            {cinemas.map((cinema, index) => 
+                <YMapMarker 
+                    key={index}
+                    coordinates={cinema.geometry.coordinates}
+                    draggable={false}
+                >
+                    <img src="src/assets/Marker.svg" alt="Marker" style={{width:"36px", height:"36px"}}/>
+                </YMapMarker>
+            )}
         </YMap>
     )
 }

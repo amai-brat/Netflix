@@ -132,7 +132,7 @@ const MainContent = () => {
             </div>
             <div className={styles.mapWrapper}>
                 <div className={styles.innerWrapper}>
-                    <p>Доступные кинотеатры</p>
+                    <p>Ближайшие кинотеатры</p>
                     <Map/>
                 </div>
             </div>
