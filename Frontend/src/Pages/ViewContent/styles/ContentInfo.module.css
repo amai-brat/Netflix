@@ -1,0 +1,132 @@
+﻿.container{
+    position: relative;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    width:100%;
+}
+.posterTrailer{
+    position: sticky;
+    top: 10px;
+    display:flex;
+    flex-direction: column;
+    margin: 0 3rem 10px 10px;
+    flex: 1;
+    align-self: flex-start;
+    .poster{
+        .favourite{
+            width: 2rem;
+            height: 2rem;
+            background-image: url(../Images/red-heart-icon.svg);
+            background-size: contain;
+            background-repeat: no-repeat;
+            position:absolute;
+            right: 0;
+            margin: 5px;
+        }
+        .favourite:hover{
+            cursor: pointer;
+        }
+        max-width: 300px;
+        height: 450px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    .trailer{
+        position: relative;
+        h3{
+            display: block;
+            font-size: 1.2rem;
+            overflow-wrap: anywhere;
+            margin-bottom: 5px;
+            font-family: fantasy;
+        }
+        a{
+            text-decoration: none;
+        }
+        a:hover::before{
+            content:"";
+            position: absolute;
+            left:50%;
+            top:50%;
+            width: 50px;
+            height: 50px;
+            transform: translate(-50%);
+            border-radius: 1000px;
+            background-image: url(../Images/icon-play-button-icons-and-png-backgrounds-20.png);
+            background-size: cover;
+        }
+        .trailerEmbed{
+            width: 300px;
+            height:200px;
+            border: 0;
+        }
+    }
+}
+.contentInfo{
+    display:flex;
+    width: 100%;
+    overflow-wrap: anywhere;
+    align-self: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-right: 10px;
+    .title{
+        font-weight: 700;
+        font-size: 250%;
+        margin-bottom: 25px;
+        line-height: 100%;
+    }
+    .description{
+        white-space: pre-wrap;
+        margin-bottom: 25px;
+    }
+    .ageRating{
+        max-width: max-content;
+        >span{
+            border: 1px solid gray;
+            border-radius: 10px;
+            padding: 7px;
+        }
+    }
+    strong{
+        font-size: 105%;
+        color:gray;
+    }
+    span{
+        margin-bottom: 15px;
+        .ratingImdb{
+            background: linear-gradient(90deg, rgba(221,185,1,1) 0%, rgba(218,113,7,1) 100%);
+            padding: 1rem 3rem;
+            border-radius: 10px;
+        }
+        .ratingKinopoisk{
+            background: linear-gradient(90deg, rgba(218,131,7,1) 3%, rgba(221,97,1,1) 100%);
+            padding: 1rem 3rem;
+            border-radius: 10px;
+        }
+        .ratingLocal{
+            background: linear-gradient(90deg, rgba(221,97,1,1) 0%, rgba(218,42,7,1) 100%);
+            padding: 1rem 3rem;
+            border-radius: 10px;
+        }
+    }
+    h2{
+        margin-bottom: 1rem;
+    }
+    .ratings{
+        overflow-wrap: initial;
+        font-size: 115%;
+        margin-top: 20px;
+        display:flex;
+        strong{
+            margin-right: 10px;
+            align-self: center;
+        }
+        span{
+            margin-right: 20px;
+        }
+    }
+}
