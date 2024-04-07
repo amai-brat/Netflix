@@ -31,8 +31,8 @@ public class UserController(
 
     [HttpPatch("change-email")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<int>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ChangeEmailAsync([FromForm] string email)
+    [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ChangeEmailAsync([FromBody] string email)
     {
         var result = await userService.ChangeEmailAsync(_userId, email);
         if (result.IsFailure)
@@ -40,13 +40,19 @@ public class UserController(
             return ErrorHelper.Handle(result.Error);
         }
         
-        return Ok(result.Value.Id);
+        var infoDto = await userService.GetPersonalInfoAsync(_userId);
+        if (infoDto.IsFailure)
+        {
+            return ErrorHelper.Handle(infoDto.Error);
+            
+        }
+        return Ok(infoDto.Value);
     }
 
     [HttpPatch("change-birthday")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<int>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ChangeBirthdayAsync([FromForm] string birthday)
+    [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ChangeBirthdayAsync([FromBody] string birthday)
     {
         if (!DateOnly.TryParseExact(birthday, "yyyy-MM-dd", out var date))
         {
@@ -59,13 +65,19 @@ public class UserController(
             return ErrorHelper.Handle(result.Error);
         }
 
-        return Ok(result.Value.Id);
+        var infoDto = await userService.GetPersonalInfoAsync(_userId);
+        if (infoDto.IsFailure)
+        {
+            return ErrorHelper.Handle(infoDto.Error);
+            
+        }
+        return Ok(infoDto.Value);
     }
 
     [HttpPatch("change-password")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<int>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ChangePasswordAsync([FromForm] ChangePasswordDto dto)
+    [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordDto dto)
     {
         var result = await userService.ChangePasswordAsync(_userId, dto);
         if (result.IsFailure)
@@ -78,16 +90,22 @@ public class UserController(
 
     [HttpPatch("change-profile-picture")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> ChangeProfilePictureAsync(IFormFile image)
     {
-        var result = await userService.ChangeProfilePictureAsync(_userId, image.OpenReadStream());
+        var result = await userService.ChangeProfilePictureAsync(_userId, image.OpenReadStream(), image.ContentType);
         if (result.IsFailure)
         {
             return ErrorHelper.Handle(result.Error);
         }
 
-        return Ok(result.Value.Id);
+        var infoDto = await userService.GetPersonalInfoAsync(_userId);
+        if (infoDto.IsFailure)
+        {
+            return ErrorHelper.Handle(infoDto.Error);
+            
+        }
+        return Ok(infoDto.Value);
     }
 
     [HttpGet("get-reviews")]

@@ -20,7 +20,7 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
             .Build();
     }
 
-    public async Task<Result> PutAsync(string name, Stream pictureStream)
+    public async Task<Result> PutAsync(string name, Stream pictureStream, string contentType)
     {
         var found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName));
         if (!found)
@@ -35,6 +35,7 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
                 .WithObject(name)
                 .WithStreamData(pictureStream)
                 .WithObjectSize(pictureStream.Length)
+                .WithContentType(contentType)
             );
         }
         catch (Exception ex)

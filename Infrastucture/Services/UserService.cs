@@ -116,7 +116,7 @@ public class UserService(
         return user;
     }
 
-    public async Task<Result<User>> ChangeProfilePictureAsync(int userId, Stream pictureStream)
+    public async Task<Result<User>> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
@@ -125,7 +125,7 @@ public class UserService(
         }
 
         var pictureName = Guid.NewGuid().ToString();
-        var result = await profilePicturesProvider.PutAsync(pictureName, pictureStream);
+        var result = await profilePicturesProvider.PutAsync(pictureName, pictureStream, contentType);
         if (result.IsFailure)
         {
             return Result.Failure<User>(result.Error);
