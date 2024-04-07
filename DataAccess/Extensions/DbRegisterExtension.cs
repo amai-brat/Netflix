@@ -15,6 +15,7 @@ namespace DataAccess.Extensions
             serviceCollection.AddScoped<IContentRepository, ContentRepository>();
             serviceCollection.AddScoped<IFavouriteContentRepository, FavouriteContentRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return serviceCollection.AddDbContext<AppDbContext>(builder =>
             {
