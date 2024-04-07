@@ -1,3 +1,4 @@
+using AutoMapper;
 using Domain.Abstractions;
 using Domain.Dtos;
 using Domain.Entities;
@@ -10,8 +11,12 @@ namespace Infrastucture.Services;
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,
     IUserRepository userRepository,
+    IMapper mapper,
+    IReviewRepository reviewRepository,
     IUnitOfWork unitOfWork) : IUserService
 {
+    private const int ReviewsPerPage = 5;
+
     public async Task<Result<PersonalInfoDto>> GetPersonalInfoAsync(int id)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == id);
@@ -131,5 +136,17 @@ public class UserService(
         await unitOfWork.SaveChangesAsync();
 
         return user;
+    }
+
+    public async Task<List<ReviewDto>> GetReviewsAsync(ReviewSearchDto dto)
+    {
+        var reviews = await reviewRepository.GetByReviewSearchDto(dto, ReviewsPerPage);
+        var reviewDtos = mapper.Map<List<ReviewDto>>(reviews);
+        return reviewDtos;
+    }
+
+    public async Task<int> GetReviewsPagesCountAsync(ReviewSearchDto dto)
+    {
+        return await reviewRepository.GetPagesCountAsync(dto, ReviewsPerPage);
     }
 }
