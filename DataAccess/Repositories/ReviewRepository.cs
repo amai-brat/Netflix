@@ -25,26 +25,24 @@ namespace DataAccess.Repositories
                 .Include(x => x.Content)
                 .Where(x => x.UserId == dto.UserId)
                 .Where(x => x.Text.Contains(dto.Search ?? ""))
-                .Skip(dto.Page * reviewsPerPage)
-                .Take(reviewsPerPage)
                 .OrderByDescending(x => 
                     dto.SortType == ReviewSortType.Rating 
                         ? x.Score 
                         : dto.SortType == ReviewSortType.DateUpdated 
-                            ? x.WrittenAt.ToUnixTimeMilliseconds()
+                            ? x.WrittenAt.UtcTicks
                             : x.Id)
+                .Skip(dto.Page * reviewsPerPage)
+                .Take(reviewsPerPage)
                 .ToListAsync();
         }
 
         public async Task<int> GetPagesCountAsync(ReviewSearchDto dto, int reviewsPerPage)
         {
-            var pages = await appDbContext.Reviews
+            var pages = Math.Ceiling(await appDbContext.Reviews
                 .Where(x => x.UserId == dto.UserId)
                 .Where(x => x.Text.Contains(dto.Search ?? ""))
-                .CountAsync() / reviewsPerPage;
-            return pages <= 0 
-                ? 1
-                : pages;
+                .CountAsync() / (double) reviewsPerPage);
+            return (int)pages;
         }
 
         public async Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter) =>
