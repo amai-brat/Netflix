@@ -148,4 +148,16 @@ public class UserController(
 
         return Ok(count);
     }
+
+    [HttpGet("get-favourites")]
+    public async Task<IActionResult> GetFavouritesAsync()
+    {
+        var result = await userService.GetFavouritesAsync(_userId);
+        if (result.IsFailure)
+        {
+            return ErrorHelper.Handle(result.Error);
+        }
+
+        return Ok(result.Value);
+    }
 }

@@ -13,4 +13,5 @@ public interface IUserService
     public Task<Result<User>> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType);
     public Task<List<ReviewDto>> GetReviewsAsync(ReviewSearchDto dto);
     public Task<int> GetReviewsPagesCountAsync(ReviewSearchDto dto);
+    public Task<Result<List<FavouriteDto>>> GetFavouritesAsync(int userId);
 }

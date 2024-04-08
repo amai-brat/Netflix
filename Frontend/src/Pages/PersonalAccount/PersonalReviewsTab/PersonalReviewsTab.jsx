@@ -10,7 +10,6 @@ import {ReviewSortSelect} from "./components/ReviewSortSelect.jsx";
 import {baseUrl} from '../../Shared/HttpClient/baseUrl.js';
 
 const PersonalReviewsTab = () => {
-  // TODO: ajax запрос
   const reviews = [
       [
         {

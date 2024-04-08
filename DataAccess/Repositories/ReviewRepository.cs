@@ -55,6 +55,16 @@ namespace DataAccess.Repositories
             return (int)pages;
         }
 
+        public async Task<int?> GetScoreByUserAsync(long userId, long contentId)
+        {
+            var result = await appDbContext.Reviews
+                .Where(x => x.UserId == userId)
+                .Where(x => x.ContentId == contentId)
+                .FirstOrDefaultAsync();
+
+            return result?.Score;
+        }
+
         public async Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter) =>
             await appDbContext.Reviews.Where(filter)
                 .Include(r => r.User)

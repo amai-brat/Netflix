@@ -2,9 +2,9 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteContentCard.css";
 
-const FavouriteContentCard = ({content, userScore, addedAt}) => {
+const FavouriteContentCard = ({content, score, addedAt}) => {
     const navigate = useNavigate()
-    const [contentImg, setContentImg] = useState(content.PosterUrl.toString())
+    const [contentImg, setContentImg] = useState(content.posterUrl.toString())
     const [displayed, setDisplayed] = useState(true)
 
     const setDefaultContentImg = () => {
@@ -21,7 +21,7 @@ const FavouriteContentCard = ({content, userScore, addedAt}) => {
     const removeContentFromFavourites = async () => {
         try{
             //TODO: Указать действительный url запроса
-            const response = await fetch("https://localhost:5000/RemoveUserFavouritesContentById?id=" + content.Id)
+            const response = await fetch("https://localhost:5000/RemoveUserFavouritesContentById?id=" + content.id)
             if(!response.ok){
                 setDisplayed(true)
             }
@@ -32,12 +32,12 @@ const FavouriteContentCard = ({content, userScore, addedAt}) => {
     
     return(
         <div className="favourite-content-card" style={{display: displayed ? "flex" : "none"}}>
-            <img className="favourite-content-card-poster" src={contentImg} alt="Poster" onError={setDefaultContentImg} onClick={() => {navigateToViewContent(content.Id)}}/>
-            <div className="favourite-content-card-data" onClick={() => {navigateToViewContent(content.Id)}}>
-                <label className="favourite-content-card-data-name">{content.Name}</label>
+            <img className="favourite-content-card-poster" src={contentImg} alt="Poster" onError={setDefaultContentImg} onClick={() => {navigateToViewContent(content.id)}}/>
+            <div className="favourite-content-card-data" onClick={() => {navigateToViewContent(content.id)}}>
+                <label className="favourite-content-card-data-name">{content.name}</label>
                 <div className="favourite-content-card-data-personal-data">
-                    <label className="favourite-content-card-data-personal-data-info">Ваша оценка: {userScore} / 10</label>
-                    <label className="favourite-content-card-data-personal-data-info">Дата добавления: {addedAt}</label>
+                    <label className="favourite-content-card-data-personal-data-info">Ваша оценка: {score} / 10</label>
+                    <label className="favourite-content-card-data-personal-data-info">Дата добавления: {new Date(addedAt).toLocaleDateString("ru").slice(0, 10)}</label>
                 </div>
             </div>
             <div className="favourite-content-card-remove-block">

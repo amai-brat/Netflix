@@ -33,5 +33,13 @@ namespace DataAccess.Repositories
             appDbContext.FavouriteContents.Remove(favouriteContent);
             await appDbContext.SaveChangesAsync();
         }
+
+        public async Task<List<FavouriteContent>> GetWithContentAsync(Expression<Func<FavouriteContent, bool>> filter)
+        {
+            return await appDbContext.FavouriteContents
+                .Include(x => x.Content)
+                .Where(filter)
+                .ToListAsync();
+        }
     }
 }

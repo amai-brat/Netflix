@@ -10,6 +10,7 @@ namespace Infrastucture.Services;
 
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,
+    IFavouriteContentRepository favouriteContentRepository,
     IUserRepository userRepository,
     IMapper mapper,
     IReviewRepository reviewRepository,
@@ -148,5 +149,24 @@ public class UserService(
     public async Task<int> GetReviewsPagesCountAsync(ReviewSearchDto dto)
     {
         return await reviewRepository.GetPagesCountAsync(dto, ReviewsPerPage);
+    }
+
+    public async Task<Result<List<FavouriteDto>>> GetFavouritesAsync(int userId)
+    {
+        var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
+        if (user is null)
+        {
+            return Result.Failure<List<FavouriteDto>>(Error.Validation(ErrorMessages.NotFoundUser));
+        }
+
+        var favourites = await favouriteContentRepository.GetWithContentAsync(x => x.UserId == userId);
+        var favouriteDtos = mapper.Map<List<FavouriteDto>>(favourites);
+        
+        foreach (var favouriteDto in favouriteDtos)
+        {
+            favouriteDto.Score = await reviewRepository.GetScoreByUserAsync(userId, favouriteDto.ContentBase.Id);
+        }
+
+        return favouriteDtos;
     }
 }
