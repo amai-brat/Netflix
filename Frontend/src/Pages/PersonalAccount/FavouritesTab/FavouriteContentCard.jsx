@@ -1,6 +1,8 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteContentCard.css";
+import {baseUrl} from '../../Shared/HttpClient/baseUrl.js';
+
 
 const FavouriteContentCard = ({content, score, addedAt}) => {
     const navigate = useNavigate()
@@ -20,8 +22,14 @@ const FavouriteContentCard = ({content, score, addedAt}) => {
     }
     const removeContentFromFavourites = async () => {
         try{
-            //TODO: Указать действительный url запроса
-            const response = await fetch("https://localhost:5000/RemoveUserFavouritesContentById?id=" + content.id)
+            //TODO: Указать действительный url запроса (проверить после добавления авторизации)
+            const response = await fetch(baseUrl + "content/favourite/remove", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: content.Id
+            });
             if(!response.ok){
                 setDisplayed(true)
             }
