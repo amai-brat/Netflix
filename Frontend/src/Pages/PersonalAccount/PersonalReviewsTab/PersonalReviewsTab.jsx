@@ -90,7 +90,7 @@ const PersonalReviewsTab = () => {
     (async () => {
       const formData = new FormData(document.getElementById("search-form"));
       try {
-        const response = await fetch(`${baseUrl}user/get-reviews?input=${formData.get("search")}&sort=${formData.get("sort")}&page=${currentPage - 1}`);
+        const response = await fetch(`${baseUrl}user/get-reviews?input=${formData.get("search")}&sort=${sortType}&page=${currentPage - 1}`);
         if (response.ok) {
           const revs = await response.json();
           setPageReviews(revs);

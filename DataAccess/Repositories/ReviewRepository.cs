@@ -21,16 +21,26 @@ namespace DataAccess.Repositories
 
         public async Task<List<Review>> GetByReviewSearchDto(ReviewSearchDto dto, int reviewsPerPage)
         {
-            return await appDbContext.Reviews
+            var reviews = appDbContext.Reviews
                 .Include(x => x.Content)
                 .Where(x => x.UserId == dto.UserId)
-                .Where(x => x.Text.Contains(dto.Search ?? ""))
-                .OrderByDescending(x => 
-                    dto.SortType == ReviewSortType.Rating 
-                        ? x.Score 
-                        : dto.SortType == ReviewSortType.DateUpdated 
-                            ? x.WrittenAt.UtcTicks
-                            : x.Id)
+                .Where(x => x.Text.Contains(dto.Search ?? ""));
+            
+            switch (dto.SortType)
+            {
+                case ReviewSortType.Rating:
+                    reviews = reviews.OrderByDescending(x => x.Score);
+                    break;
+                case ReviewSortType.DateUpdated:
+                    reviews = reviews.OrderByDescending(x => x.WrittenAt);
+                    break;
+                case null:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            return await reviews
                 .Skip(dto.Page * reviewsPerPage)
                 .Take(reviewsPerPage)
                 .ToListAsync();
