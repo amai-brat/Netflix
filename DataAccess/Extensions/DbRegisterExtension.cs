@@ -1,4 +1,5 @@
 ﻿using DataAccess.Repositories;
+using DataAccess.Repositories.Abstractions;
 using Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

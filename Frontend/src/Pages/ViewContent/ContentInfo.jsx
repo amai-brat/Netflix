@@ -128,7 +128,7 @@ function ContentInfo({contentData}){
                         <span><strong>Продолжительность:</strong> {contentData.movieLength} {getNoun(contentData.movieLength, "минута", "минуты", "минут")}</span>
                     }
                     {contentData.budget &&
-                        <span><strong>Бюджет:</strong> {contentData.budget.budget} {contentData.budget.currency}</span>
+                        <span><strong>Бюджет:</strong> {contentData.budget.budgetValue} {contentData.budget.budgetCurrencyName}</span>
                     }
                     {contentData.ageRating && 
                         <span className={styles.ageRating}><strong>Возрастной рейтинг: </strong>

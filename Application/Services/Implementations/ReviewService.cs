@@ -1,15 +1,11 @@
-﻿using Domain.Abstractions;
-using Domain.Dtos;
+﻿using Application.Dto;
+using Application.Exceptions;
+using Application.Services.Abstractions;
+using DataAccess.Repositories.Abstractions;
+using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Domain.Services
+namespace Application.Services.Implementations
 {
     public class ReviewService(
         IReviewRepository reviewRepository,

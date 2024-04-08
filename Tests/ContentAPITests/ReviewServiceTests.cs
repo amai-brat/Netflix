@@ -1,9 +1,6 @@
 ﻿using AutoFixture;
 using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
-using Domain.Services;
-using Domain.Services.ServiceExceptions;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using System;
@@ -14,6 +11,10 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Dto;
+using Application.Exceptions;
+using Application.Services.Implementations;
+using DataAccess.Repositories.Abstractions;
 using static System.Formats.Asn1.AsnWriter;
 using static System.Net.Mime.MediaTypeNames;
 

@@ -1,9 +1,6 @@
 ﻿using AutoFixture;
 using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
-using Domain.Services;
-using Domain.Services.ServiceExceptions;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -11,6 +8,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Dto;
+using Application.Exceptions;
+using Application.Services.Implementations;
+using DataAccess.Repositories.Abstractions;
 
 namespace Tests.ContentAPITests
 {

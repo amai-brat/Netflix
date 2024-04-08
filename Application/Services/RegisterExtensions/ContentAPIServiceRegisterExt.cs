@@ -1,16 +1,17 @@
-﻿using Domain.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Services.Abstractions;
+using Application.Services.Implementations;
 
-namespace Domain.Services
+namespace Application.Services.RegisterExtensions
 {
-    public static class ContentAPIServiceRegisterExt
+    public static class ContentApiServiceRegisterExt
     {
-        public static IServiceCollection AddContentAPIServices(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddContentApiServices(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IContentService, ContentService>();
             serviceCollection.AddScoped<IReviewService, ReviewService>();

@@ -1,12 +1,9 @@
-﻿using Domain.Abstractions;
-using Domain.Services.ServiceExceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Exceptions;
+using Application.Services.Abstractions;
+using DataAccess.Repositories.Abstractions;
+using Domain.Abstractions;
 
-namespace Domain.Services
+namespace Application.Services.Implementations
 {
     public class FavouriteService(
         IContentRepository contentRepository,

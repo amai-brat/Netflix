@@ -1,10 +1,11 @@
 ﻿using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Application.Dto;
+using Application.Exceptions;
+using Application.Services.Abstractions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -83,7 +84,16 @@ namespace API.Controllers.ContentController
             await HttpContext.Response.SendFileAsync(url);
             return Ok();
         }
-
+        // [HttpPost("serial/add")]
+        // [HttpPost("serial/update/{id}")]
+        // [HttpPost("movie/add")]
+        // [HttpPost("movie/update/{id}")]
+        // [HttpPost("content/delete/{id}")]
+        [HttpGet("/test")]
+        public void TestMethod(DateOnly date)
+        {
+            Console.WriteLine(date);
+        }
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)
