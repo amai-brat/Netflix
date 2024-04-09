@@ -10,12 +10,22 @@ export class SubscriptionController {
 
     @Get('/getAllSubscriptions')
     async getAllSubscriptions(): Promise<Subscription[]> {
-        return await this.subscriptionService.getAllSubscriptions();
+        try{
+            return await this.subscriptionService.getAllSubscriptions();
+        }
+        catch{
+            throw new BadRequestException("Invalid operation!");
+        }
     }
 
     @Get('/getSubscriptionById')
     async getSubscriptionById(@Query('subscriptionId', ParseIntPipe) subscriptionId: number): Promise<Subscription> {
-        return await this.subscriptionService.getSubscriptionById(subscriptionId);
+        try{
+            return await this.subscriptionService.getSubscriptionById(subscriptionId);
+        }
+        catch{
+            throw new BadRequestException("Invalid operation!");
+        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -23,7 +33,12 @@ export class SubscriptionController {
     async getUserSubscriptions(@Request() req): Promise<UserSubscription[]>{
         const userNickname = req.user.nickname;
 
-        return await this.subscriptionService.getBoughtSubscriptionsByNickname(userNickname);
+        try{  
+            return await this.subscriptionService.getBoughtSubscriptionsByNickname(userNickname);
+        }
+        catch{
+            throw new BadRequestException("Invalid operation!")
+        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -36,7 +51,12 @@ export class SubscriptionController {
             throw new BadRequestException("Invalid request body!");
         }
 
-        return await this.subscriptionService.processSubscriptionPurchase(userNickname, subscriptionId);
+        try{  
+            return await this.subscriptionService.processSubscriptionPurchase(userNickname, subscriptionId);
+        }
+        catch{
+            throw new BadRequestException("Invalid operation!")
+        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -49,6 +69,11 @@ export class SubscriptionController {
             throw new BadRequestException("Invalid request body!");
         }
 
-        await this.subscriptionService.cancelSubscription(userNickname, subscriptionId);
+        try{
+            await this.subscriptionService.cancelSubscription(userNickname, subscriptionId);
+        }
+        catch{
+            throw new BadRequestException("Invalid operation!")
+        }
     }
 }

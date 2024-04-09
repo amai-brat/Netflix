@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionController } from './subscription/subscription.controller';
 import { SubscriptionService } from './subscription/subscription.service';
-import { JwtStrategy } from 'auth/jwt.strategy';
+import { JwtStrategy } from '../auth/jwt.strategy';
 import { User } from './entities/user.entity';
 import { Subscription } from './entities/subscription.entity';
 import { UserSubscription } from './entities/user_subscription.entity';

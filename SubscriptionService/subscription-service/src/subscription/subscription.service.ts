@@ -19,30 +19,32 @@ export class SubscriptionService {
     ) {}
 
     async getAllSubscriptions(){
-        return this.subscriptionRepository.find();
+        return await this.subscriptionRepository.find();
     }
 
     async getSubscriptionById(id: number){
-        return this.subscriptionRepository.findOneByOrFail({ id: id });
+        return await this.subscriptionRepository.findOneByOrFail({ id: id });
     }
 
     async getBoughtSubscriptionsByNickname(userNickname: string){
         const user = await this.userRepository.findOneByOrFail({ nickname: userNickname })
 
-        return this.userSubscriptionRepository.find({ where: { userId: user.id } });
+        const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id });
+
+        return Array.isArray(subscriptions) ? subscriptions: [subscriptions];
     }
 
     async processSubscriptionPurchase(userNickname: string, subscriptionId: number){
         const user = await this.userRepository.findOneByOrFail({ nickname: userNickname });
         
-        const userSubscription = new UserSubscription();
+        const userSubscription = this.userSubscriptionRepository.create();
         userSubscription.boughtAt = new Date();
         userSubscription.expiresAt = new Date(userSubscription.boughtAt);
         userSubscription.expiresAt.setDate(userSubscription.boughtAt.getDate() + 30);
         userSubscription.subscriptionId = subscriptionId;
         userSubscription.userId = user.id;
 
-        return this.userSubscriptionRepository.save(userSubscription);
+        return await this.userSubscriptionRepository.save(userSubscription);
     }
 
     async cancelSubscription(userNickname: string, subscriptionId: number){
@@ -52,6 +54,6 @@ export class SubscriptionService {
             subscriptionId: subscriptionId 
         });
         
-        this.userSubscriptionRepository.remove(userSubscription);
+        await this.userSubscriptionRepository.remove(userSubscription);
     }
 }
