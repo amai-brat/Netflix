@@ -4,6 +4,9 @@ using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -66,9 +69,29 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var url = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
-            await HttpContext.Response.SendFileAsync(url);
-            return Ok();
+            var range = HttpContext.Request.Headers.Range;
+            if (string.IsNullOrEmpty(range))
+                return BadRequest("Requires Range header");
+
+            var videoPath = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
+
+            var videoSize = new FileInfo(videoPath).Length;
+            var start = long.Parse(range.First()!.Where(char.IsDigit).ToArray());
+            var end = Math.Min(start + Consts.ChunkSize, videoSize - 1);
+            var contentLength = end - start + 1;
+
+            Response.Headers.ContentRange = $"bytes {start}-{end}/{videoSize}";
+            Response.Headers.Append("Accept-Ranges", "bytes");
+            Response.Headers.ContentLength = contentLength;
+            Response.Headers.ContentType = "video/mp4";
+
+            await using var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            videoStream.Seek(start, SeekOrigin.Begin);
+            var bytes = new byte[contentLength];
+            await videoStream.ReadAsync(bytes);
+            await Response.BodyWriter.WriteAsync(bytes);
+
+            return StatusCode(206);
         }
 
         [HttpGet("serial/{season}/{episode}/video/{id}")]
