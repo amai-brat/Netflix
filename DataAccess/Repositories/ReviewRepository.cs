@@ -19,7 +19,7 @@ namespace DataAccess.Repositories
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task<List<Review>> GetByReviewSearchDto(ReviewSearchDto dto, int reviewsPerPage)
+        public async Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage)
         {
             var reviews = appDbContext.Reviews
                 .Include(x => x.Content)

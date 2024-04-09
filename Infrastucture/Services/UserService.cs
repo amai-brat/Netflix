@@ -141,7 +141,7 @@ public class UserService(
 
     public async Task<List<ReviewDto>> GetReviewsAsync(ReviewSearchDto dto)
     {
-        var reviews = await reviewRepository.GetByReviewSearchDto(dto, ReviewsPerPage);
+        var reviews = await reviewRepository.GetByReviewSearchDtoAsync(dto, ReviewsPerPage);
         var reviewDtos = mapper.Map<List<ReviewDto>>(reviews);
         return reviewDtos;
     }

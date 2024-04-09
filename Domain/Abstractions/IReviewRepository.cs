@@ -13,7 +13,7 @@ namespace Domain.Abstractions
     {
         Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter);
         Task AssignReviewAsync(Review review);
-        Task<List<Review>> GetByReviewSearchDto(ReviewSearchDto dto, int reviewsPerPage);
+        Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage);
         Task<int> GetPagesCountAsync(ReviewSearchDto dto, int reviewsPerPage);
         Task<int?> GetScoreByUserAsync(long userId, long contentId);
 
