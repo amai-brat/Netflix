@@ -8,14 +8,14 @@ public class MovieContentAdminPageDto
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string? Slogan { get; set; }
-    public string Poster { get; set; } = null!;
+    public string PosterUrl { get; set; } = null!;
     public string? Country { get; set; }
     public string ContentType { get; set; } = null!;
     public long MovieLength { get; set; }
     public DateOnly ReleaseDate { get; set; }
     public string VideoUrl { get; set; } = null!;
 
-    public AgeRatingAdminPageDto AgeRating { get; set; } = null!;
+    public AgeRatings? AgeRating { get; set; }
     public Ratings? Ratings { get; set; }
     public TrailerInfo? TrailerInfo { get; set; }
     public Budget? Budget { get; set; }

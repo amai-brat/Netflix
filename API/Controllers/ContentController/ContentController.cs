@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Services.Abstractions;
+using AutoMapper;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -84,15 +85,48 @@ namespace API.Controllers.ContentController
             await HttpContext.Response.SendFileAsync(url);
             return Ok();
         }
-        // [HttpPost("serial/add")]
-        // [HttpPost("serial/update/{id}")]
-        // [HttpPost("movie/add")]
-        // [HttpPost("movie/update/{id}")]
-        // [HttpPost("content/delete/{id}")]
-        [HttpGet("/test")]
-        public void TestMethod(DateOnly date)
+        // TODO: авторизация
+        [HttpPost("serial/add")]
+        public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
         {
-            Console.WriteLine(date);
+            
+            await _contentService.AddSerialContent(serialContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("serial/update/{id}")]
+        public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
+        {
+            serialContentAdminPageDto.Id = id;
+            await _contentService.UpdateSerialContent(serialContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("movie/add")]
+        public async Task<IActionResult> AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
+        {
+            await _contentService.AddMovieContent(movieContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("movie/update/{id}")]
+        public async Task<IActionResult> UpdateMovieContent(long id, MovieContentAdminPageDto movieContentAdminPageDto)
+        {
+            movieContentAdminPageDto.Id = id;
+            await _contentService.UpdateMovieContent(movieContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("content/delete/{id}")]
+        public async Task<IActionResult> DeleteContent(long id)
+        {
+            await _contentService.DeleteContent(id);
+            return Ok();
+        }
+        [HttpPost("/test")]
+        public IActionResult TestMethod(SerialContentAdminPageDto movieContentAdminPageDto)
+        {
+            return Ok();
         }
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {

@@ -136,15 +136,11 @@ namespace DataAccess.Repositories
 
         public void AddMovieContent(MovieContent movieContent)
         {
-            var content = appDbContext.ContentBases.Find(movieContent.Id);
-            if (content is null) throw new Exception("Такой фильм уже есть");
             appDbContext.MovieContents.Add(movieContent);
         }
 
         public void AddSerialContent(SerialContent serialContent)
         {
-            var content = appDbContext.ContentBases.Find(serialContent.Id);
-            if (content is null) throw new Exception("Такой сериал уже есть");
             appDbContext.SerialContents.Add(serialContent);
         }
 

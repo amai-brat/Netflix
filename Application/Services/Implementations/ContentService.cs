@@ -2,6 +2,7 @@
 using Application.Dto;
 using Application.Exceptions;
 using Application.Services.Extensions;
+using AutoMapper;
 using DataAccess.Repositories.Abstractions;
 using Domain.Abstractions;
 using Domain.Consts;
@@ -10,10 +11,13 @@ using Abstractions_IContentService = Application.Services.Abstractions.IContentS
 
 namespace Application.Services.Implementations;
 
-public class ContentService(IContentRepository contentRepository) : Abstractions_IContentService
+public class ContentService(IContentRepository contentRepository, IMapper? mapper = null) : Abstractions_IContentService
 {
     private readonly IContentRepository _contentRepository = contentRepository;
     private readonly HashSet<int> resolutions = [480, 720, 1080, 1440, 2160];
+    // TODO: что делать с nullable: без него летят тесты
+    // с ним логика этого сервиса уже не правильная
+    private readonly IMapper? _mapper = mapper;
 
     public async Task<ContentBase?> GetContentByIdAsync(long id) =>
         await _contentRepository.GetContentByFilterAsync(c => c.Id == id);
@@ -80,29 +84,36 @@ public class ContentService(IContentRepository contentRepository) : Abstractions
 
     public async Task DeleteContent(long contentId)
     {
-        // DeleteContent может вызвать исключение, если контент не найден
         contentRepository.DeleteContent(contentId);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        
+        var movieContent = _mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        await contentRepository.UpdateMovieContent(movieContent);
+        await contentRepository.SaveChangesAsync();
     }
 
-    public Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
+    public async Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        throw new NotImplementedException();
+        var serialContent = _mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        await contentRepository.UpdateSerialContent(serialContent);
+        await contentRepository.SaveChangesAsync();
     }
 
-    public Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
+    public async Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        throw new NotImplementedException();
+        var movieContent = _mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        contentRepository.AddMovieContent(movieContent);
+        await contentRepository.SaveChangesAsync();
     }
 
-    public Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
+    public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        throw new NotImplementedException();
+        var serialContent = _mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        contentRepository.AddSerialContent(serialContent);
+        await contentRepository.SaveChangesAsync();
     }
 
     private Expression<Func<ContentBase, bool>> IsContentNameContain(Filter filter) =>
