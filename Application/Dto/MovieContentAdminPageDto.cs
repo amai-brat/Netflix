@@ -14,8 +14,8 @@ public class MovieContentAdminPageDto
     public long MovieLength { get; set; }
     public DateOnly ReleaseDate { get; set; }
     public string VideoUrl { get; set; } = null!;
-    
-    public AgeRatingAdminPageDto? AgeRating { get; set; }
+
+    public AgeRatingAdminPageDto AgeRating { get; set; } = null!;
     public Ratings? Ratings { get; set; }
     public TrailerInfo? TrailerInfo { get; set; }
     public Budget? Budget { get; set; }

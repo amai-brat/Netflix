@@ -80,14 +80,14 @@ public class ContentService(IContentRepository contentRepository) : Abstractions
 
     public async Task DeleteContent(long contentId)
     {
+        // DeleteContent может вызвать исключение, если контент не найден
         contentRepository.DeleteContent(contentId);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = contentRepository.AddMovieContent()
-        await contentRepository.SaveChangesAsync();
+        
     }
 
     public Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)

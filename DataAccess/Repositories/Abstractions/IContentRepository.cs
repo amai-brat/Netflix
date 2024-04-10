@@ -10,11 +10,11 @@ namespace DataAccess.Repositories.Abstractions
         Task<List<ContentBase>> GetContentsByFilterAsync(Expression<Func<ContentBase, bool>> filter);
         Task<MovieContent?> GetMovieContentByFilterAsync(Expression<Func<MovieContent, bool>> filter);
         Task<SerialContent?> GetSerialContentByFilterAsync(Expression<Func<SerialContent, bool>> filter);
-        MovieContent UpdateMovieContent(MovieContent movieContent);
-        SerialContent UpdateSerialContent(SerialContent serialContent);
+        Task UpdateMovieContent(MovieContent newMovieContent);
+        Task UpdateSerialContent(SerialContent serialContent);
         ContentBase DeleteContent(long id);
-        MovieContent AddMovieContent(MovieContent movieContent);
-        SerialContent AddSerialContent(SerialContent serialContent);
+        void AddMovieContent(MovieContent movieContent);
+        void AddSerialContent(SerialContent serialContent);
         Task SaveChangesAsync();
         
         
