@@ -8,7 +8,6 @@ using Domain.Services.ServiceExceptions;
 using Infrastucture.Profiles;
 using Infrastucture.Services;
 using Moq;
-using Shared;
 using MemoryStream = System.IO.MemoryStream;
 
 namespace Tests.UserAPITests;
@@ -46,20 +45,27 @@ public class UserServiceTests
         
         // act 
         const int notFoundId = -1;
-        var resultPersonalInfo = await userService.GetPersonalInfoAsync(notFoundId);
-        var resultEmail = await userService.ChangeEmailAsync(notFoundId, "a@.a");
-        var resultBirthday = await userService.ChangeBirthdayAsync(notFoundId, DateOnly.FromDateTime(DateTime.Now).AddDays(-1));
-        var resultPassword = await userService.ChangePasswordAsync(notFoundId, new ChangePasswordDto());
-        var resultPicture = await userService.ChangeProfilePictureAsync(notFoundId, new MemoryStream(), "image/png");
-        var resultFavourites = await userService.GetFavouritesAsync(notFoundId);
+        
+        var exPersonalInfo = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await userService.GetPersonalInfoAsync(notFoundId));
+        var exEmail = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await userService.ChangeEmailAsync(notFoundId, "a@.a"));
+        var exBirthday = await Assert.ThrowsAsync<UserServiceArgumentException>(async () => 
+            await userService.ChangeBirthdayAsync(notFoundId, DateOnly.FromDateTime(DateTime.Now).AddDays(-1)));
+        var exPassword = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await userService.ChangePasswordAsync(notFoundId, new ChangePasswordDto()));
+        var exPicture = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await userService.ChangeProfilePictureAsync(notFoundId, new MemoryStream(), "image/png"));
+        var exFavourites = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await userService.GetFavouritesAsync(notFoundId));
         
         // assert
-        Assert.True(resultPersonalInfo is { IsFailure: true, Error: { Type: ErrorType.Validation, Description: ErrorMessages.NotFoundUser } });
-        Assert.True(resultEmail is { IsFailure: true, Error: { Type: ErrorType.Validation, Description: ErrorMessages.NotFoundUser } });
-        Assert.True(resultBirthday is { IsFailure: true, Error: { Type: ErrorType.Validation, Description: ErrorMessages.NotFoundUser } });
-        Assert.True(resultPassword is { IsFailure: true, Error: { Type: ErrorType.Validation, Description: ErrorMessages.NotFoundUser } });
-        Assert.True(resultPicture is { IsFailure: true, Error: { Type: ErrorType.Validation, Description: ErrorMessages.NotFoundUser } });
-        Assert.True(resultFavourites is { IsFailure: true, Error: { Type: ErrorType.Validation, Description: ErrorMessages.NotFoundUser } });
+        Assert.Contains(ErrorMessages.NotFoundUser, exPersonalInfo.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exEmail.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exBirthday.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exPicture.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exFavourites.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exPassword.Message);
     }
     
     [Fact]
@@ -79,10 +85,10 @@ public class UserServiceTests
         
         // assert
         var user = users.Single(x => x.Id == 1);
-        Assert.True(result.Value.Email == user.Email &&
-                    result.Value.BirthDay == "12.01.2024" &&
-                    result.Value.Nickname == user.Nickname &&
-                    result.Value.ProfilePictureUrl == user.ProfilePictureUrl);
+        Assert.True(result.Email == user.Email &&
+                    result.BirthDay == "12.01.2024" &&
+                    result.Nickname == user.Nickname &&
+                    result.ProfilePictureUrl == user.ProfilePictureUrl);
     }
 
     [Fact]
@@ -115,10 +121,11 @@ public class UserServiceTests
         var service = GetUserService();
         
         // act
-        var result = await service.ChangeEmailAsync(1, "k@");
+        var ex = await Assert.ThrowsAsync<UserServiceArgumentException>(async () => 
+            await service.ChangeEmailAsync(1, "k@"));
         
         // assert
-        Assert.True(result is {IsFailure: true, Error: {Type: ErrorType.Validation, Description: ErrorMessages.InvalidEmail}});
+        Assert.Contains(ErrorMessages.InvalidEmail, ex.Message);
     }
 
     [Fact]
@@ -133,12 +140,14 @@ public class UserServiceTests
         var service = GetUserService();
         
         // act
-        var resultFuture = await service.ChangeBirthdayAsync(1, DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)));
-        var resultPast = await service.ChangeBirthdayAsync(1, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-160)));
+        var exFuture = await Assert.ThrowsAsync<UserServiceArgumentException>(async() => 
+            await service.ChangeBirthdayAsync(1, DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1))));
+        var exPast = await Assert.ThrowsAsync<UserServiceArgumentException>(async () => 
+            await service.ChangeBirthdayAsync(1, DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-160))));
         
         // assert
-        Assert.True(resultFuture is {IsFailure: true, Error: {Type: ErrorType.Validation, Description: ErrorMessages.InvalidBirthday}});
-        Assert.True(resultPast is {IsFailure: true, Error: {Type: ErrorType.Validation, Description: ErrorMessages.InvalidBirthday}});
+        Assert.Contains(ErrorMessages.InvalidBirthday, exFuture.Message);
+        Assert.Contains(ErrorMessages.InvalidBirthday, exPast.Message);
     }
     
     [Fact]
@@ -158,7 +167,7 @@ public class UserServiceTests
         
         // assert
         
-        Assert.True(result.IsSuccess && result.Value.BirthDay == newBirthday);
+        Assert.True(result.BirthDay == newBirthday);
     }
 
     [Fact]
@@ -174,10 +183,11 @@ public class UserServiceTests
         var service = GetUserService();
         
         // act
-        var result = await service.ChangePasswordAsync(1, new ChangePasswordDto {PreviousPassword = "aboba", NewPassword = "Qwe123!@#"});
+        var ex = await Assert.ThrowsAsync<UserServiceArgumentException>(async () => 
+            await service.ChangePasswordAsync(1, new ChangePasswordDto {PreviousPassword = "aboba", NewPassword = "Qwe123!@#"})) ;
         
         // assert
-        Assert.True(result is {IsFailure: true, Error: {Type: ErrorType.Validation, Description: ErrorMessages.IncorrectPassword}});
+        Assert.Contains(ErrorMessages.IncorrectPassword, ex.Message);
     }
 
     [Fact]
@@ -193,10 +203,12 @@ public class UserServiceTests
         var service = GetUserService();
         
         // act
-        var result = await service.ChangePasswordAsync(1, new ChangePasswordDto {PreviousPassword = "uselessmouth", NewPassword = "aboba"});
+        await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await service.ChangePasswordAsync(1,
+                new ChangePasswordDto { PreviousPassword = "uselessmouth", NewPassword = "aboba" }));
         
         // assert
-        Assert.True(result is {IsFailure: true, Error.Type: ErrorType.Validation });
+        Assert.True(PasswordHasher.Verify("uselessmouth", users.Single(x => x.Id == 1).Password));
     }
 
     [Fact]
@@ -213,10 +225,10 @@ public class UserServiceTests
         var service = GetUserService();
         
         // act
-        var result = await service.ChangePasswordAsync(1, new ChangePasswordDto {PreviousPassword = prevPassword, NewPassword = "Qwe123!@#"});
+        await service.ChangePasswordAsync(1, new ChangePasswordDto {PreviousPassword = prevPassword, NewPassword = "Qwe123!@#"});
         
         // assert
-        Assert.True(result.IsSuccess && users.Single(x => x.Id == 1).Password != prevPassword);
+        Assert.True(users.Single(x => x.Id == 1).Password != prevPassword);
     }
 
     [Fact]
@@ -335,8 +347,7 @@ public class UserServiceTests
         var result = await service.GetFavouritesAsync(1);
         
         // assert
-        Assert.True(result.IsSuccess);
-        foreach (var dto in result.Value)
+        foreach (var dto in result)
         {
             Assert.Equal(reviews.First(x => x.ContentId == dto.ContentBase.Id).Score, dto.Score );
         }
@@ -352,18 +363,16 @@ public class UserServiceTests
         _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
         _mockPictureProvider.Setup(x => x.PutAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>()))
-            .ReturnsAsync((string name, Stream stream, string type) => Result.Success());
+            .Returns((string _, Stream _, string _) => Task.CompletedTask);
         
         var service = GetUserService();
         
         // act
-        var result = await service.ChangeProfilePictureAsync(1, new MemoryStream(), "image/png");
+        await service.ChangeProfilePictureAsync(1, new MemoryStream(), "image/png");
         
         // assert
-        Assert.True(result.IsSuccess && users.Single(x => x.Id == 1).ProfilePictureUrl != previousPicture);
+        Assert.True(users.Single(x => x.Id == 1).ProfilePictureUrl != previousPicture);
     }
-    
-    //  public Task<Result<User>> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType);
     
     private UserService GetUserService()
     {

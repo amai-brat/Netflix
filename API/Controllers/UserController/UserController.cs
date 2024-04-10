@@ -1,4 +1,3 @@
-using API.Helper;
 using Domain.Abstractions;
 using Domain.Dtos;
 using Microsoft.AspNetCore.Authorization;
@@ -21,12 +20,7 @@ public class UserController(
     public async Task<IActionResult> GetPersonalInfoAsync()
     {
         var result = await userService.GetPersonalInfoAsync(_userId);
-        if (result.IsFailure)
-        {
-            return ErrorHelper.Handle(result.Error);
-        }
-        
-        return Ok(result.Value);
+        return Ok(result);
     }
 
     [HttpPatch("change-email")]
@@ -35,18 +29,9 @@ public class UserController(
     public async Task<IActionResult> ChangeEmailAsync([FromBody] string email)
     {
         var result = await userService.ChangeEmailAsync(_userId, email);
-        if (result.IsFailure)
-        {
-            return ErrorHelper.Handle(result.Error);
-        }
-        
         var infoDto = await userService.GetPersonalInfoAsync(_userId);
-        if (infoDto.IsFailure)
-        {
-            return ErrorHelper.Handle(infoDto.Error);
-            
-        }
-        return Ok(infoDto.Value);
+       
+        return Ok(infoDto);
     }
 
     [HttpPatch("change-birthday")]
@@ -60,18 +45,9 @@ public class UserController(
         }
         
         var result = await userService.ChangeBirthdayAsync(_userId, date);
-        if (result.IsFailure)
-        {
-            return ErrorHelper.Handle(result.Error);
-        }
-
         var infoDto = await userService.GetPersonalInfoAsync(_userId);
-        if (infoDto.IsFailure)
-        {
-            return ErrorHelper.Handle(infoDto.Error);
-            
-        }
-        return Ok(infoDto.Value);
+        
+        return Ok(infoDto);
     }
 
     [HttpPatch("change-password")]
@@ -80,12 +56,8 @@ public class UserController(
     public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordDto dto)
     {
         var result = await userService.ChangePasswordAsync(_userId, dto);
-        if (result.IsFailure)
-        {
-            return ErrorHelper.Handle(result.Error);
-        }
 
-        return Ok(result.Value.Id);
+        return Ok(result.Id);
     }
 
     [HttpPatch("change-profile-picture")]
@@ -94,18 +66,9 @@ public class UserController(
     public async Task<IActionResult> ChangeProfilePictureAsync(IFormFile image)
     {
         var result = await userService.ChangeProfilePictureAsync(_userId, image.OpenReadStream(), image.ContentType);
-        if (result.IsFailure)
-        {
-            return ErrorHelper.Handle(result.Error);
-        }
-
         var infoDto = await userService.GetPersonalInfoAsync(_userId);
-        if (infoDto.IsFailure)
-        {
-            return ErrorHelper.Handle(infoDto.Error);
-            
-        }
-        return Ok(infoDto.Value);
+        
+        return Ok(infoDto);
     }
 
     [HttpGet("get-reviews")]
@@ -153,11 +116,7 @@ public class UserController(
     public async Task<IActionResult> GetFavouritesAsync()
     {
         var result = await userService.GetFavouritesAsync(_userId);
-        if (result.IsFailure)
-        {
-            return ErrorHelper.Handle(result.Error);
-        }
-
-        return Ok(result.Value);
+       
+        return Ok(result);
     }
 }

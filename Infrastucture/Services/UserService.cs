@@ -4,7 +4,6 @@ using Domain.Dtos;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastucture.Validators;
-using Shared;
 
 namespace Infrastucture.Services;
 
@@ -18,24 +17,18 @@ public class UserService(
 {
     private const int ReviewsPerPage = 5;
 
-    public async Task<Result<PersonalInfoDto>> GetPersonalInfoAsync(int id)
+    public async Task<PersonalInfoDto> GetPersonalInfoAsync(int id)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == id);
         if (user is null)
         {
-            return Result.Failure<PersonalInfoDto>(Error.Validation(ErrorMessages.NotFoundUser));
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(id));
         }
 
         string? pictureUrl = null;
         if (user.ProfilePictureUrl != null)
         {
-            var pictureResult = await profilePicturesProvider.GetUrlAsync(user.ProfilePictureUrl);
-            if (pictureResult.IsFailure)
-            {
-                return Result.Failure<PersonalInfoDto>(pictureResult.Error);
-            }
-
-            pictureUrl = pictureResult.Value;
+            pictureUrl = await profilePicturesProvider.GetUrlAsync(user.ProfilePictureUrl);
         }
 
         return new PersonalInfoDto
@@ -47,19 +40,19 @@ public class UserService(
         };
     }
 
-    public async Task<Result<User>> ChangeEmailAsync(int userId, string newEmail)
+    public async Task<User> ChangeEmailAsync(int userId, string newEmail)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.NotFoundUser));
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         var validator = new EmailValidator();
         var validationResult = await validator.ValidateAsync(newEmail);
         if (!validationResult.IsValid)
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.InvalidEmail));
+            throw new UserServiceArgumentException(ErrorMessages.InvalidEmail, nameof(newEmail));
         }
 
         user.Email = newEmail;
@@ -69,18 +62,18 @@ public class UserService(
         return user;
     }
 
-    public async Task<Result<User>> ChangeBirthdayAsync(int userId, DateOnly newBirthday)
+    public async Task<User> ChangeBirthdayAsync(int userId, DateOnly newBirthday)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.NotFoundUser));
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         if (newBirthday > DateOnly.FromDateTime(DateTime.UtcNow) ||
             newBirthday < DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-150)))
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.InvalidBirthday));
+            throw new UserServiceArgumentException(ErrorMessages.InvalidBirthday, nameof(newBirthday));
         }
 
         user.BirthDay = newBirthday;
@@ -90,24 +83,24 @@ public class UserService(
         return user;
     }
 
-    public async Task<Result<User>> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+    public async Task<User> ChangePasswordAsync(int userId, ChangePasswordDto dto)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.NotFoundUser));
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         if (!PasswordHasher.Verify(dto.PreviousPassword, user.Password))
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.IncorrectPassword));
+            throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.PreviousPassword));
         }
 
         var validator = new PasswordValidator();
         var validationResult = await validator.ValidateAsync(dto.NewPassword);
         if (!validationResult.IsValid)
         {
-            return Result.Failure<User>(Error.Validation(string.Join(" ", validationResult.Errors)));
+            throw new UserServiceArgumentException(string.Join(" ", validationResult.Errors), nameof(dto.NewPassword));
         }
 
         user.Password = PasswordHasher.Hash(dto.NewPassword);
@@ -117,21 +110,17 @@ public class UserService(
         return user;
     }
 
-    public async Task<Result<User>> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType)
+    public async Task<User> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
         {
-            return Result.Failure<User>(Error.Validation(ErrorMessages.NotFoundUser));
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         var pictureName = Guid.NewGuid().ToString();
-        var result = await profilePicturesProvider.PutAsync(pictureName, pictureStream, contentType);
-        if (result.IsFailure)
-        {
-            return Result.Failure<User>(result.Error);
-        }
-
+        await profilePicturesProvider.PutAsync(pictureName, pictureStream, contentType);
+        
         user.ProfilePictureUrl = pictureName;
 
         await unitOfWork.SaveChangesAsync();
@@ -151,12 +140,12 @@ public class UserService(
         return await reviewRepository.GetPagesCountAsync(dto, ReviewsPerPage);
     }
 
-    public async Task<Result<List<FavouriteDto>>> GetFavouritesAsync(int userId)
+    public async Task<List<FavouriteDto>> GetFavouritesAsync(int userId)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
         {
-            return Result.Failure<List<FavouriteDto>>(Error.Validation(ErrorMessages.NotFoundUser));
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         var favourites = await favouriteContentRepository.GetWithContentAsync(x => x.UserId == userId);

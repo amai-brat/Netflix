@@ -1,8 +1,9 @@
+using Domain.Services.ServiceExceptions;
 using Infrastucture.Options;
+using Infrastucture.Services.Exceptions;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
-using Shared;
 
 namespace Infrastucture.Services;
 
@@ -20,7 +21,7 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
             .Build();
     }
 
-    public async Task<Result> PutAsync(string name, Stream pictureStream, string contentType)
+    public async Task PutAsync(string name, Stream pictureStream, string contentType)
     {
         var found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName));
         if (!found)
@@ -40,13 +41,11 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
         }
         catch (Exception ex)
         {
-            return Result.Failure(Error.Failure(ex.Message));
+            throw;
         }
-
-        return Result.Success();
     }
 
-    public async Task<Result<Stream>> GetAsync(string name)
+    public async Task<Stream> GetAsync(string name)
     {
         var destination = new MemoryStream();
         try
@@ -57,7 +56,7 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
 
             if (stat is null || stat.DeleteMarker)
             {
-                return Result.Failure<Stream>(Error.Failure("Файл удалён."));
+                throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
             }
 
             await _minioClient.GetObjectAsync(new GetObjectArgs()
@@ -67,13 +66,13 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
         }
         catch (Exception ex)
         {
-            return Result.Failure<Stream>(Error.Failure(ex.Message));
+            throw;
         }
 
         return destination;
     }
 
-    public async Task<Result<string>> GetUrlAsync(string name)
+    public async Task<string> GetUrlAsync(string name)
     {
         if (Uri.TryCreate(name, new UriCreationOptions(), out _))
             return name;
@@ -86,7 +85,7 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
 
             if (stat is null || stat.DeleteMarker)
             {
-                return Result.Failure<string>(Error.Failure("Файл удалён."));
+                throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
             }
 
             return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
@@ -96,7 +95,7 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
         }
         catch (Exception ex)
         {
-            return Result.Failure<string>(Error.Failure(ex.Message));
+            throw;
         }
     }
 }
