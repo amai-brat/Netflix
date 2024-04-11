@@ -71,7 +71,7 @@ namespace API.Controllers.ContentController
 
             var range = HttpContext.Request.Headers.Range;
             if (string.IsNullOrEmpty(range))
-                return BadRequest("Requires Range header");
+                range = "bytes=0-";
 
             var videoPath = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
 
@@ -85,13 +85,8 @@ namespace API.Controllers.ContentController
             Response.Headers.ContentLength = contentLength;
             Response.Headers.ContentType = "video/mp4";
 
-            await using var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            videoStream.Seek(start, SeekOrigin.Begin);
-            var bytes = new byte[contentLength];
-            await videoStream.ReadAsync(bytes);
-            await Response.BodyWriter.WriteAsync(bytes);
-
-            return StatusCode(206);
+            var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return File(videoStream,"video/mp4", enableRangeProcessing:true );
         }
 
         [HttpGet("serial/{season}/{episode}/video/{id}")]
@@ -102,9 +97,24 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var url = await _contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
-            await HttpContext.Response.SendFileAsync(url);
-            return Ok();
+            var range = HttpContext.Request.Headers.Range;
+            if (string.IsNullOrEmpty(range))
+                range = "bytes=0-";
+            
+            var videoPath = await _contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
+            
+            var videoSize = new FileInfo(videoPath).Length;
+            var start = long.Parse(range.First()!.Where(char.IsDigit).ToArray());
+            var end = Math.Min(start + Consts.ChunkSize, videoSize - 1);
+            var contentLength = end - start + 1;
+
+            Response.Headers.ContentRange = $"bytes {start}-{end}/{videoSize}";
+            Response.Headers.Append("Accept-Ranges", "bytes");
+            Response.Headers.ContentLength = contentLength;
+            Response.Headers.ContentType = "video/mp4";
+
+            var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return File(videoStream,"video/mp4", enableRangeProcessing:true );
         }
 
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
