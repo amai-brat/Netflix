@@ -4,17 +4,19 @@ using Application.Exceptions;
 using Application.Services.Extensions;
 using AutoMapper;
 using DataAccess.Repositories.Abstractions;
-using Domain.Abstractions;
 using Domain.Consts;
 using Domain.Entities;
 using Abstractions_IContentService = Application.Services.Abstractions.IContentService;
 
 namespace Application.Services.Implementations;
 
-public class ContentService(IContentRepository contentRepository, IMapper? mapper = null) : Abstractions_IContentService
+public class ContentService(IContentRepository contentRepository,
+    ISubscriptionRepository? repository = null,
+    IMapper? mapper = null) : Abstractions_IContentService
 {
     private readonly IContentRepository _contentRepository = contentRepository;
     private readonly HashSet<int> resolutions = [480, 720, 1080, 1440, 2160];
+    private readonly ISubscriptionRepository? _subscriptionRepository = repository;
     // TODO: что делать с nullable: без него летят тесты
     // с ним логика этого сервиса уже не правильная
     private readonly IMapper? _mapper = mapper;
@@ -90,32 +92,45 @@ public class ContentService(IContentRepository contentRepository, IMapper? mappe
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = _mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        var movieContent = _mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
         await contentRepository.UpdateMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        var serialContent = _mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        var serialContent = _mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
         await contentRepository.UpdateSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = _mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        var movieContent = _mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
         contentRepository.AddMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        var serialContent = _mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        var serialContent = _mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
         contentRepository.AddSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }
-
+    private void CheckIfSubscriptionsHaveNewOne(List<Subscription> subscriptions, List<Subscription> dbSubscriptions)
+    {
+        foreach (var subscription in subscriptions)
+        {
+            if (!dbSubscriptions.Any(dbs => dbs.Name.Equals(subscription.Name)))
+            {
+                throw new Exception("нельзя добавить свою подписку");
+            }
+        }
+    }
     private Expression<Func<ContentBase, bool>> IsContentNameContain(Filter filter) =>
         content => filter.Name == null || content.Name.ToLower().Contains(filter.Name.ToLower());
 

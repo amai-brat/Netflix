@@ -40,14 +40,22 @@ namespace DataAccess.Repositories
                 .Include(mc => mc.ContentType)
                 .FirstOrDefaultAsync(mc => mc.Id == newMovieContent.Id);
             if (dbMovieContent is null) throw new Exception("Content not found");
-            // обновляем проперти
+            
+            // обновляем проперти базового класса
             dbMovieContent.Name = newMovieContent.Name;
             dbMovieContent.Description = newMovieContent.Description;
             dbMovieContent.Slogan = newMovieContent.Slogan;
             dbMovieContent.PosterUrl = newMovieContent.PosterUrl;
             dbMovieContent.Country = newMovieContent.Country;
+            dbMovieContent.ContentType.ContentTypeName = newMovieContent.ContentType.ContentTypeName;
+            dbMovieContent.AgeRatings = newMovieContent.AgeRatings;
+            dbMovieContent.Ratings = newMovieContent.Ratings;
+            dbMovieContent.TrailerInfo = newMovieContent.TrailerInfo;
+            dbMovieContent.Budget = newMovieContent.Budget;
+            // обновляем проперти класса
             dbMovieContent.MovieLength = newMovieContent.MovieLength;
             dbMovieContent.VideoUrl = newMovieContent.VideoUrl;
+            dbMovieContent.ReleaseDate = newMovieContent.ReleaseDate;
             // обновляем навигационные свойства
             UpdateContentBase(dbMovieContent, newMovieContent);
         }
@@ -67,17 +75,21 @@ namespace DataAccess.Repositories
                 .FirstOrDefaultAsync(sc => sc.Id == serialContent.Id);
             
             if (serialContentDbVersion is null) throw new Exception("Content not found");
-            // обновляем проперти
+            // обновляем проперти базового класса
             serialContentDbVersion.Name = serialContent.Name;
             serialContentDbVersion.Description = serialContent.Description;
             serialContentDbVersion.Slogan = serialContent.Slogan;
             serialContentDbVersion.PosterUrl = serialContent.PosterUrl;
             serialContentDbVersion.Country = serialContent.Country;
+            serialContentDbVersion.ContentType.ContentTypeName = serialContent.ContentType.ContentTypeName;
+            serialContentDbVersion.AgeRatings = serialContent.AgeRatings;
+            serialContentDbVersion.Ratings = serialContent.Ratings;
+            serialContentDbVersion.TrailerInfo = serialContent.TrailerInfo;
+            serialContentDbVersion.Budget = serialContent.Budget;
+            // обновляем проперти класса
+            serialContentDbVersion.YearRange = serialContent.YearRange;
             //обновляем навигационные свойства
             UpdateContentBase(serialContentDbVersion, serialContent);
-            serialContentDbVersion.YearRange.Start = serialContent.YearRange.Start;
-            serialContentDbVersion.YearRange.End = serialContent.YearRange.End;
-            
             //лучше было бы сделать в одном методе, но так понятнее(я пожалел об этом)
             UpdateSeasonInfo(serialContentDbVersion, serialContent);
             UpdateEpisodes(serialContentDbVersion, serialContent);
@@ -192,39 +204,43 @@ namespace DataAccess.Repositories
             var existingSubscriptions = appDbContext.Subscriptions.ToList();
             var existingPersons = appDbContext.PersonInContents.ToList();
             var existingProfessions = appDbContext.Professions.ToList();
+            var existingContentTypes = appDbContext.ContentTypes.ToList();
+            // TODO: вообще это можно было бы вынести в отдельный метод, т.к. это дублируется в AddMovieContent
+            // TODO: исправить изменение коллекции в цикле
             // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
-            foreach (var genre in serialContent.Genres)
+            //перепиши код ниже на reverse for
+            for (int i = serialContent.Genres.Count - 1; i >= 0; i--)
             {
-                if (existingGenres.Any(g => g.Name.Equals(genre.Name)))
+                if (existingGenres.Any(g => g.Name.Equals(serialContent.Genres[i].Name)))
                 {
-                    serialContent.Genres.Remove(genre);
-                    serialContent.Genres.Add(existingGenres.First(g => g.Name.Equals(genre.Name)));
+                    serialContent.Genres.Add(existingGenres.First(g => g.Name.Equals(serialContent.Genres[i].Name)));
+                    serialContent.Genres.Remove(serialContent.Genres[i]);
                 }
             }
             // тоже самое с подписками
-            foreach (var subscription in serialContent.AllowedSubscriptions)
+            for (int i = serialContent.AllowedSubscriptions.Count - 1; i >= 0; i--)
             {
-                if (existingSubscriptions.Any(s => s.Name.Equals(subscription.Name)))
+                if (existingSubscriptions.Any(s => s.Name.Equals(serialContent.AllowedSubscriptions[i].Name)))
                 {
-                    serialContent.AllowedSubscriptions.Remove(subscription);
-                    serialContent.AllowedSubscriptions.Add(existingSubscriptions.First(s => s.Name.Equals(subscription.Name)));
+                    serialContent.AllowedSubscriptions.Add(existingSubscriptions.First(s => s.Name.Equals(serialContent.AllowedSubscriptions[i].Name)));
+                    serialContent.AllowedSubscriptions.Remove(serialContent.AllowedSubscriptions[i]);
                 }
             }
             // тоже самое с персонами
-            foreach (var person in serialContent.PersonsInContent)
+            for(int i = serialContent.PersonsInContent.Count - 1; i >= 0; i--)
             {
-                if (existingPersons.Any(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)))
+                if (existingPersons.Any(p => p.Name.Equals(serialContent.PersonsInContent[i].Name) && p.Profession.ProfessionName.Equals(serialContent.PersonsInContent[i].Profession.ProfessionName)))
                 {
-                    serialContent.PersonsInContent.Remove(person);
-                    serialContent.PersonsInContent.Add(existingPersons.First(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)));
+                    serialContent.PersonsInContent.Add(existingPersons.First(p => p.Name.Equals(serialContent.PersonsInContent[i].Name) && p.Profession.ProfessionName.Equals(serialContent.PersonsInContent[i].Profession.ProfessionName)));
+                    serialContent.PersonsInContent.Remove(serialContent.PersonsInContent[i]);
                 }
             }
             // тоже самое с профессиями
-            foreach (var person in serialContent.PersonsInContent)
+            for(int i = serialContent.PersonsInContent.Count - 1; i >= 0; i--)
             {
-                if (existingProfessions.Any(p => p.ProfessionName.Equals(person.Profession.ProfessionName)))
+                if (existingProfessions.Any(p => p.ProfessionName.Equals(serialContent.PersonsInContent[i].Profession.ProfessionName)))
                 {
-                    person.Profession = existingProfessions.First(p => p.ProfessionName.Equals(person.Profession.ProfessionName));
+                    serialContent.PersonsInContent[i].Profession = existingProfessions.First(p => p.ProfessionName.Equals(serialContent.PersonsInContent[i].Profession.ProfessionName));
                 }
             }
             appDbContext.SerialContents.Add(serialContent);

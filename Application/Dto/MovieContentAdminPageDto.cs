@@ -5,7 +5,7 @@ namespace Application.Dto;
 public class MovieContentAdminPageDto
 {
     public long Id { get; set; }
-    public string Title { get; set; } = null!;
+    public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string? Slogan { get; set; }
     public string PosterUrl { get; set; } = null!;
@@ -15,7 +15,7 @@ public class MovieContentAdminPageDto
     public DateOnly ReleaseDate { get; set; }
     public string VideoUrl { get; set; } = null!;
 
-    public AgeRatings? AgeRating { get; set; }
+    public AgeRatings? AgeRatings { get; set; }
     public Ratings? Ratings { get; set; }
     public TrailerInfo? TrailerInfo { get; set; }
     public Budget? Budget { get; set; }

@@ -11,7 +11,7 @@ public class ContentProfile : Profile
     {
         CreateMap<MovieContentAdminPageDto, MovieContent>()
             .ForMember(dest => dest.Name,
-                opt => opt.MapFrom(src => src.Title))
+                opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.ContentType,
                 opt => opt.MapFrom(src => new ContentType { ContentTypeName = src.ContentType }))
             .ForMember(dest => dest.Genres,

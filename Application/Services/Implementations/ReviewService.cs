@@ -2,7 +2,6 @@
 using Application.Exceptions;
 using Application.Services.Abstractions;
 using DataAccess.Repositories.Abstractions;
-using Domain.Abstractions;
 using Domain.Entities;
 
 namespace Application.Services.Implementations

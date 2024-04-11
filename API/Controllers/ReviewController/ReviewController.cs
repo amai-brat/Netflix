@@ -1,6 +1,5 @@
 ﻿using Application.Dto;
 using Application.Services.Abstractions;
-using Domain.Abstractions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

@@ -1,5 +1,4 @@
-﻿using Domain.Abstractions;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -146,13 +145,8 @@ namespace API.Controllers.ContentController
             return Ok();
         }
         [HttpPost("/test")]
-        public IActionResult TestMethod(SerialContentAdminPageDto serialContentAdminPageDto)
+        public async Task<IActionResult> TestMethod()
         {
-            var validationResult = _serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
             return Ok();
         }
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase

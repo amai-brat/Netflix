@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Domain.Abstractions;
 using Domain.Entities;
 using Microsoft.Net.Http.Headers;
 using Moq;

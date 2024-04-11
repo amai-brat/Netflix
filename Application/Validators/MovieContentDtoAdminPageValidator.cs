@@ -8,7 +8,7 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
 {
     public MovieContentDtoAdminPageValidator()
     {
-        RuleFor(x => x.Title)
+        RuleFor(x => x.Name)
             .NotEmpty()
             .MaximumLength(100);
         RuleFor(x => x.Description)
@@ -28,7 +28,7 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
             .NotEmpty();
         RuleFor(x => x.VideoUrl)
             .NotEmpty();
-        RuleFor(x => x.AgeRating)
+        RuleFor(x => x.AgeRatings)
             .NotNull()
             .ChildRules(ageRating =>
             {

@@ -1,6 +1,5 @@
 ﻿using DataAccess.Repositories;
 using DataAccess.Repositories.Abstractions;
-using Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +15,7 @@ namespace DataAccess.Extensions
             serviceCollection.AddScoped<IContentRepository, ContentRepository>();
             serviceCollection.AddScoped<IFavouriteContentRepository, FavouriteContentRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
+            serviceCollection.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
             return serviceCollection.AddDbContext<AppDbContext>(builder =>
             {

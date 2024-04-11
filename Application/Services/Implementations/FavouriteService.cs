@@ -1,7 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Services.Abstractions;
 using DataAccess.Repositories.Abstractions;
-using Domain.Abstractions;
 
 namespace Application.Services.Implementations
 {
