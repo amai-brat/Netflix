@@ -1,12 +1,12 @@
-﻿using Application.Dto;
-using Domain.Entities;
+﻿using System.Data;
+using Application.Dto;
 using FluentValidation;
 
 namespace Application.Validators;
 
-public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentAdminPageDto>
+public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialContentAdminPageDto>
 {
-    public MovieContentDtoAdminPageValidator()
+    public SerialContentDtoAdminPageValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty()
@@ -21,12 +21,6 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
         RuleFor(x => x.Country)
             .MaximumLength(50);
         RuleFor(x => x.ContentType)
-            .NotEmpty();
-        RuleFor(x => x.MovieLength)
-            .NotEmpty();
-        RuleFor(x => x.ReleaseDate)
-            .NotEmpty();
-        RuleFor(x => x.VideoUrl)
             .NotEmpty();
         RuleFor(x => x.AgeRating)
             .NotNull()
@@ -67,6 +61,21 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
             sub.RuleFor(subdto => subdto.Name).NotEmpty().MaximumLength(50);
             sub.RuleFor(subdto => subdto.Description).NotEmpty().MaximumLength(200);
             sub.RuleFor(subdto => subdto.MaxResolution).NotEmpty();
+        });
+        RuleFor(x => x.ReleaseYears).ChildRules(ry =>
+        {
+            ry.RuleFor(releaseYear => releaseYear.End).NotEmpty()
+                .GreaterThan(releaseYear => releaseYear.Start);
+            ry.RuleFor(releaseYear => releaseYear.End).NotEmpty();
+        });
+        RuleForEach(x => x.SeasonInfos).ChildRules(si =>
+        {
+            si.RuleFor(sii => sii.SeasonNumber).NotEmpty();
+            si.RuleForEach(sii => sii.Episodes).ChildRules(ep =>
+            {
+                ep.RuleFor(epi => epi.EpisodeNumber).NotEmpty();
+                ep.RuleFor(epi => epi.VideoUrl).NotEmpty();
+            });
         });
     }
 }

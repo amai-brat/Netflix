@@ -1,12 +1,8 @@
-﻿using Domain.Abstractions;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using DataAccess.Repositories.Abstractions;
 
 namespace DataAccess.Repositories
@@ -45,7 +41,13 @@ namespace DataAccess.Repositories
                 .FirstOrDefaultAsync(mc => mc.Id == newMovieContent.Id);
             if (dbMovieContent is null) throw new Exception("Content not found");
             // обновляем проперти
-            appDbContext.Entry(dbMovieContent).CurrentValues.SetValues(newMovieContent);
+            dbMovieContent.Name = newMovieContent.Name;
+            dbMovieContent.Description = newMovieContent.Description;
+            dbMovieContent.Slogan = newMovieContent.Slogan;
+            dbMovieContent.PosterUrl = newMovieContent.PosterUrl;
+            dbMovieContent.Country = newMovieContent.Country;
+            dbMovieContent.MovieLength = newMovieContent.MovieLength;
+            dbMovieContent.VideoUrl = newMovieContent.VideoUrl;
             // обновляем навигационные свойства
             UpdateContentBase(dbMovieContent, newMovieContent);
         }
@@ -66,7 +68,11 @@ namespace DataAccess.Repositories
             
             if (serialContentDbVersion is null) throw new Exception("Content not found");
             // обновляем проперти
-            appDbContext.Entry(serialContentDbVersion).CurrentValues.SetValues(serialContent);
+            serialContentDbVersion.Name = serialContent.Name;
+            serialContentDbVersion.Description = serialContent.Description;
+            serialContentDbVersion.Slogan = serialContent.Slogan;
+            serialContentDbVersion.PosterUrl = serialContent.PosterUrl;
+            serialContentDbVersion.Country = serialContent.Country;
             //обновляем навигационные свойства
             UpdateContentBase(serialContentDbVersion, serialContent);
             serialContentDbVersion.YearRange.Start = serialContent.YearRange.Start;
@@ -136,11 +142,91 @@ namespace DataAccess.Repositories
 
         public void AddMovieContent(MovieContent movieContent)
         {
+            // нужно проверить что тех полей которые были даны нет в бд, иначе подгружать их
+            var existingGenres = appDbContext.Genres.ToList();
+            var existingSubscriptions = appDbContext.Subscriptions.ToList();
+            var existingPersons = appDbContext.PersonInContents.ToList();
+            var existingProfessions = appDbContext.Professions.ToList();
+            // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
+            foreach (var genre in movieContent.Genres)
+            {
+                if (existingGenres.Any(g => g.Name.Equals(genre.Name)))
+                {
+                    movieContent.Genres.Remove(genre);
+                    movieContent.Genres.Add(existingGenres.First(g => g.Name.Equals(genre.Name)));
+                }
+            }
+            // тоже самое с подписками
+            foreach (var subscription in movieContent.AllowedSubscriptions)
+            {
+                if (existingSubscriptions.Any(s => s.Name.Equals(subscription.Name)))
+                {
+                    movieContent.AllowedSubscriptions.Remove(subscription);
+                    movieContent.AllowedSubscriptions.Add(existingSubscriptions.First(s => s.Name.Equals(subscription.Name)));
+                }
+            }
+            // тоже самое с персонами
+            foreach (var person in movieContent.PersonsInContent)
+            {
+                if (existingPersons.Any(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)))
+                {
+                    movieContent.PersonsInContent.Remove(person);
+                    movieContent.PersonsInContent.Add(existingPersons.First(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)));
+                }
+            }
+            // тоже самое с профессиями
+            foreach (var person in movieContent.PersonsInContent)
+            {
+                if (existingProfessions.Any(p => p.ProfessionName.Equals(person.Profession.ProfessionName)))
+                {
+                    person.Profession = existingProfessions.First(p => p.ProfessionName.Equals(person.Profession.ProfessionName));
+                }
+            }
             appDbContext.MovieContents.Add(movieContent);
         }
 
         public void AddSerialContent(SerialContent serialContent)
         {
+            // нужно проверить что тех полей которые были даны нет в бд, иначе подгружать их
+            var existingGenres = appDbContext.Genres.ToList();
+            var existingSubscriptions = appDbContext.Subscriptions.ToList();
+            var existingPersons = appDbContext.PersonInContents.ToList();
+            var existingProfessions = appDbContext.Professions.ToList();
+            // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
+            foreach (var genre in serialContent.Genres)
+            {
+                if (existingGenres.Any(g => g.Name.Equals(genre.Name)))
+                {
+                    serialContent.Genres.Remove(genre);
+                    serialContent.Genres.Add(existingGenres.First(g => g.Name.Equals(genre.Name)));
+                }
+            }
+            // тоже самое с подписками
+            foreach (var subscription in serialContent.AllowedSubscriptions)
+            {
+                if (existingSubscriptions.Any(s => s.Name.Equals(subscription.Name)))
+                {
+                    serialContent.AllowedSubscriptions.Remove(subscription);
+                    serialContent.AllowedSubscriptions.Add(existingSubscriptions.First(s => s.Name.Equals(subscription.Name)));
+                }
+            }
+            // тоже самое с персонами
+            foreach (var person in serialContent.PersonsInContent)
+            {
+                if (existingPersons.Any(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)))
+                {
+                    serialContent.PersonsInContent.Remove(person);
+                    serialContent.PersonsInContent.Add(existingPersons.First(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)));
+                }
+            }
+            // тоже самое с профессиями
+            foreach (var person in serialContent.PersonsInContent)
+            {
+                if (existingProfessions.Any(p => p.ProfessionName.Equals(person.Profession.ProfessionName)))
+                {
+                    person.Profession = existingProfessions.First(p => p.ProfessionName.Equals(person.Profession.ProfessionName));
+                }
+            }
             appDbContext.SerialContents.Add(serialContent);
         }
 
@@ -160,6 +246,7 @@ namespace DataAccess.Repositories
             UpdateGenres(dbContent, newContent.Genres, existingGenres);
             UpdateSubscriptions(dbContent, newContent.AllowedSubscriptions, existingSubscriptions);
             UpdatePersonsAndProfession(dbContent, newContent.PersonsInContent, existingPersons, existingProfessions);
+
         }
         // обязательно должны быть загружены все персоны и профессии
         private void UpdatePersonsAndProfession(ContentBase dbContent,
@@ -230,6 +317,8 @@ namespace DataAccess.Repositories
                 }
                 // если в существующих её нет и её нет в бд, то выкидываем исключение. 
                 // админ может добавлять только из существующих(для добавления подписок у него отдельная вкладка)
+                // TODO: если честно здесь оплошность т.к. логика приложения не должна быть в репозитории
+                // надо бы в сервисе это делать, но в данном случае это не критично
                 else
                 {
                     throw new Exception("Вы не можете добавить свою подписку к фильму");

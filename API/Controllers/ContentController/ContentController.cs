@@ -7,6 +7,7 @@ using Application.Dto;
 using Application.Exceptions;
 using Application.Services.Abstractions;
 using AutoMapper;
+using FluentValidation;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,12 +17,14 @@ namespace API.Controllers.ContentController
     [ApiController]
     public class ContentController(
         IContentService contentService,
-        IFavouriteService favouriteService
-        ) : ControllerBase
+        IFavouriteService favouriteService,
+        IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
+        IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator) : ControllerBase
     {
         private readonly IContentService _contentService = contentService;
         private readonly IFavouriteService _favouriteService = favouriteService;
-
+        private readonly IValidator<MovieContentAdminPageDto> _movieContentAdminPageDtoValidator = movieContentAdminPageDtoValidator;
+        private readonly IValidator<SerialContentAdminPageDto> _serialContentAdminPageDtoValidator = serialContentAdminPageDtoValidator;
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
@@ -89,7 +92,11 @@ namespace API.Controllers.ContentController
         [HttpPost("serial/add")]
         public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
         {
-            
+            var validationResult = _serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
         }
@@ -98,6 +105,11 @@ namespace API.Controllers.ContentController
         public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
         {
             serialContentAdminPageDto.Id = id;
+            var validationResult = _serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
         }
@@ -105,6 +117,11 @@ namespace API.Controllers.ContentController
         [HttpPost("movie/add")]
         public async Task<IActionResult> AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
         {
+            var validationResult = _movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
         }
@@ -113,6 +130,11 @@ namespace API.Controllers.ContentController
         public async Task<IActionResult> UpdateMovieContent(long id, MovieContentAdminPageDto movieContentAdminPageDto)
         {
             movieContentAdminPageDto.Id = id;
+            var validationResult = _movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
@@ -124,8 +146,13 @@ namespace API.Controllers.ContentController
             return Ok();
         }
         [HttpPost("/test")]
-        public IActionResult TestMethod(SerialContentAdminPageDto movieContentAdminPageDto)
+        public IActionResult TestMethod(SerialContentAdminPageDto serialContentAdminPageDto)
         {
+            var validationResult = _serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             return Ok();
         }
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase

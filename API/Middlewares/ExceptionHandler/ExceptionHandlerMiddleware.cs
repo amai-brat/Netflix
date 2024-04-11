@@ -37,7 +37,7 @@ namespace API.Middlewares.ExceptionHandler
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = ex.Message,
+                    Message = ex.Message + ex.StackTrace,
                     Code = 500
                 });
             }
