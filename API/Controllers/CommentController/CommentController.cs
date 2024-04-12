@@ -44,6 +44,8 @@ public class CommentController(
         {
             c.Comment.CommentNotification = null!;
             c.Comment.Review.Comments = null!;
+            c.Comment.Review.User.Reviews = null!;
+            c.Comment.User.Comments = null!;
         });
         return commentNotifications;
     }

@@ -7,8 +7,8 @@ public class CommentRepository(AppDbContext appDbContext): ICommentRepository
 {
     public async Task<long> AssignCommentAsync(Comment comment)
     {
-        var id = (await appDbContext.Comments.AddAsync(comment)).Entity.Id;
+        await appDbContext.Comments.AddAsync(comment);
         await appDbContext.SaveChangesAsync();
-        return id;
+        return comment.Id;
     }
 }

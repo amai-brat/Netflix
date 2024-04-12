@@ -20,7 +20,7 @@ builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services
-    .AddCommentService()
+    .AddContentService()
     .AddReviewService()
     .AddCommentService()
     .AddFavouriteService()

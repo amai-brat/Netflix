@@ -12,6 +12,9 @@ public class CommentNotificationRepository(AppDbContext appDbContext) : IComment
         await appDbContext.CommentNotifications
             .Include(c => c.Comment)
                 .ThenInclude(c => c.Review)
+                    .ThenInclude(r => r.User)
+            .Include(c => c.Comment)
+                .ThenInclude(c => c.User)
             .SingleOrDefaultAsync(filter);
 
     public async Task<List<CommentNotification>> GetAllCommentNotificationsByFilterAsync(
@@ -19,6 +22,9 @@ public class CommentNotificationRepository(AppDbContext appDbContext) : IComment
         await appDbContext.CommentNotifications
             .Include(c => c.Comment)
                 .ThenInclude(c => c.Review)
+                    .ThenInclude(r => r.User)
+            .Include(c => c.Comment)
+                .ThenInclude(c => c.User)
             .Where(filter)
             .ToListAsync();
 }

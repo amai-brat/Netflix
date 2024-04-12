@@ -22,6 +22,6 @@ public class NotificationService(
 
         return await _notificationRepository.GetAllCommentNotificationsByFilterAsync(n => 
                 n.Comment.Review.UserId == userId && 
-                (!n.Readed || n.Comment.WrittenAt.Date > DateTime.UtcNow.AddDays(-10)));
+                (!n.Readed || n.Comment.WrittenAt > DateTimeOffset.UtcNow.AddDays(-10)));
     }
 }

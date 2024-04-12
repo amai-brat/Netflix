@@ -29,6 +29,7 @@ public class CommentService(
             Text = text,
             UserId = userId,
             ReviewId = reviewId,
+            WrittenAt = DateTimeOffset.UtcNow,
             CommentNotification = new CommentNotification()
             {
                 Readed = false
