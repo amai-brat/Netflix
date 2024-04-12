@@ -1,0 +1,124 @@
+.reviewItem{
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    height: 260px;
+    width: 75%;
+    overflow-wrap: anywhere;
+    .reviewHeader{
+        border-bottom: 2px solid white;
+        align-items: flex-start;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 48px;
+        .userInfo{
+            align-items: flex-start;
+            display: flex;
+            .avatar{
+                height: 3rem;
+                width: 3rem;
+            }
+            .username{
+                margin-left: 10px;
+            }
+        }
+        .dateLikesComments{
+            font-size: 60%;
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            height: 3rem;
+            .commentsLikes{
+                display: flex;
+                height: 100%;
+                .comment{
+                    width: 2rem;
+                    height: 1.5rem;
+                    display: inline;
+                }
+                .comment:hover{
+                    cursor: pointer;
+                }
+                .heart{
+                    display: inline;
+                    height: 1.5rem;
+                    width: 2rem;
+                }
+                .heart:hover{
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+    .reviewText{
+        height: 100%;
+        font-size: 100%;
+        text-overflow: ellipsis;
+        -moz-white-space: nowrap;
+        overflow: hidden;
+        display: flex;
+        span{
+            max-height: 100%;
+        }
+        .text{
+            
+        }
+        .score{
+            min-width: fit-content;
+            align-self: center;
+            border-radius: 10px;
+            padding: 5px;
+            margin-left: 5px;
+        }
+    }
+    .reviewText:hover{
+        cursor: pointer;
+    }
+}
+.modalReview{
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    .modalHeader{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        .closeCross{
+            width: 2rem;
+            height: 2rem;
+            margin:0;
+            right: 0;
+            top: 0;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+    }
+    h2{
+        text-align: center;
+    }
+}
+.sendReview{
+    margin-top: 40px;
+    padding: 10px 40px;
+    background: #ff2400;
+    border-radius: 10px;
+    border: transparent;
+    color: white;
+    width: fit-content;
+    align-self: center;
+}
+.sendReview:hover{
+    cursor: pointer;
+}
+.commentForm{
+    display: table;
+    width: 70%;
+    align-self: center;
+}

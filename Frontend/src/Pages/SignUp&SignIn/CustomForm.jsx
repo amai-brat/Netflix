@@ -138,7 +138,7 @@ export const CustomForm = ({formType}) => {
                     onClose = {() => setResponse(null)}
                     icon={false}
                     sx={{
-                        marginTop: "2%", 
+                        marginTop: "3%", 
                         display: response != null ? "flex" : "none",
                         paddingTop: "0%",
                         paddingBottom: "0%"

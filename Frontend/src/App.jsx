@@ -15,12 +15,15 @@ import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
 import Error404 from "./Pages/Error/Error404.jsx";
 import "/src/Pages/Shared/Styles/App.css";
 import { SubscriptionsManagement } from './Pages/Admin/Subscriptions/SubscriptionsManagement.jsx';
+import {ToastContainer} from "react-toastify";
 
 function App() {
+    
     const location = useLocation();
 
     return (
         <>
+            <ToastContainer />
             {location.pathname !== "/" && location.pathname !== "/signin" 
                 && location.pathname !== "/signup" && !location.pathname.startsWith("/admin") && <Header/>}
             <Routes>
@@ -37,6 +40,7 @@ function App() {
                 <Route path="signin" element={<SignUpSignIn formType="signin"/>}/>
                 <Route path="Subscriptions" element={<Subscriptions/>}/>
                 <Route path="ViewContent/:id" element={<ViewContent/>}/>
+                <Route path="admin/subscriptions" element={<SubscriptionsManagement/>}/>
                 <Route path="admin/subscriptions" element={<SubscriptionsManagement/>}/>
                 <Route path="*" element={<Error404/>}/>
             </Routes>
