@@ -20,21 +20,17 @@ namespace API.Controllers.ContentController
         IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
         IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator) : ControllerBase
     {
-        private readonly IContentService _contentService = contentService;
-        private readonly IFavouriteService _favouriteService = favouriteService;
-        private readonly IValidator<MovieContentAdminPageDto> _movieContentAdminPageDtoValidator = movieContentAdminPageDtoValidator;
-        private readonly IValidator<SerialContentAdminPageDto> _serialContentAdminPageDtoValidator = serialContentAdminPageDtoValidator;
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
-            var content = await _contentService.GetContentByIdAsync(id);
+            var content = await contentService.GetContentByIdAsync(id);
             if (content is null)
                 return BadRequest(ErrorMessages.NotFoundContent);
 
             if (content is SerialContent)
-                return Ok(SetConstraintOnPersonCount((await _contentService.GetSerialContentByIdAsync(id))!));
+                return Ok(SetConstraintOnPersonCount((await contentService.GetSerialContentByIdAsync(id))!));
             else if(content is MovieContent)
-                return Ok(SetConstraintOnPersonCount((await _contentService.GetMovieContentByIdAsync(id))!));
+                return Ok(SetConstraintOnPersonCount((await contentService.GetMovieContentByIdAsync(id))!));
             else 
                 return Ok(SetConstraintOnPersonCount(content));
         }
@@ -42,7 +38,7 @@ namespace API.Controllers.ContentController
         [HttpGet("filter")]
         public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
         {
-            var contents = await _contentService.GetContentsByFilterAsync(filter);
+            var contents = await contentService.GetContentsByFilterAsync(filter);
             return Ok(contents);
         }
 
@@ -50,7 +46,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> AddContentFavouriteAsync([FromBody] long contentId)
         {
-            await _favouriteService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            await favouriteService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
 
@@ -58,7 +54,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> RemoveContentFavouriteAsync([FromBody] long contentId)
         {
-            await _favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            await favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
 
@@ -70,7 +66,7 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var url = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
+            var url = await contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
             await HttpContext.Response.SendFileAsync(url);
             return Ok();
         }
@@ -83,7 +79,7 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var url = await _contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
+            var url = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
             await HttpContext.Response.SendFileAsync(url);
             return Ok();
         }
@@ -91,12 +87,12 @@ namespace API.Controllers.ContentController
         [HttpPost("serial/add")]
         public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
         {
-            var validationResult = _serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _contentService.AddSerialContent(serialContentAdminPageDto);
+            await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
         }
         // TODO: авторизация
@@ -104,24 +100,24 @@ namespace API.Controllers.ContentController
         public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
         {
             serialContentAdminPageDto.Id = id;
-            var validationResult = _serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _contentService.UpdateSerialContent(serialContentAdminPageDto);
+            await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
         }
         // TODO: авторизация
         [HttpPost("movie/add")]
         public async Task<IActionResult> AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
         {
-            var validationResult = _movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+            var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _contentService.AddMovieContent(movieContentAdminPageDto);
+            await contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
         }
         // TODO: авторизация
@@ -129,26 +125,26 @@ namespace API.Controllers.ContentController
         public async Task<IActionResult> UpdateMovieContent(long id, MovieContentAdminPageDto movieContentAdminPageDto)
         {
             movieContentAdminPageDto.Id = id;
-            var validationResult = _movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+            var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _contentService.UpdateMovieContent(movieContentAdminPageDto);
+            await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
         // TODO: авторизация
         [HttpPost("content/delete/{id}")]
         public async Task<IActionResult> DeleteContent(long id)
         {
-            await _contentService.DeleteContent(id);
+            await contentService.DeleteContent(id);
             return Ok();
         }
-        [HttpPost("/test")]
-        public async Task<IActionResult> TestMethod()
-        {
-            return Ok();
-        }
+        // [HttpPost("/test")]
+        // public async Task<IActionResult> TestMethod()
+        // {
+        //     return Ok();
+        // }
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)

@@ -11,15 +11,13 @@ using Abstractions_IContentService = Application.Services.Abstractions.IContentS
 namespace Application.Services.Implementations;
 
 public class ContentService(IContentRepository contentRepository,
-    ISubscriptionRepository? repository = null,
+    ISubscriptionRepository? subscriptionRepository = null,
     IMapper? mapper = null) : Abstractions_IContentService
 {
     private readonly IContentRepository _contentRepository = contentRepository;
     private readonly HashSet<int> resolutions = [480, 720, 1080, 1440, 2160];
-    private readonly ISubscriptionRepository? _subscriptionRepository = repository;
     // TODO: что делать с nullable: без него летят тесты
     // с ним логика этого сервиса уже не правильная
-    private readonly IMapper? _mapper = mapper;
 
     public async Task<ContentBase?> GetContentByIdAsync(long id) =>
         await _contentRepository.GetContentByFilterAsync(c => c.Id == id);
@@ -92,32 +90,32 @@ public class ContentService(IContentRepository contentRepository,
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = _mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
-        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
+        var movieContent = mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
         await contentRepository.UpdateMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        var serialContent = _mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
-        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
+        var serialContent = mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
         await contentRepository.UpdateSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = _mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
-        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
+        var movieContent = mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
         contentRepository.AddMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        var serialContent = _mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
-        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, _subscriptionRepository!.GetAll());
+        var serialContent = mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
         contentRepository.AddSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }

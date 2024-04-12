@@ -14,13 +14,12 @@ namespace API.Controllers.ReviewController
         IContentService contentService
         ) : ControllerBase
     {
-        private readonly IReviewService _reviewService = reviewService;
         private readonly IContentService _contentService = contentService;
 
         [HttpGet("{contentId}")]
         public async Task<IActionResult> GetReviewsByContentId(long contentId, [FromQuery] int offset, [FromQuery] int limit, [FromQuery] string sort)
         {
-            var reviews = await _reviewService.GetReviewsByContentIdAsync(contentId, sort, offset, limit);
+            var reviews = await reviewService.GetReviewsByContentIdAsync(contentId, sort, offset, limit);
             reviews.ForEach(SetUpReview);
             return Ok(reviews);
         }
@@ -30,9 +29,9 @@ namespace API.Controllers.ReviewController
         public async Task<IActionResult> AssignReviewAsync([FromQuery] bool withScore, [FromBody] ReviewAssignDto review)
         {
             if (withScore)
-                await _reviewService.AssignReviewWithRatingAsync(review, long.Parse(User.FindFirst("Id")!.Value));
+                await reviewService.AssignReviewWithRatingAsync(review, long.Parse(User.FindFirst("Id")!.Value));
             else
-                await _reviewService.AssignReviewAsync(review, long.Parse(User.FindFirst("Id")!.Value));
+                await reviewService.AssignReviewAsync(review, long.Parse(User.FindFirst("Id")!.Value));
 
             return Ok();
         }

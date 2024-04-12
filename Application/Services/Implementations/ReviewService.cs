@@ -12,22 +12,18 @@ namespace Application.Services.Implementations
         IUserRepository userRepository
         ) : IReviewService
     {
-        private readonly IReviewRepository _reviewRepository = reviewRepository;
-        private readonly IContentRepository _contentRepository = contentRepository;
-        private readonly IUserRepository _userRepository = userRepository;
-
         public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
         {
             if(!IsValidReview(review, out var errorMessage, out var param))
                 throw new ReviewServiceArgumentException(errorMessage!, param!);
 
-            if (await _contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
+            if (await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
                 throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
 
-            if (await _userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
+            if (await userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
                 throw new ReviewServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
 
-            await _reviewRepository.AssignReviewAsync(new Review()
+            await reviewRepository.AssignReviewAsync(new Review()
             {
                 UserId = userId,
                 ContentId = review.ContentId,
@@ -45,7 +41,7 @@ namespace Application.Services.Implementations
         }
 
         public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId) =>
-            await _reviewRepository.GetReviewsByFilterAsync(r => r.ContentId == contentId);
+            await reviewRepository.GetReviewsByFilterAsync(r => r.ContentId == contentId);
 
         public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId, string sort) => 
             ((sort.ToLower(), await GetReviewsByContentIdAsync(contentId)) switch
