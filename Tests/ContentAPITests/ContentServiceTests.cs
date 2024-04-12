@@ -11,7 +11,6 @@ using DataAccess;
 using DataAccess.Repositories;
 using DataAccess.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Xunit.Abstractions;
 
 namespace Tests.ContentAPITests
