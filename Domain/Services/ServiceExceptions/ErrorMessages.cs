@@ -15,6 +15,7 @@ namespace Domain.Services.ServiceExceptions
         public const string IncorrectSortType = "Указана неизвестная сортировка";
         public const string NotFoundContent = "Контента с указанным id не существует";
         public const string NotFoundReview = "Рецензии с указанным id не существует";
+        public const string NotFoundNotification = "Уведомления с указанным id не существует";
         public const string NotFoundUser = "Пользователя с указанным id не существует";
         public const string AlreadyFavourite = "Контент уже в избранном";
         public const string NotInFavourite = "Контент уже не входит в избранное";

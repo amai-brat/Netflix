@@ -12,6 +12,14 @@ public class NotificationService(
     private readonly ICommentNotificationRepository _notificationRepository = commentNotificationRepository;
     private readonly IUserRepository _userRepository = userRepository;
 
+    public async Task SetNotificationReadedAsync(long notificationId)
+    {
+        if (await _notificationRepository.GetCommentNotificationByFilterAsync(c => c.Id == notificationId) is null)
+            throw new NotificationServiceArgumentException(ErrorMessages.NotFoundNotification, $"{notificationId}");
+
+        await _notificationRepository.SetNotificationReadedAsync(notificationId);
+    }
+
     public async Task<CommentNotification?> GetCommentNotificationByCommentIdAsync(long commentId) =>
         await _notificationRepository.GetCommentNotificationByFilterAsync(c => c.Comment.Id == commentId);
 

@@ -7,6 +7,14 @@ namespace DataAccess.Repositories;
 
 public class CommentNotificationRepository(AppDbContext appDbContext) : ICommentNotificationRepository
 {
+    public async Task SetNotificationReadedAsync(long id)
+    {
+        var notification = await appDbContext.CommentNotifications.SingleAsync(c => c.Id == id);
+        notification.Readed = true;
+        appDbContext.CommentNotifications.Update(notification);
+        await appDbContext.SaveChangesAsync();
+    }
+
     public async Task<CommentNotification?> GetCommentNotificationByFilterAsync(
         Expression<Func<CommentNotification, bool>> filter) =>
         await appDbContext.CommentNotifications

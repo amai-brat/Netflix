@@ -5,6 +5,7 @@ namespace Domain.Abstractions;
 
 public interface ICommentNotificationRepository
 {
+    Task SetNotificationReadedAsync(long id);
     Task<CommentNotification?> GetCommentNotificationByFilterAsync(
         Expression<Func<CommentNotification, bool>> filter);
     Task<List<CommentNotification>> GetAllCommentNotificationsByFilterAsync(
