@@ -70,7 +70,6 @@ namespace DataAccess.Repositories
                 .Include(sc => sc.ContentType)
                 .Include(sc => sc.SeasonInfos)
                     .ThenInclude(s => s.Episodes)
-                        .ThenInclude(e => e.SeasonInfo)
                 .Include(sc => sc.YearRange)
                 .FirstOrDefaultAsync(sc => sc.Id == serialContent.Id);
             
@@ -159,6 +158,7 @@ namespace DataAccess.Repositories
             var existingSubscriptions = appDbContext.Subscriptions.ToList();
             var existingPersons = appDbContext.PersonInContents.ToList();
             var existingProfessions = appDbContext.Professions.ToList();
+            var existingContentTypes = appDbContext.ContentTypes.ToList();
             // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
             foreach (var genre in movieContent.Genres)
             {
@@ -194,6 +194,11 @@ namespace DataAccess.Repositories
                     person.Profession = existingProfessions.First(p => p.ProfessionName.Equals(person.Profession.ProfessionName));
                 }
             }
+            // тоже самое с типом контента
+            if (existingContentTypes.Any(ct => ct.ContentTypeName.Equals(movieContent.ContentType.ContentTypeName)))
+            {
+                movieContent.ContentType = existingContentTypes.First(ct => ct.ContentTypeName.Equals(movieContent.ContentType.ContentTypeName));
+            }
             appDbContext.MovieContents.Add(movieContent);
         }
 
@@ -208,7 +213,6 @@ namespace DataAccess.Repositories
             // TODO: вообще это можно было бы вынести в отдельный метод, т.к. это дублируется в AddMovieContent
             // TODO: исправить изменение коллекции в цикле
             // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
-            //перепиши код ниже на reverse for
             for (int i = serialContent.Genres.Count - 1; i >= 0; i--)
             {
                 if (existingGenres.Any(g => g.Name.Equals(serialContent.Genres[i].Name)))
@@ -242,6 +246,11 @@ namespace DataAccess.Repositories
                 {
                     serialContent.PersonsInContent[i].Profession = existingProfessions.First(p => p.ProfessionName.Equals(serialContent.PersonsInContent[i].Profession.ProfessionName));
                 }
+            }
+            // тоже самое с типом контента
+            if (existingContentTypes.Any(ct => ct.ContentTypeName.Equals(serialContent.ContentType.ContentTypeName)))
+            {
+                serialContent.ContentType = existingContentTypes.First(ct => ct.ContentTypeName.Equals(serialContent.ContentType.ContentTypeName));
             }
             appDbContext.SerialContents.Add(serialContent);
         }

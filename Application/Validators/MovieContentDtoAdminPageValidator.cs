@@ -65,8 +65,6 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
         RuleForEach(x => x.AllowedSubscriptions).ChildRules(sub =>
         {
             sub.RuleFor(subdto => subdto.Name).NotEmpty().MaximumLength(50);
-            sub.RuleFor(subdto => subdto.Description).NotEmpty().MaximumLength(200);
-            sub.RuleFor(subdto => subdto.MaxResolution).NotEmpty();
         });
     }
 }

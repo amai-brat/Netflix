@@ -5,7 +5,7 @@ namespace Application.Dto;
 public class SerialContentAdminPageDto
 {
     public long Id { get; set; }
-    public string Title { get; set; } = null!;
+    public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public string? Slogan { get; set; }
     public string PosterUrl { get; set; } = null!;

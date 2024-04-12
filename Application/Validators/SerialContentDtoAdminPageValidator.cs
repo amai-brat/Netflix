@@ -8,7 +8,7 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
 {
     public SerialContentDtoAdminPageValidator()
     {
-        RuleFor(x => x.Title)
+        RuleFor(x => x.Name)
             .NotEmpty()
             .MaximumLength(100);
         RuleFor(x => x.Description)
@@ -59,8 +59,6 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
         RuleForEach(x => x.AllowedSubscriptions).ChildRules(sub =>
         {
             sub.RuleFor(subdto => subdto.Name).NotEmpty().MaximumLength(50);
-            sub.RuleFor(subdto => subdto.Description).NotEmpty().MaximumLength(200);
-            sub.RuleFor(subdto => subdto.MaxResolution).NotEmpty();
         });
         RuleFor(x => x.ReleaseYears).ChildRules(ry =>
         {
