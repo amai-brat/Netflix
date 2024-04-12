@@ -9,10 +9,12 @@ namespace Domain.Services.ServiceExceptions
     public class ErrorMessages
     {
         public const string ReviewMustHaveText = "Рецензия должна быть заполненной";
+        public const string CommentMustHaveText = "Комментарий должнен быть заполненным";
         public const string ScoreMustBeValid = "Оценка должна быть от 0 до 10";
         public const string ArgumentsMustBePositive = "Аргументы должны быть целыми неотрицательными числами";
         public const string IncorrectSortType = "Указана неизвестная сортировка";
         public const string NotFoundContent = "Контента с указанным id не существует";
+        public const string NotFoundReview = "Рецензии с указанным id не существует";
         public const string NotFoundUser = "Пользователя с указанным id не существует";
         public const string AlreadyFavourite = "Контент уже в избранном";
         public const string NotInFavourite = "Контент уже не входит в избранное";

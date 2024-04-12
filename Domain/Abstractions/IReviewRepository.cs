@@ -10,6 +10,7 @@ namespace Domain.Abstractions
 {
     public interface IReviewRepository
     {
+        Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter);
         Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter);
         Task AssignReviewAsync(Review review);
     }
