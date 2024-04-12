@@ -29,13 +29,21 @@ public class CommentController(
     
     [HttpPost("assign")]
     [Authorize]
-    public async Task<IActionResult> AssignCommentAsync([FromQuery] long reviewId, [FromBody] string text)
+    public async Task<IActionResult> AssignCommentAsync([FromQuery] long reviewId, [FromBody] CommentAssignDto text)
     {
         var userId = User?.FindFirst("id")?.Value;
             
-        var id = await _commentService.AssignCommentAsync(text, long.Parse(userId), reviewId);
+        var id = await _commentService.AssignCommentAsync(text.Text, long.Parse(userId), reviewId);
             
         return Ok(id);
+    }
+    
+    [HttpPost("set/readed")]
+    [Authorize]
+    public async Task<IActionResult> AssignCommentAsync([FromQuery] long notificationId)
+    {
+        await _notificationService.SetNotificationReadedAsync(notificationId);
+        return Ok();
     }
 
     private List<CommentNotification> SetCommentNotifications(List<CommentNotification> commentNotifications)
