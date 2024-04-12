@@ -9,9 +9,11 @@ const NotificationPopUpPanel = ({notifications}) =>{
     return(
         <div id="notification-pop-up-panel">
             {notifications.map((notification, index) => (
-                <div key={index} className="notification-info" onClick={() => {navigateToViewContent(notification.ContentId)}}>
-                    <label className="notification-message">{notification.Message}</label>
-                    <label className="notification-date">{notification.DateTime}</label>
+                <div key={index} className="notification-info" onClick={() => {navigateToViewContent(notification.comment.review.contentId)}}>
+                    <label className="notification-message">
+                        Ответ от {notification.comment.user.nickname}: {notification.comment.text}
+                    </label>
+                    <label className="notification-date">{notification.comment.writtenAt.substring(0,10)}</label>
                 </div>
             ))}
         </div>
