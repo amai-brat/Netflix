@@ -17,9 +17,10 @@ public class NotificationHub(
     public override Task OnConnectedAsync()
     {
         var userId = Context?.User?.FindFirst("id")?.Value;
-        Connections.Add(long.Parse(userId), Context.ConnectionId);
         
-        return base.OnConnectedAsync();
+        Connections.TryAdd(long.Parse(userId), Context.ConnectionId);
+        
+        return Task.FromResult(base.OnConnectedAsync());
     }
     
     public async Task NotifyAboutCommentAsync(long commentId)
@@ -30,6 +31,15 @@ public class NotificationHub(
             return;
         
         var connectionId = Connections[commentNotification.Comment.Review.UserId];
-        await Clients.Client(connectionId).SendAsync("ReceiveNotification", commentNotification);
+        await Clients.Client(connectionId).SendAsync("ReceiveNotification", SetCommentNotification(commentNotification));
+    }
+    
+    private CommentNotification SetCommentNotification(CommentNotification commentNotification)
+    {
+        commentNotification.Comment.CommentNotification = null!;
+        commentNotification.Comment.Review.Comments = null!;
+        commentNotification.Comment.Review.User.Reviews = null!;
+        commentNotification.Comment.User.Comments = null!;
+        return commentNotification;
     }
 }
