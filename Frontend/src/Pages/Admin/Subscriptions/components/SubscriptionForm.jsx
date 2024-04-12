@@ -3,28 +3,32 @@ import formStyles from "../styles/form.module.scss";
 import { DataGrid } from '@mui/x-data-grid';
 import {createTheme, ThemeProvider} from "@mui/material";
 import {useEffect, useState} from "react";
+import {baseUrl} from "../../../Shared/HttpClient/baseUrl.js";
 
 
 export const SubscriptionForm = ({ subscription }) => {
-    const contents = [
-        {
-            id: 1,
-            name: "BLYYYYA"
-        },
-        {
-            id: 2,
-            name: "FAPAHHH"
-        },
-        {
-            id: 3,
-            name: "BLYYYYA"
-        },
-        {
-            id: 4,
-            name: "FAPAHHH"
-        }
-    ];
+    const [contents, setContents] = useState([]);
     
+    useEffect(() => {
+        (async() => {
+            try {
+                const response = await fetch(baseUrl + "admin/subscriptions/contents", {
+                    method: "GET",
+                    headers: {
+                        // TODO: auth token
+                        // "Authorization": "Bearer [token]"
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    setContents(data);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        })();
+    }, []);
     const columns = [
         {
             field: 'id', headerName: 'Id', width: 120
@@ -65,7 +69,7 @@ export const SubscriptionForm = ({ subscription }) => {
     }
     
     useEffect(() => {
-        setAccessibleContentIds(subscription ? subscription.accessibleContents?.map(x => x.id) : []);
+        setAccessibleContentIds(subscription ? subscription.accessibleContent?.map(x => x.id) : []);
     }, [subscription]);
     
     const [accessibleContentIds, setAccessibleContentIds] = useState();
@@ -79,7 +83,56 @@ export const SubscriptionForm = ({ subscription }) => {
         validate,
         onSubmit: async (values) => {
             values.accessibleContentIds = accessibleContentIds;
-            console.log(values)
+            
+            const serverMessageElem = document.getElementById("serverMessage-form");
+            
+            if (!subscription) {
+                try {
+                    const response = await fetch(baseUrl + "admin/subscriptions/add", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(values)
+                    })
+                    
+                    if (response.ok) {
+                        serverMessageElem.innerHTML = "Успешно создана";
+                    } else {
+                        serverMessageElem.innerHTML = await response.json();
+                    }
+                } catch (e) {
+                    serverMessageElem.innerHTML = "Ошибка"
+                }
+            } else {
+                const dto = {
+                    subscriptionId: subscription.id,
+                    newName: values.name,
+                    newDescription: values.description,
+                    newMaxResolution: values.maxResolution,
+                    newPrice: values.price,
+                    accessibleContentIdsToAdd: values.accessibleContentIds.filter(x => !subscription.accessibleContent.map(y => y.id).includes(x.id)),
+                    accessibleContentIdsToRemove: values.accessibleContentIds.filter(x => subscription.accessibleContent.map(y => y.id).includes(x.id)),
+                };
+
+                try {
+                    const response = await fetch(baseUrl + "admin/subscriptions/edit", {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(dto)
+                    })
+
+                    if (response.ok) {
+                        serverMessageElem.innerHTML = "Успешно изменено";
+                    } else {
+                        serverMessageElem.innerHTML = await response.json();
+                    }
+                } catch (e) {
+                    serverMessageElem.innerHTML = "Ошибка"
+                }
+            }
         },
         enableReinitialize: true
     });
@@ -134,7 +187,7 @@ export const SubscriptionForm = ({ subscription }) => {
             </div>
             <button className={formStyles.submitButton} type={"submit"}>Отправить</button>
             <br/>
-            <span id={"serverMessage"}></span>
+            <span id={"serverMessage-form"}></span>
         </form>
     )
 };
