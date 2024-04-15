@@ -14,10 +14,11 @@
     "@emotion/styled": "^11.11.0",
     "@microsoft/signalr": "^8.0.0",
     "classnames": "^2.5.1",
-    "formik": "^2.4.5",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
     "express": "^4.19.2",
+    "@mui/x-data-grid": "^7.1.1",
+    "formik": "^2.4.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
@@ -25,7 +26,7 @@
     "react-player": "^2.15.1",
     "react-router-dom": "^6.22.3",
     "react-toastify": "^10.0.5",
-    "sass": "^1.71.1"
+    "sass": "^1.71.1",
     "swiper": "^11.0.7"
   },
   "devDependencies": {

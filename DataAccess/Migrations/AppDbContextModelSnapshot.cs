@@ -235,6 +235,38 @@ namespace DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.Currency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_currencies");
+
+                    b.ToTable("currencies", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "RUB"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "USD"
+                        });
+                });
+
             modelBuilder.Entity("Domain.Entities.Episode", b =>
                 {
                     b.Property<long>("Id")
@@ -518,6 +550,10 @@ namespace DataAccess.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price");
+
                     b.HasKey("Id")
                         .HasName("pk_subscriptions");
 
@@ -529,21 +565,24 @@ namespace DataAccess.Migrations
                             Id = 1,
                             Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки",
                             MaxResolution = 2160,
-                            Name = "Фильмы"
+                            Name = "Фильмы",
+                            Price = 300m
                         },
                         new
                         {
                             Id = 2,
                             Description = "Все сериалы только в этой подписке",
                             MaxResolution = 1080,
-                            Name = "Сериалы"
+                            Name = "Сериалы",
+                            Price = 350m
                         },
                         new
                         {
                             Id = 3,
                             Description = "Мультфильмы для всех возрастов только в данной подписке",
                             MaxResolution = 720,
-                            Name = "Мультфильмы"
+                            Name = "Мультфильмы",
+                            Price = 228m
                         });
                 });
 

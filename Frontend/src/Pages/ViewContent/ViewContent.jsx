@@ -4,6 +4,7 @@ import styles from './styles/ViewContent.module.css';
 import ContentPlayer from "./contentPlayer.jsx";
 import Reviews from "./Reviews.jsx";
 import {useParams} from "react-router-dom";
+import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 const ViewContent = () => {
     let { id } = useParams();
     const [contentData,setContentData] = useState(null)
@@ -12,8 +13,7 @@ const ViewContent = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                //TODO: правильный юрл
-                const resp = await fetch(`http://localhost:5001/api/content/${id}`);
+                const resp = await fetch(`${baseUrl}content/${id}`);
                 const body = await resp.json();
                 if (resp.ok) {
                     setContentData(body);

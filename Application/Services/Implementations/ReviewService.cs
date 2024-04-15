@@ -1,7 +1,7 @@
 ﻿using Application.Dto;
 using Application.Exceptions;
+using Application.Repositories;
 using Application.Services.Abstractions;
-using DataAccess.Repositories.Abstractions;
 using Domain.Entities;
 
 namespace Application.Services.Implementations

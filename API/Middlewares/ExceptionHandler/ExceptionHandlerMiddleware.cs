@@ -1,5 +1,6 @@
 ﻿
 using Application.Exceptions;
+using Domain.Services.ServiceExceptions;
 
 namespace API.Middlewares.ExceptionHandler
 {
@@ -12,9 +13,10 @@ namespace API.Middlewares.ExceptionHandler
                 await next.Invoke(context);
             }
             catch(ArgumentException ex) when (
-            ex is ReviewServiceArgumentException ||
-            ex is FavouriteServiceArgumentException ||
-            ex is ContentServiceArgumentException)
+            ex is ReviewServiceArgumentException or FavouriteServiceArgumentException ||
+            ex is ContentServiceArgumentException || 
+            ex is SubscriptionServiceArgumentException || 
+            ex is UserServiceArgumentException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails

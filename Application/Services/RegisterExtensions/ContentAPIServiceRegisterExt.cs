@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Application.Services.Abstractions;
 using Application.Services.Implementations;
 
@@ -11,6 +11,7 @@ namespace Application.Services.RegisterExtensions
             serviceCollection.AddScoped<IContentService, ContentService>();
             serviceCollection.AddScoped<IReviewService, ReviewService>();
             serviceCollection.AddScoped<IFavouriteService, FavouriteService>();
+            serviceCollection.AddScoped<ISubscriptionService, SubscriptionService>();
 
             return serviceCollection;
         }

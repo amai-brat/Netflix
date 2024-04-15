@@ -12,8 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Dto;
 using Application.Exceptions;
+using Application.Repositories;
 using Application.Services.Implementations;
-using DataAccess.Repositories.Abstractions;
 using static System.Formats.Asn1.AsnWriter;
 using static System.Net.Mime.MediaTypeNames;
 

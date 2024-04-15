@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Mappers;
+using Application.Repositories;
 using Application.Services.Implementations;
 using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
-using DataAccess.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
@@ -49,7 +49,7 @@ namespace Tests.ContentAPITests
             var contentRepo = new ContentRepository(dbContext);
             var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
             //Act
-            _mockSubscription.Setup(repo => repo.GetAll()).Returns(movieContentDto.AllowedSubscriptions
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(movieContentDto.AllowedSubscriptions
                 .Select(dto => new Subscription(){Name = dto.Name}).ToList());
             await contentService.AddMovieContent(movieContentDto);
             //Assert
@@ -73,7 +73,7 @@ namespace Tests.ContentAPITests
             var contentRepo = new ContentRepository(dbContext);
             var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
             //Act
-            _mockSubscription.Setup(repo => repo.GetAll()).Returns(serialContentDto.AllowedSubscriptions
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto.AllowedSubscriptions
                 .Select(dto => new Subscription(){Id = dto.Id,Name = dto.Name,Description = dto.Description, MaxResolution = dto.MaxResolution.Value}).ToList());
             await contentService.AddSerialContent(serialContentDto);
             //Assert
@@ -109,7 +109,7 @@ namespace Tests.ContentAPITests
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.AddMovieContent(It.IsAny<MovieContent>()));
-            _mockSubscription.Setup(repository => repository.GetAll()).Returns(
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
             var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
             await service.AddMovieContent(movieContentDto);
@@ -128,7 +128,7 @@ namespace Tests.ContentAPITests
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.AddSerialContent(It.IsAny<SerialContent>()));
-            _mockSubscription.Setup(repository => repository.GetAll()).Returns(
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
             var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
             await service.AddSerialContent(serialContentDto);
@@ -159,7 +159,7 @@ namespace Tests.ContentAPITests
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()));
-            _mockSubscription.Setup(repository => repository.GetAll()).Returns(
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
             var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
             await service.UpdateMovieContent(movieContentDto);
@@ -177,7 +177,7 @@ namespace Tests.ContentAPITests
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()));
-            _mockSubscription.Setup(repository => repository.GetAll()).Returns(
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
             var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
             await service.UpdateSerialContent(serialContentDto);
@@ -520,7 +520,7 @@ namespace Tests.ContentAPITests
 
         private List<ContentBase> BuildFilteredMovieContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>();
+            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>().ToList();
 
             foreach (var content in contents)
             {
@@ -546,7 +546,7 @@ namespace Tests.ContentAPITests
 
         private List<ContentBase> BuildUnFilteredMovieContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>();
+            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>().ToList();
 
             foreach (var content in contents)
             {
@@ -572,7 +572,7 @@ namespace Tests.ContentAPITests
         
         private List<ContentBase> BuildFilteredSerialContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>();
+            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>().ToList();
             foreach (var content in contents)
             {
                 if (filter.Name is not null)
@@ -597,7 +597,7 @@ namespace Tests.ContentAPITests
 
         private List<ContentBase> BuildUnFilteredSerialContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>();
+            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>().ToList();
 
             foreach (var content in contents)
             {

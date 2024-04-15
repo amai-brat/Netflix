@@ -15,5 +15,8 @@
         public const string UserDoesNotHavePermissionBySubscription = "Контент не доступен с текущей подпиской";
         public const string NotFoundSeason = "Указан неверный сезон";
         public const string NotFoundEpisode = "Указан неверный эпизод";
+        public const string InvalidEmail = "Дана некорректная почта";
+        public const string InvalidBirthday = "Невозможный день рождения";
+        public const string IncorrectPassword = "Неправильный пароль";
     }
 }
