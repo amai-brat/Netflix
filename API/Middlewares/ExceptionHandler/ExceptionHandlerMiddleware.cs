@@ -1,5 +1,6 @@
 ﻿
 using Application.Exceptions;
+using Infrastructure;
 
 namespace API.Middlewares.ExceptionHandler
 {
@@ -42,10 +43,6 @@ namespace API.Middlewares.ExceptionHandler
                 });
             }
         }
-        private class ExceptionDetails
-        {
-            public string Message { get; set; } = null!;
-            public int Code { get; set; }
-        }
+        
     }
 }

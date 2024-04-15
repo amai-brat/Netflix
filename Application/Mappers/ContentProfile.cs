@@ -65,5 +65,50 @@ public class ContentProfile : Profile
                             EpisodeNumber = edto.EpisodeNumber
                         }))
                     })));
+        CreateMap<MovieContent, MovieContentAdminPageDto>()
+            .ForMember(dest => dest.Genres,
+                opt => opt.MapFrom(src => src.Genres.Select(g => g.Name).ToList()))
+            .ForMember(dest => dest.PersonsInContent,
+                opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentAdminPageDto
+                {
+                    Name = p.Name,
+                    Profession = p.Profession.ProfessionName
+                }).ToList()))
+            .ForMember(dest => dest.AllowedSubscriptions,
+                opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
+                {
+                    Name = s.Name,
+                    Description = s.Description,
+                    MaxResolution = s.MaxResolution
+                }).ToList()));
+        
+        CreateMap<SerialContent, SerialContentAdminPageDto>()
+            .ForMember(dest => dest.Genres,
+                opt => opt.MapFrom(src => src.Genres.Select(g => g.Name).ToList()))
+            .ForMember(dest => dest.PersonsInContent,
+                opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentAdminPageDto
+                {
+                    Name = p.Name,
+                    Profession = p.Profession.ProfessionName
+                }).ToList()))
+            .ForMember(dest => dest.AllowedSubscriptions,
+                opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
+                {
+                    Name = s.Name,
+                    Description = s.Description,
+                    MaxResolution = s.MaxResolution
+                }).ToList()))
+            .ForMember(dest => dest.ReleaseYears,
+                opt => opt.MapFrom(src => src.YearRange))
+            .ForMember(dest => dest.SeasonInfos,
+                opt => opt.MapFrom(src => src.SeasonInfos.Select(si => new SeasonInfoAdminPageDto
+                {
+                    SeasonNumber = si.SeasonNumber,
+                    Episodes = si.Episodes.Select(e => new EpisodeAdminPageDto
+                    {
+                        VideoUrl = e.VideoUrl,
+                        EpisodeNumber = e.EpisodeNumber
+                    }).ToList()
+                }).ToList()));
     }
 }

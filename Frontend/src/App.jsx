@@ -15,6 +15,7 @@ import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
 import Error404 from "./Pages/Error/Error404.jsx";
 import "/src/Pages/Shared/Styles/App.css";
 import {ToastContainer} from "react-toastify";
+import AdminContent from "./Pages/PersonalAccount/AdminContent/AdminContent.jsx";
 
 function App() {
     
@@ -33,6 +34,7 @@ function App() {
                     <Route path="FavouritesTab" element={<FavouritesTab/>}/>
                     <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
                     <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                    <Route path="admin/content" element={<AdminContent/>}></Route>
                 </Route>
                 <Route path="SelectionContent" element={<SelectionContent/>}/>
                 {/*Здесь должен быть Route для админовской части*/}
