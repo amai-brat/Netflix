@@ -1,6 +1,7 @@
 using Domain.Services.ServiceExceptions;
 using Infrastucture.Options;
 using Infrastucture.Services.Exceptions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -29,45 +30,31 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
             await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
         }
 
-        try
-        {
-            await _minioClient.PutObjectAsync(new PutObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(name)
-                .WithStreamData(pictureStream)
-                .WithObjectSize(pictureStream.Length)
-                .WithContentType(contentType)
-            );
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
+        await _minioClient.PutObjectAsync(new PutObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name)
+            .WithStreamData(pictureStream)
+            .WithObjectSize(pictureStream.Length)
+            .WithContentType(contentType)
+        );
     }
 
     public async Task<Stream> GetAsync(string name)
     {
         var destination = new MemoryStream();
-        try
-        {
-            var stat = await _minioClient.StatObjectAsync(new StatObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(name));
+        var stat = await _minioClient.StatObjectAsync(new StatObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name));
 
-            if (stat is null || stat.DeleteMarker)
-            {
-                throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
-            }
-
-            await _minioClient.GetObjectAsync(new GetObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(name)
-                .WithCallbackStream(x => x.CopyToAsync(destination)));
-        }
-        catch (Exception ex)
+        if (stat is null || stat.DeleteMarker)
         {
-            throw;
+            throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
         }
+
+        await _minioClient.GetObjectAsync(new GetObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name)
+            .WithCallbackStream(x => x.CopyToAsync(destination)));
 
         return destination;
     }
@@ -76,26 +63,19 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
     {
         if (Uri.TryCreate(name, new UriCreationOptions(), out _))
             return name;
-        
-        try
-        {
-            var stat = await _minioClient.StatObjectAsync(new StatObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(name));
 
-            if (stat is null || stat.DeleteMarker)
-            {
-                throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
-            }
+        var stat = await _minioClient.StatObjectAsync(new StatObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name));
 
-            return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(name)
-                .WithExpiry(3600));
-        }
-        catch (Exception ex)
+        if (stat is null || stat.DeleteMarker)
         {
-            throw;
+            throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
         }
+
+        return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name)
+            .WithExpiry(3600));
     }
 }

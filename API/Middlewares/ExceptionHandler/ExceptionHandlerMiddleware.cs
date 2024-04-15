@@ -12,10 +12,11 @@ namespace API.Middlewares
                 await next.Invoke(context);
             }
             catch(ArgumentException ex) when (
-            ex is ReviewServiceArgumentException ||
-            ex is FavouriteServiceArgumentException ||
-            ex is ContentServiceArgumentException ||
-            ex is CommentServiceArgumentException)
+                ex is ReviewServiceArgumentException ||
+                ex is FavouriteServiceArgumentException ||
+                ex is ContentServiceArgumentException ||
+                ex is CommentServiceArgumentException || 
+                ex is SubscriptionServiceArgumentException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync($"{ex.Message}. {ex.ParamName}");

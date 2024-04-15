@@ -17,6 +17,7 @@ namespace Domain.Services
             serviceCollection.AddScoped<IReviewService, ReviewService>();
             serviceCollection.AddScoped<IFavouriteService, FavouriteService>();
             serviceCollection.AddScoped<ICommentService, CommentService>();
+            serviceCollection.AddScoped<ISubscriptionService, SubscriptionService>();
 
             return serviceCollection;
         }

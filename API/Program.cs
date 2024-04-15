@@ -34,10 +34,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseExceptionHandlerMiddleware();
+
 app.UseCors(x => x.WithOrigins("http://localhost:5173")
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials());
+
 app.MapControllers();
 
 app.Run();
