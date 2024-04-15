@@ -253,8 +253,60 @@ namespace Tests.ContentAPITests
             Assert.Contains(ErrorMessages.ArgumentsMustBePositive, ex.Message);
         }
 
+        [Fact]
+        public async Task DeleteReview_CorrectIdGiven_ReviewReturned()
+        {
+            //Arrange
+            var reviews = BuildDefaultReviewList();
+            var review = reviews[Random.Shared.Next(0, reviews.Count)];
+            var reviewId = review.Id;
 
-        private List<ContentBase> BuildDefaultContentBaseList() =>
+            _mockReview.Setup(repository => repository.GetReviewByIdAsync(It.IsAny<long>()))
+                .ReturnsAsync((long id) => reviews.SingleOrDefault(review => review.Id == id));
+            _mockReview.Setup(repository => repository.DeleteReview(It.IsAny<Review>()))
+                .Returns((Review review) =>
+                {
+                    reviews.Remove(review);
+                    return review;
+                });
+
+			var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+
+			//Act
+            var deletedReview = await service.DeleteReviewByIdAsync(reviewId);
+
+            //Assert
+            Assert.Equal(review, deletedReview);
+            Assert.DoesNotContain(review, reviews);
+		}
+
+		[Fact]
+		public async Task DeleteReview_InvalidIdGiven_ExceptionThrown()
+		{
+			//Arrange
+			var reviews = BuildDefaultReviewList();
+            var notExistingId = -1000L;
+
+			_mockReview.Setup(repository => repository.GetReviewByIdAsync(It.IsAny<long>()))
+				.ReturnsAsync((long id) => reviews.SingleOrDefault(review => review.Id == id));
+			_mockReview.Setup(repository => repository.DeleteReview(It.IsAny<Review>()))
+				.Returns((Review review) =>
+				{
+					reviews.Remove(review);
+					return review;
+				});
+
+			var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+
+			//Act
+			var ex = await Assert.ThrowsAsync<ReviewServiceArgumentException>(async() => 
+                await service.DeleteReviewByIdAsync(notExistingId));
+
+            //Assert
+            Assert.Contains(ErrorMessages.NotFoundReview, ex.Message);
+		}
+
+		private List<ContentBase> BuildDefaultContentBaseList() =>
             _fixture.Build<ContentBase>()
             .Without(c => c.PersonsInContent)
             .Without(c => c.AllowedSubscriptions)

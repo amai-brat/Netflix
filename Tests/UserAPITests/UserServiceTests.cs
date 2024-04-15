@@ -58,15 +58,18 @@ public class UserServiceTests
             await userService.ChangeProfilePictureAsync(notFoundId, new MemoryStream(), "image/png"));
         var exFavourites = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
             await userService.GetFavouritesAsync(notFoundId));
-        
-        // assert
-        Assert.Contains(ErrorMessages.NotFoundUser, exPersonalInfo.Message);
+		var exRole = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+		   await userService.ChangeRoleAsync(notFoundId, "admin"));
+
+		// assert
+		Assert.Contains(ErrorMessages.NotFoundUser, exPersonalInfo.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exEmail.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exBirthday.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exPicture.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exFavourites.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exPassword.Message);
-    }
+		Assert.Contains(ErrorMessages.NotFoundUser, exPersonalInfo.Message);
+	}
     
     [Fact]
     public async Task GetPersonalInfo_UserExists_DtoReturned()
@@ -91,7 +94,45 @@ public class UserServiceTests
                     result.ProfilePictureUrl == user.ProfilePictureUrl);
     }
 
+	[Fact]
+	public async Task ChangeRole_CorrectRoleGiven_EntityChanged()
+    {
+		// arrange
+		var users = GetUsers();
+
+		_mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
+			.ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
+
+		var service = GetUserService();
+
+        // act
+        var newRole = "moderator";
+		await service.ChangeRoleAsync(1, newRole);
+
+		// assert
+		Assert.True(users.Single(x => x.Id == 1).Role == newRole);
+	}
+
     [Fact]
+    public async Task ChangeRole_InvalidRoleGiven_ErrorReturned()
+    {
+		// arrange
+		var users = GetUsers();
+
+		_mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
+			.ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
+
+		var service = GetUserService();
+
+		// act
+		var ex = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+			await service.ChangeRoleAsync(1, "godRole"));
+
+		// assert
+		Assert.Contains(ErrorMessages.IncorrectRole, ex.Message);
+	}
+
+   [Fact]
     public async Task ChangeEmail_CorrectEmailGiven_EntityChanged()
     {
         // arrange
