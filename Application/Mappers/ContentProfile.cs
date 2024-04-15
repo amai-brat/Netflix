@@ -29,7 +29,8 @@ public class ContentProfile : Profile
                     src.AllowedSubscriptions.Select(sdto =>
                         new Subscription
                         {
-                            Name = sdto.Name
+                            Name = sdto.Name,
+                            Description = sdto.Description??""
                         })));
 
         CreateMap<SerialContentAdminPageDto, SerialContent>()
@@ -49,7 +50,8 @@ public class ContentProfile : Profile
                     src.AllowedSubscriptions.Select(sdto =>
                         new Subscription
                         {
-                            Name = sdto.Name
+                            Name = sdto.Name,
+                            Description = sdto.Description??""
                         })))
             .ForMember(dest => dest.YearRange,
                 opt => opt.MapFrom(src
