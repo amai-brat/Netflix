@@ -114,6 +114,34 @@ public class SubscriptionService(
         return subscription;
     }
 
+    public async Task<List<AdminSubscriptionsDto>> GetSubscriptionsAsync()
+    {
+        var subscriptions = await subRepository.GetAllSubscriptionsWithAccessibleContentAsync();
+        var result = subscriptions
+            .Select(subscription => new AdminSubscriptionsDto
+            {
+                Id = subscription.Id,
+                Name = subscription.Name,
+                Description = subscription.Description,
+                MaxResolution = subscription.MaxResolution,
+                Price = subscription.Price,
+                AccessibleContent = subscription.AccessibleContent
+                    .Select(x => new AdminSubscriptionContentDto { Id = x.Id, Name = x.Name })
+                    .ToList()
+            })
+            .ToList();
+
+        return result;
+    }
+
+    public async Task<List<AdminSubscriptionContentDto>> GetContentsAsync()
+    {
+        var contents = await contentRepository.GetContentsByFilterAsync(x => true);
+        return contents
+            .Select(x => new AdminSubscriptionContentDto() { Id = x.Id, Name = x.Name })
+            .ToList();
+    }
+
     private static bool Validate(NewSubscriptionDto dto, out string error, out string paramName)
     {
         if (string.IsNullOrEmpty(dto.Name) || !ValidateName(dto.Name))

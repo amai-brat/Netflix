@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers.SuscriptionController;
 
 [ApiController]
-[Authorize(Roles = "admin")]
+// [Authorize(Roles = "admin")]
 [Route("admin/subscriptions")]
 public class SubscriptionController(
-    ISubscriptionRepository subscriptionRepository, 
     ISubscriptionService subscriptionService)
     : ControllerBase
 {
@@ -18,10 +17,19 @@ public class SubscriptionController(
     [ProducesResponseType<List<Subscription>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllSubscriptionsAsync()
     {
-        var result = await subscriptionRepository.GetAllSubscriptionsAsync();
+        var result = await subscriptionService.GetSubscriptionsAsync();
+        
         return Ok(result);
     }
 
+    [HttpGet("contents")]
+    public async Task<IActionResult> GetAvailableContentsForSubscriptionAsync()
+    {
+        var result = await subscriptionService.GetContentsAsync();
+
+        return Ok(result);
+    }
+    
     [HttpPost("add")]
     [ProducesResponseType<Subscription>(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddSubscriptionAsync(NewSubscriptionDto dto)

@@ -13,7 +13,7 @@ builder.Services.AddContentAPIServices();
 var app = builder.Build();
 
 app.UseExceptionHandlerMiddleware();
-
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.MapControllers();
 
 app.Run();
