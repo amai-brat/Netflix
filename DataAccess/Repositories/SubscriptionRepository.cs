@@ -11,6 +11,14 @@ public class SubscriptionRepository(AppDbContext dbContext) : ISubscriptionRepos
         return await dbContext.Subscriptions.ToListAsync();
     }
 
+    public async Task<List<Subscription>> GetAllSubscriptionsWithAccessibleContentAsync()
+    {
+        return await dbContext.Subscriptions
+            .Include(x => x.AccessibleContent)
+            .AsSplitQuery()
+            .ToListAsync();
+    }
+
     public async Task<Subscription> AddAsync(Subscription subscription)
     {
         var entry = await dbContext.Subscriptions.AddAsync(subscription);

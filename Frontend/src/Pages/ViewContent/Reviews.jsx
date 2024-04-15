@@ -3,6 +3,7 @@ import {useState} from "react";
 import PaginatedReviews from "./PaginatedReviews.jsx";
 import Modal from 'react-modal';
 import {toast} from "react-toastify";
+import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 const modalStyles = {
     content: {
         top: '50%',
@@ -61,7 +62,7 @@ const Reviews = ({contentId}) => {
     const sendReview = async () => {
         //TODO правильный юрл
         try {
-            const resp = await fetch("http://localhost:5000/api/reviews/add", {
+            const resp = await fetch(baseUrl + "reviews/assign", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
