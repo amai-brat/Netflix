@@ -75,19 +75,19 @@ namespace DataAccess.Repositories
                 .Include(r => r.RatedByUsers)
                 .ToListAsync();
 
-		public Review DeleteReview(Review review)
-		{
-			return appDbContext.Reviews.Remove(review).Entity;
-		}
+        public Review DeleteReview(Review review)
+        {
+            return appDbContext.Reviews.Remove(review).Entity;
+        }
 
-		public async Task<Review?> GetReviewByIdAsync(long id)
-		{
-			return await appDbContext.Reviews.FindAsync(id);
-		}
+        public async Task<Review?> GetReviewByIdAsync(long id)
+        {
+            return await appDbContext.Reviews.FindAsync(id);
+        }
 
-		public async Task SaveChangesAsync()
-		{
-			await appDbContext.SaveChangesAsync();
-		}
-	}
+        public async Task SaveChangesAsync()
+        {
+            await appDbContext.SaveChangesAsync();
+        }
+    }
 }
