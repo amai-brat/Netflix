@@ -27,6 +27,7 @@ namespace DataAccess
 		public DbSet<Comment> Comments => Set<Comment>();
 
 		public DbSet<Subscription> Subscriptions => Set<Subscription>();
+		public DbSet<Currency> Currencies => Set<Currency>();
 		public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
 
 

@@ -144,7 +144,7 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 31, 11, 12, 47, 690, DateTimeKind.Unspecified).AddTicks(3130), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 11, 19, 12, 11, 868, DateTimeKind.Unspecified).AddTicks(6030), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -235,6 +235,38 @@ namespace DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.Currency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_currencies");
+
+                    b.ToTable("currencies", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "RUB"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "USD"
+                        });
+                });
+
             modelBuilder.Entity("Domain.Entities.Episode", b =>
                 {
                     b.Property<long>("Id")
@@ -293,7 +325,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 3, 31, 10, 32, 47, 690, DateTimeKind.Unspecified).AddTicks(3120), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 11, 18, 32, 11, 868, DateTimeKind.Unspecified).AddTicks(6021), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -465,7 +497,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 3, 31, 11, 2, 47, 690, DateTimeKind.Unspecified).AddTicks(3126), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 11, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(6026), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -518,6 +550,10 @@ namespace DataAccess.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price");
+
                     b.HasKey("Id")
                         .HasName("pk_subscriptions");
 
@@ -529,21 +565,24 @@ namespace DataAccess.Migrations
                             Id = 1,
                             Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки",
                             MaxResolution = 2160,
-                            Name = "Фильмы"
+                            Name = "Фильмы",
+                            Price = 300m
                         },
                         new
                         {
                             Id = 2,
                             Description = "Все сериалы только в этой подписке",
                             MaxResolution = 1080,
-                            Name = "Сериалы"
+                            Name = "Сериалы",
+                            Price = 350m
                         },
                         new
                         {
                             Id = 3,
                             Description = "Мультфильмы для всех возрастов только в данной подписке",
                             MaxResolution = 720,
-                            Name = "Мультфильмы"
+                            Name = "Мультфильмы",
+                            Price = 228m
                         });
                 });
 
@@ -595,7 +634,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
-                            BirthDay = new DateOnly(2004, 3, 31),
+                            BirthDay = new DateOnly(2004, 4, 11),
                             Email = "testEmail@gmail.com",
                             Nickname = "testUser",
                             Password = "testPassword228;",
@@ -605,7 +644,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -2L,
-                            BirthDay = new DateOnly(1999, 3, 31),
+                            BirthDay = new DateOnly(1999, 4, 11),
                             Email = "testEmail2@gmail.com",
                             Nickname = "testUser2",
                             Password = "testPassword1337;",
@@ -645,8 +684,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 3, 29, 11, 2, 47, 690, DateTimeKind.Unspecified).AddTicks(2961), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 4, 30, 11, 2, 47, 690, DateTimeKind.Unspecified).AddTicks(2998), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 9, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(5834), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 11, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(5861), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 

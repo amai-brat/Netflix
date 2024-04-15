@@ -6,6 +6,7 @@ import {toast} from "react-toastify";
 import {useState} from "react";
 import Modal from "react-modal";
 import ReviewComment from "./ReviewComment.jsx";
+import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 const modalStyles = {
     content: {
         top: '50%',
@@ -49,7 +50,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const sendComment = async () => {
         //TODO правильный юрл
         try {
-            const resp = await fetch("http://localhost:5000/api/comments/add", {
+            const resp = await fetch(baseUrl + "api/comments/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -78,7 +79,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const likeReview = async () => {
         try{
             //TODO: напистаь правильный юрл
-            const resp = await fetch("http://localhost:8080/api/review/like", {
+            const resp = await fetch(baseUrl + "api/review/like", {
                 method: "post",
                 // TODO: написать поля с идентификацией юзера
                 body: {reviewId: review.id}
