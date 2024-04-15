@@ -15,5 +15,6 @@ namespace Domain.Abstractions
         Task<List<Review>> GetReviewsByContentIdAsync(long contentId, string sort, int offset, int limit);
         Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId);
         Task AssignReviewAsync(ReviewAssignDto review, long userId);
+        Task<Review> DeleteReviewByIdAsync(long id);
     }
 }

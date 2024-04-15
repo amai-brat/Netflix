@@ -75,7 +75,22 @@ namespace Domain.Services
             return reviews[Math.Min(reviews.Count, offset)..Math.Min(reviews.Count, offset + limit)];
         }
 
-        private bool IsValidReview(ReviewAssignDto review, out string? errorMessage, out string? param)
+		public async Task<Review> DeleteReviewByIdAsync(long id)
+		{
+            var review = await _reviewRepository.GetReviewByIdAsync(id);
+
+            if (review == null)
+            {
+                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundReview, nameof(id));
+            }
+
+            var deletedReview = _reviewRepository.DeleteReview(review);
+			await _reviewRepository.SaveChangesAsync();
+
+            return deletedReview;
+		}
+
+		private bool IsValidReview(ReviewAssignDto review, out string? errorMessage, out string? param)
         {
             errorMessage = null;
             param = null;
@@ -93,5 +108,5 @@ namespace Domain.Services
 
             return errorMessage == null;
         }
-    }
+	}
 }
