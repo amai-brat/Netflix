@@ -7,7 +7,7 @@ const FavouriteTabSearchPanel = ({favourites, setFavourites}) => {
         setSearchContentName(e.target.value)
     }
     const filterFavouritesByName = () => favourites.filter((content) => 
-        content.ContentBase.Name.toLowerCase().indexOf(searchContentName.toLowerCase()) >= 0)
+        content.contentBase.name.toLowerCase().indexOf(searchContentName.toLowerCase()) >= 0)
     
     return (
         <div id="favourite-search-panel">

@@ -13,5 +13,6 @@ namespace Domain.Abstractions
         Task<List<FavouriteContent>> GetFavouriteContentsByFilterAsync(Expression<Func<FavouriteContent, bool>> filter);
         Task AddFavouriteContentAsync(long contentId, long userId);
         Task RemoveFavouriteContentAsync(long contentId, long userId);
+        Task<List<FavouriteContent>> GetWithContentAsync(Expression<Func<FavouriteContent, bool>> filter);
     }
 }
