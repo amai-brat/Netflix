@@ -1,15 +1,10 @@
-﻿using Domain.Abstractions;
-using Domain.Dtos;
-using Domain.Entities;
-using Domain.Services.ServiceExceptions;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Application.Dto;
+using Application.Exceptions;
+using Application.Services.Abstractions;
+using FluentValidation;
 
 namespace API.Controllers.ContentController
 {
@@ -17,23 +12,21 @@ namespace API.Controllers.ContentController
     [ApiController]
     public class ContentController(
         IContentService contentService,
-        IFavouriteService favouriteService
-        ) : ControllerBase
+        IFavouriteService favouriteService,
+        IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
+        IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator) : ControllerBase
     {
-        private readonly IContentService _contentService = contentService;
-        private readonly IFavouriteService _favouriteService = favouriteService;
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
-            var content = await _contentService.GetContentByIdAsync(id);
+            var content = await contentService.GetContentByIdAsync(id);
             if (content is null)
                 return BadRequest(ErrorMessages.NotFoundContent);
 
             if (content is SerialContent)
-                return Ok(SetConstraintOnPersonCount((await _contentService.GetSerialContentByIdAsync(id))!));
+                return Ok(SetConstraintOnPersonCount((await contentService.GetSerialContentByIdAsync(id))!));
             else if(content is MovieContent)
-                return Ok(SetConstraintOnPersonCount((await _contentService.GetMovieContentByIdAsync(id))!));
+                return Ok(SetConstraintOnPersonCount((await contentService.GetMovieContentByIdAsync(id))!));
             else 
                 return Ok(SetConstraintOnPersonCount(content));
         }
@@ -41,7 +34,7 @@ namespace API.Controllers.ContentController
         [HttpGet("filter")]
         public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
         {
-            var contents = await _contentService.GetContentsByFilterAsync(filter);
+            var contents = await contentService.GetContentsByFilterAsync(filter);
             return Ok(contents);
         }
 
@@ -49,7 +42,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> AddContentFavouriteAsync([FromBody] long contentId)
         {
-            await _favouriteService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            await favouriteService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
 
@@ -57,7 +50,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> RemoveContentFavouriteAsync([FromBody] long contentId)
         {
-            await _favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            await favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
             return Ok();
         }
 
@@ -69,21 +62,7 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var range = HttpContext.Request.Headers.Range;
-            if (string.IsNullOrEmpty(range))
-                range = "bytes=0-";
-
-            var videoPath = await _contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
-
-            var videoSize = new FileInfo(videoPath).Length;
-            var start = long.Parse(range.First()!.Where(char.IsDigit).ToArray());
-            var end = Math.Min(start + Consts.ChunkSize, videoSize - 1);
-            var contentLength = end - start + 1;
-
-            Response.Headers.ContentRange = $"bytes {start}-{end}/{videoSize}";
-            Response.Headers.Append("Accept-Ranges", "bytes");
-            Response.Headers.ContentLength = contentLength;
-            Response.Headers.ContentType = "video/mp4";
+            var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
 
             var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp4", enableRangeProcessing:true );
@@ -97,26 +76,73 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var range = HttpContext.Request.Headers.Range;
-            if (string.IsNullOrEmpty(range))
-                range = "bytes=0-";
+            var videoPath = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
             
-            var videoPath = await _contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
-            
-            var videoSize = new FileInfo(videoPath).Length;
-            var start = long.Parse(range.First()!.Where(char.IsDigit).ToArray());
-            var end = Math.Min(start + Consts.ChunkSize, videoSize - 1);
-            var contentLength = end - start + 1;
-
-            Response.Headers.ContentRange = $"bytes {start}-{end}/{videoSize}";
-            Response.Headers.Append("Accept-Ranges", "bytes");
-            Response.Headers.ContentLength = contentLength;
-            Response.Headers.ContentType = "video/mp4";
-
             var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp4", enableRangeProcessing:true );
         }
-
+        // TODO: авторизация
+        [HttpPost("serial/add")]
+        public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
+        {
+            var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            await contentService.AddSerialContent(serialContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("serial/update/{id}")]
+        public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
+        {
+            serialContentAdminPageDto.Id = id;
+            var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            await contentService.UpdateSerialContent(serialContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("movie/add")]
+        public async Task<IActionResult> AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
+        {
+            var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            await contentService.AddMovieContent(movieContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("movie/update/{id}")]
+        public async Task<IActionResult> UpdateMovieContent(long id, MovieContentAdminPageDto movieContentAdminPageDto)
+        {
+            movieContentAdminPageDto.Id = id;
+            var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            await contentService.UpdateMovieContent(movieContentAdminPageDto);
+            return Ok();
+        }
+        // TODO: авторизация
+        [HttpPost("content/delete/{id}")]
+        public async Task<IActionResult> DeleteContent(long id)
+        {
+            await contentService.DeleteContent(id);
+            return Ok();
+        }
+        // [HttpPost("/test")]
+        // public async Task<IActionResult> TestMethod()
+        // {
+        //     return Ok();
+        // }
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)

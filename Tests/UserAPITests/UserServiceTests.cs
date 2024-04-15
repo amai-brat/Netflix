@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
+using Application.Dto;
+using Application.Exceptions;
+using Application.Repositories;
 using AutoFixture;
 using AutoMapper;
-using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastucture.Profiles;

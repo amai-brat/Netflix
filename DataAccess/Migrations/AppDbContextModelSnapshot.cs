@@ -144,7 +144,7 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 11, 19, 12, 11, 868, DateTimeKind.Unspecified).AddTicks(6030), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 10, 41, 53, 927, DateTimeKind.Unspecified).AddTicks(2730), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -290,12 +290,12 @@ namespace DataAccess.Migrations
                         .HasColumnName("video_url");
 
                     b.HasKey("Id")
-                        .HasName("pk_episode");
+                        .HasName("pk_episodes");
 
                     b.HasIndex("SeasonInfoId")
-                        .HasDatabaseName("ix_episode_season_info_id");
+                        .HasDatabaseName("ix_episodes_season_info_id");
 
-                    b.ToTable("episode", (string)null);
+                    b.ToTable("episodes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.FavouriteContent", b =>
@@ -325,7 +325,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 11, 18, 32, 11, 868, DateTimeKind.Unspecified).AddTicks(6021), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 12, 10, 1, 53, 927, DateTimeKind.Unspecified).AddTicks(2713), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -497,7 +497,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 11, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(6026), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 10, 31, 53, 927, DateTimeKind.Unspecified).AddTicks(2724), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -634,7 +634,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
-                            BirthDay = new DateOnly(2004, 4, 11),
+                            BirthDay = new DateOnly(2004, 4, 12),
                             Email = "testEmail@gmail.com",
                             Nickname = "testUser",
                             Password = "testPassword228;",
@@ -644,7 +644,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -2L,
-                            BirthDay = new DateOnly(1999, 4, 11),
+                            BirthDay = new DateOnly(1999, 4, 12),
                             Email = "testEmail2@gmail.com",
                             Nickname = "testUser2",
                             Password = "testPassword1337;",
@@ -684,8 +684,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 9, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(5834), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 11, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(5861), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 10, 10, 31, 53, 927, DateTimeKind.Unspecified).AddTicks(2503), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 12, 10, 31, 53, 927, DateTimeKind.Unspecified).AddTicks(2541), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -993,7 +993,7 @@ namespace DataAccess.Migrations
                         .HasForeignKey("SeasonInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_episode_season_infos_season_info_id");
+                        .HasConstraintName("fk_episodes_season_infos_season_info_id");
 
                     b.Navigation("SeasonInfo");
                 });

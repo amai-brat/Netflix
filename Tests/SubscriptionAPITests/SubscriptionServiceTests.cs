@@ -1,8 +1,8 @@
+using Application.Dto;
+using Application.Repositories;
+using Application.Services.Implementations;
 using AutoFixture;
-using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
-using Domain.Services;
 using Domain.Services.ServiceExceptions;
 using Moq;
 

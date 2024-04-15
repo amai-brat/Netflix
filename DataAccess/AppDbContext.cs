@@ -29,6 +29,8 @@ namespace DataAccess
 		public DbSet<Subscription> Subscriptions => Set<Subscription>();
 		public DbSet<Currency> Currencies => Set<Currency>();
 		public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
+		public DbSet<Episode> Episodes => Set<Episode>();
+		
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
