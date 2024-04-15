@@ -13,6 +13,8 @@ namespace Domain.Services.ServiceExceptions
         public const string ArgumentsMustBePositive = "Аргументы должны быть целыми неотрицательными числами";
         public const string IncorrectSortType = "Указана неизвестная сортировка";
         public const string NotFoundContent = "Контента с указанным id не существует";
+        public const string NotFoundReview = "Рецензии с указанным id не существует";
+        public const string NotFoundComment = "Комментарий с указанным id не существует";
         public const string NotFoundUser = "Пользователя с указанным id не существует";
         public const string AlreadyFavourite = "Контент уже в избранном";
         public const string NotInFavourite = "Контент уже не входит в избранное";
@@ -24,5 +26,6 @@ namespace Domain.Services.ServiceExceptions
         public const string InvalidEmail = "Дана некорректная почта";
         public const string InvalidBirthday = "Невозможный день рождения";
         public const string IncorrectPassword = "Неправильный пароль";
+        public const string IncorrectRole = "Неправильная роль (user/admin/moderator)";
     }
 }
