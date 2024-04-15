@@ -2,12 +2,16 @@ import {useFormik} from "formik";
 import formStyles from "../styles/form.module.scss";
 import { DataGrid } from '@mui/x-data-grid';
 import {createTheme, ThemeProvider} from "@mui/material";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {baseUrl} from "../../../Shared/HttpClient/baseUrl.js";
+import {toast} from "react-toastify";
+import {SubscriptionsContext} from "./SubscriptionsContext.js";
+import {getSubscriptions} from "../httpClient.js";
 
 
 export const SubscriptionForm = ({ subscription }) => {
     const [contents, setContents] = useState([]);
+    const {setSubscriptions} = useContext(SubscriptionsContext);
     
     useEffect(() => {
         (async() => {
@@ -84,8 +88,6 @@ export const SubscriptionForm = ({ subscription }) => {
         onSubmit: async (values) => {
             values.accessibleContentIds = accessibleContentIds;
             
-            const serverMessageElem = document.getElementById("serverMessage-form");
-            
             if (!subscription) {
                 try {
                     const response = await fetch(baseUrl + "admin/subscription/add", {
@@ -97,12 +99,19 @@ export const SubscriptionForm = ({ subscription }) => {
                     })
                     
                     if (response.ok) {
-                        serverMessageElem.innerHTML = "Успешно создана";
+                        toast.success("Успешно создана", {
+                            position: "bottom-center"
+                        });
+                        setSubscriptions((await getSubscriptions()).data);
                     } else {
-                        serverMessageElem.innerHTML = await response.json();
+                        toast.error(await response.json(),{
+                            position: "bottom-center"
+                        });
                     }
                 } catch (e) {
-                    serverMessageElem.innerHTML = "Ошибка"
+                    toast.error("Ошибка", {
+                        position: "bottom-center"
+                    })
                 }
             } else {
                 const dto = {
@@ -125,12 +134,19 @@ export const SubscriptionForm = ({ subscription }) => {
                     })
 
                     if (response.ok) {
-                        serverMessageElem.innerHTML = "Успешно изменено";
+                        toast.success("Успешно изменено", {
+                            position: "bottom-center"
+                        });
+                        setSubscriptions((await getSubscriptions()).data);
                     } else {
-                        serverMessageElem.innerHTML = await response.json();
+                        toast.error(await response.json(),{
+                            position: "bottom-center"
+                        });
                     }
                 } catch (e) {
-                    serverMessageElem.innerHTML = "Ошибка"
+                    toast.error("Ошибка", {
+                        position: "bottom-center"
+                    })
                 }
             }
         },
@@ -187,7 +203,6 @@ export const SubscriptionForm = ({ subscription }) => {
             </div>
             <button className={formStyles.submitButton} type={"submit"}>Отправить</button>
             <br/>
-            <span id={"serverMessage-form"}></span>
         </form>
     )
 };

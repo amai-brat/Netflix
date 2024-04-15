@@ -1,7 +1,11 @@
 import styles from '../styles/deletionConfirmation.module.scss';
 import {baseUrl} from "../../../Shared/HttpClient/baseUrl.js";
+import {toast} from "react-toastify";
+import {useContext} from "react";
+import {SubscriptionsContext} from "./SubscriptionsContext.js";
 
 export const DeletionConfirmation = ({ subscription, setModalIsOpen }) => {
+    const {setSubscriptions} = useContext(SubscriptionsContext);
     async function handleDeleteButtonClick() {
         const serverMessageElement = document.getElementById("server-message");
         try {
@@ -13,13 +17,20 @@ export const DeletionConfirmation = ({ subscription, setModalIsOpen }) => {
                 }
             });
             if (response.ok) {
-                serverMessageElement.innerHTML = "Успешно удалено";
+                toast.success("Успешно удалено", {
+                    position: "bottom-center"
+                });
+                setSubscriptions(subscriptions => subscriptions.filter(x => x.id !== subscription.id))
                 setTimeout(() => setModalIsOpen(false), 500);
             } else {
-                serverMessageElement.innerHTML = "Не получилось удалить: " + await response.text();
+                toast.error("Не получилось удалить: " + await response.text(), {
+                    position: "bottom-center"
+                })
             }
         } catch (e) {
-            serverMessageElement.innerHTML = "Ошибка";
+            toast.error("Ошибка", {
+                position: "bottom-center"
+            })
             console.log(e);
         }
     }
@@ -31,7 +42,6 @@ export const DeletionConfirmation = ({ subscription, setModalIsOpen }) => {
                 <button onClick={handleDeleteButtonClick}>Да</button>
                 <button onClick={() => setModalIsOpen(false)}>Нет</button>
             </div>
-            <span id={"server-message"}></span>
         </div>
     );
 }

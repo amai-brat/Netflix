@@ -3,27 +3,17 @@ import styles from './styles/page.module.scss';
 import React, {useEffect, useState} from "react";
 import {SubscriptionForm} from "./components/SubscriptionForm.jsx";
 import {baseUrl} from "../../Shared/HttpClient/baseUrl.js";
+import {SubscriptionsContext} from "./components/SubscriptionsContext.js";
+import {getSubscriptions} from "./httpClient.js";
 
 export const SubscriptionsManagement = () => {
     const [subscriptions, setSubscriptions] = useState([]);
-
+    
     useEffect(() => {
         (async() => {
-            try {
-                const response = await fetch(baseUrl + "admin/subscription/all", {
-                    method: "GET",
-                    headers: {
-                        // TODO: auth token
-                        // "Authorization": "Bearer [token]"
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setSubscriptions(data);
-                }
-            } catch (e) {
-                console.log(e);
+            const res = await getSubscriptions();
+            if (res && res.ok) {
+                setSubscriptions(res.data);
             }
         })();
     }, []);
@@ -38,6 +28,7 @@ export const SubscriptionsManagement = () => {
     }
     
     return (
+      <SubscriptionsContext.Provider value={{subscriptions, setSubscriptions}}>
         <div className={styles.container}>
             <div className={styles.leftSidebar}>
                 <SubscriptionsSidebar subscriptions={subscriptions} 
@@ -48,5 +39,6 @@ export const SubscriptionsManagement = () => {
             <div className={styles.content}>
                 {contents[contentType]}
             </div>
-        </div>)
+        </div>
+      </SubscriptionsContext.Provider>)
 };
