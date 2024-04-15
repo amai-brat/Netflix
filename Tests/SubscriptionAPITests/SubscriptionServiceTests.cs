@@ -191,7 +191,7 @@ public class SubscriptionServiceTests
 
         _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
             .ReturnsAsync((long id) => contents.FirstOrDefault(x => x.Id == id));
-        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+        _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => subscriptions.FirstOrDefault(x => x.Id == id));
 
         var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
@@ -235,7 +235,7 @@ public class SubscriptionServiceTests
             .With(x => x.SubscriptionId, 0)
             .Create();
 
-        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+        _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => subscriptions.FirstOrDefault(x => x.Id == id));
         
         var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
@@ -266,7 +266,7 @@ public class SubscriptionServiceTests
             .Without(x => x.AccessibleContentIdsToRemove)
             .Create();
 
-        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+        _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Subscription() { Id = id });
         
         var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
@@ -293,7 +293,7 @@ public class SubscriptionServiceTests
             .Without(x => x.AccessibleContentIdsToRemove)
             .Create();
 
-        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+        _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Subscription() { Id = id });
         _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
             .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));
@@ -322,7 +322,7 @@ public class SubscriptionServiceTests
             .Without(x => x.AccessibleContentIdsToAdd)
             .Create();
 
-        _mockSubRepo.Setup(x => x.GetSubscriptionByIdAsync(It.IsAny<int>()))
+        _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Subscription() { Id = id });
         _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
             .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));

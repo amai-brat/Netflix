@@ -8,7 +8,7 @@ namespace API.Controllers.SuscriptionController;
 
 [ApiController]
 // [Authorize(Roles = "admin")]
-[Route("admin/subscriptions")]
+[Route("admin/subscription")]
 public class SubscriptionController(
     ISubscriptionService subscriptionService)
     : ControllerBase

@@ -34,7 +34,8 @@ public class SubscriptionService(
             Name = dto.Name,
             Description = dto.Description,
             MaxResolution = dto.MaxResolution,
-            AccessibleContent = contents
+            AccessibleContent = contents,
+            Price = dto.Price
         });
 
         await subRepository.SaveChangesAsync();
@@ -60,7 +61,7 @@ public class SubscriptionService(
 
     public async Task<Subscription> EditSubscriptionAsync(EditSubscriptionDto dto)
     {
-        var subscription = await subRepository.GetSubscriptionByIdAsync(dto.SubscriptionId);
+        var subscription = await subRepository.GetSubscriptionWithAccessibleContentAsync(dto.SubscriptionId);
         if (subscription is null)
         {
             throw new SubscriptionServiceArgumentException(
@@ -81,6 +82,9 @@ public class SubscriptionService(
 
         if (dto.NewMaxResolution is not null)
             subscription.MaxResolution = dto.NewMaxResolution.Value;
+
+        if (dto.NewPrice is not null)
+            subscription.Price = dto.NewPrice.Value;
         
         if (dto.AccessibleContentIdsToAdd != null)
         {
@@ -92,7 +96,8 @@ public class SubscriptionService(
                         SubscriptionErrorMessages.GivenIdOfNonExistingContent,
                         nameof(dto.AccessibleContentIdsToAdd));
 
-                subscription.AccessibleContent.Add(content);
+                if (subscription.AccessibleContent.All(x => x.Id != content.Id))
+                    subscription.AccessibleContent.Add(content);
             }
         }
 
@@ -165,6 +170,13 @@ public class SubscriptionService(
             return false;
         }
 
+        if (!ValidatePrice(dto.Price))
+        {
+            error = SubscriptionErrorMessages.SubscriptionPriceLessThanZero;
+            paramName = nameof(dto.Price);
+            return false;
+        }
+
         error = "";
         paramName = "";
         return true;
@@ -193,6 +205,13 @@ public class SubscriptionService(
             return false;
         }
 
+        if (dto.NewPrice is not null && !ValidatePrice(dto.NewPrice.Value))
+        {
+            error = SubscriptionErrorMessages.SubscriptionPriceLessThanZero;
+            paramName = nameof(dto.NewPrice);
+            return false;
+        }
+        
         error = "";
         paramName = "";
         return true;
@@ -203,5 +222,6 @@ public class SubscriptionService(
                                               Regex.IsMatch(name, "^[А-Яа-яA-Za-z0-9-_ ]+$");
     private static bool ValidateDescription(string description) => !IsEmptyOrWhiteSpace(description);
     private static bool ValidateMaxResolution(int resolution) => resolution > 0;
+    private static bool ValidatePrice(decimal price) => price >= 0;
 
 }
