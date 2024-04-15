@@ -60,7 +60,7 @@ public class SubscriptionService(
 
     public async Task<Subscription> EditSubscriptionAsync(EditSubscriptionDto dto)
     {
-        var subscription = await subRepository.GetSubscriptionByIdAsync(dto.SubscriptionId);
+        var subscription = await subRepository.GetSubscriptionWithAccessibleContentAsync(dto.SubscriptionId);
         if (subscription is null)
         {
             throw new SubscriptionServiceArgumentException(

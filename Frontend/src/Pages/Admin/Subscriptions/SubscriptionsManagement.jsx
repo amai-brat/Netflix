@@ -10,7 +10,7 @@ export const SubscriptionsManagement = () => {
     useEffect(() => {
         (async() => {
             try {
-                const response = await fetch(baseUrl + "admin/subscriptions/all", {
+                const response = await fetch(baseUrl + "admin/subscription/all", {
                     method: "GET",
                     headers: {
                         // TODO: auth token

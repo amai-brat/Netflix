@@ -5,7 +5,7 @@ export const DeletionConfirmation = ({ subscription, setModalIsOpen }) => {
     async function handleDeleteButtonClick() {
         const serverMessageElement = document.getElementById("server-message");
         try {
-            const response = await fetch(`${baseUrl}admin/subscriptions/delete/${subscription.id}`, {
+            const response = await fetch(`${baseUrl}admin/subscription/delete/${subscription.id}`, {
                 method: "DELETE",
                 headers: {
                     // TODO: auth token

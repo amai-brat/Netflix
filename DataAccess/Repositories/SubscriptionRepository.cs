@@ -35,6 +35,12 @@ public class SubscriptionRepository(AppDbContext dbContext) : ISubscriptionRepos
         return await dbContext.Subscriptions.FindAsync(subscriptionId);
     }
 
+    public async Task<Subscription?> GetSubscriptionWithAccessibleContentAsync(int subscriptionId)
+    {
+        return await dbContext.Subscriptions
+            .Include(x => x.AccessibleContent)
+            .SingleOrDefaultAsync(x => x.Id == subscriptionId);
+    }
     public Subscription Remove(Subscription subscription)
     {
         return dbContext.Subscriptions.Remove(subscription).Entity;

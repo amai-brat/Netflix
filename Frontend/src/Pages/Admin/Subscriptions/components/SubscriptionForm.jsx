@@ -12,7 +12,7 @@ export const SubscriptionForm = ({ subscription }) => {
     useEffect(() => {
         (async() => {
             try {
-                const response = await fetch(baseUrl + "admin/subscriptions/contents", {
+                const response = await fetch(baseUrl + "admin/subscription/contents", {
                     method: "GET",
                     headers: {
                         // TODO: auth token
@@ -88,7 +88,7 @@ export const SubscriptionForm = ({ subscription }) => {
             
             if (!subscription) {
                 try {
-                    const response = await fetch(baseUrl + "admin/subscriptions/add", {
+                    const response = await fetch(baseUrl + "admin/subscription/add", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -116,7 +116,7 @@ export const SubscriptionForm = ({ subscription }) => {
                 };
 
                 try {
-                    const response = await fetch(baseUrl + "admin/subscriptions/edit", {
+                    const response = await fetch(baseUrl + "admin/subscription/edit", {
                         method: "PUT",
                         headers: {
                             "Content-Type": "application/json"
@@ -179,7 +179,7 @@ export const SubscriptionForm = ({ subscription }) => {
             <div className={formStyles.inputWrapper}>
                 <label>Доступные по подписке произведения</label>
                 <ThemeProvider theme={theme}>
-                    <DataGrid checkboxSelection columns={columns} rows={contents}
+                    <DataGrid style={{color: "white"}} checkboxSelection columns={columns} rows={contents}
                               onRowSelectionModelChange={(model) => {setAccessibleContentIds(model)}}
                               rowSelectionModel={accessibleContentIds}
                     sx={dataGridStyles}></DataGrid>
@@ -199,11 +199,17 @@ const dataGridStyles = {
 }
 
 const theme = createTheme({
+    palette: {
+        text: {
+            primary: '#ffffff',
+        },
+    },
     components: {
         MuiPaper: {
             styleOverrides: {
                 root: {
                     backgroundColor: "#313131",
+                    color: "white"
                 }
             }
         },
@@ -211,6 +217,14 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     width: "100%",
+                    color: "white"
+                }
+            }
+        },
+        MuiTypography: {
+            styleOverrides: {
+                root: {
+                    color: 'white'
                 }
             }
         }
