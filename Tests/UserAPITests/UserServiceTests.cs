@@ -2,6 +2,8 @@ using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
+using Application.Services.Abstractions;
+using Application.Services.Implementations;
 using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
@@ -32,6 +34,7 @@ public class UserServiceTests
     private readonly IMapper _mapper;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork = new();
     private readonly Mock<IReviewRepository> _mockReviewRepo = new();
+    private readonly IPasswordHasher _passwordHasher = new PasswordHasher();
     
     [Fact]
     public async Task AllMethods_UserNotFound_ErrorReturned()
@@ -237,7 +240,7 @@ public class UserServiceTests
     {
         // arrange
         var users = GetUsers();
-        users.Single(x => x.Id == 1).Password = PasswordHasher.Hash("uselessmouth");
+        users.Single(x => x.Id == 1).Password = _passwordHasher.Hash("uselessmouth");
         
         _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
@@ -250,7 +253,7 @@ public class UserServiceTests
                 new ChangePasswordDto { PreviousPassword = "uselessmouth", NewPassword = "aboba" }));
         
         // assert
-        Assert.True(PasswordHasher.Verify("uselessmouth", users.Single(x => x.Id == 1).Password));
+        Assert.True(_passwordHasher.Verify("uselessmouth", users.Single(x => x.Id == 1).Password));
     }
 
     [Fact]
@@ -259,7 +262,7 @@ public class UserServiceTests
         // arrange
         var users = GetUsers();
         var prevPassword = "uselessmouth";
-        users.Single(x => x.Id == 1).Password = PasswordHasher.Hash(prevPassword);
+        users.Single(x => x.Id == 1).Password = _passwordHasher.Hash(prevPassword);
         
         _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
@@ -418,7 +421,7 @@ public class UserServiceTests
     
     private UserService GetUserService()
     {
-        return new UserService(_mockPictureProvider.Object, _mockFavouirteRepo.Object, _mockUserRepo.Object, _mapper, _mockReviewRepo.Object, _mockUnitOfWork.Object);
+        return new UserService(_mockPictureProvider.Object, _mockFavouirteRepo.Object, _mockUserRepo.Object, _mapper, _mockReviewRepo.Object, _mockUnitOfWork.Object, _passwordHasher);
     }
 
     private List<User> GetUsers()

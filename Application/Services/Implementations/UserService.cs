@@ -8,7 +8,7 @@ using Domain.Services.ServiceExceptions;
 using Infrastucture.Validators;
 using IReviewRepository = Application.Repositories.IReviewRepository;
 
-namespace Infrastucture.Services;
+namespace Application.Services.Implementations;
 
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,
@@ -16,7 +16,8 @@ public class UserService(
     IUserRepository userRepository,
     IMapper mapper,
     IReviewRepository reviewRepository,
-    IUnitOfWork unitOfWork) : IUserService
+    IUnitOfWork unitOfWork,
+    IPasswordHasher passwordHasher) : IUserService
 {
     private const int ReviewsPerPage = 5;
 
@@ -116,7 +117,7 @@ public class UserService(
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
-        if (!PasswordHasher.Verify(dto.PreviousPassword, user.Password))
+        if (!passwordHasher.Verify(dto.PreviousPassword, user.Password))
         {
             throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.PreviousPassword));
         }
@@ -128,7 +129,7 @@ public class UserService(
             throw new UserServiceArgumentException(string.Join(" ", validationResult.Errors), nameof(dto.NewPassword));
         }
 
-        user.Password = PasswordHasher.Hash(dto.NewPassword);
+        user.Password = passwordHasher.Hash(dto.NewPassword);
 
         await unitOfWork.SaveChangesAsync();
 
@@ -182,5 +183,20 @@ public class UserService(
         }
 
         return favouriteDtos;
+    }
+
+    public async Task<TokensDto> AuthenticateAsync(LoginDto dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<TokensDto> RefreshTokenAsync(string token)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RevokeTokenAsync(string token)
+    {
+        throw new NotImplementedException();
     }
 }

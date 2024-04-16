@@ -2,6 +2,7 @@ using API.Hubs;
 using API.Middlewares.ExceptionHandler;
 using Application.Dto;
 using Application.Mappers;
+using Application.Options;
 using Application.Services.RegisterExtensions;
 using Application.Validators;
 using DataAccess.Extensions;
@@ -11,19 +12,9 @@ using Infrastucture.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "Frontend",
-        policy  =>
-        {
-            policy.WithOrigins("http://localhost:5173/")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-});
 builder.Services.AddSignalR();
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastucture();

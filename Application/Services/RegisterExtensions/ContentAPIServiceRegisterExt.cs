@@ -16,6 +16,7 @@ namespace Application.Services.RegisterExtensions
             serviceCollection.AddScoped<ISubscriptionService, SubscriptionService>();
             serviceCollection.AddScoped<ICommentService, CommentService>();
             serviceCollection.AddScoped<INotificationService, NotificationService>();
+            serviceCollection.AddScoped<IPasswordHasher, PasswordHasher>();
             
             return serviceCollection;
         }
