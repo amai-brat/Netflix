@@ -98,13 +98,13 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                 <div id="selection-content-filter-panel-country">
                     <label htmlFor="selection-content-filter-panel-country-select" className="selection-content-filter-panel-filter-name">Страна</label>
                     <select id="selection-content-filter-panel-country-select" onChange={(e) => {
-                        if (e.target.value === "-1") {
+                        if (e.target.value === "0") {
                             filter.country = null
                         } else {
-                            filter.country = parseInt(e.target.value)
+                            filter.country = e.target[parseInt(e.target.value)].innerHTML
                         }
                     }}>
-                        <option className="selection-content-filter-panel-country-select-option" value={-1}>Любая</option>
+                        <option className="selection-content-filter-panel-country-select-option" value={0}>Любая</option>
                         <option className="selection-content-filter-panel-country-select-option" value={1}>США</option>
                         <option className="selection-content-filter-panel-country-select-option" value={2}>Россия</option>
                         <option className="selection-content-filter-panel-country-select-option" value={3}>Китай</option>

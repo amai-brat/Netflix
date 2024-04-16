@@ -24,7 +24,7 @@ const Header = () => {
                 const response = await fetch(baseUrl + "user/get-personal-info")
                 if(response.ok){
                     const userData = await response.json()
-                    setUser({name: userData.Nickname, icon: userData.ProfilePictureUrl })
+                    setUser({name: userData.nickname, icon: userData.profilePictureUrl })
                     isUserAuth = true
                 }else{
                     setUser(null)
