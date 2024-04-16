@@ -1,3 +1,4 @@
+using API.Hubs;
 using API.Middlewares.ExceptionHandler;
 using Application.Dto;
 using Application.Mappers;
@@ -10,6 +11,18 @@ using Infrastucture.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "Frontend",
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:5173/")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+builder.Services.AddSignalR();
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
@@ -49,7 +62,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandlerMiddleware();
 
 app.UseCors("Frontend");
-
+app.MapHub<NotificationHub>("/hub/notification");
 app.MapControllers();
 
 app.Run();

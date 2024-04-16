@@ -14,6 +14,9 @@ namespace DataAccess.Repositories
             await appDbContext.AddAsync(review);
             await appDbContext.SaveChangesAsync();
         }
+        
+        public async Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter) =>
+            await appDbContext.Reviews.SingleOrDefaultAsync(filter);
 
         public async Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage)
         {
@@ -60,7 +63,7 @@ namespace DataAccess.Repositories
 
             return result?.Score;
         }
-
+        
         public async Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter) =>
             await appDbContext.Reviews.Where(filter)
                 .Include(r => r.User)

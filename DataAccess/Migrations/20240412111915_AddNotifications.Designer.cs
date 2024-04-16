@@ -3,6 +3,7 @@ using System;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240412111915_AddNotifications")]
+    partial class AddNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -321,12 +324,12 @@ namespace DataAccess.Migrations
                         .HasColumnName("video_url");
 
                     b.HasKey("Id")
-                        .HasName("pk_episodes");
+                        .HasName("pk_episode");
 
                     b.HasIndex("SeasonInfoId")
-                        .HasDatabaseName("ix_episodes_season_info_id");
+                        .HasDatabaseName("ix_episode_season_info_id");
 
-                    b.ToTable("episodes", (string)null);
+                    b.ToTable("episode", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.FavouriteContent", b =>
@@ -1031,7 +1034,7 @@ namespace DataAccess.Migrations
                         .HasForeignKey("SeasonInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_episodes_season_infos_season_info_id");
+                        .HasConstraintName("fk_episode_season_infos_season_info_id");
 
                     b.Navigation("SeasonInfo");
                 });

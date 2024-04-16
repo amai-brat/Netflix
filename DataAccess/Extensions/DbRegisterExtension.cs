@@ -1,8 +1,11 @@
 ﻿using Application.Repositories;
+using Application.Services.Abstractions;
 using DataAccess.Repositories;
+using Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using IReviewRepository = Application.Repositories.IReviewRepository;
 
 namespace DataAccess.Extensions
 {
@@ -15,6 +18,8 @@ namespace DataAccess.Extensions
             serviceCollection.AddScoped<IContentRepository, ContentRepository>();
             serviceCollection.AddScoped<IFavouriteContentRepository, FavouriteContentRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
+            serviceCollection.AddScoped<ICommentRepository, CommentRepository>();
+            serviceCollection.AddScoped<ICommentNotificationRepository, CommentNotificationRepository>();
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 

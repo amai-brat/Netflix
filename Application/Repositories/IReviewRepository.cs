@@ -6,6 +6,7 @@ namespace Application.Repositories
 {
     public interface IReviewRepository
     {
+        Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter);
         Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter);
         Task AssignReviewAsync(Review review);
         Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage);
