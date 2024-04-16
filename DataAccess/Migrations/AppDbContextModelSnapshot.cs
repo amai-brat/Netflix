@@ -109,6 +109,10 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("CommentNotificationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("comment_notification_id");
+
                     b.Property<long>("ReviewId")
                         .HasColumnType("bigint")
                         .HasColumnName("review_id");
@@ -129,6 +133,10 @@ namespace DataAccess.Migrations
                     b.HasKey("Id")
                         .HasName("pk_comments");
 
+                    b.HasIndex("CommentNotificationId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_comments_comment_notification_id");
+
                     b.HasIndex("ReviewId")
                         .HasDatabaseName("ix_comments_review_id");
 
@@ -144,8 +152,31 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 11, 19, 12, 11, 868, DateTimeKind.Unspecified).AddTicks(6030), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 14, 29, 14, 856, DateTimeKind.Unspecified).AddTicks(102), new TimeSpan(0, 3, 0, 0, 0))
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.CommentNotification", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CommentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("comment_id");
+
+                    b.Property<bool>("Readed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("readed");
+
+                    b.HasKey("Id")
+                        .HasName("pk_comment_notifications");
+
+                    b.ToTable("comment_notifications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ContentBase", b =>
@@ -290,12 +321,12 @@ namespace DataAccess.Migrations
                         .HasColumnName("video_url");
 
                     b.HasKey("Id")
-                        .HasName("pk_episode");
+                        .HasName("pk_episodes");
 
                     b.HasIndex("SeasonInfoId")
-                        .HasDatabaseName("ix_episode_season_info_id");
+                        .HasDatabaseName("ix_episodes_season_info_id");
 
-                    b.ToTable("episode", (string)null);
+                    b.ToTable("episodes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.FavouriteContent", b =>
@@ -325,7 +356,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 11, 18, 32, 11, 868, DateTimeKind.Unspecified).AddTicks(6021), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 12, 13, 49, 14, 856, DateTimeKind.Unspecified).AddTicks(92), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -497,7 +528,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 11, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(6026), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 14, 19, 14, 856, DateTimeKind.Unspecified).AddTicks(98), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -634,7 +665,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
-                            BirthDay = new DateOnly(2004, 4, 11),
+                            BirthDay = new DateOnly(2004, 4, 12),
                             Email = "testEmail@gmail.com",
                             Nickname = "testUser",
                             Password = "testPassword228;",
@@ -644,7 +675,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -2L,
-                            BirthDay = new DateOnly(1999, 4, 11),
+                            BirthDay = new DateOnly(1999, 4, 12),
                             Email = "testEmail2@gmail.com",
                             Nickname = "testUser2",
                             Password = "testPassword1337;",
@@ -684,8 +715,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 9, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(5834), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 11, 19, 2, 11, 868, DateTimeKind.Unspecified).AddTicks(5861), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 10, 14, 19, 14, 855, DateTimeKind.Unspecified).AddTicks(9933), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 12, 14, 19, 14, 855, DateTimeKind.Unspecified).AddTicks(9967), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -815,6 +846,11 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.Comment", b =>
                 {
+                    b.HasOne("Domain.Entities.CommentNotification", "CommentNotification")
+                        .WithOne("Comment")
+                        .HasForeignKey("Domain.Entities.Comment", "CommentNotificationId")
+                        .HasConstraintName("fk_comments_comment_notifications_comment_notification_id");
+
                     b.HasOne("Domain.Entities.Review", "Review")
                         .WithMany("Comments")
                         .HasForeignKey("ReviewId")
@@ -828,6 +864,8 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_comments_users_user_id");
+
+                    b.Navigation("CommentNotification");
 
                     b.Navigation("Review");
 
@@ -993,7 +1031,7 @@ namespace DataAccess.Migrations
                         .HasForeignKey("SeasonInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_episode_season_infos_season_info_id");
+                        .HasConstraintName("fk_episodes_season_infos_season_info_id");
 
                     b.Navigation("SeasonInfo");
                 });
@@ -1158,6 +1196,12 @@ namespace DataAccess.Migrations
                         });
 
                     b.Navigation("YearRange")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.CommentNotification", b =>
+                {
+                    b.Navigation("Comment")
                         .IsRequired();
                 });
 

@@ -1,13 +1,9 @@
-﻿using Domain.Abstractions;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Dtos;
+using Application.Dto;
+using Application.Repositories;
+using Application.Services.Abstractions;
 
 namespace DataAccess.Repositories
 {
@@ -18,6 +14,9 @@ namespace DataAccess.Repositories
             await appDbContext.AddAsync(review);
             await appDbContext.SaveChangesAsync();
         }
+        
+        public async Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter) =>
+            await appDbContext.Reviews.SingleOrDefaultAsync(filter);
 
         public async Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage)
         {
@@ -64,7 +63,7 @@ namespace DataAccess.Repositories
 
             return result?.Score;
         }
-
+        
         public async Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter) =>
             await appDbContext.Reviews.Where(filter)
                 .Include(r => r.User)

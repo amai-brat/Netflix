@@ -1,9 +1,12 @@
+using Application.Dto;
+using Application.Exceptions;
+using Application.Repositories;
+using Application.Services.Abstractions;
 using AutoMapper;
-using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastucture.Validators;
+using IReviewRepository = Application.Repositories.IReviewRepository;
 
 namespace Infrastucture.Services;
 

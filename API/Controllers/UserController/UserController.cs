@@ -1,6 +1,5 @@
-using Domain.Abstractions;
-using Domain.Dtos;
-using Microsoft.AspNetCore.Authorization;
+using Application.Dto;
+using Application.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.UserController;

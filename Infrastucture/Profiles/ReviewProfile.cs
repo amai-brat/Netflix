@@ -1,5 +1,5 @@
+using Application.Dto;
 using AutoMapper;
-using Domain.Dtos;
 using Domain.Entities;
 
 namespace Infrastucture.Profiles;

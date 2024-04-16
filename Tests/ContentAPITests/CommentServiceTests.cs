@@ -1,8 +1,8 @@
-﻿using Domain.Entities;
-using Domain.Services.ServiceExceptions;
-using Domain.Services;
+﻿using Application.Exceptions;
+using Application.Repositories;
+using Application.Services.Implementations;
+using Domain.Entities;
 using AutoFixture;
-using Domain.Abstractions;
 using Moq;
 
 namespace Tests.ContentAPITests
@@ -11,6 +11,8 @@ namespace Tests.ContentAPITests
 	{
 		private readonly Fixture _fixture = new();
 		private readonly Mock<ICommentRepository> _mockComment = new();
+		private readonly Mock<IReviewRepository> _mockReview = new();
+		private readonly Mock<IUserRepository> _mockUser = new();
 
 		[Fact]
 		public async Task DeleteComment_CorrectIdGiven_CommentReturned()
@@ -21,15 +23,15 @@ namespace Tests.ContentAPITests
 			var commentId = comment.Id;
 
 			_mockComment.Setup(repository => repository.GetCommentByIdAsync(It.IsAny<long>()))
-				.ReturnsAsync((long id) => comments.SingleOrDefault(comment => comment.Id == id));
+				.ReturnsAsync((long id) => comments.SingleOrDefault(com => com.Id == id));
 			_mockComment.Setup(repository => repository.Remove(It.IsAny<Comment>()))
-				.Returns((Comment comment) =>
+				.Returns((Comment com) =>
 				{
-					comments.Remove(comment);
-					return comment;
+					comments.Remove(com);
+					return com;
 				});
 
-			var service = new CommentService(_mockComment.Object);
+			var service = new CommentService(_mockComment.Object, _mockReview.Object, _mockUser.Object);
 
 			//Act
 			var deletedComment = await service.DeleteCommentByIdAsync(commentId);
@@ -56,7 +58,7 @@ namespace Tests.ContentAPITests
 					return comment;
 				});
 
-			var service = new CommentService(_mockComment.Object);
+			var service = new CommentService(_mockComment.Object, _mockReview.Object, _mockUser.Object);
 
 			//Act
 			var ex = await Assert.ThrowsAsync<CommentServiceArgumentException>(async() =>
