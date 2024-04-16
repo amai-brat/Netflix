@@ -1,8 +1,7 @@
 using Application.Exceptions;
 using Application.Repositories;
-using Domain.Abstractions;
+using Application.Services.Abstractions;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
 
 namespace Application.Services.Implementations;
 
@@ -12,20 +11,16 @@ public class CommentService(
     IUserRepository userRepository
     ): ICommentService
 {
-    private readonly ICommentRepository _commentRepository = commentRepository;
-    private readonly IUserRepository _userRepository = userRepository;
-    private readonly IReviewRepository _reviewRepository = reviewRepository;
-
     public async Task<long> AssignCommentAsync(string text, long userId, long reviewId)
     {
         if(string.IsNullOrEmpty(text))
             throw new CommentServiceArgumentException(ErrorMessages.CommentMustHaveText, text);
-        if(await _userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
+        if(await userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
             throw new CommentServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
-        if (await _reviewRepository.GetReviewByFilterAsync(r => r.Id == reviewId) is null)
+        if (await reviewRepository.GetReviewByFilterAsync(r => r.Id == reviewId) is null)
             throw new CommentServiceArgumentException(ErrorMessages.NotFoundReview, $"{reviewId}");
             
-        return await _commentRepository.AssignCommentAsync(new Comment()
+        return await commentRepository.AssignCommentAsync(new Comment()
         {
             Text = text,
             UserId = userId,
@@ -36,5 +31,19 @@ public class CommentService(
                 Readed = false
             }
         });
+    }
+    public async Task<Comment> DeleteCommentByIdAsync(long id)
+    {
+        var comment = await commentRepository.GetCommentByIdAsync(id);
+
+        if (comment == null) 
+        {
+            throw new CommentServiceArgumentException(ErrorMessages.NotFoundComment, nameof(id));
+        }
+
+        comment = commentRepository.Remove(comment);
+
+        await commentRepository.SaveChangesAsync();
+        return comment;
     }
 }

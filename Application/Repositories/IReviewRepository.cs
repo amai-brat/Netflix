@@ -12,5 +12,8 @@ namespace Application.Repositories
         Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage);
         Task<int> GetPagesCountAsync(ReviewSearchDto dto, int reviewsPerPage);
         Task<int?> GetScoreByUserAsync(long userId, long contentId);
+        Task<Review?> GetReviewByIdAsync(long id);
+        Review DeleteReview(Review review);
+        Task SaveChangesAsync();
     }
 }

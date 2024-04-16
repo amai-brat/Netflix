@@ -43,6 +43,28 @@ public class UserService(
         };
     }
 
+    public async Task<User> ChangeRoleAsync(long userId, string newRole)
+    {
+        var user = await userRepository.GetUserByFilterAsync(u => u.Id == userId);
+        var acceptableRoles = new List<string> { "user", "admin", "moderator" };
+
+		if (user is null)
+        {
+			throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
+		}
+
+        if (!acceptableRoles.Contains(newRole))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.IncorrectRole, nameof(newRole));
+        }
+
+        user.Role = newRole;
+
+        await unitOfWork.SaveChangesAsync();
+
+        return user;
+    }
+
     public async Task<User> ChangeEmailAsync(int userId, string newEmail)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);

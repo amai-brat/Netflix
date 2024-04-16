@@ -1,8 +1,10 @@
-using Domain.Dtos;
+using Domain.Entities;
 
-namespace Domain.Abstractions;
+namespace Application.Services.Abstractions;
 
 public interface ICommentService
 {
     Task<long> AssignCommentAsync(string text, long userId, long reviewId);
+   Task<Comment> DeleteCommentByIdAsync(long id);
+
 }

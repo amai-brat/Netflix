@@ -9,6 +9,7 @@
         public const string IncorrectSortType = "Указана неизвестная сортировка";
         public const string NotFoundContent = "Контента с указанным id не существует";
         public const string NotFoundReview = "Рецензии с указанным id не существует";
+        public const string NotFoundComment = "Комментарий с указанным id не существует";
         public const string NotFoundNotification = "Уведомления с указанным id не существует";
         public const string NotFoundUser = "Пользователя с указанным id не существует";
         public const string AlreadyFavourite = "Контент уже в избранном";
@@ -21,5 +22,6 @@
         public const string InvalidEmail = "Дана некорректная почта";
         public const string InvalidBirthday = "Невозможный день рождения";
         public const string IncorrectPassword = "Неправильный пароль";
+        public const string IncorrectRole = "Неправильная роль (user/admin/moderator)";
     }
 }
