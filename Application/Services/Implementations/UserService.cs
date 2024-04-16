@@ -188,6 +188,11 @@ public class UserService(
 
     public async Task<long?> RegisterAsync(SignUpDto dto)
     {
+        if (!await userRepository.IsEmailUniqueAsync(dto.Email))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
+        }
+        
         var user = new User
         {
             Email = dto.Email,
@@ -195,7 +200,7 @@ public class UserService(
             Password = passwordHasher.Hash(dto.Password),
             Role = "user"
         };
-
+        
         user = await userRepository.AddAsync(user);
         await unitOfWork.SaveChangesAsync();
         

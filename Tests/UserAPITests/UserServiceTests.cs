@@ -63,6 +63,8 @@ public class UserServiceTests
             await userService.GetFavouritesAsync(notFoundId));
         var exRole = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
            await userService.ChangeRoleAsync(notFoundId, "admin"));
+        var exAuthenticate = await Assert.ThrowsAsync<UserServiceArgumentException>(async () =>
+            await userService.AuthenticateAsync(new LoginDto{Email = "a", Password = "Qwe123!@#", RememberMe = true}));
 
         // assert
         Assert.Contains(ErrorMessages.NotFoundUser, exPersonalInfo.Message);
@@ -72,6 +74,7 @@ public class UserServiceTests
         Assert.Contains(ErrorMessages.NotFoundUser, exFavourites.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exPassword.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exRole.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exAuthenticate.Message);
     }
     
     [Fact]
@@ -93,8 +96,7 @@ public class UserServiceTests
         var user = users.Single(x => x.Id == 1);
         Assert.True(result.Email == user.Email &&
                     result.BirthDay == "12.01.2024" &&
-                    result.Nickname == user.Nickname &&
-                    result.ProfilePictureUrl == user.ProfilePictureUrl);
+                    result.Nickname == user.Nickname);
     }
 
     [Fact]
@@ -417,6 +419,155 @@ public class UserServiceTests
         // assert
         Assert.True(users.Single(x => x.Id == 1).ProfilePictureUrl != previousPicture);
     }
+
+    [Fact]
+    public async Task Register_CorrectDtoGiven_NewUserIdReturned()
+    {
+        // arrange 
+        var users = GetUsers();
+
+        var dto = new SignUpDto
+        {
+            Login = "Aboba",
+            Email = "a@a.a",
+            Password = "Qwe123!@#"
+        };
+
+        _mockUserRepo.Setup(x => x.IsEmailUniqueAsync(It.IsAny<string>()))
+            .ReturnsAsync((string email) => users.All(x => x.Email != email));
+        _mockUserRepo.Setup(x => x.AddAsync(It.IsAny<User>()))
+            .ReturnsAsync((User u) =>
+            {
+                u.Id = Random.Shared.NextInt64();
+                users.Add(u);
+
+                return u;
+            });
+
+        var service = GetUserService();
+        
+        // act 
+        await service.RegisterAsync(dto);
+        
+        // assert
+        _mockUserRepo.Verify(x => x.AddAsync(It.IsAny<User>()), Times.Once);
+        Assert.Contains(users, x => x.Email == dto.Email);
+    }
+
+    [Fact]
+    public async Task Register_NotUniqueEmailGiven_ErrorThrown()
+    {
+        // arrange 
+        var users = GetUsers();
+        users.First().Email = "a@a.a";
+
+        var dto = new SignUpDto
+        {
+            Login = "Aboba",
+            Email = "a@a.a",
+            Password = "Qwe123!@#"
+        };
+        
+        _mockUserRepo.Setup(x => x.AddAsync(It.IsAny<User>()))
+            .ReturnsAsync((User u) =>
+            {
+                u.Id = Random.Shared.NextInt64();
+                users.Add(u);
+
+                return u;
+            });
+
+        var service = GetUserService();
+        
+        // act 
+        var ex = await Assert.ThrowsAsync<UserServiceArgumentException>(
+            async () => await service.RegisterAsync(dto));
+        
+        // assert
+        _mockUserRepo.Verify(x => x.AddAsync(It.IsAny<User>()), Times.Never);
+        Assert.Contains(ErrorMessages.EmailNotUnique, ex.Message);
+    }
+    
+    [Fact]
+    public async Task Authenticate_CorrectDtoGiven_TokensReturned()
+    {
+        // arrange 
+        var users = GetUsers();
+        users[0] = new User
+        {
+            Email = "a@a.a",
+            Password = _passwordHasher.Hash("Qwe123!@#")
+        };
+        
+        var dto = new LoginDto
+        {
+            Email = "a@a.a",
+            Password = "Qwe123!@#"
+        };
+        
+        _mockTokenService.Setup(x => x.GenerateTokensAsync(It.IsAny<User>(), It.IsAny<bool>()))
+            .ReturnsAsync((User u, bool b) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+        _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
+            .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
+
+        var service = GetUserService();
+        
+        // act
+        var tokens = await service.AuthenticateAsync(dto);
+        
+        // assert
+        Assert.NotNull(tokens);
+    }
+    
+    [Fact]
+    public async Task Authenticate_IncorrectPassword_ErrorThrown()
+    {
+        // arrange 
+        var users = GetUsers();
+        users[0] = new User
+        {
+            Email = "a@a.a",
+            Password = _passwordHasher.Hash("Qwe123!@#")
+        };
+        
+        var dto = new LoginDto
+        {
+            Email = "a@a.a",
+            Password = "PassWord229*"
+        };
+        
+        _mockTokenService.Setup(x => x.GenerateTokensAsync(It.IsAny<User>(), It.IsAny<bool>()))
+            .ReturnsAsync((User u, bool b) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+        _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
+            .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
+
+        var service = GetUserService();
+        
+        // act
+        var ex = await Assert.ThrowsAsync<UserServiceArgumentException>(
+            async () => await service.AuthenticateAsync(dto));
+        
+        // assert
+        Assert.Contains(ErrorMessages.IncorrectPassword, ex.Message);
+    }
+    
+    [Fact]
+    public async Task RefreshToken_TokenGiven_NewTokenReturned()
+    {
+        // arrange
+        const string token = "abiba";
+        
+        _mockTokenService.Setup(x => x.RefreshTokenAsync(It.IsAny<string>()))
+            .ReturnsAsync((string _) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+
+        var service = GetUserService();
+        
+        // act
+        var tokens = await service.RefreshTokenAsync(token);
+        
+        // assert
+        Assert.NotEqual(token, tokens.RefreshToken);
+    }
     
     private UserService GetUserService()
     {
@@ -430,6 +581,7 @@ public class UserServiceTests
             .With(x => x.Id, () => i++)
             .With(x => x.Email)
             .With(x => x.Nickname)
+            .With(x => x.ProfilePictureUrl)
             .OmitAutoProperties()
             .CreateMany(5)
             .ToList();

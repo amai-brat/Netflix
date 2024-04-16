@@ -15,5 +15,10 @@ namespace DataAccess.Repositories
             var entry = await appDbContext.Users.AddAsync(user);
             return entry.Entity;
         }
+
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            return await appDbContext.Users.AllAsync(x => x.Email != email);
+        }
     }
 }

@@ -25,5 +25,6 @@
         public const string IncorrectRole = "Неправильная роль (user/admin/moderator)";
         public const string RefreshTokenNotFound = "Refresh токен не найден";
         public const string NotActiveRefreshToken = "Refresh токен не активен";
+        public const string EmailNotUnique = "Пользователь с данной почтой существует";
     }
 }
