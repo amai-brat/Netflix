@@ -1,5 +1,6 @@
 ﻿.main{
     margin-left: 8px;
+    margin-right: 8px;
     overflow-y: auto;
     .delete{
         input, button{
@@ -39,20 +40,24 @@
         border: 1px solid white;
         margin-right: 10px;
     }
-    .edit{
-        .editMovie{
-            input, button{
-                display: inline-block;
-                margin-left: 10px;
 
+    .edit {
+        .editMovie {
+            input, button {
             }
         }
         .editSerial{
             input, button{
                 display: inline-block;
-                margin-left: 10px;
 
             }
+        }
+        .editInput{
+            margin-right: 10px;
+            margin-left:10px;
+        }
+        .editButton{
+            margin-right: 10px;
         }
     }
 }

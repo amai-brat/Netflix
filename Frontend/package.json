@@ -13,11 +13,11 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@microsoft/signalr": "^8.0.0",
-    "classnames": "^2.5.1",
-    "formik": "^2.4.5",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "classnames": "^2.5.1",
     "express": "^4.19.2",
+    "formik": "^2.4.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
@@ -36,6 +36,6 @@
     "eslint-plugin-react": "^7.34.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "vite": "^5.1.6"
+    "vite": "^5.2.8"
   }
 }

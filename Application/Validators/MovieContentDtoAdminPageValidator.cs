@@ -57,6 +57,8 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
             })
             .When(x => x.Budget != null);
         RuleForEach(x => x.Genres).NotEmpty().MaximumLength(20);
+        RuleFor(x => x.PersonsInContent).NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions).NotEmpty();
         RuleForEach(x => x.PersonsInContent).ChildRules(pic =>
         {
             pic.RuleFor(picdto => picdto.Name).NotEmpty().MaximumLength(70);

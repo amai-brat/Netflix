@@ -1,5 +1,7 @@
 ﻿.addSerialOptions{
-    display: block;
+    *{
+        display: block;
+    }
     *{
         width: 50%;
     }
@@ -23,11 +25,12 @@
     }
     .subscriptions{
         .subscription{
+            display: block;
+            *{
+                display: inline-block;
+            }
             input{
                 width: unset;
-            }
-            *{
-                display:inline-block;
             }
         }
     }

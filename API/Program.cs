@@ -5,6 +5,7 @@ using Application.Services.RegisterExtensions;
 using Application.Validators;
 using DataAccess.Extensions;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +18,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
 builder.Services.AddScoped<IValidator<MovieContentAdminPageDto>, MovieContentDtoAdminPageValidator>();
 builder.Services.AddScoped<IValidator<SerialContentAdminPageDto>, SerialContentDtoAdminPageValidator>();
+// builder.Services.Configure<ApiBehaviorOptions>(options =>
+// {   
+//     options.SuppressModelStateInvalidFilter = true;
+// });
 var app = builder.Build();
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

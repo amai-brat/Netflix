@@ -160,45 +160,59 @@ namespace DataAccess.Repositories
             var existingProfessions = appDbContext.Professions.ToList();
             var existingContentTypes = appDbContext.ContentTypes.ToList();
             // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
-            foreach (var genre in movieContent.Genres)
+            for (int i = movieContent.Genres.Count - 1; i >= 0; i--)
             {
-                if (existingGenres.Any(g => g.Name.Equals(genre.Name)))
+                if (existingGenres.Any(g => g.Name.Equals(movieContent.Genres[i].Name)))
                 {
-                    movieContent.Genres.Remove(genre);
-                    movieContent.Genres.Add(existingGenres.First(g => g.Name.Equals(genre.Name)));
+                    movieContent.Genres.Add(existingGenres.First(g => g.Name.Equals(movieContent.Genres[i].Name)));
+                    movieContent.Genres.Remove(movieContent.Genres[i]);
                 }
             }
+
             // тоже самое с подписками
-            foreach (var subscription in movieContent.AllowedSubscriptions)
+            for (int i = movieContent.AllowedSubscriptions.Count - 1; i >= 0; i--)
             {
-                if (existingSubscriptions.Any(s => s.Name.Equals(subscription.Name)))
+                if (existingSubscriptions.Any(s => s.Name.Equals(movieContent.AllowedSubscriptions[i].Name)))
                 {
-                    movieContent.AllowedSubscriptions.Remove(subscription);
-                    movieContent.AllowedSubscriptions.Add(existingSubscriptions.First(s => s.Name.Equals(subscription.Name)));
+                    movieContent.AllowedSubscriptions.Add(existingSubscriptions.First(s =>
+                        s.Name.Equals(movieContent.AllowedSubscriptions[i].Name)));
+                    movieContent.AllowedSubscriptions.Remove(movieContent.AllowedSubscriptions[i]);
                 }
             }
+
             // тоже самое с персонами
-            foreach (var person in movieContent.PersonsInContent)
+            for (int i = movieContent.PersonsInContent.Count - 1; i >= 0; i--)
             {
-                if (existingPersons.Any(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)))
+                if (existingPersons.Any(p =>
+                        p.Name.Equals(movieContent.PersonsInContent[i].Name) &&
+                        p.Profession.ProfessionName.Equals(movieContent.PersonsInContent[i].Profession.ProfessionName)))
                 {
-                    movieContent.PersonsInContent.Remove(person);
-                    movieContent.PersonsInContent.Add(existingPersons.First(p => p.Name.Equals(person.Name) && p.Profession.ProfessionName.Equals(person.Profession.ProfessionName)));
+                    movieContent.PersonsInContent.Add(existingPersons.First(p =>
+                        p.Name.Equals(movieContent.PersonsInContent[i].Name) &&
+                        p.Profession.ProfessionName.Equals(movieContent.PersonsInContent[i].Profession
+                            .ProfessionName)));
+                    movieContent.PersonsInContent.Remove(movieContent.PersonsInContent[i]);
                 }
             }
+
             // тоже самое с профессиями
-            foreach (var person in movieContent.PersonsInContent)
+            for (int i = movieContent.PersonsInContent.Count - 1; i >= 0; i--)
             {
-                if (existingProfessions.Any(p => p.ProfessionName.Equals(person.Profession.ProfessionName)))
+                if (existingProfessions.Any(p =>
+                        p.ProfessionName.Equals(movieContent.PersonsInContent[i].Profession.ProfessionName)))
                 {
-                    person.Profession = existingProfessions.First(p => p.ProfessionName.Equals(person.Profession.ProfessionName));
+                    movieContent.PersonsInContent[i].Profession = existingProfessions.First(p =>
+                        p.ProfessionName.Equals(movieContent.PersonsInContent[i].Profession.ProfessionName));
                 }
             }
+
             // тоже самое с типом контента
             if (existingContentTypes.Any(ct => ct.ContentTypeName.Equals(movieContent.ContentType.ContentTypeName)))
             {
-                movieContent.ContentType = existingContentTypes.First(ct => ct.ContentTypeName.Equals(movieContent.ContentType.ContentTypeName));
+                movieContent.ContentType = existingContentTypes.First(ct =>
+                    ct.ContentTypeName.Equals(movieContent.ContentType.ContentTypeName));
             }
+
             appDbContext.MovieContents.Add(movieContent);
         }
 
@@ -211,7 +225,6 @@ namespace DataAccess.Repositories
             var existingProfessions = appDbContext.Professions.ToList();
             var existingContentTypes = appDbContext.ContentTypes.ToList();
             // TODO: вообще это можно было бы вынести в отдельный метод, т.к. это дублируется в AddMovieContent
-            // TODO: исправить изменение коллекции в цикле
             // пройдемся по жанрам и если имя такого уже есть в бд, то заменим его на версию в бд
             for (int i = serialContent.Genres.Count - 1; i >= 0; i--)
             {

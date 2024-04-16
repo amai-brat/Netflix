@@ -1,8 +1,8 @@
-﻿import styles from './css/AddSerialOptions.module.css'
+﻿import styles from './css/AddMovieOptions.module.css'
 import {useEffect, useState} from "react";
 import { ToastContainer, toast } from 'react-toastify';
-const AddSerialOptions = () => {
-    
+
+const AddMovieOptions = () => {
     const [id, setId] = useState(0)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -10,6 +10,15 @@ const AddSerialOptions = () => {
     const [posterUrl, setPosterUrl] = useState("")
     const [country, setCountry] = useState(null)
     const [contentType, setContentType] = useState("")
+
+    // логика других полей в том что они имеют неправильные начальные значения
+    // и при отправке на сервере проблем с биндингом нет, но есть с валидатором - он отклоняет 
+    // но с Date нельзя создать намеренно неправильное значение, биндер asp.net core выбрасывает свое исключение
+    // до самого валидатора. поэтому будем считать что у всех фильмов есть дата по умолчанию( мое день рождение )
+    const [releaseDate,setReleaseDate] = useState("2004-03-15")
+    const [videoUrl,setVideoUrl] = useState("")
+    const [movieLength, setMovieLength] = useState(0)
+    
     const [ageRating, setAgeRating] = useState(null)
     const [ageRatingClicked, setAgeRatingClicked] = useState(false)
     const [ratings, setRatings] = useState(null)
@@ -19,35 +28,12 @@ const AddSerialOptions = () => {
     const [budget, setBudget] = useState(null)
     const [budgetClicked, setBudgetClicked] = useState(false)
     const [genres, setGenres] = useState([])
-    // логика других полей в том что они имеют неправильные начальные значения
-    // и при отправке на сервере проблем с биндингом нет, но есть с валидатором - он отклоняет 
-    // но с Date нельзя создать намеренно неправильное значение, биндер asp.net core выбрасывает свое исключение
-    // до самого валидатора. поэтому будем считать что у всех фильмов есть дата по умолчанию
-    const [releaseYears, setReleaseYears] = useState({start: "2004-03-15", end: "2004-03-16"})
     const [personsInContent, setPersonsInContent] = useState([])
     const [allowedSubscriptions, setAllowedSubscriptions] = useState([])
     const [allSubscriptions, setAllSubscriptions] = useState([])
     const [personName, setPersonName] = useState("")
     const [personProfession, setPersonProfession] = useState("")
-    
-    const [seasonInfos, setSeasonInfos] = useState([])
-    const [seasonNumber, setSeasonNumber] = useState(0)
-    const [seasonEpisodes, setSeasonEpisodes] = useState([])
-    const addEpisode = () => {
-        setSeasonEpisodes([...seasonEpisodes, {episodeNumber: 0, videoUrl: ""}])
-    }
-    const addSeasonAndEpisodes = () => {
-        // if season already exists, then add episodes to it
-        for (let i = 0; i < seasonInfos.length; i++) {
-            if (seasonInfos[i].seasonNumber === seasonNumber) {
-                seasonInfos[i].episodes = seasonEpisodes;
-                setSeasonInfos([...seasonInfos]);
-                return;
-            }
-        }
-        setSeasonInfos([...seasonInfos, {seasonNumber: seasonNumber, episodes: seasonEpisodes}]);
-        setSeasonEpisodes([]);
-    }
+
     const addPerson = () => {
         setPersonsInContent([...personsInContent, {name: personName, profession: personProfession}])
     }
@@ -78,7 +64,7 @@ const AddSerialOptions = () => {
         }
     };
     const Submit = async () => {
-        const resp = await fetch("http://localhost:5114/content/serial/add", {
+        const resp = await fetch("http://localhost:5114/content/movie/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -91,19 +77,20 @@ const AddSerialOptions = () => {
                 posterUrl: posterUrl,
                 country: country,
                 contentType: contentType,
-                ageRating: ageRating,
+                ageRatings: ageRating,
                 ratings: ratings,
+                releaseDate: releaseDate,
+                videoUrl: videoUrl,
                 trailerInfo: trailerInfo,
                 budget: budget,
+                movieLength: movieLength,
                 genres: genres,
-                releaseYears: releaseYears,
                 personsInContent: personsInContent,
                 allowedSubscriptions: allowedSubscriptions,
-                seasonInfos: seasonInfos
             })
         })
         if (resp.ok) {
-            toast.success("Сериал успешно добавлен", {
+            toast.success("Фильм успешно добавлен", {
                 position: "bottom-center"
             })
         } else {
@@ -177,12 +164,6 @@ const AddSerialOptions = () => {
     const setBudgetBudgetCurrencyName = (value) => {
         setBudget({...budget, budgetCurrencyName: value})
     }
-    const setReleaseYearsStart = (value) => {
-        setReleaseYears({...releaseYears, start: value})
-    }
-    const setReleaseYearsEnd = (value) => {
-        setReleaseYears({...releaseYears, end: value})
-    }
     return (
         <div className={styles.addSerialOptions}>
             <h2>Добавление сериала</h2>
@@ -195,6 +176,10 @@ const AddSerialOptions = () => {
             <input type="text" placeholder="URL постера" onChange={e => setPosterUrl(e.target.value)}/>
             <h2>Страна</h2>
             <input type="text" placeholder="Страна" onChange={e => setCountry(e.target.value)}/>
+            <h2>Ссылка на видео</h2>
+            <input type={"text"} placeholder={"Ссылка на видео"} onChange={e => setVideoUrl(e.target.value)}/>
+            <h2>Длительность фильма</h2>
+            <input type={"number"} placeholder={"Длительность"} onChange={e => setMovieLength(Number.parseInt(e.target.value))}/>
             <h2>Тип контента</h2>
             <select onChange={e => setContentType(e.target.value)} defaultValue={""}>
                 <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
@@ -252,44 +237,10 @@ const AddSerialOptions = () => {
             <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
             <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
             <button onClick={addPerson}>Добавить</button>
-            <h2>Добавить сезоны</h2>
-            {seasonInfos.map((s, i) =>
-                <div key={i}>
-                    <h3>Сезон: {s.seasonNumber}</h3>
-                    {s.episodes.map((episode, j) =>
-                        <div key={j}>
-                            <p>Номер эпизода: {episode.episodeNumber}</p>
-                            <p>URL видео: {episode.videoUrl}</p>
-                        </div>
-                    )}
-                </div>
-            )}
-            <input type="number" placeholder="Номер сезона"
-                   onChange={e => setSeasonNumber(Number.parseInt(e.target.value))}/>
-            <h4 style={{marginTop: "0px", marginBottom: "10px"}}>Добавить серии в сезон</h4>
-
-
-            {seasonEpisodes.map((episode, i) =>
-                <div key={i}>
-                    <input type="number" placeholder="Номер эпизода"
-                           onChange={e => {
-                               const newEpisodes = [...seasonEpisodes];
-                               newEpisodes[i].episodeNumber = Number.parseInt(e.target.value);
-                               setSeasonEpisodes(newEpisodes);
-                           }}/>
-                    <input type="text" placeholder="URL видео" onChange={e => {
-                        const newEpisodes = [...seasonEpisodes];
-                        newEpisodes[i].videoUrl = e.target.value;
-                        setSeasonEpisodes(newEpisodes);
-                    }}/>
-                </div>
-            )}
-            <button onClick={addEpisode}>+</button>
-            <button onClick={addSeasonAndEpisodes}>Добавить сезон с эпизодами</button>
-            <h2>Дата выхода</h2> <input type="date" onChange={e => setReleaseYearsStart(e.target.value)}/>
-            <h2>Дата окончания</h2> <input type="date" onChange={e => setReleaseYearsEnd(e.target.value)}/>
+            
+            <h2>Дата выхода</h2> <input type="date" onChange={e => setReleaseDate(e.target.value)}/>
             <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>
         </div>
     )
 }
-export default AddSerialOptions
+export default AddMovieOptions

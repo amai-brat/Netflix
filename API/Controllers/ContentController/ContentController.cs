@@ -91,7 +91,7 @@ namespace API.Controllers.ContentController
             var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
@@ -104,7 +104,7 @@ namespace API.Controllers.ContentController
             var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
@@ -116,7 +116,7 @@ namespace API.Controllers.ContentController
             var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
@@ -129,20 +129,20 @@ namespace API.Controllers.ContentController
             var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
         // TODO: авторизация
-        [HttpPost("content/delete/{id}")]
+        [HttpGet("delete/{id}")]
         public async Task<IActionResult> DeleteContent(long id)
         {
             await contentService.DeleteContent(id);
             return Ok();
         }
         // TODO: авторизация
-        [HttpGet("content/admin/movie/{id}")]
+        [HttpGet("admin/movie/{id}")]
         public async Task<MovieContentAdminPageDto> GetMovieContentAdminPageDto(long id)
         {
             var content = await contentService.GetContentByIdAsync(id);
@@ -153,12 +153,12 @@ namespace API.Controllers.ContentController
             return movieContentDto;
 
         }
-        [HttpGet("content/admin/serial/{id}")]
+        [HttpGet("admin/serial/{id}")]
         public async Task<SerialContentAdminPageDto> GetSerialContentAdminPageDto(long id)
         {
             var content = await contentService.GetContentByIdAsync(id);
             if (content is not SerialContent) throw new Exception("такого контента нет");
-            
+
             var serialContent = await contentService.GetSerialContentByIdAsync(id);
             var serialContentDto = mapper.Map<SerialContentAdminPageDto>(serialContent);
             return serialContentDto;

@@ -50,7 +50,11 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
                 budget.RuleFor(b => b!.BudgetCurrencyName).NotEmpty().MaximumLength(10);
             })
             .When(x => x.Budget != null);
+        RuleFor(x => x.Genres)
+            .NotEmpty();
         RuleForEach(x => x.Genres).NotEmpty().MaximumLength(20);
+        RuleFor(x => x.PersonsInContent).NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions).NotEmpty();
         RuleForEach(x => x.PersonsInContent).ChildRules(pic =>
         {
             pic.RuleFor(picdto => picdto.Name).NotEmpty().MaximumLength(70);
@@ -75,5 +79,6 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
                 ep.RuleFor(epi => epi.VideoUrl).NotEmpty();
             });
         });
+        RuleFor(x => x.SeasonInfos).NotEmpty();
     }
 }
