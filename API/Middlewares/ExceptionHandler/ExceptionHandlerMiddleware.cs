@@ -1,7 +1,8 @@
 ﻿
+using Application.Exceptions;
 using Domain.Services.ServiceExceptions;
 
-namespace API.Middlewares
+namespace API.Middlewares.ExceptionHandler
 {
     public class ExceptionHandlerMiddleware : IMiddleware
     {
@@ -16,16 +17,40 @@ namespace API.Middlewares
             ex is FavouriteServiceArgumentException ||
             ex is ContentServiceArgumentException ||
             ex is CommentServiceArgumentException || 
-            ex is NotificationServiceArgumentException)
+            ex is NotificationServiceArgumentException ||
+            ex is SubscriptionServiceArgumentException || 
+            ex is UserServiceArgumentException)
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync($"{ex.Message}. {ex.ParamName}");
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = $"{ex.Message}. {ex.ParamName}",
+                    Code = 400
+                });
             }
             catch (ContentServiceNotPermittedException ex)
             {
                 context.Response.StatusCode = 403;
-                await context.Response.WriteAsync(ex.Message);
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = ex.Message,
+                    Code = 403
+                });
             }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = ex.Message + ex.StackTrace,
+                    Code = 400
+                });
+            }
+        }
+        private class ExceptionDetails
+        {
+            public string Message { get; set; } = null!;
+            public int Code { get; set; }
         }
     }
 }

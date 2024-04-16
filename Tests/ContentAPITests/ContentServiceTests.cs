@@ -1,24 +1,190 @@
 ﻿using AutoFixture;
-using Domain.Abstractions;
-using Domain.Dtos;
 using Domain.Entities;
-using Domain.Services;
-using Domain.Services.ServiceExceptions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Dto;
+using Application.Exceptions;
+using Application.Mappers;
+using Application.Repositories;
+using Application.Services.Implementations;
+using AutoMapper;
+using DataAccess;
+using DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace Tests.ContentAPITests
 {
-    public class ContentServiceTests
+    public class ContentServiceTests 
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private readonly Fixture _fixture = new();
         private readonly Mock<IContentRepository> _mockContent = new();
+        private readonly Mock<ISubscriptionRepository> _mockSubscription  = new();
+        private readonly IMapper _mapper;
+        public ContentServiceTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new ContentProfile());
+            });
+            _mapper = mapperConfig.CreateMapper();
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
+        }
+        [Fact]
+        public async Task AddMovieContent_ShouldAddContent_Unit()
+        {
+            //Arrange
+            AppDbContext dbContext;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            dbContext = new AppDbContext(options);
+            var movieContentDto = _fixture
+                .Build<MovieContentAdminPageDto>()
+                .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
+                .Create();
+            var contentRepo = new ContentRepository(dbContext);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
+            //Act
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(movieContentDto.AllowedSubscriptions
+                .Select(dto => new Subscription(){Name = dto.Name}).ToList());
+            await contentService.AddMovieContent(movieContentDto);
+            //Assert
+            Assert.NotNull(dbContext.MovieContents.SingleOrDefault());
+        }
+        [Fact]
+        public async Task AddSerialContent_ShouldAddContent_Unit()
+        {
+            //Arrange
+            AppDbContext dbContext;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .EnableSensitiveDataLogging()
+                .Options;
+            dbContext = new AppDbContext(options);
+            var serialContentDto = _fixture
+                .Build<SerialContentAdminPageDto>()
+                .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
+                .With(dto => dto.AllowedSubscriptions, _fixture.CreateMany<SubscriptionAdminPageDto>(3).ToList())
+                .Create();
+            var contentRepo = new ContentRepository(dbContext);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
+            //Act
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto.AllowedSubscriptions
+                .Select(dto => new Subscription(){Id = dto.Id,Name = dto.Name,Description = dto.Description, MaxResolution = dto.MaxResolution.Value}).ToList());
+            await contentService.AddSerialContent(serialContentDto);
+            //Assert
+            Assert.NotNull(dbContext.SerialContents.SingleOrDefault());
+        }
+        [Fact]
+        public async Task DeleteContent_ShouldDeleteContent_Unit()
+        {
+            //Arrange
+            AppDbContext dbContext;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            dbContext = new AppDbContext(options);
+            var contentRepo = new ContentRepository(dbContext);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
+            var content = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().First();
+            dbContext.MovieContents.Add(content);
+            await dbContext.SaveChangesAsync();
+            //Act
+            _mockContent.Setup(repository => repository.DeleteContent(content.Id)).Returns(content);
+            await contentService.DeleteContent(content.Id);
+            //Assert
+            Assert.Null(dbContext.MovieContents.SingleOrDefault());
+        }
+        [Fact]
+        public async Task AddMovieContent_ShouldAddContentInRepo_Unit()
+        {
+            //Arrange
+            var movieContentDto = _fixture
+                .Build<MovieContentAdminPageDto>()
+                .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
+                .Create();
+            //Act
+            _mockContent.Setup(repository => repository.AddMovieContent(It.IsAny<MovieContent>()));
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
+                movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            await service.AddMovieContent(movieContentDto);
+            //Assert
+            _mockContent.Verify(repository => repository.AddMovieContent(It.IsAny<MovieContent>()), Times.Once);
+            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+
+        }
+        [Fact]
+        public async Task AddSerialContent_ShouldAddContentInRepo_Unit()
+        {
+            //Arrange
+            var serialContentDto = _fixture
+                .Build<SerialContentAdminPageDto>()
+                .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
+                .Create();
+            //Act
+            _mockContent.Setup(repository => repository.AddSerialContent(It.IsAny<SerialContent>()));
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
+                serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            await service.AddSerialContent(serialContentDto);
+            //Assert
+            _mockContent.Verify(repository => repository.AddSerialContent(It.IsAny<SerialContent>()), Times.Once);
+            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+        }
+        [Fact]
+        public async Task DeleteContent_ShouldDeleteContentInRepo_Unit()
+        {
+            //Arrange
+            var contentId = 1;
+            //Act
+            _mockContent.Setup(repository => repository.DeleteContent(contentId)).Returns(new ContentBase());
+            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            await service.DeleteContent(contentId);
+            //Assert
+            _mockContent.Verify(repository => repository.DeleteContent(contentId), Times.Once);
+            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+        }
+        [Fact]
+        public async Task UpdateMovieContent_ShouldUpdateContentInRepo_Unit()
+        {
+            //Arrange
+            var movieContentDto = _fixture
+                .Build<MovieContentAdminPageDto>()
+                .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
+                .Create();
+            //Act
+            _mockContent.Setup(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()));
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
+                movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            await service.UpdateMovieContent(movieContentDto);
+            //Assert
+            _mockContent.Verify(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()), Times.Once);
+            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+        }
+        [Fact]
+        public async Task UpdateSerialContent_ShouldUpdateContentInRepo_Unit()
+        {
+            //Arrange
+            var serialContentDto = _fixture
+                .Build<SerialContentAdminPageDto>()
+                .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
+                .Create();
+            //Act
+            _mockContent.Setup(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()));
+            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
+                serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            await service.UpdateSerialContent(serialContentDto);
+            //Assert
+            _mockContent.Verify(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()), Times.Once);
+            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+        }
         [Fact]
         public async Task GetExistedContentByIdShouldReturnContent()
         {
@@ -354,7 +520,7 @@ namespace Tests.ContentAPITests
 
         private List<ContentBase> BuildFilteredMovieContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>();
+            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>().ToList();
 
             foreach (var content in contents)
             {
@@ -380,7 +546,7 @@ namespace Tests.ContentAPITests
 
         private List<ContentBase> BuildUnFilteredMovieContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>();
+            var contents = BuildDefaultMovieContentBaseList().Cast<MovieContent>().ToList();
 
             foreach (var content in contents)
             {
@@ -406,7 +572,7 @@ namespace Tests.ContentAPITests
         
         private List<ContentBase> BuildFilteredSerialContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>();
+            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>().ToList();
             foreach (var content in contents)
             {
                 if (filter.Name is not null)
@@ -431,7 +597,7 @@ namespace Tests.ContentAPITests
 
         private List<ContentBase> BuildUnFilteredSerialContentBaseList(Filter filter)
         {
-            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>();
+            var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>().ToList();
 
             foreach (var content in contents)
             {

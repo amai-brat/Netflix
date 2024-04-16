@@ -321,12 +321,12 @@ namespace DataAccess.Migrations
                         .HasColumnName("video_url");
 
                     b.HasKey("Id")
-                        .HasName("pk_episode");
+                        .HasName("pk_episodes");
 
                     b.HasIndex("SeasonInfoId")
-                        .HasDatabaseName("ix_episode_season_info_id");
+                        .HasDatabaseName("ix_episodes_season_info_id");
 
-                    b.ToTable("episode", (string)null);
+                    b.ToTable("episodes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.FavouriteContent", b =>
@@ -1031,7 +1031,7 @@ namespace DataAccess.Migrations
                         .HasForeignKey("SeasonInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_episode_season_infos_season_info_id");
+                        .HasConstraintName("fk_episodes_season_infos_season_info_id");
 
                     b.Navigation("SeasonInfo");
                 });

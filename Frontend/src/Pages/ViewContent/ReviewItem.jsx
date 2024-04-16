@@ -7,7 +7,10 @@ import {useState} from "react";
 import Modal from "react-modal";
 import ReviewComment from "./ReviewComment.jsx";
 import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+<<<<<<< HEAD
 import {useDataStore} from "../../store/dataStoreProvider.jsx";
+=======
+>>>>>>> dev
 const modalStyles = {
     content: {
         top: '50%',
@@ -51,7 +54,11 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     }
     const sendComment = async () => {
         try {
+<<<<<<< HEAD
             const resp = await fetch(baseUrl + "comment/assign?reviewId=" + review.id, {
+=======
+            const resp = await fetch(baseUrl + "api/comments/add", {
+>>>>>>> dev
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -81,7 +88,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const likeReview = async () => {
         try{
             //TODO: напистаь правильный юрл
-            const resp = await fetch("http://localhost:8080/api/review/like", {
+            const resp = await fetch(baseUrl + "api/review/like", {
                 method: "post",
                 // TODO: написать поля с идентификацией юзера
                 body: {reviewId: review.id}
