@@ -119,40 +119,42 @@ const EditMovieOptions = (movieOptions) => {
         setGenres([...genres, value])
     }
     const popUpTrailerInfo = () => {
-        setTrailerInfoClicked(!trailerInfoClicked)
-        if (trailerInfoClicked) {
+        if (!trailerInfoClicked) {
             setTrailerInfo({url: "", name: ""})
         }
         else {
             setTrailerInfo(null)
         }
+        setTrailerInfoClicked(!trailerInfoClicked)
     }
     const popUpBudget = () => {
-        setBudgetClicked(!budgetClicked)
-        if (budgetClicked) {
+        if (!budgetClicked) {
             setBudget({budgetValue: 0, budgetCurrencyName: ""})
         }
         else {
             setBudget(null)
         }
+        setBudgetClicked(!budgetClicked)
+        
     }
     const popUpAgeRating = () => {
-        setAgeRatingClicked(!ageRatingClicked)
-        if (ageRatingClicked) {
+        if (!ageRatingClicked) {
             setAgeRatings({age: 0, ageMpaa: null})
         }
         else {
             setAgeRatings(null)
         }
+        setAgeRatingClicked(!ageRatingClicked)
+        
     }
     const popUpRating = () => {
-        setRatingClicked(!ratingClicked)
-        if (ratingClicked) {
+        if (!ratingClicked) {
             setRatings({kinopoiskRating: 0, imdbRating: 0, localRating: 0})
         }
         else {
             setRatings(null)
         }
+        setRatingClicked(!ratingClicked)
     }
     const setAgeRatingAge = (value) => {
         setAgeRatings({...ageRatings, age: value})

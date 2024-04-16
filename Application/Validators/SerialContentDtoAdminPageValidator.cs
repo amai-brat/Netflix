@@ -13,7 +13,7 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
             .MaximumLength(100);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .MaximumLength(500);
+            .MaximumLength(1000);
         RuleFor(x => x.PosterUrl)
             .NotEmpty();
         RuleFor(x => x.Slogan)

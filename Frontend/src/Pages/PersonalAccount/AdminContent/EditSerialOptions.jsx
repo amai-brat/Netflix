@@ -132,33 +132,33 @@ const EditSerialOptions = (serialOptions) => {
         }
     }
     const popUpTrailerInfo = () => {
-        setTrailerInfoClicked(!trailerInfoClicked)
-        if (trailerInfoClicked) {
+        if (!trailerInfoClicked) {
             setTrailerInfo({url: "", name: ""})
         }
         else {
             setTrailerInfo(null)
         }
+        setTrailerInfoClicked(!trailerInfoClicked)
     }
     const popUpBudget = () => {
-        setBudgetClicked(!budgetClicked)
-        if (budgetClicked) {
+        if (!budgetClicked) {
             setBudget({budgetValue: 0, budgetCurrencyName: ""})
         }
         else {
             setBudget(null)
         }
+        setBudgetClicked(!budgetClicked)
     }
     const popUpAgeRating = () => {
         //hindi code here ask me for details if you don't understand
         setAgeRatingClicked(!ageRatingClicked)
         if (!ageRatingClicked) {
             setAgeRating({age: 0, ageMpaa: null})
-            setAgeRatingClicked(!ageRatingClicked)
         }
         else {
             setAgeRating(null)
         }
+        setAgeRatingClicked(!ageRatingClicked)
     }
     const setAgeRatingAge = (value) => {
         setAgeRating({...ageRating, age: value})
@@ -167,13 +167,13 @@ const EditSerialOptions = (serialOptions) => {
         setAgeRating({...ageRating, ageMpaa: value})
     }
     const popUpRating = () => {
-        setRatingClicked(!ratingClicked)
-        if (ratingClicked) {
+        if (!ratingClicked) {
             setRatings({kinopoiskRating: 0, imdbRating: 0, localRating: 0})
         }
         else {
             setRatings(null)
         }
+        setRatingClicked(!ratingClicked)
     }
     const setRatingsKinopoiskRating = (value) => {
         setRatings({...ratings, kinopoiskRating: value})
@@ -212,25 +212,25 @@ const EditSerialOptions = (serialOptions) => {
                     <option value="Фильм">Фильм</option>
                     <option value="Сериал">Сериал</option>
                 </select>
-                <button onClick={popUpAgeRating}>Указать возрастные рейтинги</button>
+                <button onClick={popUpAgeRating} style={{display:"block"}}>Указать возрастные рейтинги</button>
                 {(ageRatingClicked || ageRating != null)&& <div>
                     <input type="number" value={ageRating.age} placeholder="Возрастной рейтинг" onChange={e => setAgeRatingAge(e.target.value)}/>
                     <input type="text" value={ageRating.ageMpaa} placeholder="Возрастной рейтинг MPAA"
                            onChange={e => setAgeRatingAgeMpaa(e.target.value)}/>
                 </div>}
-                <button onClick={popUpRating}>Указать рейтинги</button>
+                <button onClick={popUpRating} style={{display:"block"}}>Указать рейтинги</button>
                 {(ratingClicked || ratings != null) && <div>
                     <input type="number" value={ratings.kinopoiskRating} placeholder="Рейтинг Кинопоиска"
                            onChange={e => setRatingsKinopoiskRating(e.target.value)}/>
                     <input type="number" value={ratings.imdbRating} placeholder="Рейтинг IMDB" onChange={e => setRatingsImdbRating(e.target.value)}/>
                 </div>}
-                <button onClick={popUpBudget}>Указать бюджет</button>
+                <button onClick={popUpBudget} style={{display:"block"}}>Указать бюджет</button>
                 {(budgetClicked || budget != null) && <div>
                     <input type="number" value={budget.budgetValue} placeholder="Бюджет" onChange={e => setBudgetBudgetValue(e.target.value)}/>
                     <input type="text" value={budget.budgetCurrencyName} placeholder="Валюта бюджета"
                            onChange={e => setBudgetBudgetCurrencyName(e.target.value)}/>
                 </div>}
-                <button onClick={popUpTrailerInfo}>Указать трейлер</button>
+                <button onClick={popUpTrailerInfo} style={{display:"block"}}>Указать трейлер</button>
                 {(trailerInfoClicked || trailerInfo != null) && <div>
                     <input type="text" value={trailerInfo.name} placeholder="Название трейлера" onChange={e => setTrailerInfoName(e.target.value)}/>
                     <input type="text" value={trailerInfo.url} placeholder="URL трейлера" onChange={e => setTrailerInfoUrl(e.target.value)}/>
@@ -265,8 +265,7 @@ const EditSerialOptions = (serialOptions) => {
                 <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
                 <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
                 <button onClick={addPerson}>Добавить</button>
-                <button onClick={addPerson}>Добавить</button>
-                <h2>Добавить сезоны</h2>
+                <h2 style={{display:"block"}}>Добавить сезоны</h2>
                 {seasonInfos.map((s, i) =>
                     <div key={i}>
                         <h3>Сезон: {s.seasonNumber}</h3>
@@ -298,7 +297,7 @@ const EditSerialOptions = (serialOptions) => {
                     </div>
                 )}
                 <button onClick={addEpisode}>+</button>
-                <button onClick={addSeasonAndEpisodes}>Добавить сезон с эпизодами</button>
+                <button onClick={addSeasonAndEpisodes} style={{display:"block"}}>Добавить сезон с эпизодами</button>
                 <h2>Дата выхода</h2> <input type="date" value={releaseYearStart} onChange={e => setReleaseYearsStart(e.target.value)}/>
                 <h2>Дата окончания</h2> <input type="date" value={releaseYearEnd} onChange={e => setReleaseYearsEnd(e.target.value)}/>
                 <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить

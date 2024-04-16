@@ -166,7 +166,7 @@ const AddMovieOptions = () => {
     }
     return (
         <div className={styles.addSerialOptions}>
-            <h2>Добавление сериала</h2>
+            <h2>Название фильма</h2>
             <input type="text" placeholder="Название" onChange={e => setName(e.target.value)}/>
             <h2>Описание</h2>
             <textarea placeholder="Описание" onChange={e => setDescription(e.target.value)}/>
