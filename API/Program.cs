@@ -87,3 +87,5 @@ app.MapHub<NotificationHub>("/hub/notification");
 app.MapControllers();
 
 app.Run();
+
+public partial class Program;
