@@ -2,10 +2,10 @@ using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
 using Application.Services.Abstractions;
+using Application.Validators;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
-using Infrastucture.Validators;
 using IReviewRepository = Application.Repositories.IReviewRepository;
 
 namespace Application.Services.Implementations;
@@ -17,7 +17,8 @@ public class UserService(
     IMapper mapper,
     IReviewRepository reviewRepository,
     IUnitOfWork unitOfWork,
-    IPasswordHasher passwordHasher) : IUserService
+    IPasswordHasher passwordHasher,
+    ITokenService tokenService) : IUserService
 {
     private const int ReviewsPerPage = 5;
 
@@ -185,18 +186,46 @@ public class UserService(
         return favouriteDtos;
     }
 
+    public async Task<long?> RegisterAsync(SignUpDto dto)
+    {
+        var user = new User
+        {
+            Email = dto.Email,
+            Nickname = dto.Login,
+            Password = passwordHasher.Hash(dto.Password),
+            Role = "user"
+        };
+
+        user = await userRepository.AddAsync(user);
+        await unitOfWork.SaveChangesAsync();
+        
+        return user?.Id;
+    }
+
     public async Task<TokensDto> AuthenticateAsync(LoginDto dto)
     {
-        throw new NotImplementedException();
+        var user = await userRepository.GetUserByFilterAsync(x => x.Email == dto.Email);
+        if (user is null)
+        {
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(dto.Email));
+        }
+
+        if (!passwordHasher.Verify(dto.Password, user.Password))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
+        }
+        
+        var tokens = await tokenService.GenerateTokensAsync(user, dto.RememberMe);
+        return tokens;
     }
 
     public async Task<TokensDto> RefreshTokenAsync(string token)
     {
-        throw new NotImplementedException();
+        return await tokenService.RefreshTokenAsync(token);
     }
 
-    public async Task RevokeTokenAsync(string token)
+    public Task RevokeTokenAsync(string token)
     {
-        throw new NotImplementedException();
+        return tokenService.RevokeTokenAsync(token);
     }
 }

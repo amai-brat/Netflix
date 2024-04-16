@@ -22,7 +22,8 @@ namespace DataAccess.Extensions
             serviceCollection.AddScoped<ICommentNotificationRepository, CommentNotificationRepository>();
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-
+            serviceCollection.AddScoped<ITokenRepository, TokenRepository>();
+            
             return serviceCollection.AddDbContext<AppDbContext>(builder =>
             {
                 builder.UseNpgsql(configuration["Database:ConnectionString"]);

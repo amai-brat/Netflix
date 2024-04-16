@@ -9,6 +9,7 @@ using DataAccess.Extensions;
 using FluentValidation;
 using Infrastucture;
 using Infrastucture.Options;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,12 +21,41 @@ builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastucture();
 builder.Services.AddControllers();
 builder.Services.AddContentApiServices();
-builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
-builder.Services.AddScoped<IValidator<MovieContentAdminPageDto>, MovieContentDtoAdminPageValidator>();
-builder.Services.AddScoped<IValidator<SerialContentAdminPageDto>, SerialContentDtoAdminPageValidator>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddValidators();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.ApiKey,
+        Description = """
+                      Authorization using JWT by adding header
+                      Authorization: Bearer [token]
+                      """,
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Scheme = "Bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddCors(options =>
 {

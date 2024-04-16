@@ -42,7 +42,7 @@ namespace API.Middlewares.ExceptionHandler
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = ex.Message + ex.StackTrace,
+                    Message = ex.Message,
                     Code = 400
                 });
             }

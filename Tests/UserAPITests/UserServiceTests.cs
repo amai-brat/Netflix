@@ -9,9 +9,7 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastucture.Profiles;
-using Infrastucture.Services;
 using Moq;
-using MemoryStream = System.IO.MemoryStream;
 
 namespace Tests.UserAPITests;
 
@@ -35,6 +33,7 @@ public class UserServiceTests
     private readonly Mock<IUnitOfWork> _mockUnitOfWork = new();
     private readonly Mock<IReviewRepository> _mockReviewRepo = new();
     private readonly IPasswordHasher _passwordHasher = new PasswordHasher();
+    private readonly Mock<ITokenService> _mockTokenService = new();
     
     [Fact]
     public async Task AllMethods_UserNotFound_ErrorReturned()
@@ -72,7 +71,7 @@ public class UserServiceTests
         Assert.Contains(ErrorMessages.NotFoundUser, exPicture.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exFavourites.Message);
         Assert.Contains(ErrorMessages.NotFoundUser, exPassword.Message);
-        Assert.Contains(ErrorMessages.NotFoundUser, exPersonalInfo.Message);
+        Assert.Contains(ErrorMessages.NotFoundUser, exRole.Message);
     }
     
     [Fact]
@@ -421,7 +420,7 @@ public class UserServiceTests
     
     private UserService GetUserService()
     {
-        return new UserService(_mockPictureProvider.Object, _mockFavouirteRepo.Object, _mockUserRepo.Object, _mapper, _mockReviewRepo.Object, _mockUnitOfWork.Object, _passwordHasher);
+        return new UserService(_mockPictureProvider.Object, _mockFavouirteRepo.Object, _mockUserRepo.Object, _mapper, _mockReviewRepo.Object, _mockUnitOfWork.Object, _passwordHasher, _mockTokenService.Object);
     }
 
     private List<User> GetUsers()

@@ -11,7 +11,7 @@
         public const string NotFoundReview = "Рецензии с указанным id не существует";
         public const string NotFoundComment = "Комментарий с указанным id не существует";
         public const string NotFoundNotification = "Уведомления с указанным id не существует";
-        public const string NotFoundUser = "Пользователя с указанным id не существует";
+        public const string NotFoundUser = "Пользователь не найден";
         public const string AlreadyFavourite = "Контент уже в избранном";
         public const string NotInFavourite = "Контент уже не входит в избранное";
         public const string NotFoundResolution = "Указанного разрешения нет";
@@ -23,5 +23,7 @@
         public const string InvalidBirthday = "Невозможный день рождения";
         public const string IncorrectPassword = "Неправильный пароль";
         public const string IncorrectRole = "Неправильная роль (user/admin/moderator)";
+        public const string RefreshTokenNotFound = "Refresh токен не найден";
+        public const string NotActiveRefreshToken = "Refresh токен не активен";
     }
 }
