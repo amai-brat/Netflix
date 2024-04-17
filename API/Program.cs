@@ -1,3 +1,4 @@
+using System.Text;
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
 using Application.Dto;
@@ -9,6 +10,9 @@ using DataAccess.Extensions;
 using FluentValidation;
 using Infrastucture;
 using Infrastucture.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +29,19 @@ builder.Services.AddAutoMapper(typeof(ContentProfile));
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidators();
-
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:Key"]!))
+        };
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -82,7 +98,12 @@ if (app.Environment.IsDevelopment())
 }
 app.UseExceptionHandlerMiddleware();
 
+app.UseRouting();
 app.UseCors("Frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapHub<NotificationHub>("/hub/notification");
 app.MapControllers();
 
