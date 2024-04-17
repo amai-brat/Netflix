@@ -19,7 +19,7 @@ public class TokenServiceTests
     public async Task GenerateTokens_UserGiven_OldRefreshTokensDeleted()
     {
         // arrange
-        var user = new User { Id = 1 };
+        var user = new User { Id = 1, Role = "user" };
         var tokens = _fixture.Build<RefreshToken>()
             .With(x => x.UserId, 1)
             .With(x => x.Created, DateTime.UtcNow.AddDays(-4))
@@ -56,7 +56,7 @@ public class TokenServiceTests
     public async Task RevokeToken_TokenGiven_Revoked()
     {
         // arrange
-        var user = new User { Id = 1 };
+        var user = new User { Id = 1, Role = "user"};
         DateTime? dateTime = null;
         var tokens = _fixture.Build<RefreshToken>()
             .With(x => x.UserId, 1)
@@ -97,7 +97,7 @@ public class TokenServiceTests
     public async Task RefreshToken_OldTokenGiven_OldRevokedAndNewReturned()
     {
         // assert
-        var user = new User { Id = 1 };
+        var user = new User { Id = 1, Role = "user"};
         DateTime? dateTime = null;
         var i = 1;
         var tokens = _fixture.Build<RefreshToken>()
