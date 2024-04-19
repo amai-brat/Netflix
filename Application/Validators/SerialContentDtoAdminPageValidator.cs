@@ -23,12 +23,11 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
         RuleFor(x => x.ContentType)
             .NotEmpty();
         RuleFor(x => x.AgeRating)
-            .NotNull()
             .ChildRules(ageRating =>
             {
                 ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21);
                 ageRating.RuleFor(ar => ar!.AgeMpaa).Length(0, 7); 
-            });
+            }).When(x => x.AgeRating != null);
         RuleFor(x => x.Ratings)
             .ChildRules(ratings =>
             {

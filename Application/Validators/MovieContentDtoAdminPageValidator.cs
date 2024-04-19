@@ -29,12 +29,11 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
         RuleFor(x => x.VideoUrl)
             .NotEmpty();
         RuleFor(x => x.AgeRatings)
-            .NotNull()
             .ChildRules(ageRating =>
             {
                 ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21).NotEmpty();
                 ageRating.RuleFor(ar => ar!.AgeMpaa).Length(0, 7); 
-            });
+            }).When(x => x.AgeRatings != null);
         RuleFor(x => x.Ratings)
             .ChildRules(ratings =>
             {

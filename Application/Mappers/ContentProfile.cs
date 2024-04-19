@@ -16,6 +16,10 @@ public class ContentProfile : Profile
                 opt => opt.MapFrom(src => new ContentType { ContentTypeName = src.ContentType }))
             .ForMember(dest => dest.Genres,
                 opt => opt.MapFrom(src => src.Genres.Select(genre => new Genre { Name = genre }).ToList()))
+            .ForMember(dest => dest.AgeRatings,
+                opt => opt.MapFrom(src => src.AgeRatings != null 
+                    ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
+                    : new AgeRatings()))
             .ForMember(dest => dest.PersonsInContent,
                 opt => opt.MapFrom(src =>
                     src.PersonsInContent.Select(pdto =>
@@ -40,6 +44,10 @@ public class ContentProfile : Profile
                 opt => opt.MapFrom(src => new ContentType { ContentTypeName = src.ContentType }))
             .ForMember(dest => dest.Genres,
                 opt => opt.MapFrom(src => src.Genres.Select(genre => new Genre { Name = genre }).ToList()))
+            .ForMember(dest => dest.AgeRatings,
+                opt => opt.MapFrom(src => src.AgeRating != null 
+                    ? new AgeRatings { Age = src.AgeRating.Age, AgeMpaa = src.AgeRating.AgeMpaa }
+                    : new AgeRatings()))
             .ForMember(dest => dest.PersonsInContent,
                 opt => opt.MapFrom(src =>
                     src.PersonsInContent.Select(pdto =>
@@ -76,6 +84,10 @@ public class ContentProfile : Profile
                     Name = p.Name,
                     Profession = p.Profession.ProfessionName
                 }).ToList()))
+            .ForMember(dest => dest.AgeRatings,
+                opt => opt.MapFrom(src => src.AgeRatings != null
+                    ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
+                    : null))
             .ForMember(dest => dest.AllowedSubscriptions,
                 opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
                 {
@@ -83,12 +95,16 @@ public class ContentProfile : Profile
                     Description = s.Description,
                     MaxResolution = s.MaxResolution
                 }).ToList()));
-        
+
         CreateMap<SerialContent, SerialContentAdminPageDto>()
             .ForMember(dest => dest.ContentType,
                 opt => opt.MapFrom(src => src.ContentType.ContentTypeName))
             .ForMember(dest => dest.Genres,
                 opt => opt.MapFrom(src => src.Genres.Select(g => g.Name).ToList()))
+            .ForMember(dest => dest.AgeRating,
+                opt => opt.MapFrom(src => src.AgeRatings != null
+                    ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
+                    : null))
             .ForMember(dest => dest.PersonsInContent,
                 opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentAdminPageDto
                 {

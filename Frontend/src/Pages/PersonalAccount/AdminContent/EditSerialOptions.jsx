@@ -53,7 +53,7 @@ const EditSerialOptions = (serialOptions) => {
     const addSeasonAndEpisodes = () => {
         // if season already exists, then add episodes to it
         for (let i = 0; i < seasonInfos.length; i++) {
-            if (seasonInfos[i].seasonNumber === seasonNumber) {
+            if (seasonInfos[i]!= null && seasonInfos[i].seasonNumber === seasonNumber) {
                 seasonInfos[i].episodes = seasonEpisodes;
                 setSeasonInfos([...seasonInfos]);
                 return;
@@ -94,6 +94,39 @@ const EditSerialOptions = (serialOptions) => {
     const setGenresGenres = (value) => {
         setGenres([...genres, value])
     }
+    const getNotNullGenres = () => {
+        const newGenres = []
+        for (let i = 0; i < genres.length; i++) {
+            if (genres[i] != null) {
+                newGenres.push(genres[i])
+            }
+        }
+        return newGenres
+    }
+    const getNotNullPersons = () => {
+        const newPersons = []
+        for (let i = 0; i < personsInContent.length; i++) {
+            if (personsInContent[i] != null) {
+                newPersons.push(personsInContent[i])
+            }
+        }
+        return newPersons
+    }
+    const getNotNullSeasons = () => {
+        const newSeasons = []
+        for (let i = 0; i < seasonInfos.length; i++) {
+            if (seasonInfos[i] != null) {
+                const newEpisodes = []
+                for (let j = 0; j < seasonInfos[i].episodes.length; j++) {
+                    if (seasonInfos[i].episodes[j] != null) {
+                        newEpisodes.push(seasonInfos[i].episodes[j])
+                    }
+                }
+                newSeasons.push({seasonNumber: seasonInfos[i].seasonNumber, episodes: newEpisodes})
+            }
+        }
+        return newSeasons
+    }
     const Submit = async () => {
         const resp = await fetch(`http://localhost:5114/content/serial/update/${id}`, {
             method: "POST",
@@ -112,11 +145,11 @@ const EditSerialOptions = (serialOptions) => {
                 ratings: ratings,
                 trailerInfo: trailerInfo,
                 budget: budget,
-                genres: genres,
+                genres: getNotNullGenres(),
                 releaseYears: {start: releaseYearStart, end: releaseYearEnd},
-                personsInContent: personsInContent,
+                personsInContent: getNotNullPersons(),
                 allowedSubscriptions: allowedSubscriptions,
-                seasonInfos: seasonInfos
+                seasonInfos: getNotNullSeasons()
             })
         })
         if (resp.ok) {
@@ -193,6 +226,26 @@ const EditSerialOptions = (serialOptions) => {
     const setBudgetBudgetCurrencyName = (value) => {
         setBudget({...budget, budgetCurrencyName: value})
     }
+    const handleRemoveGenre = index => {
+        const newGenres = [...genres];
+        newGenres[index] = null;
+        setGenres(newGenres);
+    };
+    const handleRemovePerson = index => {
+        const newPersons = [...personsInContent];
+        newPersons[index] = null;
+        setPersonsInContent(newPersons);
+    }
+    const handleRemoveSeason = index => {
+        const newSeasons = [...seasonInfos];
+        newSeasons[index] = null;
+        setSeasonInfos(newSeasons);
+    }
+    const handleRemoveEpisode = (seasonIndex, episodeIndex) => {
+        const newSeasons = [...seasonInfos];
+        newSeasons[seasonIndex].episodes[episodeIndex] = null;
+        setSeasonInfos(newSeasons);
+    }
     return (
         <>
             <div className={styles.addSerialOptions}>
@@ -207,7 +260,7 @@ const EditSerialOptions = (serialOptions) => {
                 <h2>Страна</h2>
                 <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
                 <h2>Тип контента</h2>
-                <select onChange={e => setContentType(e.target.value)} defaultValue={""} value={contentType}>
+                <select onChange={e => setContentType(e.target.value)} value={contentType}>
                     <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
                     <option value="Фильм">Фильм</option>
                     <option value="Сериал">Сериал</option>
@@ -236,11 +289,16 @@ const EditSerialOptions = (serialOptions) => {
                     <input type="text" value={trailerInfo.url} placeholder="URL трейлера" onChange={e => setTrailerInfoUrl(e.target.value)}/>
                 </div>}
                 <h2>Добавить жанры(enter - сохранение)</h2>
-                {genres !== null &&
-                    <div className={styles.existingGenres}>
-                        {genres.map((genre, index) => <div key={index}>{genre.toString()}</div>)}
-                    </div>
-                }
+                <div>
+                    {genres.map((genre, index) =>
+                        genre !== null ? (
+                            <div style={{ display: "block" }} key={index}>
+                                <span>{genre}</span>
+                                <span className={styles.trash} onClick={() => handleRemoveGenre(index)}></span>
+                            </div>
+                        ) : null
+                    )}
+                </div>
                 <input type="text" placeholder="Жанр" onKeyDown={handleKeyDown}/>
                 <h2>Выберите подписки</h2>
                 <div className={styles.subscriptions}>
@@ -259,28 +317,46 @@ const EditSerialOptions = (serialOptions) => {
                         </div>)}
                 </div>
                 <h2>Добавить новые персоны</h2>
-                {personsInContent.map((p, i) =>
-                    <div key={i}>{p.name} - {p.profession}</div>)
-                }
+                <div>
+                    {personsInContent.map((person, index) =>
+                        person !== null ? (
+                            <div style={{ display: "block" }} key={index}>
+                                <span>{person.name} - {person.profession}</span>
+                                <span className={styles.trash} onClick={() => handleRemovePerson(index)}></span>
+                            </div>
+                        ) : null
+                    )}
+                </div>
                 <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
                 <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
                 <button onClick={addPerson}>Добавить</button>
                 <h2 style={{display:"block"}}>Добавить сезоны</h2>
                 {seasonInfos.map((s, i) =>
+                {if (s !== null) return(
                     <div key={i}>
-                        <h3>Сезон: {s.seasonNumber}</h3>
+                        <h3 style={{display:"inline"}}>Сезон: {s.seasonNumber}</h3>
+                        <span className={styles.trash} onClick={() => handleRemoveSeason(i)}></span>
                         {s.episodes.map((episode, j) =>
-                            <div key={j}>
-                                <p>Номер эпизода: {episode.episodeNumber}</p>
+                        {if (episode !== null) return(
+                            <div key={j} style={{width: "auto"}}>
+                                <p style={{display:"inline", marginRight:"1px"}}>Номер эпизода: <span style={{
+                                    border: "1px solid white",
+                                    paddingLeft: "3px",
+                                    paddingRight: "3px",
+                                    borderRadius: "3px"
+                                }}>{episode.episodeNumber}</span></p>
+                                <span className={styles.trash} onClick={() => handleRemoveEpisode(i, j)}></span>
                                 <p>URL видео: {episode.videoUrl}</p>
                             </div>
                         )}
+                        )}
                     </div>
+                )}
                 )}
                 <input type="number" placeholder="Номер сезона"
                        onChange={e => setSeasonNumber(Number.parseInt(e.target.value))}/>
                 <h4 style={{marginTop: "0px", marginBottom: "10px"}}>Добавить серии в сезон</h4>
-                
+
                 {seasonEpisodes.map((episode, i) =>
                     <div key={i}>
                         <input type="number" placeholder="Номер эпизода"
@@ -291,7 +367,7 @@ const EditSerialOptions = (serialOptions) => {
                                }}/>
                         <input type="text" placeholder="URL видео" onChange={e => {
                             const newEpisodes = [...seasonEpisodes];
-                            newEpisodes[i].videoUrl = e.target.value;
+                            newEpisodes[i].videoUrl = e.target.value;   
                             setSeasonEpisodes(newEpisodes);
                         }}/>
                     </div>
