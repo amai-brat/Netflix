@@ -48,6 +48,24 @@ const EditMovieOptions = (movieOptions) => {
     const [personName, setPersonName] = useState("")
     const [personProfession, setPersonProfession] = useState("")
 
+    const getNotNullPersons = () => {
+        const newPersons = []
+        for (let i = 0; i < personsInContent.length; i++) {
+            if (personsInContent[i] != null) {
+                newPersons.push(personsInContent[i])
+            }
+        }
+        return newPersons
+    }
+    const getNotNullGenres = () => {
+        const newGenres = []
+        for (let i = 0; i < genres.length; i++) {
+            if (genres[i] != null) {
+                newGenres.push(genres[i])
+            }
+        }
+        return newGenres
+    }
     const addPerson = () => {
         setPersonsInContent([...personsInContent, {name: personName, profession: personProfession}])
     }
@@ -98,8 +116,8 @@ const EditMovieOptions = (movieOptions) => {
                 trailerInfo: trailerInfo,
                 budget: budget,
                 movieLength: movieLength,
-                genres: genres,
-                personsInContent: personsInContent,
+                genres: getNotNullGenres(),
+                personsInContent: getNotNullPersons(),
                 allowedSubscriptions: allowedSubscriptions,
             })
         })
@@ -180,6 +198,16 @@ const EditMovieOptions = (movieOptions) => {
     const setBudgetBudgetCurrencyName = (value) => {
         setBudget({...budget, budgetCurrencyName: value})
     }
+    const handleRemoveGenre = index => {
+        const newGenres = [...genres];
+        newGenres[index] = null;
+        setGenres(newGenres);
+    };
+    const handleRemovePerson = index => {
+        const newPersons = [...personsInContent];
+        newPersons[index] = null;
+        setPersonsInContent(newPersons);
+    }
     return (
         <div className={styles.addSerialOptions}>
             <h2>Имя фильма</h2>
@@ -190,13 +218,16 @@ const EditMovieOptions = (movieOptions) => {
             <h2>Слоган</h2>
             <input type="text" placeholder="Слоган" value={slogan} onChange={e => setSlogan(e.target.value)}/>
             <h2>Постер</h2>
-            <input type="text" placeholder="URL постера" value={posterUrl} onChange={e => setPosterUrl(e.target.value)}/>
+            <input type="text" placeholder="URL постера" value={posterUrl}
+                   onChange={e => setPosterUrl(e.target.value)}/>
             <h2>Страна</h2>
             <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
             <h2>Ссылка на видео</h2>
-            <input type={"text"} placeholder={"Ссылка на видео"} value={videoUrl} onChange={e => setVideoUrl(e.target.value)}/>
+            <input type={"text"} placeholder={"Ссылка на видео"} value={videoUrl}
+                   onChange={e => setVideoUrl(e.target.value)}/>
             <h2>Длительность фильма</h2>
-            <input type={"number"} placeholder={"Длительность"} value={movieLength} onChange={e => setMovieLength(Number.parseInt(e.target.value))}/>
+            <input type={"number"} placeholder={"Длительность"} value={movieLength}
+                   onChange={e => setMovieLength(Number.parseInt(e.target.value))}/>
             <h2>Тип контента</h2>
             <select onChange={e => setContentType(e.target.value)} defaultValue={""} value={contentType}>
                 <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
@@ -204,8 +235,9 @@ const EditMovieOptions = (movieOptions) => {
                 <option value="Сериал">Сериал</option>
             </select>
             <button onClick={popUpAgeRating}>Указать возрастные рейтинги</button>
-            {(ageRatingClicked || ageRatings != null)&& <div>
-                <input type="number" value={ageRatings.age} placeholder="Возрастной рейтинг" onChange={e => setAgeRatingAge(e.target.value)}/>
+            {(ageRatingClicked || ageRatings != null) && <div>
+                <input type="number" value={ageRatings.age} placeholder="Возрастной рейтинг"
+                       onChange={e => setAgeRatingAge(e.target.value)}/>
                 <input type="text" value={ageRatings.ageMpaa} placeholder="Возрастной рейтинг MPAA"
                        onChange={e => setAgeRatingAgeMpaa(e.target.value)}/>
             </div>}
@@ -213,44 +245,62 @@ const EditMovieOptions = (movieOptions) => {
             {(ratingClicked || ratings != null) && <div>
                 <input type="number" value={ratings.kinopoiskRating} placeholder="Рейтинг Кинопоиска"
                        onChange={e => setRatingsKinopoiskRating(e.target.value)}/>
-                <input type="number" value={ratings.imdbRating} placeholder="Рейтинг IMDB" onChange={e => setRatingsImdbRating(e.target.value)}/>
+                <input type="number" value={ratings.imdbRating} placeholder="Рейтинг IMDB"
+                       onChange={e => setRatingsImdbRating(e.target.value)}/>
             </div>}
             <button onClick={popUpBudget}>Указать бюджет</button>
             {(budgetClicked || budget != null) && <div>
-                <input type="number" value={budget.budgetValue} placeholder="Бюджет" onChange={e => setBudgetBudgetValue(e.target.value)}/>
+                <input type="number" value={budget.budgetValue} placeholder="Бюджет"
+                       onChange={e => setBudgetBudgetValue(e.target.value)}/>
                 <input type="text" value={budget.budgetCurrencyName} placeholder="Валюта бюджета"
                        onChange={e => setBudgetBudgetCurrencyName(e.target.value)}/>
             </div>}
             <button onClick={popUpTrailerInfo}>Указать трейлер</button>
             {(trailerInfoClicked || trailerInfo != null) && <div>
-                <input type="text" value={trailerInfo.name} placeholder="Название трейлера" onChange={e => setTrailerInfoName(e.target.value)}/>
-                <input type="text" value={trailerInfo.url} placeholder="URL трейлера" onChange={e => setTrailerInfoUrl(e.target.value)}/>
+                <input type="text" value={trailerInfo.name} placeholder="Название трейлера"
+                       onChange={e => setTrailerInfoName(e.target.value)}/>
+                <input type="text" value={trailerInfo.url} placeholder="URL трейлера"
+                       onChange={e => setTrailerInfoUrl(e.target.value)}/>
             </div>}
             <h2>Добавить жанры(enter - сохранение)</h2>
-            {genres !== null &&
-                <div className={styles.existingGenres}>
-                    {genres.map((genre, index) => <div key={index}>{genre.toString()}</div>)}
-                </div>
-            }
+            <div style={{width:"auto"}}>
+                {genres.map((genre, index) =>
+                    genre !== null ? (
+                        <div style={{display: "block"}} key={index}>
+                            <span style={{display:"inline"}}>{genre}</span>
+                            <span className={styles.trash} onClick={() => handleRemoveGenre(index)}></span>
+                        </div>
+                    ) : null
+                )}
+            </div>
             <input type="text" placeholder="Жанр" onKeyDown={handleKeyDown}/>
             <h2>Выберите подписки</h2>
             <div className={styles.subscriptions}>
                 {allSubscriptions.map((subscription, index) =>
                     <div key={index} className={styles.subscription}>
-                        <input type="checkbox" checked={allowedSubscriptions.find(s => s.name === subscription.name) != null} onChange={e => {
-                            if (e.target.checked) {
-                                setAllowedSubscriptions([...allowedSubscriptions, subscription])
-                            } else {
-                                setAllowedSubscriptions(allowedSubscriptions.filter(sub => sub.name !== subscription.name))
-                            }
-                        }}/>
+                        <input type="checkbox"
+                               checked={allowedSubscriptions.find(s => s.name === subscription.name) != null}
+                               onChange={e => {
+                                   if (e.target.checked) {
+                                       setAllowedSubscriptions([...allowedSubscriptions, subscription])
+                                   } else {
+                                       setAllowedSubscriptions(allowedSubscriptions.filter(sub => sub.name !== subscription.name))
+                                   }
+                               }}/>
                         <label>{subscription.name}</label>
                     </div>)}
             </div>
             <h2>Добавить новые персоны</h2>
-            {personsInContent.map((p, i) =>
-                <div key={i}>{p.name} - {p.profession}</div>)
-            }
+            <div style={{width:"auto"}}>
+                {personsInContent.map((person, index) =>
+                    person !== null ? (
+                        <div style={{ display: "block" }} key={index}>
+                            <span style={{display:"inline"}}>{person.name} - {person.profession}</span>
+                            <span className={styles.trash} onClick={() => handleRemovePerson(index)}></span>
+                        </div>
+                    ) : null
+                )}
+            </div>
             <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
             <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
             <button onClick={addPerson}>Добавить</button>
