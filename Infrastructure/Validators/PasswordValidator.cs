@@ -1,7 +1,5 @@
 using FluentValidation;
-
-namespace Application.Validators;
-
+namespace Infrastructure.Validators;
 public class PasswordValidator : AbstractValidator<string>
 {
     public PasswordValidator()

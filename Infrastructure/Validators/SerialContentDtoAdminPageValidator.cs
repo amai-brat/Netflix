@@ -1,8 +1,7 @@
-﻿using System.Data;
-using Application.Dto;
+﻿using Application.Dto;
 using FluentValidation;
 
-namespace Application.Validators;
+namespace Infrastructure.Validators;
 
 public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialContentAdminPageDto>
 {

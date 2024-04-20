@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Application.Validators;
+namespace Infrastructure.Validators;
 
 public class EmailValidator : AbstractValidator<string>
 {

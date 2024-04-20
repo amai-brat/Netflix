@@ -1,4 +1,5 @@
-namespace Application.Services.Abstractions;
+namespace Infrastructure.Services;
+
 
 public interface IProfilePicturesProvider
 {

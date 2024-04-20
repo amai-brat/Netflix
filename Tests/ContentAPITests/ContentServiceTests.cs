@@ -4,12 +4,12 @@ using Moq;
 using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
-using Application.Mappers;
 using Application.Repositories;
 using Application.Services.Implementations;
 using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
+using Infrastructure.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 

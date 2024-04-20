@@ -3,12 +3,12 @@ using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
 using Application.Services.Abstractions;
-using Application.Services.Implementations;
 using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastructure.Profiles;
+using Infrastructure.Services;
 using Moq;
 
 namespace Tests.UserAPITests;

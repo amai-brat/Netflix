@@ -1,15 +1,15 @@
 using System.Text;
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
-using Application.Mappers;
 using Application.Options;
-using Application.Services.RegisterExtensions;
 using DataAccess.Extensions;
 using Infrastructure;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Application;
+using Infrastructure.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +18,7 @@ builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
-builder.Services.AddInfrastucture();
+builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));

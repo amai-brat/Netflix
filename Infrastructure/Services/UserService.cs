@@ -2,13 +2,13 @@ using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
 using Application.Services.Abstractions;
-using Application.Validators;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
+using Infrastructure.Validators;
 using IReviewRepository = Application.Repositories.IReviewRepository;
 
-namespace Application.Services.Implementations;
+namespace Infrastructure.Services;
 
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,

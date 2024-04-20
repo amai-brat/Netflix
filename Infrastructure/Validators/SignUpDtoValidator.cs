@@ -1,7 +1,7 @@
 using Application.Dto;
 using FluentValidation;
 
-namespace Application.Validators;
+namespace Infrastructure.Validators;
 
 public class SignUpDtoValidator : AbstractValidator<SignUpDto>
 {

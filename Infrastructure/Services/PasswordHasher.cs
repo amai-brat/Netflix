@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using Application.Services.Abstractions;
-
-namespace Application.Services.Implementations;
+namespace Infrastructure.Services;
 
 public class PasswordHasher : IPasswordHasher
 {

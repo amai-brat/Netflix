@@ -1,6 +1,5 @@
 ﻿
 using Application.Exceptions;
-using Infrastructure;
 using Domain.Services.ServiceExceptions;
 namespace API.Middlewares.ExceptionHandler
 {
@@ -47,6 +46,10 @@ namespace API.Middlewares.ExceptionHandler
                 });
             }
         }
-        
+        private class ExceptionDetails
+        {
+            public string Message { get; set; } = null!;
+            public int Code { get; set; }
+        }
     }
 }
