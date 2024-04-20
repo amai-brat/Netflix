@@ -1,4 +1,4 @@
-namespace Infrastructure.Options;
+namespace Infrastucture.Options;
 
 public class MinioOptions
 {

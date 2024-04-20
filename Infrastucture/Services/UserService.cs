@@ -5,11 +5,10 @@ using Application.Services.Abstractions;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
-using Infrastructure.Validators;
-using Infrastucture.Services;
+using Infrastucture.Validators;
 using IReviewRepository = Application.Repositories.IReviewRepository;
 
-namespace Infrastructure.Services;
+namespace Infrastucture.Services;
 
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,
