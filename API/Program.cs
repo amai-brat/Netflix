@@ -1,17 +1,13 @@
 using System.Text;
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
-using Application.Dto;
 using Application.Mappers;
 using Application.Options;
 using Application.Services.RegisterExtensions;
-using Application.Validators;
 using DataAccess.Extensions;
-using FluentValidation;
-using Infrastucture;
-using Infrastucture.Options;
+using Infrastructure;
+using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -86,7 +82,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

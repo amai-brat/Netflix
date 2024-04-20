@@ -13,7 +13,7 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
             .MaximumLength(100);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .MaximumLength(500);
+            .MaximumLength(1000);
         RuleFor(x => x.PosterUrl)
             .NotEmpty();
         RuleFor(x => x.Slogan)
@@ -29,12 +29,11 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
         RuleFor(x => x.VideoUrl)
             .NotEmpty();
         RuleFor(x => x.AgeRatings)
-            .NotNull()
             .ChildRules(ageRating =>
             {
-                ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21);
+                ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21).NotEmpty();
                 ageRating.RuleFor(ar => ar!.AgeMpaa).Length(0, 7); 
-            });
+            }).When(x => x.AgeRatings != null);
         RuleFor(x => x.Ratings)
             .ChildRules(ratings =>
             {
@@ -57,6 +56,8 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
             })
             .When(x => x.Budget != null);
         RuleForEach(x => x.Genres).NotEmpty().MaximumLength(20);
+        RuleFor(x => x.PersonsInContent).NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions).NotEmpty();
         RuleForEach(x => x.PersonsInContent).ChildRules(pic =>
         {
             pic.RuleFor(picdto => picdto.Name).NotEmpty().MaximumLength(70);

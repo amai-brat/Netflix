@@ -8,7 +8,7 @@ using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
-using Infrastucture.Profiles;
+using Infrastructure.Profiles;
 using Moq;
 
 namespace Tests.UserAPITests;

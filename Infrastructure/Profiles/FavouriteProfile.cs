@@ -2,7 +2,7 @@ using Application.Dto;
 using AutoMapper;
 using Domain.Entities;
 
-namespace Infrastucture.Profiles;
+namespace Infrastructure.Profiles;
 
 public class FavouriteProfile : Profile
 {

@@ -13,7 +13,7 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
             .MaximumLength(100);
         RuleFor(x => x.Description)
             .NotEmpty()
-            .MaximumLength(500);
+            .MaximumLength(1000);
         RuleFor(x => x.PosterUrl)
             .NotEmpty();
         RuleFor(x => x.Slogan)
@@ -23,12 +23,11 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
         RuleFor(x => x.ContentType)
             .NotEmpty();
         RuleFor(x => x.AgeRating)
-            .NotNull()
             .ChildRules(ageRating =>
             {
                 ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21);
                 ageRating.RuleFor(ar => ar!.AgeMpaa).Length(0, 7); 
-            });
+            }).When(x => x.AgeRating != null);
         RuleFor(x => x.Ratings)
             .ChildRules(ratings =>
             {
@@ -50,7 +49,11 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
                 budget.RuleFor(b => b!.BudgetCurrencyName).NotEmpty().MaximumLength(10);
             })
             .When(x => x.Budget != null);
+        RuleFor(x => x.Genres)
+            .NotEmpty();
         RuleForEach(x => x.Genres).NotEmpty().MaximumLength(20);
+        RuleFor(x => x.PersonsInContent).NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions).NotEmpty();
         RuleForEach(x => x.PersonsInContent).ChildRules(pic =>
         {
             pic.RuleFor(picdto => picdto.Name).NotEmpty().MaximumLength(70);
@@ -75,5 +78,6 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
                 ep.RuleFor(epi => epi.VideoUrl).NotEmpty();
             });
         });
+        RuleFor(x => x.SeasonInfos).NotEmpty();
     }
 }
