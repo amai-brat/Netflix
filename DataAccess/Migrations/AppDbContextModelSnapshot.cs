@@ -109,10 +109,6 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("CommentNotificationId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("comment_notification_id");
-
                     b.Property<long>("ReviewId")
                         .HasColumnType("bigint")
                         .HasColumnName("review_id");
@@ -133,10 +129,6 @@ namespace DataAccess.Migrations
                     b.HasKey("Id")
                         .HasName("pk_comments");
 
-                    b.HasIndex("CommentNotificationId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_comments_comment_notification_id");
-
                     b.HasIndex("ReviewId")
                         .HasDatabaseName("ix_comments_review_id");
 
@@ -152,31 +144,8 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 14, 29, 14, 856, DateTimeKind.Unspecified).AddTicks(102), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 10, 41, 53, 927, DateTimeKind.Unspecified).AddTicks(2730), new TimeSpan(0, 3, 0, 0, 0))
                         });
-                });
-
-            modelBuilder.Entity("Domain.Entities.CommentNotification", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CommentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("comment_id");
-
-                    b.Property<bool>("Readed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("readed");
-
-                    b.HasKey("Id")
-                        .HasName("pk_comment_notifications");
-
-                    b.ToTable("comment_notifications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ContentBase", b =>
@@ -266,38 +235,6 @@ namespace DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.Currency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_currencies");
-
-                    b.ToTable("currencies", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "RUB"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "USD"
-                        });
-                });
-
             modelBuilder.Entity("Domain.Entities.Episode", b =>
                 {
                     b.Property<long>("Id")
@@ -356,7 +293,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 12, 13, 49, 14, 856, DateTimeKind.Unspecified).AddTicks(92), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 4, 12, 10, 1, 53, 927, DateTimeKind.Unspecified).AddTicks(2713), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -528,7 +465,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 14, 19, 14, 856, DateTimeKind.Unspecified).AddTicks(98), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 4, 12, 10, 31, 53, 927, DateTimeKind.Unspecified).AddTicks(2724), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -581,10 +518,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric")
-                        .HasColumnName("price");
-
                     b.HasKey("Id")
                         .HasName("pk_subscriptions");
 
@@ -596,24 +529,21 @@ namespace DataAccess.Migrations
                             Id = 1,
                             Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки",
                             MaxResolution = 2160,
-                            Name = "Фильмы",
-                            Price = 300m
+                            Name = "Фильмы"
                         },
                         new
                         {
                             Id = 2,
                             Description = "Все сериалы только в этой подписке",
                             MaxResolution = 1080,
-                            Name = "Сериалы",
-                            Price = 350m
+                            Name = "Сериалы"
                         },
                         new
                         {
                             Id = 3,
                             Description = "Мультфильмы для всех возрастов только в данной подписке",
                             MaxResolution = 720,
-                            Name = "Мультфильмы",
-                            Price = 228m
+                            Name = "Мультфильмы"
                         });
                 });
 
@@ -715,8 +645,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 10, 14, 19, 14, 855, DateTimeKind.Unspecified).AddTicks(9933), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 12, 14, 19, 14, 855, DateTimeKind.Unspecified).AddTicks(9967), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 10, 10, 31, 53, 927, DateTimeKind.Unspecified).AddTicks(2503), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 12, 10, 31, 53, 927, DateTimeKind.Unspecified).AddTicks(2541), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -846,11 +776,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.Comment", b =>
                 {
-                    b.HasOne("Domain.Entities.CommentNotification", "CommentNotification")
-                        .WithOne("Comment")
-                        .HasForeignKey("Domain.Entities.Comment", "CommentNotificationId")
-                        .HasConstraintName("fk_comments_comment_notifications_comment_notification_id");
-
                     b.HasOne("Domain.Entities.Review", "Review")
                         .WithMany("Comments")
                         .HasForeignKey("ReviewId")
@@ -864,8 +789,6 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_comments_users_user_id");
-
-                    b.Navigation("CommentNotification");
 
                     b.Navigation("Review");
 
@@ -1196,12 +1119,6 @@ namespace DataAccess.Migrations
                         });
 
                     b.Navigation("YearRange")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Entities.CommentNotification", b =>
-                {
-                    b.Navigation("Comment")
                         .IsRequired();
                 });
 

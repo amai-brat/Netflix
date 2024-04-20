@@ -5,11 +5,11 @@ const FavouritesFilterPopUp = ({favourites, setFavourites}) => {
     const filterFavouritesByRule = (rule) => {
         switch (rule){
             case "score":
-                return favourites.slice().sort((a,b) => b.score - a.score);
+                return favourites.slice().sort((a,b) => b.UserScore - a.UserScore);
             case "date":
-                return favourites.slice().sort((a,b) => new Date(b.addedAt) - new Date(a.addedAt))
+                return favourites.slice().sort((a,b) => new Date(b.AddedAt) - new Date(a.AddedAt))
             case "name":
-                return favourites.slice().sort((a,b) => a.contentBase.name.localeCompare(b.contentBase.name))
+                return favourites.slice().sort((a,b) => a.ContentBase.Name.localeCompare(b.ContentBase.Name))
             default:
                 return favourites.slice()
         }

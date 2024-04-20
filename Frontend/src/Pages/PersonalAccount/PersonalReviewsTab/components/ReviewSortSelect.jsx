@@ -2,11 +2,6 @@ import {createTheme, css, MenuItem, Select, styled, ThemeProvider} from "@mui/ma
 
 export const ReviewSortSelect = ({setSortType}) => {
   const theme = createTheme({
-    palette: {
-      text: {
-        primary: '#ffffff',
-      },
-    },
     components: {
       MuiSelect: {
         styleOverrides: {

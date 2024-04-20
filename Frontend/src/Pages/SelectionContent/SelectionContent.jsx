@@ -5,28 +5,19 @@ import "/src/Pages/SelectionContent/Styles/SelectionContent.css";
 import SelectionContentSearchPanel from "./SelectionContentSearchPanel.jsx";
 import {contentsData, contentTypesData} from "./TestData.jsx";
 import {useLocation} from "react-router-dom";
-import {baseUrl} from "../Shared/HttpClient/baseUrl";
 
 const SelectionContent = () => {
-    const getQueryParams = () =>
-        Object.keys(filter)
-            .map(key => {
-                if (Array.isArray(filter[key])) {
-                    if(filter[key].length === 0)
-                        return '';
-                    return filter[key].map(value => `${key}=${value}`).join('&');
-                } else {
-                    if(filter[key] === null)
-                        return '';
-                    return `${key}=${filter[key]}`;
-                }
-            })
-            .filter(param => param !== '')
-            .join('&');
-    
     const getAllContentByFilterAsync = async () => {
         try {
-            const response = await fetch(baseUrl + "content/filter?" + getQueryParams())
+            //TODO: Указать действительный url запроса
+            const response = await fetch("https://localhost:5000/GetAllContentByFilter", {
+                method: "post",
+                headers:{
+                    "Accept": "application/json",
+                    "Content-Type": 'application/json'
+                },
+                body: JSON.stringify(filter)
+            })
             if(response.ok){
                 setContents(await response.json())
             }else{
@@ -34,7 +25,8 @@ const SelectionContent = () => {
             }
         }
         catch (error){
-            setContents(null)
+            //TODO: изменить на null после разработки API
+            setContents(contentsData)
             console.error(error)
         }
     }

@@ -3,7 +3,6 @@ import {Section} from "./components/Section.jsx";
 import { register } from 'swiper/element/bundle';
 import {PromoSlider} from "./components/PromoSlider.jsx";
 import {useEffect, useState} from "react";
-import Map from "./components/map/Map.jsx";
 register();
 
 
@@ -115,13 +114,6 @@ const MainContent = () => {
 
     }, []);
 
-    const a = function () {
-        return(<iframe
-            src="https://yandex.ru/map-widget/v1/?ll=49.136538%2C55.786424&mode=poi&poi%5Bpoint%5D=49.123375%2C55.791550&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1763683699&z=13.54"
-            allowFullScreen="true"
-        ></iframe>)
-    }
-    
     return (
         <div className={styles.pageWrapper}>
             <PromoSlider></PromoSlider>
@@ -132,8 +124,11 @@ const MainContent = () => {
             </div>
             <div className={styles.mapWrapper}>
                 <div className={styles.innerWrapper}>
-                    <p>Ближайшие кинотеатры</p>
-                    <Map/>
+                    <p>Доступные кинотеатры</p>
+                    <iframe
+                        src="https://yandex.ru/map-widget/v1/?ll=49.136538%2C55.786424&mode=poi&poi%5Bpoint%5D=49.123375%2C55.791550&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D1763683699&z=13.54"
+                        allowFullScreen="true"
+                    ></iframe>
                 </div>
             </div>
         </div>

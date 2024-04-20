@@ -2,7 +2,6 @@
 import React, {useEffect, useState} from 'react';
 import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(720)
     const [error, setError] = useState(null)
@@ -11,7 +10,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [currentSeason, setCurrentSeason] = useState(1)
     const getUrl = () => {
         // TODO: написать url на сервер правильный
-        return baseUrl + "content/movie/video/" + contentId + "?resolution=" + resolution +
+        return "http://localhost:5001/video/" + contentId + "?res=" + resolution +
             (contentType === "сериал"? `&episode=${currentEpisode}&season=${currentSeason}` : ``)
     }
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)

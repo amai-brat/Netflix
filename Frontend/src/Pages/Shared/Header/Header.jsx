@@ -9,22 +9,20 @@ import "/src/Pages/Shared/Header/Styles/Header.css"
 import NotificationPanel from "./NotificationPanel.jsx";
 import NotificationPopUpPanel from "./NotificationPopUpPanel.jsx";
 import * as signalR from "@microsoft/signalr";
-import {baseUrl} from "../HttpClient/baseUrl.js";
-import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 const Header = () => {
     const [notifications, setNotifications] = useState([])
     const [alarmed, setAlarmed] = useState(false)
     const [user, setUser] = useState(undefined)
-    const store = useDataStore()
     
     useEffect(() => {
         let isUserAuth = false
         const getCurrentUserDataAsync = async () => {
             try{
-                const response = await fetch(baseUrl + "user/get-personal-info")
+                //TODO: Указать действительный url запроса и body с query при необходимости
+                const response = await fetch("https://localhost:5000/GetCurrentUserData")
                 if(response.ok){
                     const userData = await response.json()
-                    setUser({name: userData.nickname, icon: userData.profilePictureUrl })
+                    setUser({name: userData.Nickname, icon: userData.ProfilePictureUrl })
                     isUserAuth = true
                 }else{
                     setUser(null)
@@ -35,49 +33,23 @@ const Header = () => {
                 console.error(error)
             }
         }
-        
-        const getNotificationHistory = async () => {
-            try{
-                const response = await fetch(baseUrl + "comment/notifications")
-                if(response.ok){
-                    const notificationsData = await response.json()
-                    if(notificationsData.filter(x => !x.readed).length !== 0){
-                        setAlarmed(true)   
-                    }
-                    setNotifications(notificationsData)
-                }else{
-                    setAlarmed(false)
-                    setNotifications([])
+        getCurrentUserDataAsync().then(()=>{
+                if(!isUserAuth){
+                    return
                 }
+                //Todo: Установить действительный url
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("http://localhost:5000/NotificationHub", {accessTokenFactory: () => user})
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+    
+                connection.start().then(() => {}).catch(err => console.error(err))
+                connection.on("ReceiveMessage", (notification) => {
+                    setAlarmed(true)
+                    setNotifications([...notifications, notification])
+                });
             }
-            catch (error){
-                setAlarmed(false)
-                setNotifications([])
-                console.error(error)
-            }
-        }
-        
-        getCurrentUserDataAsync().then(() => {
-            getNotificationHistory().then(()=>{
-                    if(!isUserAuth){
-                        return
-                    }
-                    const connection = new signalR.HubConnectionBuilder()
-                        .withUrl(baseUrl + "hub/notification")
-                        .configureLogging(signalR.LogLevel.Information)
-                        .build();
-
-                    connection.start().then(() => {
-                        store.setConnection(connection)
-                    }).catch(err => console.error(err))
-                
-                    connection.on("ReceiveNotification", (notification) => {
-                        setAlarmed(true)
-                        setNotifications(notifications => [...notifications, notification])
-                    });
-                }
-            )  
-        })
+        )
     }, []);
     
     const navigate = useNavigate()

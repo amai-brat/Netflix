@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Domain.Entities;
 
-namespace Application.Repositories
+namespace DataAccess.Repositories.Abstractions
 {
     public interface IUserRepository
     {

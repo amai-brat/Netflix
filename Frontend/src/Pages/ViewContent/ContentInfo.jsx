@@ -2,14 +2,13 @@
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {useEffect, useState} from "react";
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 
 function ContentInfo({contentData}){
-    const groupedByRole = contentData.personsInContent.reduce((acc, person) => {
-        if (acc[person.profession.professionName]) {
-            acc[person.profession.professionName].push(person);
+    const groupedByRole = contentData.personInContent.reduce((acc, person) => {
+        if (acc[person.profession]) {
+            acc[person.profession].push(person);
         } else {
-            acc[person.profession.professionName] = [person];
+            acc[person.profession] = [person];
         }
         return acc;
     }, {});
@@ -54,7 +53,7 @@ function ContentInfo({contentData}){
     }
     async function addToFavourites() {
         try{
-            const resp = await fetch(baseUrl + "api/favourites/add", {
+            const resp = await fetch("http://localhost:5000/api/favourites/add", {
                 method: "POST",
                 //TODO: добавить токен
                 headers: {
@@ -89,7 +88,7 @@ function ContentInfo({contentData}){
                 <div className={styles.posterTrailer}>
                     <div className={styles.poster}>
                         <div className={styles.favourite} title={"В избранное"} onClick={addToFavourites}></div>
-                        <img src={contentData.posterUrl} alt="poster" className={styles.poster}/>
+                        <img src={contentData.poster} alt="poster" className={styles.poster}/>
                     </div>
                     {contentData.trailerInfo &&
                         <div className={styles.trailer}>
@@ -102,27 +101,27 @@ function ContentInfo({contentData}){
                     }
                 </div>
                 <div className={styles.contentInfo}>
-                    <span className={styles.title}>{contentData.name}</span>
+                    <span className={styles.title}>{contentData.title}</span>
                     <span className={styles.description}>{contentData.description}</span>
                     <h2>Детали</h2>
                     {contentData.country &&
                         <span><strong>Страна:</strong> {contentData.country}</span>
                     }
-                    {contentData.slogan &&
+                    {contentData.slogan && 
                         <span><strong>Слоган:</strong> {contentData.slogan}</span>
                     }
-                    {contentData.genres &&
-                        <span><strong>Жанры:</strong> {contentData.genres.map(g => g.name).join(", ")}</span>
+                    {contentData.genres && 
+                        <span><strong>Жанры:</strong> {contentData.genres.join(", ")}</span>
                     }
-                    {contentData.yearRange &&
-                        <span><strong>Годы выхода:</strong> {contentData.yearRange.start + " - " + contentData.yearRange.end}</span>
+                    {contentData.releaseYears && 
+                        <span><strong>Годы выхода:</strong> {contentData.releaseYears.start + " - " + contentData.releaseYears.end}</span>
                     }
-                    {contentData.seasonInfos &&
+                    {contentData.seasonInfos && 
                         <span><strong>Количество сезонов: </strong> {contentData.seasonInfos.length}</span>}
-                    {contentData.contentType &&
-                        <span><strong>Тип контента:</strong> {contentData.contentType.contentTypeName}</span>
+                    {contentData.contentType && 
+                        <span><strong>Тип контента:</strong> {contentData.contentType}</span>
                     }
-                    {contentData.releaseDate &&
+                    {contentData.releaseDate && 
                         <span><strong>Дата выхода:</strong> {contentData.releaseDate}</span>
                     }
                     {contentData.movieLength &&
@@ -131,39 +130,35 @@ function ContentInfo({contentData}){
                     {contentData.budget &&
                         <span><strong>Бюджет:</strong> {contentData.budget.budgetValue} {contentData.budget.budgetCurrencyName}</span>
                     }
-                    {contentData.ageRatings &&
+                    {contentData.ageRating && 
                         <span className={styles.ageRating}><strong>Возрастной рейтинг: </strong>
                             <span>
-                                {contentData.ageRatings.age && <span>{contentData.ageRatings.age}+</span>}
-                                {contentData.ageRatings.ageMpaa && <span> ({contentData.ageRatings.ageMpaa})</span>}
+                                {contentData.ageRating.age && <span>{contentData.ageRating.age}+</span>}
+                                {contentData.ageRating.ageMpaa && <span> ({contentData.ageRating.ageMpaa})</span>}
                             </span>
                         </span>
                     }
                     <span className={styles.ratings}>
                         <strong>Рейтинги:</strong>
-                        {contentData.ratings.imdbRating &&
-                            <span className={styles.ratingImdb}>IMDb: {contentData.ratings.imdbRating}</span>}
-                        {contentData.ratings.kinopoiskRating && <span
-                            className={styles.ratingKinopoisk}>Кинопоиск: {contentData.ratings.kinopoiskRating}</span>}
-                        <span
-                            className={styles.ratingLocal}>Локальный: {contentData.ratings.localRating == null ? "недостаточно оценок" : contentData.ratings.localRating}</span></span>
+                        {contentData.ratings.imdb && <span className={styles.ratingImdb}>IMDb: {contentData.ratings.imdb}</span>}
+                        {contentData.ratings.kinopoisk && <span className={styles.ratingKinopoisk}>Кинопоиск: {contentData.ratings.kinopoisk}</span>}
+                        <span className={styles.ratingLocal}>Локальный: {contentData.ratings.local == null? "недостаточно оценок": contentData.ratings.local}</span></span>
                     <h2>В главных ролях:</h2>
-                    <span>{printAllPersonsByRole("Актер")}</span>
+                    <span>{printAllPersonsByRole("актеры")}</span>
                     <h2>Также работали</h2>
                     {Object.keys(groupedByRole).map((role) => {
-                        if (role === "Актер") {
-                            return <span key={role}></span>;
+                        if (role === "актеры") {
+                            return;
                         }
-                        return <span
-                            key={role}><strong>{capitalizeFirstLetter(role) + ": "}</strong> {printAllPersonsByRole(role)}</span>
+                        return <span key={role}><strong>{capitalizeFirstLetter(role) + ": "}</strong> {printAllPersonsByRole(role)}</span>
 
                     })}
                 </div>
+
             </div>
         </>
 
 
     );
 }
-
 export default ContentInfo

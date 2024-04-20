@@ -1,10 +1,14 @@
 ﻿using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Services.Abstractions;
+using AutoMapper;
 using FluentValidation;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace API.Controllers.ContentController
 {
@@ -63,10 +67,9 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
-
-            var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return File(videoStream,"video/mp4", enableRangeProcessing:true );
+            var url = await contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
+            await HttpContext.Response.SendFileAsync(url);
+            return Ok();
         }
 
         [HttpGet("serial/{season}/{episode}/video/{id}")]
@@ -77,10 +80,9 @@ namespace API.Controllers.ContentController
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var videoPath = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
-            
-            var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return File(videoStream,"video/mp4", enableRangeProcessing:true );
+            var url = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
+            await HttpContext.Response.SendFileAsync(url);
+            return Ok();
         }
         // TODO: авторизация
         [HttpPost("serial/add")]

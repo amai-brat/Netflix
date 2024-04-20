@@ -8,8 +8,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Exceptions;
-using Application.Repositories;
 using Application.Services.Implementations;
+using DataAccess.Repositories.Abstractions;
 
 namespace Tests.ContentAPITests
 {

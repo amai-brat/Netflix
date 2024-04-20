@@ -9,9 +9,6 @@ public class Comment
 
     public long UserId { get; set; }
     public User User { get; set; } = null!;
-    
-    public long? CommentNotificationId { get; set; }
-    public CommentNotification CommentNotification { get; set; }
 
     public string Text { get; set; } = null!;
     public DateTimeOffset WrittenAt { get; set; }

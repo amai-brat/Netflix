@@ -1,7 +1,12 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
-using Application.Repositories;
+using System.Text;
+using System.Threading.Tasks;
+using DataAccess.Repositories.Abstractions;
 
 namespace DataAccess.Repositories
 {

@@ -2,7 +2,6 @@
 import {useEffect, useState} from "react";
 import ReactPaginate from "react-paginate";
 import styles from './styles/paginatedReview.module.css';
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 const testReviews =  [
     {
         id: 1,
@@ -118,23 +117,24 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
     const [error, setError] = useState(null);
     const endOffset = itemOffset + itemsPerPage;
     useEffect( () => {
-        const fetchData = async () => {
+        //TODO: раскомментировать после того как будет готов сервер, убрать тестовые данные
+        /*const fetchData = async () => {
             try{
-                const resp = await fetch(`${baseUrl}reviews/${contentId}/?offset=${itemOffset}&limit=${itemsPerPage}&sort=${sort}`);
+                const resp = await fetch(`http://localhost:8000/reviews/${contentId}/?offset=${itemOffset}&limit=${itemsPerPage}&sort=${sort}`);
                 const data = await resp.json();
                 if (resp.ok){
-                    setItems(data);
-                    setTotalCount(data.length);
+                    setItems(data.reviews);
+                    setTotalCount(data.totalCount);
                 } else {
                     setError(data.message);
                 }
             } catch (e) {
                 setError("Не удалось загрузить данные ");
             }
-        };
-        //setItems(testReviews.slice(itemOffset,endOffset));
-        //setTotalCount(testReviews.length);
-        fetchData();
+        };*/
+        setItems(testReviews.slice(itemOffset,endOffset));
+        setTotalCount(testReviews.length);
+        // fetchData();
     },[itemOffset, itemsPerPage, sort, contentId]);
     const handlePageClick = (event) => {
         const newOffset = event.selected * itemsPerPage;

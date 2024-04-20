@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.Repositories;
+namespace DataAccess.Repositories.Abstractions;
 
 public interface IContentTypeRepository
 {

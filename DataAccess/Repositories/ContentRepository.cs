@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Repositories;
+using DataAccess.Repositories.Abstractions;
 
 namespace DataAccess.Repositories
 {
@@ -29,7 +29,7 @@ namespace DataAccess.Repositories
                 .Include(s => s.SeasonInfos)
                     .ThenInclude(s => s.Episodes)
                 .SingleOrDefaultAsync(filter);
-        
+
         public async Task UpdateMovieContent(MovieContent newMovieContent)
         {
             var dbMovieContent = await appDbContext.MovieContents
@@ -377,7 +377,6 @@ namespace DataAccess.Repositories
                 {
                     continue;
                 }
-
                 // если в существующих его нет, но он уже есть в тех которые в бд, то 
                 // добавляем версию из бд
                 var firstOrDefault = existingGenres.FirstOrDefault(g => g.Name.Equals(genre.Name));
@@ -386,7 +385,6 @@ namespace DataAccess.Repositories
                     dbContent.Genres.Add(firstOrDefault);
                     continue;
                 }
-
                 // если в существующих его нет и его нет в бд, то добавляем полностьюб новый жанр.
                 // TODO: хорошо было бы сделать [ConcurrencyCheck] на имя жанра, т.к. в этом этапе может быть такое
                 // что пока программа работала кто-то добавил такой жанр а локальный кеш не обновлялся
@@ -396,11 +394,6 @@ namespace DataAccess.Repositories
                 dbContent.Genres.Add(genre);
                 existingGenres.Add(genre);
             }
-        }
-
-        public async Task<ContentBase?> GetContentByIdAsync(long id)
-        {
-            return await appDbContext.ContentBases.FindAsync(id);
         }
     }
 }

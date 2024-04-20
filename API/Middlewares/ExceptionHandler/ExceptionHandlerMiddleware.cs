@@ -13,13 +13,9 @@ namespace API.Middlewares.ExceptionHandler
                 await next.Invoke(context);
             }
             catch(ArgumentException ex) when (
-                ex is ReviewServiceArgumentException ||
-                ex is FavouriteServiceArgumentException ||
-                ex is ContentServiceArgumentException ||
-                ex is CommentServiceArgumentException || 
-                ex is NotificationServiceArgumentException ||
-                ex is SubscriptionServiceArgumentException || 
-                ex is UserServiceArgumentException)
+            ex is ReviewServiceArgumentException ||
+            ex is FavouriteServiceArgumentException ||
+            ex is ContentServiceArgumentException)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
