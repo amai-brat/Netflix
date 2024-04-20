@@ -1,4 +1,6 @@
 using DataAccess;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +22,22 @@ public class WebAppFactory : WebApplicationFactory<Program>
             {
                 options.UseInMemoryDatabase("Test");
             });
+            
+            var sp = services.BuildServiceProvider();
+            using (var scope = sp.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var db = scopedServices.GetRequiredService<AppDbContext>();
+                db.Database.EnsureCreated();
+            }
+            
+        });
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddAuthentication(TestAuthHandler.AuthenticationScheme)
+                .AddScheme<AuthenticationSchemeOptions,
+                    TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
         });
     }
 }

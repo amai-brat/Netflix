@@ -1,19 +1,20 @@
 using Application.Dto;
 using Application.Services.Abstractions;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.SuscriptionController;
 
 [ApiController]
-// [Authorize(Roles = "admin")]
+[Authorize(Roles = "admin")]
 [Route("admin/subscription")]
 public class SubscriptionController(
     ISubscriptionService subscriptionService)
     : ControllerBase
 {
     [HttpGet("all")]
-    [ProducesResponseType<List<Subscription>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<AdminSubscriptionsDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllSubscriptionsAsync()
     {
         var result = await subscriptionService.GetSubscriptionsAsync();
@@ -34,7 +35,7 @@ public class SubscriptionController(
     public async Task<IActionResult> AddSubscriptionAsync(NewSubscriptionDto dto)
     {
         var result = await subscriptionService.AddSubscriptionAsync(dto);
-        return Ok(result);
+        return Created("", result);
     }
 
     [HttpDelete("delete/{subscriptionId:int}")]
