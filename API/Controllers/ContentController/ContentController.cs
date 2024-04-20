@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Services.Abstractions;
+using AutoMapper;
 using FluentValidation;
 
 namespace API.Controllers.ContentController
@@ -14,7 +15,8 @@ namespace API.Controllers.ContentController
         IContentService contentService,
         IFavouriteService favouriteService,
         IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
-        IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator) : ControllerBase
+        IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator,
+        IMapper mapper) : ControllerBase
     {
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
@@ -88,7 +90,7 @@ namespace API.Controllers.ContentController
             var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
@@ -101,7 +103,7 @@ namespace API.Controllers.ContentController
             var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
@@ -113,7 +115,7 @@ namespace API.Controllers.ContentController
             var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
@@ -126,17 +128,39 @@ namespace API.Controllers.ContentController
             var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors);
+                throw new Exception(validationResult.ToString());
             }
             await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
         // TODO: авторизация
-        [HttpPost("content/delete/{id}")]
+        [HttpGet("delete/{id}")]
         public async Task<IActionResult> DeleteContent(long id)
         {
             await contentService.DeleteContent(id);
             return Ok();
+        }
+        // TODO: авторизация
+        [HttpGet("admin/movie/{id}")]
+        public async Task<MovieContentAdminPageDto> GetMovieContentAdminPageDto(long id)
+        {
+            var content = await contentService.GetContentByIdAsync(id);
+            if (content is not MovieContent) throw new Exception("такого контента нет");
+            
+            var movieContent = await contentService.GetMovieContentByIdAsync(id);
+            var movieContentDto = mapper.Map<MovieContentAdminPageDto>(movieContent);
+            return movieContentDto;
+
+        }
+        [HttpGet("admin/serial/{id}")]
+        public async Task<SerialContentAdminPageDto> GetSerialContentAdminPageDto(long id)
+        {
+            var content = await contentService.GetContentByIdAsync(id);
+            if (content is not SerialContent) throw new Exception("такого контента нет");
+
+            var serialContent = await contentService.GetSerialContentByIdAsync(id);
+            var serialContentDto = mapper.Map<SerialContentAdminPageDto>(serialContent);
+            return serialContentDto;
         }
         // [HttpPost("/test")]
         // public async Task<IActionResult> TestMethod()
