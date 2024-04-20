@@ -16,7 +16,9 @@ public class UserService(
     IUserRepository userRepository,
     IMapper mapper,
     IReviewRepository reviewRepository,
-    IUnitOfWork unitOfWork) : IUserService
+    IUnitOfWork unitOfWork,
+    IPasswordHasher passwordHasher,
+    ITokenService tokenService) : IUserService
 {
     private const int ReviewsPerPage = 5;
 
@@ -116,7 +118,7 @@ public class UserService(
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
-        if (!PasswordHasher.Verify(dto.PreviousPassword, user.Password))
+        if (!passwordHasher.Verify(dto.PreviousPassword, user.Password))
         {
             throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.PreviousPassword));
         }
@@ -128,7 +130,7 @@ public class UserService(
             throw new UserServiceArgumentException(string.Join(" ", validationResult.Errors), nameof(dto.NewPassword));
         }
 
-        user.Password = PasswordHasher.Hash(dto.NewPassword);
+        user.Password = passwordHasher.Hash(dto.NewPassword);
 
         await unitOfWork.SaveChangesAsync();
 
@@ -182,5 +184,53 @@ public class UserService(
         }
 
         return favouriteDtos;
+    }
+
+    public async Task<long?> RegisterAsync(SignUpDto dto)
+    {
+        if (!await userRepository.IsEmailUniqueAsync(dto.Email))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
+        }
+        
+        var user = new User
+        {
+            Email = dto.Email,
+            Nickname = dto.Login,
+            Password = passwordHasher.Hash(dto.Password),
+            Role = "user"
+        };
+        
+        user = await userRepository.AddAsync(user);
+        await unitOfWork.SaveChangesAsync();
+        
+        return user?.Id;
+    }
+
+    public async Task<TokensDto> AuthenticateAsync(LoginDto dto)
+    {
+        var user = await userRepository.GetUserByFilterAsync(x => x.Email == dto.Email);
+        if (user is null)
+        {
+            throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(dto.Email));
+        }
+
+        if (!passwordHasher.Verify(dto.Password, user.Password))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
+        }
+        
+        var tokens = await tokenService.GenerateTokensAsync(user, dto.RememberMe);
+        return tokens;
+    }
+
+    public async Task<TokensDto> RefreshTokenAsync(string token)
+    {
+        return await tokenService.RefreshTokenAsync(token);
+    }
+
+    public Task RevokeTokenAsync(string token)
+    {
+        return tokenService.RevokeTokenAsync(token);
     }
 }

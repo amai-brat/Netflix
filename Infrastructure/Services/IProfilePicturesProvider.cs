@@ -1,5 +1,6 @@
 namespace Infrastructure.Services;
 
+
 public interface IProfilePicturesProvider
 {
     public Task PutAsync(string name, Stream pictureStream, string contentType);

@@ -1,6 +1,7 @@
 using Application.Services.Abstractions;
 using Application.Services.Implementations;
 using Domain.Abstractions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
@@ -16,6 +17,7 @@ namespace Application
             serviceCollection.AddScoped<ISubscriptionService, SubscriptionService>();
             serviceCollection.AddScoped<ICommentService, CommentService>();
             serviceCollection.AddScoped<INotificationService, NotificationService>();
+            serviceCollection.AddScoped<ITokenService, TokenService>();
             
             return serviceCollection;
         }

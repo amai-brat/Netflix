@@ -8,6 +8,7 @@ namespace DataAccess
 	public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 	{
 		public DbSet<User> Users => Set<User>();
+		public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
 		public DbSet<FavouriteContent> FavouriteContents => Set<FavouriteContent>();
 
@@ -49,6 +50,7 @@ namespace DataAccess
 			modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UsersReviewsEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UserSubsciptionConfiguration());
+			modelBuilder.ApplyConfiguration(new RefreshTokenEntityConfiguration());
 
 			modelBuilder.SeedWithTestData();
 

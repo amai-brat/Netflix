@@ -14,4 +14,9 @@ public interface IUserService
     public Task<List<ReviewDto>> GetReviewsAsync(ReviewSearchDto dto);
     public Task<int> GetReviewsPagesCountAsync(ReviewSearchDto dto);
     public Task<List<FavouriteDto>> GetFavouritesAsync(int userId);
+
+    public Task<long?> RegisterAsync(SignUpDto dto); 
+    public Task<TokensDto> AuthenticateAsync(LoginDto dto);
+    public Task<TokensDto> RefreshTokenAsync(string token);
+    public Task RevokeTokenAsync(string token);
 }

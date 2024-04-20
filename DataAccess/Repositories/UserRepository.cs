@@ -9,5 +9,16 @@ namespace DataAccess.Repositories
     {
         public async Task<User?> GetUserByFilterAsync(Expression<Func<User, bool>> filter) =>
             await appDbContext.Users.SingleOrDefaultAsync(filter);
+
+        public async Task<User?> AddAsync(User user)
+        {
+            var entry = await appDbContext.Users.AddAsync(user);
+            return entry.Entity;
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            return await appDbContext.Users.AllAsync(x => x.Email != email);
+        }
     }
 }
