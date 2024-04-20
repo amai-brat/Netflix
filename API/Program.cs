@@ -6,8 +6,9 @@ using Application.Services.RegisterExtensions;
 using Application.Validators;
 using DataAccess.Extensions;
 using FluentValidation;
+using Infrastructure;
+using Infrastructure.Options;
 using Infrastucture;
-using Infrastucture.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 

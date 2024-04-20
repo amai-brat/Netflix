@@ -1,5 +1,6 @@
 ﻿
 using Application.Exceptions;
+using Domain.Services.ServiceExceptions;
 using Infrastructure;
 
 namespace API.Middlewares.ExceptionHandler

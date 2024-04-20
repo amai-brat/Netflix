@@ -1,8 +1,9 @@
 using Application.Services.Abstractions;
+using Infrastructure.Services;
 using Infrastucture.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastucture;
+namespace Infrastructure;
 
 public static class DependencyInjection
 {

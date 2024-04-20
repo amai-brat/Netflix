@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Services.Abstractions;
+using AutoMapper;
 using FluentValidation;
 
 namespace API.Controllers.ContentController
