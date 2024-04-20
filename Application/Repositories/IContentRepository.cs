@@ -1,8 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace DataAccess.Repositories.Abstractions
+namespace Application.Repositories
 {
     public interface IContentRepository
     {
@@ -15,8 +14,7 @@ namespace DataAccess.Repositories.Abstractions
         ContentBase DeleteContent(long id);
         void AddMovieContent(MovieContent movieContent);
         void AddSerialContent(SerialContent serialContent);
+        Task<ContentBase?> GetContentByIdAsync(long id);
         Task SaveChangesAsync();
-        
-        
     }
 }

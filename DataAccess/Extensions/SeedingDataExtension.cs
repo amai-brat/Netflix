@@ -9,9 +9,21 @@ namespace DataAccess.Extensions
 		{
 			var subscriptions = new List<Subscription>()
 			{
-				new Subscription() { Id = 1, Name = "Фильмы", MaxResolution = 2160, Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки" },
-				new Subscription() { Id = 2, Name = "Сериалы", MaxResolution = 1080, Description = "Все сериалы только в этой подписке" },
-				new Subscription() { Id = 3, Name = "Мультфильмы", MaxResolution = 720, Description = "Мультфильмы для всех возрастов только в данной подписке" }
+				new Subscription()
+				{
+					Id = 1, Name = "Фильмы", MaxResolution = 2160, Price = 300,
+					Description = "Все фильмы на сервисе Netflix будут доступны после приобретения этой подписки"
+				},
+				new Subscription()
+				{
+					Id = 2, Name = "Сериалы", MaxResolution = 1080, Price = 350,
+					Description = "Все сериалы только в этой подписке"
+				},
+				new Subscription()
+				{
+					Id = 3, Name = "Мультфильмы", MaxResolution = 720, Price = 228,
+					Description = "Мультфильмы для всех возрастов только в данной подписке"
+				}
 			};
 
 			var contentTypes = new List<ContentType>()
@@ -204,6 +216,22 @@ namespace DataAccess.Extensions
 
 			modelBuilder.Entity<Profession>().HasData(profession);
 			modelBuilder.Entity<PersonInContent>().HasData(personInContent1, personInContent2);
+
+			var currencies = new List<Currency>()
+			{
+				new()
+				{
+					Id = 1,
+					Name = "RUB"
+				},
+				new()
+				{
+					Id = 2,
+					Name = "USD" 
+				}
+			};
+
+			modelBuilder.Entity<Currency>().HasData(currencies);
 		}
 	}
 }

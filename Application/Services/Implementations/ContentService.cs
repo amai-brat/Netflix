@@ -1,10 +1,9 @@
 ﻿using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
+using Application.Repositories;
 using Application.Services.Extensions;
 using AutoMapper;
-using DataAccess.Repositories.Abstractions;
-using Domain.Consts;
 using Domain.Entities;
 using Abstractions_IContentService = Application.Services.Abstractions.IContentService;
 
@@ -14,22 +13,21 @@ public class ContentService(IContentRepository contentRepository,
     ISubscriptionRepository? subscriptionRepository = null,
     IMapper? mapper = null) : Abstractions_IContentService
 {
-    private readonly IContentRepository _contentRepository = contentRepository;
-    private readonly HashSet<int> resolutions = [480, 720, 1080, 1440, 2160];
+    private readonly HashSet<int> _resolutions = [480, 720, 1080, 1440, 2160];
     // TODO: что делать с nullable: без него летят тесты
     // с ним логика этого сервиса уже не правильная
 
     public async Task<ContentBase?> GetContentByIdAsync(long id) =>
-        await _contentRepository.GetContentByFilterAsync(c => c.Id == id);
+        await contentRepository.GetContentByFilterAsync(c => c.Id == id);
 
     public async Task<MovieContent?> GetMovieContentByIdAsync(long id) =>
-        await _contentRepository.GetMovieContentByFilterAsync(c => c.Id == id);
+        await contentRepository.GetMovieContentByFilterAsync(c => c.Id == id);
 
     public async Task<SerialContent?> GetSerialContentByIdAsync(long id) =>
-        await _contentRepository.GetSerialContentByFilterAsync(c => c.Id == id);
+        await contentRepository.GetSerialContentByFilterAsync(c => c.Id == id);
 
     public async Task<List<ContentBase>> GetContentsByFilterAsync(Filter filter) =>
-        await _contentRepository.GetContentsByFilterAsync(
+        await contentRepository.GetContentsByFilterAsync(
             IsContentNameContain(filter)
                 .CombineExpressions(IsContentTypesContain(filter))
                 .CombineExpressions(IsCountryContain(filter))
@@ -40,10 +38,10 @@ public class ContentService(IContentRepository contentRepository,
 
     public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, int subscriptionId)
     {
-        var movie = await _contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
+        var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
         if (movie is null)
             throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{movieId}");
-        if (!resolutions.Contains(resolution))
+        if (!_resolutions.Contains(resolution))
             throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
         if (!movie.AllowedSubscriptions.Select(s => s.Id)
                 .Contains(subscriptionId) ||
@@ -56,11 +54,11 @@ public class ContentService(IContentRepository contentRepository,
     public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
         int subscriptionId)
     {
-        var serial = await _contentRepository.GetSerialContentByFilterAsync(s => s.Id == serialId);
+        var serial = await contentRepository.GetSerialContentByFilterAsync(s => s.Id == serialId);
         if (serial is null)
             throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{serialId}");
 
-        if (!resolutions.Contains(resolution))
+        if (!_resolutions.Contains(resolution))
             throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
 
         if (!serial.SeasonInfos.Select(s => s.SeasonNumber)
@@ -91,7 +89,7 @@ public class ContentService(IContentRepository contentRepository,
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
         var movieContent = mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
-        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
         await contentRepository.UpdateMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
@@ -99,7 +97,7 @@ public class ContentService(IContentRepository contentRepository,
     public async Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
     {
         var serialContent = mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
-        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
         await contentRepository.UpdateSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }
@@ -107,7 +105,7 @@ public class ContentService(IContentRepository contentRepository,
     public async Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
         var movieContent = mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
-        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
         contentRepository.AddMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
@@ -115,7 +113,7 @@ public class ContentService(IContentRepository contentRepository,
     public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
     {
         var serialContent = mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
-        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, subscriptionRepository!.GetAll());
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
         contentRepository.AddSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }

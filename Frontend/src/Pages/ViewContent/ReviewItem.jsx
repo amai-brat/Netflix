@@ -6,6 +6,9 @@ import {toast} from "react-toastify";
 import {useState} from "react";
 import Modal from "react-modal";
 import ReviewComment from "./ReviewComment.jsx";
+import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {useDataStore} from "../../store/dataStoreProvider.jsx";
+
 const modalStyles = {
     content: {
         top: '50%',
@@ -30,6 +33,7 @@ const modalStyles = {
 const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const [modalOpen, setModalOpen] = useState(false)
     const [commentText, setCommentText] = useState('')
+    const store = useDataStore()
     
     const handleTextChange = (event) => {
         setCommentText(event.target.value)
@@ -47,18 +51,18 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
         document.body.style.overflow = "hidden"
     }
     const sendComment = async () => {
-        //TODO правильный юрл
         try {
-            const resp = await fetch("http://localhost:5000/api/comments/add", {
+            const resp = await fetch(baseUrl + "comment/assign?reviewId=" + review.id, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 //TODO: добавить токен
-                body: JSON.stringify({reviewId: review.id, text: commentText})
+                body: JSON.stringify({Text: commentText})
             });
             const body = await resp.json();
             if (resp.ok) {
+                store.data.connection.invoke("NotifyAboutCommentAsync", body)
                 toast.success(body.message, {
                     position: "bottom-center"
                 })
@@ -78,7 +82,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const likeReview = async () => {
         try{
             //TODO: напистаь правильный юрл
-            const resp = await fetch("http://localhost:8080/api/review/like", {
+            const resp = await fetch(baseUrl + "api/review/like", {
                 method: "post",
                 // TODO: написать поля с идентификацией юзера
                 body: {reviewId: review.id}

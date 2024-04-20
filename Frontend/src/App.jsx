@@ -14,6 +14,7 @@ import Header from "./Pages/Shared/Header/Header.jsx";
 import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
 import Error404 from "./Pages/Error/Error404.jsx";
 import "/src/Pages/Shared/Styles/App.css";
+import { SubscriptionsManagement } from './Pages/Admin/Subscriptions/SubscriptionsManagement.jsx';
 import {ToastContainer} from "react-toastify";
 import AdminContent from "./Pages/PersonalAccount/AdminContent/AdminContent.jsx";
 
@@ -25,7 +26,7 @@ function App() {
         <>
             <ToastContainer />
             {location.pathname !== "/" && location.pathname !== "/signin" 
-                && location.pathname !== "/signup" && <Header/>}
+                && location.pathname !== "/signup" && !location.pathname.startsWith("/admin") && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
@@ -37,11 +38,12 @@ function App() {
                     <Route path="admin/content" element={<AdminContent/>}></Route>
                 </Route>
                 <Route path="SelectionContent" element={<SelectionContent/>}/>
-                {/*Здесь должен быть Route для админовской части*/}
                 <Route path="signup" element={<SignUpSignIn formType="signup"/>}/>
                 <Route path="signin" element={<SignUpSignIn formType="signin"/>}/>
                 <Route path="Subscriptions" element={<Subscriptions/>}/>
                 <Route path="ViewContent/:id" element={<ViewContent/>}/>
+                <Route path="admin/subscriptions" element={<SubscriptionsManagement/>}/>
+                <Route path="admin/subscriptions" element={<SubscriptionsManagement/>}/>
                 <Route path="*" element={<Error404/>}/>
             </Routes>
         </>
