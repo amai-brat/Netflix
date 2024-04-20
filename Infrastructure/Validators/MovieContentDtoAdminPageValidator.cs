@@ -1,8 +1,7 @@
 ﻿using Application.Dto;
-using Domain.Entities;
 using FluentValidation;
 
-namespace Application.Validators;
+namespace Infrastructure.Validators;
 
 public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentAdminPageDto>
 {

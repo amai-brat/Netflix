@@ -36,6 +36,7 @@
             height: 3rem;
             .commentsLikes{
                 display: flex;
+                align-self: flex-end;
                 height: 100%;
                 .comment{
                     width: 2rem;

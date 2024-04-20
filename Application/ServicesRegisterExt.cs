@@ -1,11 +1,11 @@
-using Microsoft.Extensions.DependencyInjection;
 using Application.Services.Abstractions;
 using Application.Services.Implementations;
 using Domain.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.Services.RegisterExtensions
+namespace Application
 {
-    public static class ContentApiServiceRegisterExt
+    public static class ServicesRegisterExt
     {
         public static IServiceCollection AddContentApiServices(this IServiceCollection serviceCollection)
         {

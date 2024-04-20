@@ -1,12 +1,12 @@
 using Application.Services.Abstractions;
-using Infrastucture.Services;
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastucture;
+namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastucture(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddAutoMapper(typeof(DependencyInjection).Assembly);
         serviceCollection.AddScoped<IUserService, UserService>();

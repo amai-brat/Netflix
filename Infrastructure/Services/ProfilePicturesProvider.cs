@@ -1,12 +1,12 @@
 using Domain.Services.ServiceExceptions;
-using Infrastucture.Options;
-using Infrastucture.Services.Exceptions;
+using Infrastructure.Options;
+using Infrastructure.Services.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 
-namespace Infrastucture.Services;
+namespace Infrastructure.Services;
 
 public class ProfilePicturesProvider : IProfilePicturesProvider
 {

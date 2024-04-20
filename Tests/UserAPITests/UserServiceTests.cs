@@ -6,8 +6,8 @@ using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
-using Infrastucture.Profiles;
-using Infrastucture.Services;
+using Infrastructure.Profiles;
+using Infrastructure.Services;
 using Moq;
 using MemoryStream = System.IO.MemoryStream;
 

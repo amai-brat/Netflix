@@ -1,9 +1,8 @@
-﻿using System.Runtime.Intrinsics.X86;
-using Application.Dto;
+﻿using Application.Dto;
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Mappers;
+namespace Infrastructure.Mappers;
 
 public class ContentProfile : Profile
 {

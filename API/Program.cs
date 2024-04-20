@@ -1,13 +1,13 @@
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
+using Application;
 using Application.Dto;
-using Application.Mappers;
-using Application.Services.RegisterExtensions;
-using Application.Validators;
 using DataAccess.Extensions;
 using FluentValidation;
-using Infrastucture;
-using Infrastucture.Options;
+using Infrastructure;
+using Infrastructure.Mappers;
+using Infrastructure.Options;
+using Infrastructure.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +26,7 @@ builder.Services.AddSignalR();
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
-builder.Services.AddInfrastucture();
+builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
 builder.Services.AddContentApiServices();
 builder.Services.AddSwaggerGen();
