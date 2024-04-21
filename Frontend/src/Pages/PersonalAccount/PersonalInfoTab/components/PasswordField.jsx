@@ -78,13 +78,13 @@ export const PasswordField = () => {
                     <Button variant="contained" onClick={handlePasswordChange}>Сохранить</Button>
 
                     <Alert severity={response != null && response.Success ? "success" : "error"} 
+                           variant="filled"
                         onClose = {() => setResponse(null)}
                         icon={false}
                         sx={{
                             marginTop: "4%", 
                             display: response != null ? "flex" : "none"
-                        }}
-                        style={{color: "#000000"}}>
+                        }}>
                         {response != null ? response.Message : ""}
                     </Alert>
                 </div>

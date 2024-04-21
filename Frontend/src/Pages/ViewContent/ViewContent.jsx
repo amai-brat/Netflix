@@ -5,6 +5,7 @@ import ContentPlayer from "./contentPlayer.jsx";
 import Reviews from "./Reviews.jsx";
 import {useParams} from "react-router-dom";
 import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {contentService} from "../../services/content.service.js";
 const ViewContent = () => {
     let { id } = useParams();
     const [contentData,setContentData] = useState(null)
@@ -13,12 +14,11 @@ const ViewContent = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const resp = await fetch(`${baseUrl}content/${id}`);
-                const body = await resp.json();
-                if (resp.ok) {
-                    setContentData(body);
+                const {response, data } = await contentService.getContentInfo(id);
+                if (response.ok) {
+                    setContentData(data);
                 } else{
-                    setError(body.message)
+                    setError(data.message)
                 }
             } catch (e) {
                 setError(e.message)

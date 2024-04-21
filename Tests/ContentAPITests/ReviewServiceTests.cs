@@ -1,21 +1,13 @@
 ﻿using AutoFixture;
 using Domain.Entities;
-using Microsoft.Net.Http.Headers;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
 using Application.Services.Implementations;
-using static System.Formats.Asn1.AsnWriter;
-using static System.Net.Mime.MediaTypeNames;
+using AutoMapper;
+using Infrastructure.Profiles;
 
 namespace Tests.ContentAPITests
 {
@@ -25,6 +17,18 @@ namespace Tests.ContentAPITests
         private readonly Mock<IContentRepository> _mockContent = new();
         private readonly Mock<IUserRepository> _mockUser = new();
         private readonly Mock<IReviewRepository> _mockReview = new();
+        private readonly IMapper _mapper;
+        
+        public ReviewServiceTests()
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ReviewProfile());
+                mc.AddProfile(new FavouriteProfile());
+                mc.AddProfile(new ContentProfile());
+            });
+            _mapper = mappingConfig.CreateMapper();
+        }
 
         [Fact]
         public async Task AssignReviewWithCorrectDataShouldWorkCorrect()
@@ -51,7 +55,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.AssignReviewAsync(It.IsAny<Review>()))
                 .Callback((Review rev) => { userReviews.Add(rev); });
 
-            var service = new ReviewService(_mockReview.Object,_mockContent.Object, _mockUser.Object);
+            var service = GetService();
             await service.AssignReviewAsync(review, userId);
 
             //Assert
@@ -87,7 +91,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.AssignReviewAsync(It.IsAny<Review>()))
                 .Callback((Review rev) => { userReviews.Add(rev); });
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             await service.AssignReviewWithRatingAsync(review, userId);
 
             //Assert
@@ -129,7 +133,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.AssignReviewAsync(It.IsAny<Review>()))
                 .Callback((Review rev) => { userReviews.Add(rev); });
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ReviewServiceArgumentException>(async () => { await service.AssignReviewWithRatingAsync(review, _userId); });
 
             //Assert
@@ -147,7 +151,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.GetReviewsByFilterAsync(It.IsAny<Expression<Func<Review, bool>>>()))
                 .ReturnsAsync((Expression<Func<Review, bool>> filter) =>  reviews.Where(filter.Compile()).ToList());
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var result = await service.GetReviewsByContentIdAsync(contentId);
 
             //Assert
@@ -167,7 +171,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.GetReviewsByFilterAsync(It.IsAny<Expression<Func<Review, bool>>>()))
                 .ReturnsAsync((Expression<Func<Review, bool>> filter) => reviews.Where(filter.Compile()).ToList());
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var result = await service.GetReviewsByContentIdAsync(contentId, sortType);
 
             //Assert
@@ -179,6 +183,7 @@ namespace Tests.ContentAPITests
         {
             //Arrange
             var reviews = BuildDefaultReviewList();
+            var reviewDtos = _mapper.Map<List<ReviewDto>>(reviews);
             var contentId = reviews[Random.Shared.Next(0, reviews.Count)].ContentId;
             var sortType = "score";
             var offset = 0;
@@ -188,11 +193,13 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.GetReviewsByFilterAsync(It.IsAny<Expression<Func<Review, bool>>>()))
                 .ReturnsAsync((Expression<Func<Review, bool>> filter) => reviews.Where(filter.Compile()).ToList());
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var result = await service.GetReviewsByContentIdAsync(contentId, sortType, offset, limit);
 
             //Assert
-            Assert.True(reviews.Where(r => r.ContentId == contentId).OrderBy(r => r.Score).Take(3).SequenceEqual(result));
+            var toCheckReviews = reviews.Where(r => r.ContentId == contentId).OrderBy(r => r.Score).Take(limit).ToList();
+            Assert.True(_mapper.Map<List<ReviewDto>>(toCheckReviews).SequenceEqual(result, new ReviewDtoEqualityComparer()));
+            
         }
 
         [Fact]
@@ -206,7 +213,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.GetReviewsByFilterAsync(It.IsAny<Expression<Func<Review, bool>>>()))
                 .ReturnsAsync((Expression<Func<Review, bool>> filter) => reviews.Where(filter.Compile()).ToList());
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var result = await service.GetReviewsByContentIdAsync(contentId);
 
             //Assert
@@ -225,7 +232,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.GetReviewsByFilterAsync(It.IsAny<Expression<Func<Review, bool>>>()))
                 .ReturnsAsync((Expression<Func<Review, bool>> filter) => reviews.Where(filter.Compile()).ToList());
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ReviewServiceArgumentException>(async () => { await service.GetReviewsByContentIdAsync(contentId, sortType); });
 
             //Assert
@@ -246,7 +253,7 @@ namespace Tests.ContentAPITests
             _mockReview.Setup(repository => repository.GetReviewsByFilterAsync(It.IsAny<Expression<Func<Review, bool>>>()))
                 .ReturnsAsync((Expression<Func<Review, bool>> filter) => reviews.Where(filter.Compile()).ToList());
 
-            var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ReviewServiceArgumentException>(async () => { await service.GetReviewsByContentIdAsync(contentId, sortType, offset, limit); });
 
             //Assert
@@ -270,8 +277,8 @@ namespace Tests.ContentAPITests
                     return review;
                 });
 
-			var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
-
+            var service = GetService();
+            
 			//Act
             var deletedReview = await service.DeleteReviewByIdAsync(reviewId);
 
@@ -296,7 +303,7 @@ namespace Tests.ContentAPITests
 					return review;
 				});
 
-			var service = new ReviewService(_mockReview.Object, _mockContent.Object, _mockUser.Object);
+            var service = GetService();
 
 			//Act
 			var ex = await Assert.ThrowsAsync<ReviewServiceArgumentException>(async() => 
@@ -340,5 +347,28 @@ namespace Tests.ContentAPITests
             .Do(u => { u.Id = Math.Abs(u.Id); })
             .CreateMany(20)
             .ToList();
+
+        private ReviewService GetService() => new ReviewService(
+                _mockReview.Object, 
+                _mockContent.Object, 
+                _mockUser.Object, 
+                _mapper);
+        
+        private class ReviewDtoEqualityComparer : IEqualityComparer<ReviewDto>
+        {
+            public bool Equals(ReviewDto? x, ReviewDto? y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                if (x.GetType() != y.GetType()) return false;
+                return x.Id == y.Id && x.Score == y.Score && x.WrittenAt.Equals(y.WrittenAt) && x.LikesScore == y.LikesScore && x.IsPositive == y.IsPositive && x.Text == y.Text;
+            }
+
+            public int GetHashCode(ReviewDto obj)
+            {
+                return HashCode.Combine(obj.Id, obj.User, obj.Score, obj.WrittenAt, obj.LikesScore, obj.IsPositive, obj.Text, obj.Comments);
+            }
+        }
     }
 }

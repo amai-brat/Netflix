@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Application;
-using Infrastructure.Mappers;
+using Infrastructure.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 

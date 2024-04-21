@@ -2,16 +2,16 @@
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
+using Application.Services.Abstractions;
 using Application.Services.Extensions;
 using AutoMapper;
 using Domain.Entities;
-using Abstractions_IContentService = Application.Services.Abstractions.IContentService;
 
 namespace Application.Services.Implementations;
 
 public class ContentService(IContentRepository contentRepository,
     ISubscriptionRepository? subscriptionRepository = null,
-    IMapper? mapper = null) : Abstractions_IContentService
+    IMapper? mapper = null) : IContentService
 {
     private readonly HashSet<int> _resolutions = [480, 720, 1080, 1440, 2160];
     // TODO: что делать с nullable: без него летят тесты

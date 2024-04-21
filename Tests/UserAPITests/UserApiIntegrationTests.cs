@@ -150,7 +150,7 @@ public class UserApiIntegrationTests(WebAppFactory factory) : IClassFixture<WebA
 
         // act
         var response = await client.GetAsync($"/user/get-reviews?page=0");
-        var res = await response.Content.ReadFromJsonAsync<List<ReviewDto>>();
+        var res = await response.Content.ReadFromJsonAsync<List<UserReviewDto>>();
         
         // assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

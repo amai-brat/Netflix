@@ -24,7 +24,7 @@ function App() {
 
     return (
         <>
-            <ToastContainer />
+            <ToastContainer theme={"dark"} />
             {location.pathname !== "/" && location.pathname !== "/signin" 
                 && location.pathname !== "/signup" && !location.pathname.startsWith("/admin") && <Header/>}
             <Routes>

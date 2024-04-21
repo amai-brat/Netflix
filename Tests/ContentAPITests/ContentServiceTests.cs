@@ -9,7 +9,7 @@ using Application.Services.Implementations;
 using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
-using Infrastructure.Mappers;
+using Infrastructure.Profiles;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 

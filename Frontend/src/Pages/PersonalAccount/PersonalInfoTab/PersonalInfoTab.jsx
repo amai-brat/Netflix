@@ -70,7 +70,7 @@ const PersonalInfoTab = () => {
                 setResponse({Success: true, Message: "Данные успешно обновлены"});
             }
             else {
-                setResponse({Success: false, Message: responseData.message.match(/^[^(]*/)[0]})
+                setResponse({Success: false, Message: responseData.message})
             }
         }
         catch (error) {

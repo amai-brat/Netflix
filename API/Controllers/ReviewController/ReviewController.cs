@@ -1,8 +1,6 @@
 ﻿using Application.Dto;
 using Application.Services.Abstractions;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.ReviewController
@@ -20,7 +18,6 @@ namespace API.Controllers.ReviewController
         public async Task<IActionResult> GetReviewsByContentId(long contentId, [FromQuery] int offset, [FromQuery] int limit, [FromQuery] string sort)
         {
             var reviews = await reviewService.GetReviewsByContentIdAsync(contentId, sort, offset, limit);
-            reviews.ForEach(SetUpReview);
             return Ok(reviews);
         }
 
@@ -34,18 +31,6 @@ namespace API.Controllers.ReviewController
                 await reviewService.AssignReviewAsync(review, long.Parse(User.FindFirst("Id")!.Value));
 
             return Ok();
-        }
-
-        private void SetUpReview(Review review)
-        {
-            review.Comments?.ForEach(c =>{
-                c.Review = null!;
-                c.User.Comments = null!;
-                c.ScoredByUsers?.ForEach(s => { s.ScoredComments = null!; });
-            });
-            review.RatedByUsers?.ForEach(u => u.Review = null!);
-            review.User.Reviews = null!;
-            review.User.ScoredReviews = null!;
         }
     }
 }

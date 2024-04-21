@@ -15,7 +15,7 @@ const ReviewComment = ({comment}) => {
             </div>
             <div className={styles.reviewText}>
                   <span className={styles.text}>
-                      {comment.text + " Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad adipisci amet asperiores, assumenda autem culpa eos fugiat id, ipsam neque nihil non obcaecati odit quod recusandae, rerum tempora? Dolore, dolorum!" + " Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut consectetur, cumque debitis dolore modi quia totam ut. Excepturi incidunt, inventore molestias omnis placeat quisquam tempora. Adipisci dolorem et laboriosam rem."}
+                      {comment.text}
                   </span>
             </div>
         </div>

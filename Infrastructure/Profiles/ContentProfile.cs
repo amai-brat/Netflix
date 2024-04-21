@@ -2,7 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Infrastructure.Mappers;
+namespace Infrastructure.Profiles;
 
 public class ContentProfile : Profile
 {

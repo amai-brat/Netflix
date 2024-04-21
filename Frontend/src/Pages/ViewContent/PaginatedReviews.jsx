@@ -124,7 +124,7 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
                 const data = await resp.json();
                 if (resp.ok){
                     setItems(data);
-                    setTotalCount(data.length);
+                    setTotalCount(100);
                 } else {
                     setError(data.message);
                 }
@@ -153,7 +153,7 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
                         pageCount={pageCount}
                         pageRangeDisplayed={4}
                         onPageChange={handlePageClick}
-                        marginPagesDisplayed={1}
+                        marginPagesDisplayed={4}
                         renderOnZeroPageCount={null}
                         nextLabel={null}
                         previousLabel={null}
