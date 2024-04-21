@@ -22,7 +22,7 @@ public class UserService(
 {
     private const int ReviewsPerPage = 5;
 
-    public async Task<PersonalInfoDto> GetPersonalInfoAsync(int id)
+    public async Task<PersonalInfoDto> GetPersonalInfoAsync(long id)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == id);
         if (user is null)
@@ -67,7 +67,7 @@ public class UserService(
         return user;
     }
 
-    public async Task<User> ChangeEmailAsync(int userId, string newEmail)
+    public async Task<User> ChangeEmailAsync(long userId, string newEmail)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
@@ -89,7 +89,7 @@ public class UserService(
         return user;
     }
 
-    public async Task<User> ChangeBirthdayAsync(int userId, DateOnly newBirthday)
+    public async Task<User> ChangeBirthdayAsync(long userId, DateOnly newBirthday)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
@@ -110,7 +110,7 @@ public class UserService(
         return user;
     }
 
-    public async Task<User> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+    public async Task<User> ChangePasswordAsync(long userId, ChangePasswordDto dto)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
@@ -137,7 +137,7 @@ public class UserService(
         return user;
     }
 
-    public async Task<User> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType)
+    public async Task<User> ChangeProfilePictureAsync(long userId, Stream pictureStream, string contentType)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)
@@ -167,7 +167,7 @@ public class UserService(
         return await reviewRepository.GetPagesCountAsync(dto, ReviewsPerPage);
     }
 
-    public async Task<List<FavouriteDto>> GetFavouritesAsync(int userId)
+    public async Task<List<FavouriteDto>> GetFavouritesAsync(long userId)
     {
         var user = await userRepository.GetUserByFilterAsync(x => x.Id == userId);
         if (user is null)

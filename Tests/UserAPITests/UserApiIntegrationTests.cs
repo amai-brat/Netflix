@@ -7,19 +7,13 @@ namespace Tests.UserAPITests;
 
 public class UserApiIntegrationTests(WebAppFactory factory) : IClassFixture<WebAppFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
-
     [Fact]
     public async Task SignUp_CorrectDtoGiven_NewUserCreated()
     {
+        // arrange
+        var client = factory.CreateClient();
         var postRequest = new HttpRequestMessage(HttpMethod.Post, "/auth/signup");
-        var form = new Dictionary<string, string>()
-        {
-            {"login", "ABOBA"},
-            {"email", "a@a.a"},
-            {"password", "Qwe123!@#"}
-        };
-
+        
         var dto = new SignUpDto
         {
             Login = "ABOBA",
@@ -28,8 +22,10 @@ public class UserApiIntegrationTests(WebAppFactory factory) : IClassFixture<WebA
         };
         postRequest.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
-        var response = await _client.SendAsync(postRequest);
+        // act
+        var response = await client.SendAsync(postRequest);
 
+        // assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 }

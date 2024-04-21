@@ -5,15 +5,15 @@ namespace Application.Services.Abstractions;
 
 public interface IUserService
 {
-    public Task<PersonalInfoDto> GetPersonalInfoAsync(int id);
+    public Task<PersonalInfoDto> GetPersonalInfoAsync(long id);
     public Task<User> ChangeRoleAsync(long userId, string newRole);
-    public Task<User> ChangeEmailAsync(int userId, string newEmail);
-    public Task<User> ChangeBirthdayAsync(int userId, DateOnly newBirthday);
-    public Task<User> ChangePasswordAsync(int userId, ChangePasswordDto dto);
-    public Task<User> ChangeProfilePictureAsync(int userId, Stream pictureStream, string contentType);
+    public Task<User> ChangeEmailAsync(long userId, string newEmail);
+    public Task<User> ChangeBirthdayAsync(long userId, DateOnly newBirthday);
+    public Task<User> ChangePasswordAsync(long userId, ChangePasswordDto dto);
+    public Task<User> ChangeProfilePictureAsync(long userId, Stream pictureStream, string contentType);
     public Task<List<ReviewDto>> GetReviewsAsync(ReviewSearchDto dto);
     public Task<int> GetReviewsPagesCountAsync(ReviewSearchDto dto);
-    public Task<List<FavouriteDto>> GetFavouritesAsync(int userId);
+    public Task<List<FavouriteDto>> GetFavouritesAsync(long userId);
 
     public Task<long?> RegisterAsync(SignUpDto dto); 
     public Task<TokensDto> AuthenticateAsync(LoginDto dto);

@@ -30,7 +30,6 @@ public class WebAppFactory : WebApplicationFactory<Program>
                 var db = scopedServices.GetRequiredService<AppDbContext>();
                 db.Database.EnsureCreated();
             }
-            
         });
 
         builder.ConfigureTestServices(services =>

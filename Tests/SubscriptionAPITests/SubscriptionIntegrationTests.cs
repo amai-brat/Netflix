@@ -102,9 +102,10 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         }
         
         // act
-        _ = await adminClient.DeleteAsync($"/admin/subscription/delete/{existingIds.FirstOrDefault()}");
+        var response = await adminClient.DeleteAsync($"/admin/subscription/delete/{existingIds.FirstOrDefault()}");
         
         // assert
+        Assert.True(response.IsSuccessStatusCode);
         await using (var sp = factory.Services.CreateAsyncScope())
         {
             var context = sp.ServiceProvider.GetService<AppDbContext>();
@@ -153,9 +154,10 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         };
         
         // act
-        _ = await adminClient.PutAsJsonAsync("/admin/subscription/edit", dto);
+        var response = await adminClient.PutAsJsonAsync("/admin/subscription/edit", dto);
         
         // assert
+        Assert.True(response.IsSuccessStatusCode);
         await using (var sp = factory.Services.CreateAsyncScope())
         {
             var context = sp.ServiceProvider.GetService<AppDbContext>();
