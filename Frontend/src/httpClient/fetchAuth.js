@@ -9,8 +9,11 @@ const originalRequest = async (url, config, isJsonResponse)=> {
   return {response, data}
 }
 
-export const fetchAuth = async (url, config = {}, isJsonResponse = false) => {
+export const fetchAuth = async (url, isJsonResponse = false, config = {}) => {
   let accessToken = sessionStorage.getItem("accessToken");
+  if (!config.headers) {
+    config = {headers: {}};
+  }
   
   if (isTokenValid(accessToken)) {
     config['headers'].Authorization = `Bearer ${accessToken}`;
