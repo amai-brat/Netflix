@@ -75,6 +75,11 @@ public class UserService(
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
+        if (!await userRepository.IsEmailUniqueAsync(newEmail))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.EmailNotUnique, nameof(newEmail));
+        }
+        
         var validator = new EmailValidator();
         var validationResult = await validator.ValidateAsync(newEmail);
         if (!validationResult.IsValid)

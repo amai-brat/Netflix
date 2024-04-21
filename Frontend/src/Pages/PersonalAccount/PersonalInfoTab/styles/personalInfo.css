@@ -37,3 +37,7 @@
     border-radius: 30px;
     padding: 2%;
 }
+
+.MuiAlert-message {
+    color: black;
+}

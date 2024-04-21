@@ -7,9 +7,7 @@ import reviewTabStyle from './styles/reviewTab.module.scss';
 import {ReviewAccordion} from "./components/ReviewAccordion.jsx";
 import {ReviewsPagination} from "./components/ReviewsPagination.jsx";
 import {ReviewSortSelect} from "./components/ReviewSortSelect.jsx";
-import {baseUrl} from '../../Shared/HttpClient/baseUrl.js';
 import {userService} from "../../../services/user.service.js";
-import {Sort} from "@mui/icons-material";
 
 const PersonalReviewsTab = () => {
   const [currentPage, setCurrentPage] = useState(1);

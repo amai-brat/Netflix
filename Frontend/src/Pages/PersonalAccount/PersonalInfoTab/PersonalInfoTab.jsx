@@ -1,30 +1,22 @@
-import { useEffect, useState, useRef } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import DefaultUserIcon from "../../../assets/DefaultUserIcon.svg";
 import "./styles/personalInfo.css";
-import { UserAvatar } from './components/UserAvatar';
-import { DataField } from './components/DataField';
-import { Divider } from '@mui/material';
-import { PasswordField } from './components/PasswordField';
-import {baseUrl} from "../../Shared/HttpClient/baseUrl.js";
+import {UserAvatar} from './components/UserAvatar';
+import {DataField} from './components/DataField';
+import {Divider} from '@mui/material';
+import {PasswordField} from './components/PasswordField';
+import {userService} from "../../../services/user.service.js";
 
 const PersonalInfoTab = () => {
     const inputFile = useRef(null)
-    
-    const testUser = {
-        nickname: "TestGuy",
-        profilePictureUrl: "https://distribution.faceit-cdn.net/images/02947bb3-c786-41df-a6a3-a4a9e6ed4d2f.jpeg",
-        email: "testguy2024@mail.com",
-        birthDay: "22.04.1987"
-    }
-    const[user, setUser] = useState(testUser);
+    const[user, setUser] = useState({});
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(baseUrl + "user/get-personal-info");
+                const {response, data} = await userService.getPersonalInfo();
                 if (response.ok){
-                    const user = await response.json();
-                    setUser(user);
+                    setUser(data);
                 }
                 else{
                     setUser(null);
@@ -32,7 +24,6 @@ const PersonalInfoTab = () => {
                 
             } catch (error) {
                 console.log(error);
-                setUser(testUser);
             }
         };
 
@@ -47,13 +38,9 @@ const PersonalInfoTab = () => {
     const handleAvatarChange = async () => {
         const formData = new FormData(document.getElementById("avatar-change-form"));
         try {
-            const response = await fetch(baseUrl + "user/change-profile-picture", {
-                method: "PATCH",
-                body: formData
-            });
-
+            const {response, data} = await userService.changeProfilePicture(formData);
             if (response.ok) {
-                setUser(await response.json())
+                setUser(data)
             } else {
                 alert("Ошибка при изменении фотографии");
             }
@@ -64,25 +51,26 @@ const PersonalInfoTab = () => {
     }
 
     const handleDataChange = async (setResponse, label, data) => {
-        const urlLabel = label == "Почта" ? "email" : "birthDay";
+        const urlLabel = label === "Почта" ? "email" : "birthDay";
         
         try {
-            const response = await fetch(`${baseUrl}user/change-${urlLabel}`, {
-                method: "patch",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
+            let response, responseData;
+            if (urlLabel === "email") {
+                const res = await userService.changeEmail(data);
+                response = res.response;
+                responseData = res.data;
+            } else {
+                const res = await userService.changeBirthDay(data);
+                response = res.response;
+                responseData = res.data;
+            }
 
             if (response.ok){
-                let updatedUser = await response.json();
-                setUser(updatedUser);
+                setUser(responseData);
                 setResponse({Success: true, Message: "Данные успешно обновлены"});
             }
             else {
-                let errorText = await response.text();
-                setResponse({Success: false, Message: errorText})
+                setResponse({Success: false, Message: responseData.message.match(/^[^(]*/)[0]})
             }
         }
         catch (error) {
