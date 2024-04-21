@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
+import {authenticationService} from "../../services/authentication.service.js";
 
 export const CustomForm = ({formType}) => {
     const [response, setResponse] = useState(null);
@@ -9,8 +10,8 @@ export const CustomForm = ({formType}) => {
     const validateSignin = (values) => {
         const errors = {};
 
-        if (!values.login) {
-            errors.login = 'Обязательное поле';
+        if (!values.email) {
+            errors.email = 'Обязательное поле';
         }
 
         if (!values.password) {
@@ -59,58 +60,51 @@ export const CustomForm = ({formType}) => {
     };
     
     const initialSigninValues = {
-        login: '',
+        email: '',
         password: '',
         rememberMe: false,
     }
 
     const handleSubmit = async (values) => {    
         try {
-            const response = await fetch(`https://localhost:5000/${formType}`, {
-                method: "post",
-                headers:{
-                    "Content-Type": 'application/json'
-                },
-                body: values
-            });
+            let resp;
+            if (formType === "signin") {
+                resp = await authenticationService.signin(values);
+            } else {
+                resp = await authenticationService.signup(values);
+            }
 
-            if (response.ok){
-                //Какая-то логика
-                let message = formType == "signin" ? "Успешный вход" : "Успешная регистрация";
+            if (resp.ok){
+                let message = formType === "signin" ? "Успешный вход" : "Успешная регистрация";
                 setResponse({Success: true, Message: message});
             }
             else {
-                let errorText = await response.text();
+                let errorText = resp.data.message.match(/^[^(]*/)[0];
                 setResponse({Success: false, Message: errorText})
             }
         }
         catch (error) {
             setResponse({Success: false, Message: "Произошла ошибка при отправке запроса"})
         }
-
-        //TODO убрать перед деплоем
-        const formResults = JSON.stringify(values);
-        console.log(formResults);
     };
 
     return (
         <Formik 
-            initialValues={formType == "signup" ? initialSignupValues : initialSigninValues} 
+            initialValues={formType === "signup" ? initialSignupValues : initialSigninValues} 
             onSubmit={handleSubmit} 
-            validate={formType=="signup"? validateSignup: validateSignin}
+            validate={formType === "signup"? validateSignup: validateSignin}
         >
             <Form id="form">
+                { formType === 'signup' ? (
+                  <div className="inputWrapper">
+                      <Field type="text" name="login" placeholder="Логин"/>
+                      <ErrorMessage name="login" component="span"/>
+                  </div>
+                ) : null}
                 <div className="inputWrapper">
-                    <Field type="text" name="login" placeholder="Логин"/>
-                    <ErrorMessage name="login" component="span"/>
+                    <Field type="email" name="email" placeholder="Почта" />
+                    <ErrorMessage name="email" component="span"/>
                 </div>
-
-                { formType == 'signup' ? (
-                    <div className="inputWrapper">
-                        <Field type="email" name="email" placeholder="Почта" />
-                        <ErrorMessage name="email" component="span"/>
-                    </div>
-                    ) : null }
 
                 <div className="inputWrapper">
                     <Field type="password" name="password" placeholder="Пароль"/>
@@ -121,7 +115,7 @@ export const CustomForm = ({formType}) => {
                     <button type="submit" className="submitButton">{formType === 'signin' ? 'Войти' : 'Зарегистрироваться'}</button>
                 </div>
 
-                {formType == 'signin' ? (
+                {formType === 'signin' ? (
                     <div className="rememberCheckbox">
                         <Field type="checkbox" name="rememberMe" />
                         <label>Запомнить меня</label>
@@ -129,8 +123,8 @@ export const CustomForm = ({formType}) => {
                 ) : null}
 
                 <div className="redirect">
-                    <p>{formType=="signin" ? "Новенький в Netflix?" : "Уже есть аккаунт?"}</p>
-                    <Link to={`/${formType=="signin" ? "signup" : "signin"}`}>{formType=="signin" ? "Зарегистрироваться" : "Войти"}</Link>
+                    <p>{formType === "signin" ? "Новенький в Netflix?" : "Уже есть аккаунт?"}</p>
+                    <Link to={`/${formType === "signin" ? "signup" : "signin"}`}>{formType ==="signin" ? "Зарегистрироваться" : "Войти"}</Link>
                 </div>
 
                 <Alert severity={response != null && response.Success ? "success" : "error"} 
