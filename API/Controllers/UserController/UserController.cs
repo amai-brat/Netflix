@@ -27,7 +27,7 @@ public class UserController(
     public async Task<IActionResult> ChangeEmailAsync([FromBody] string email)
     {
         var userId = GetUserId();
-        var result = await userService.ChangeEmailAsync(userId, email);
+        _ = await userService.ChangeEmailAsync(userId, email);
         var infoDto = await userService.GetPersonalInfoAsync(userId);
        
         return Ok(infoDto);
@@ -67,7 +67,7 @@ public class UserController(
     public async Task<IActionResult> ChangeProfilePictureAsync(IFormFile image)
     {
         var userId = GetUserId();
-        var result = await userService.ChangeProfilePictureAsync(userId, image.OpenReadStream(), image.ContentType);
+        _ = await userService.ChangeProfilePictureAsync(userId, image.OpenReadStream(), image.ContentType);
         var infoDto = await userService.GetPersonalInfoAsync(userId);
         
         return Ok(infoDto);

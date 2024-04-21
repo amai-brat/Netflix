@@ -17,7 +17,15 @@ public class TestAuthHandler(
     
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var claims = new[] { new Claim(ClaimTypes.Name, "Test user") };
+        if (!Context.Request.Headers.Authorization.Contains("Test"))
+        {
+            return Task.FromResult(AuthenticateResult.Fail("Authorization header value doesn't contain Test"));
+        }
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Name, "Test user")
+        };
         var identity = new ClaimsIdentity(claims, AuthenticationScheme);
         identity.AddClaims(GetClaimsBasedOnHttpHeaders(Context));
         var principal = new ClaimsPrincipal(identity);

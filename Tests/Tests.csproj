@@ -30,4 +30,14 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserAPITests\TestPhotos\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="UserAPITests\TestPhotos\test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

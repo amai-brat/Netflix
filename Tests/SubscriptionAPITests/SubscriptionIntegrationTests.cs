@@ -15,7 +15,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
     public async Task Get_AdminRequest_SubscriptionsReturned()
     {
         // arrange 
-        var adminClient = GetAdminHttpClient();
+        var adminClient = factory.CreateAdminHttpClient();
         int subscriptionsCount;
         await using (var sp = factory.Services.CreateAsyncScope())
         {
@@ -35,7 +35,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
     public async Task Get_UserRequest_ForbiddenReturned()
     {
         // arrange 
-        var userClient = GetUserHttpClient();
+        var userClient = factory.CreateUserHttpClient();
 
         // act
         var response = await userClient.GetAsync("/admin/subscription/all");
@@ -43,12 +43,25 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         // assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
+    
+    [Fact]
+    public async Task Get_AnonymousRequest_UnauthorizedReturned()
+    {
+        // arrange 
+        var client = factory.CreateAnonymousHttpClient();
+
+        // act
+        var response = await client.GetAsync("/admin/subscription/all");
+        
+        // assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 
     [Fact]
     public async Task Add_CorrectDtoGiven_CreatedReturned()
     {
         // arrange 
-        var adminClient = GetAdminHttpClient();
+        var adminClient = factory.CreateAdminHttpClient();
         
         var dto = new NewSubscriptionDto
         {
@@ -71,7 +84,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
     public async Task Add_InvalidDtoGiven_BadRequestReturned()
     {
         // arrange 
-        var adminClient = GetAdminHttpClient();
+        var adminClient = factory.CreateAdminHttpClient();
         
         var dto = new NewSubscriptionDto
         {
@@ -92,7 +105,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
     public async Task Delete_ExistingIdGiven_SubscriptionDeleted()
     {
         // arrange
-        var adminClient = GetAdminHttpClient();
+        var adminClient = factory.CreateAdminHttpClient();
 
         List<int> existingIds;
         await using (var sp = factory.Services.CreateAsyncScope())
@@ -118,7 +131,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
     public async Task Delete_NonExistingIdGiven_BadRequestReturned()
     {
         // arrange
-        var adminClient = GetAdminHttpClient();
+        var adminClient = factory.CreateAdminHttpClient();
 
         List<int> existingIds;
         await using (var sp = factory.Services.CreateAsyncScope())
@@ -138,7 +151,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
     public async Task Edit_DtoGiven_SubscriptionChanged()
     {
         // arrange
-        var adminClient = GetAdminHttpClient();
+        var adminClient = factory.CreateAdminHttpClient();
         
         List<Subscription> subscriptionsBefore;
         await using (var sp = factory.Services.CreateAsyncScope())
@@ -164,23 +177,5 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
             var editedSubscription = await context!.Subscriptions.FindAsync(dto.SubscriptionId);
             Assert.Equal(dto.NewName, editedSubscription!.Name);
         }
-    }
-    
-    private HttpClient GetAdminHttpClient()
-    {
-        var adminClient = factory.CreateClient();
-        adminClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-        adminClient.DefaultRequestHeaders.Add("X-Test-role", "admin");
-
-        return adminClient;
-    }
-
-    private HttpClient GetUserHttpClient()
-    {
-        var userClient = factory.CreateClient();
-        userClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-        userClient.DefaultRequestHeaders.Add("X-Test-role", "user");
-
-        return userClient;
     }
 }
