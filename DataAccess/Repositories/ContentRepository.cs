@@ -275,6 +275,14 @@ namespace DataAccess.Repositories
             appDbContext.SerialContents.Add(serialContent);
         }
 
+        public async Task<List<ContentBase>> GetRandomContentsAsync(int amount)
+        {
+            return await appDbContext.ContentBases
+                .OrderBy(_ => EF.Functions.Random())
+                .Take(amount)
+                .ToListAsync();
+        }
+
         public async Task SaveChangesAsync()
         {
             await appDbContext.SaveChangesAsync();

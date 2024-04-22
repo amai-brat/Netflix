@@ -5,39 +5,18 @@ import 'swiper/css';
 import { register } from 'swiper/element/bundle';
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
+import {contentService} from "../../../services/content.service.js";
 register();
 
 export const PromoSlider = () => {
-    const [promoImages, setPromoImages] = useState([
-        {
-            id: 1,
-            url: "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig"
-        },
-        {
-            id: 2,
-            url: "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig"
-        },
-        {
-            id: 3,
-            url: "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig"
-        },
-        {
-            id: 4,
-            url: "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig"
-        },
-        {
-            id: 5,
-            url: "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig"
-        }
-    ]);
+    const [promoImages, setPromoImages] = useState([]);
 
     useEffect(() => {
-        // TODO: настоящий url запроса
         (async () => {
-            const response = await fetch('http://localhost:8080/getPromos');
+            const {response, data} = await contentService.getPromos();
             if (response.ok)
             {
-                setPromoImages(await response.json());
+                setPromoImages(data);
             }
         })()
     }, []);
@@ -58,7 +37,7 @@ export const PromoSlider = () => {
                     {promoImages.map((promo, index) => (
                             <swiper-slide key={index}>
                                 <Link to={"/ViewContent/" + promo.id}>
-                                    <img src={promo.url} alt={"promo"}/>
+                                    <img src={promo.posterUrl} alt={"promo"}/>
                                 </Link>
                             </swiper-slide>
                         ))}

@@ -16,8 +16,6 @@ public class ContentService(
     IMapper mapper) : IContentService
 {
     private readonly HashSet<int> _resolutions = [480, 720, 1080, 1440, 2160];
-    // TODO: что делать с nullable: без него летят тесты
-    // с ним логика этого сервиса уже не правильная
 
     public async Task<ContentBase?> GetContentByIdAsync(long id) =>
         await contentRepository.GetContentByFilterAsync(c => c.Id == id);
@@ -140,6 +138,12 @@ public class ContentService(
         }
 
         return result;
+    }
+
+    public async Task<List<PromoDto>> GetPromosAsync()
+    {
+        var contents = await contentRepository.GetRandomContentsAsync(5);
+        return mapper.Map<List<PromoDto>>(contents);
     }
 
     private void CheckIfSubscriptionsHaveNewOne(List<Subscription> subscriptions, List<Subscription> dbSubscriptions)

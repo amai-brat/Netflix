@@ -131,5 +131,6 @@ public class ContentProfile : Profile
                 }).ToList()));
 
         CreateMap<ContentBase, SectionContentDto>();
+        CreateMap<ContentBase, PromoDto>();
     }
 }

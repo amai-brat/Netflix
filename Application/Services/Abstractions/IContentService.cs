@@ -17,4 +17,5 @@ public interface IContentService
     Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto);
     Task AddSerialContent(SerialContentAdminPageDto serialContentDto);
     Task<List<SectionDto>> GetSectionsAsync();
+    Task<List<PromoDto>> GetPromosAsync();
 }

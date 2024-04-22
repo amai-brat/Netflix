@@ -9,7 +9,8 @@ export const contentService = {
   likeReview,
   addToFavourites,
   removeFromFavourites,
-  getSections
+  getSections,
+  getPromos
 };
 
 async function getContentInfo(id) {
@@ -73,5 +74,10 @@ async function removeFromFavourites(contentId) {
 
 async function getSections() {
   const response = await fetch(`${baseUrl}content/sections`);
+  return {response, data: await response.json()};
+}
+
+async function getPromos() {
+  const response = await fetch(`${baseUrl}content/promos`);
   return {response, data: await response.json()};
 }

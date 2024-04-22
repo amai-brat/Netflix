@@ -169,6 +169,13 @@ namespace API.Controllers.ContentController
             var result = await contentService.GetSectionsAsync();
             return Ok(result);
         }
+
+        [HttpGet("promos")]
+        public async Task<IActionResult> GetPromos()
+        {
+            var result = await contentService.GetPromosAsync();
+            return Ok(result);
+        }
   
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {
