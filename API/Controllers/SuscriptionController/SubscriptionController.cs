@@ -1,6 +1,5 @@
 using Application.Dto;
 using Application.Services.Abstractions;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,24 +30,26 @@ public class SubscriptionController(
     }
     
     [HttpPost("add")]
-    [ProducesResponseType<Subscription>(StatusCodes.Status201Created)]
+    [ProducesResponseType<int>(StatusCodes.Status201Created)]
     public async Task<IActionResult> AddSubscriptionAsync(NewSubscriptionDto dto)
     {
         var result = await subscriptionService.AddSubscriptionAsync(dto);
-        return Created("", result);
+        return Created("", result.Id);
     }
 
     [HttpDelete("delete/{subscriptionId:int}")]
-    [ProducesResponseType<Subscription>(StatusCodes.Status200OK)]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteSubscriptionAsync(int subscriptionId)
     {
-        return Ok(await subscriptionService.DeleteSubscriptionAsync(subscriptionId));
+        var result = await subscriptionService.DeleteSubscriptionAsync(subscriptionId);
+        return Ok(result.Id);
     }
 
     [HttpPut("edit")]
-    [ProducesResponseType<Subscription>(StatusCodes.Status200OK)]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
     public async Task<IActionResult> EditSubscriptionAsync(EditSubscriptionDto dto)
     {
-        return Ok(await subscriptionService.EditSubscriptionAsync(dto));
+        var result = await subscriptionService.EditSubscriptionAsync(dto);
+        return Ok(result.Id);
     }
 }

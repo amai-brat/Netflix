@@ -3,10 +3,9 @@ import formStyles from "../styles/form.module.scss";
 import { DataGrid } from '@mui/x-data-grid';
 import {createTheme, ThemeProvider} from "@mui/material";
 import {useContext, useEffect, useState} from "react";
-import {baseUrl} from "../../../Shared/HttpClient/baseUrl.js";
 import {toast} from "react-toastify";
 import {SubscriptionsContext} from "./SubscriptionsContext.js";
-import {getSubscriptions} from "../httpClient.js";
+import {adminSubscriptionService} from "../../../../services/admin.subscription.service.js";
 
 
 export const SubscriptionForm = ({ subscription }) => {
@@ -16,16 +15,8 @@ export const SubscriptionForm = ({ subscription }) => {
     useEffect(() => {
         (async() => {
             try {
-                const response = await fetch(baseUrl + "admin/subscription/contents", {
-                    method: "GET",
-                    headers: {
-                        // TODO: auth token
-                        // "Authorization": "Bearer [token]"
-                    }
-                });
-                
+                const {response, data} = await adminSubscriptionService.getContentsForSubscription();
                 if (response.ok) {
-                    const data = await response.json();
                     setContents(data);
                 }
             } catch (e) {
@@ -90,21 +81,14 @@ export const SubscriptionForm = ({ subscription }) => {
             
             if (!subscription) {
                 try {
-                    const response = await fetch(baseUrl + "admin/subscription/add", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(values)
-                    })
-                    
+                    const {response, data} = await adminSubscriptionService.addSubscription(values);
                     if (response.ok) {
                         toast.success("Успешно создана", {
                             position: "bottom-center"
                         });
-                        setSubscriptions((await getSubscriptions()).data);
+                        setSubscriptions((await adminSubscriptionService.getSubscriptions()).data);
                     } else {
-                        toast.error(await response.json(),{
+                        toast.error(data,{
                             position: "bottom-center"
                         });
                     }
@@ -121,25 +105,19 @@ export const SubscriptionForm = ({ subscription }) => {
                     newMaxResolution: values.maxResolution,
                     newPrice: values.price,
                     accessibleContentIdsToAdd: values.accessibleContentIds.filter(x => !subscription.accessibleContent.map(y => y.id).includes(x.id)),
-                    accessibleContentIdsToRemove: values.accessibleContentIds.filter(x => subscription.accessibleContent.map(y => y.id).includes(x.id)),
+                    accessibleContentIdsToRemove: subscription.accessibleContent.map(y => y.id).filter(x => !values.accessibleContentIds.includes(x)),
                 };
 
                 try {
-                    const response = await fetch(baseUrl + "admin/subscription/edit", {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(dto)
-                    })
+                    const {response, data} = await adminSubscriptionService.editSubscription(dto);
 
                     if (response.ok) {
                         toast.success("Успешно изменено", {
                             position: "bottom-center"
                         });
-                        setSubscriptions((await getSubscriptions()).data);
+                        setSubscriptions((await adminSubscriptionService.getSubscriptions()).data);
                     } else {
-                        toast.error(await response.json(),{
+                        toast.error(data,{
                             position: "bottom-center"
                         });
                     }
