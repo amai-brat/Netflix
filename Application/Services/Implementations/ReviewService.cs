@@ -14,7 +14,12 @@ namespace Application.Services.Implementations
         IMapper mapper
         ) : IReviewService
     {
-        public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
+	    public async Task<int> GetReviewsCountByContentIdAsync(long contentId)
+	    {
+		    return await reviewRepository.GetReviewsCountAsync(contentId);
+	    }
+
+	    public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
         {
             if(!IsValidReview(review, out var errorMessage, out var param))
                 throw new ReviewServiceArgumentException(errorMessage!, param!);

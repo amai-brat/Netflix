@@ -21,6 +21,13 @@ namespace API.Controllers.ReviewController
             return Ok(reviews);
         }
 
+        [HttpGet("count/{contentId:long}")]
+        public async Task<IActionResult> GetReviewsCount(long contentId)
+        {
+            var count = await reviewService.GetReviewsCountByContentIdAsync(contentId);
+            return Ok(count);
+        }
+
         [HttpPost("assign")]
         [Authorize]
         public async Task<IActionResult> AssignReviewAsync([FromQuery] bool withScore, [FromBody] ReviewAssignDto review)

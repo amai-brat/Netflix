@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Application.Dto;
 using Application.Repositories;
-using Application.Services.Abstractions;
 
 namespace DataAccess.Repositories
 {
@@ -14,7 +13,13 @@ namespace DataAccess.Repositories
             await appDbContext.AddAsync(review);
             await appDbContext.SaveChangesAsync();
         }
-        
+
+        public async Task<int> GetReviewsCountAsync(long contentId)
+        {
+            return await appDbContext.Reviews.Where(x => x.ContentId == contentId)
+                .CountAsync();
+        }
+
         public async Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter) =>
             await appDbContext.Reviews.SingleOrDefaultAsync(filter);
 

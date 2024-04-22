@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import ReactPaginate from "react-paginate";
 import styles from './styles/paginatedReview.module.css';
 import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {contentService} from "../../services/content.service.js";
 const testReviews =  [
     {
         id: 1,
@@ -120,13 +121,17 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
     useEffect( () => {
         const fetchData = async () => {
             try{
-                const resp = await fetch(`${baseUrl}reviews/${contentId}/?offset=${itemOffset}&limit=${itemsPerPage}&sort=${sort}`);
-                const data = await resp.json();
-                if (resp.ok){
-                    setItems(data);
-                    setTotalCount(100);
+                const {response: reviewResp, data: revs} = await contentService.getReviews(contentId, itemOffset, itemsPerPage, sort);
+                const {response: countResp, data: count} = await contentService.getReviewsCount(contentId);
+                
+                if (reviewResp.ok){
+                    setItems(revs);
                 } else {
-                    setError(data.message);
+                    setError(revs.message);
+                }
+                
+                if (countResp.ok) {
+                    setTotalCount(count);
                 }
             } catch (e) {
                 setError("Не удалось загрузить данные ");
@@ -153,7 +158,7 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
                         pageCount={pageCount}
                         pageRangeDisplayed={4}
                         onPageChange={handlePageClick}
-                        marginPagesDisplayed={4}
+                        marginPagesDisplayed={1}
                         renderOnZeroPageCount={null}
                         nextLabel={null}
                         previousLabel={null}

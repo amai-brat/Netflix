@@ -9,6 +9,7 @@ namespace Application.Repositories
         Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter);
         Task<List<Review>> GetReviewsByFilterAsync(Expression<Func<Review, bool>> filter);
         Task AssignReviewAsync(Review review);
+        Task<int> GetReviewsCountAsync(long contentId);
         Task<List<Review>> GetByReviewSearchDtoAsync(ReviewSearchDto dto, int reviewsPerPage);
         Task<int> GetPagesCountAsync(ReviewSearchDto dto, int reviewsPerPage);
         Task<int?> GetScoreByUserAsync(long userId, long contentId);
