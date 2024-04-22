@@ -19,6 +19,21 @@ namespace Application.Services.Implementations
 		    return await reviewRepository.GetReviewsCountAsync(contentId);
 	    }
 
+	    public async Task<bool> LikeReviewAsync(long reviewId, long userId)
+	    {
+		    if (!await reviewRepository.IsReviewLikedByUserAsync(reviewId, userId))
+		    {
+			    await reviewRepository.AddReviewLikeAsync(reviewId, userId);
+			    await reviewRepository.SaveChangesAsync();
+			    return true;
+		    }
+
+		    await reviewRepository.RemoveReviewLikeAsync(reviewId, userId);
+		    await reviewRepository.SaveChangesAsync();
+
+		    return false;
+	    }
+
 	    public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
         {
             if(!IsValidReview(review, out var errorMessage, out var param))

@@ -3,12 +3,14 @@ import heart from './Images/red-heart-icon.svg'
 import comment from './Images/comment-svgrepo-com.svg'
 import closeCross from './Images/icons8-close-96.svg'
 import {toast} from "react-toastify";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import Modal from "react-modal";
 import ReviewComment from "./ReviewComment.jsx";
 import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 import {useDataStore} from "../../store/dataStoreProvider.jsx";
 import {commentService} from "../../services/comment.service.js";
+import {ReviewsContext} from "./ReviewsContext.js";
+import {contentService} from "../../services/content.service.js";
 
 const modalStyles = {
     content: {
@@ -32,6 +34,7 @@ const modalStyles = {
     }
 }
 const ReviewItem = ({review, customStyles, notOpenModal}) => {
+    const {setReviewsChanged} = useContext(ReviewsContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [commentText, setCommentText] = useState('')
     const store = useDataStore()
@@ -56,6 +59,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
             const {response, data} = await commentService.createComment(review.id, {Text: commentText});
             if (response.ok) {
                 try {await store.data.connection.invoke("NotifyAboutCommentAsync", data);} catch (e) {console.log(e)}
+                setReviewsChanged(true);
                 toast.success("Комментарий отправлен", {
                     position: "bottom-center"
                 })
@@ -74,19 +78,15 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     }
     const likeReview = async () => {
         try{
-            //TODO: напистаь правильный юрл
-            const resp = await fetch(baseUrl + "api/review/like", {
-                method: "post",
-                // TODO: написать поля с идентификацией юзера
-                body: {reviewId: review.id}
-            })
-            const body = await resp.json()
-            if (resp.ok){
-                toast.success(body.message, {
+            const {response, data} = await contentService.likeReview(review.id);
+            if (response.ok){
+                setReviewsChanged(true);
+                
+                toast.success(data === true ? "Лайк поставлен" : "Лайк удалён", {
                     position: "bottom-center"
                 })
             } else{
-                toast.error(body.message, {
+                toast.error(data.message, {
                     position: "bottom-center"
                 })
             }

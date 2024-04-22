@@ -36,6 +36,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 403
                 });
             }
+            // TODO: бизнес ошибки отправляются, нужно 500
             catch (Exception ex)
             {
                 context.Response.StatusCode = 400;

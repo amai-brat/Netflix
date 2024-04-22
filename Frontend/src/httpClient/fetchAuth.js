@@ -12,7 +12,7 @@ const originalRequest = async (url, config, isJsonResponse)=> {
 export const fetchAuth = async (url, isJsonResponse = false, config = {}) => {
   let accessToken = sessionStorage.getItem("accessToken");
   if (!config.headers) {
-    config = {headers: {}};
+    config = {...config, headers: {}};
   }
   
   if (isTokenValid(accessToken)) {

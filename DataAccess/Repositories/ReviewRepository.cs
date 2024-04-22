@@ -84,6 +84,28 @@ namespace DataAccess.Repositories
             return appDbContext.Reviews.Remove(review).Entity;
         }
 
+        public async Task<bool> IsReviewLikedByUserAsync(long reviewId, long userId)
+        {
+            var reviewLike = await appDbContext
+                .UsersReviews
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.ReviewId == reviewId);
+            return reviewLike != null;
+        }
+
+        public Task RemoveReviewLikeAsync(long reviewId, long userId)
+        {
+            appDbContext.UsersReviews.Remove(new UsersReviews { ReviewId = reviewId, UserId = userId });
+            return Task.CompletedTask;
+        }
+
+        public async Task AddReviewLikeAsync(long reviewId, long userId)
+        {
+            await appDbContext
+                .UsersReviews
+                .AddAsync(new UsersReviews { ReviewId = reviewId, UserId = userId, IsLiked = true });
+        }
+
         public async Task<Review?> GetReviewByIdAsync(long id)
         {
             return await appDbContext.Reviews.FindAsync(id);

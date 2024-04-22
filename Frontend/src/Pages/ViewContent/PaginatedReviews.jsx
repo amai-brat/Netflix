@@ -2,107 +2,9 @@
 import {useEffect, useState} from "react";
 import ReactPaginate from "react-paginate";
 import styles from './styles/paginatedReview.module.css';
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {ReviewsContext} from "./ReviewsContext.js";
 import {contentService} from "../../services/content.service.js";
-const testReviews =  [
-    {
-        id: 1,
-        user: {
-            id: 1,
-            avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-            name: "Артурия Пендрагон"
-        },
-        score: 5,
-        writtenAt: "2021-10-10",
-        likesScore: 10,
-        text: "Отличный фильм",
-        isPositive: true,
-        comments: [
-            {
-                id: 1,
-                user: {
-                    id: 2,
-                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-                    name: "Александр"
-                },
-                text: "Согласен",
-                writtenAt: "2021-10-10"
-            },
-            {
-                id: 2,
-                user: {
-                    id: 2,
-                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-                    name: "Александр"
-                },
-                text: "Согласен",
-                writtenAt: "2021-10-10"
-            },
-            {
-                id: 3,
-                user: {
-                    id: 2,
-                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-                    name: "Александр"
-                },
-                text: "Согласен",
-                writtenAt: "2021-10-10"
-            }
-        ]
-    },
-    {
-        id: 2,
-        user: {
-            id: 1,
-            avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-            name: "Артурия Пендрагон"
-        },
-        score: 5,
-        writtenAt: "2021-10-10",
-        likesScore: 10,
-        isPositive: false,
-        text: "Отличный фильм",
-        comments: [
-            {
-                id: 1,
-                user: {
-                    id: 2,
-                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-                    name: "Александр"
-                },
-                text: "Согласен",
-                writtenAt: "2021-10-10"
-            }
-        ]
-    },
-    {
-        id: 3,
-        user: {
-            id: 1,
-            avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-            name: "Артурия Пендрагон"
-        },
-        score: 5,
-        writtenAt: "2021-10-10",
-        likesScore: 10,
-        isPositive: true,
-        text: "Отличный фильм",
-        comments: [
-            {
-                id: 1,
-                user: {
-                    id: 2,
-                    avatar: "https://wallpapers.com/images/hd/saber-fate-stay-night-ql4w5fa4bkis4bnp.jpg",
-                    name: "Александр"
-                },
-                text: "Согласен",
-                writtenAt: "2021-10-10"
-            }
-        ]
-    }
-    
-    
-]
+
 function Items({newItems}) {
     return (
         <>
@@ -113,41 +15,51 @@ function Items({newItems}) {
     )
 }
 const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
+    const [reviewsChanged, setReviewsChanged] = useState(false);
     const [items, setItems] = useState([]);
     const [itemOffset, setItemOffset] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [error, setError] = useState(null);
     const endOffset = itemOffset + itemsPerPage;
-    useEffect( () => {
-        const fetchData = async () => {
-            try{
-                const {response: reviewResp, data: revs} = await contentService.getReviews(contentId, itemOffset, itemsPerPage, sort);
-                const {response: countResp, data: count} = await contentService.getReviewsCount(contentId);
-                
-                if (reviewResp.ok){
-                    setItems(revs);
-                } else {
-                    setError(revs.message);
-                }
-                
-                if (countResp.ok) {
-                    setTotalCount(count);
-                }
-            } catch (e) {
-                setError("Не удалось загрузить данные ");
-            }
-        };
-        //setItems(testReviews.slice(itemOffset,endOffset));
-        //setTotalCount(testReviews.length);
+    
+    useEffect(() => {
         fetchData();
     },[itemOffset, itemsPerPage, sort, contentId]);
+    
+    useEffect(() => {
+        if (!reviewsChanged) return;
+        fetchData();
+        setReviewsChanged(false);
+    }, [reviewsChanged]);
+    
     const handlePageClick = (event) => {
         const newOffset = event.selected * itemsPerPage;
         setItemOffset(newOffset);
     };
+    
+    const fetchData = async () => {
+        try{
+            const {response: reviewResp, data: revs} = await contentService.getReviews(contentId, itemOffset, itemsPerPage, sort);
+            const {response: countResp, data: count} = await contentService.getReviewsCount(contentId);
+
+            if (reviewResp.ok){
+                setItems(revs);
+            } else {
+                setError(revs.message);
+            }
+
+            if (countResp.ok) {
+                setTotalCount(count);
+            }
+        } catch (e) {
+            setError("Не удалось загрузить данные ");
+        }
+    };
+    
     const pageCount = Math.ceil(totalCount / itemsPerPage);
     return (
-        <>
+        <ReviewsContext.Provider value={{reviewsChanged, setReviewsChanged}}>
+            <>
             {error && <h3 className={styles.errorMessage}>{error}</h3>}
             {items.length === 0 && <h3>Пока нет рецензий</h3>}
             {items.length > 0 && 
@@ -172,9 +84,10 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
                     />
                 </>
             }
-            
-        </>
+            </>
+        </ReviewsContext.Provider>
     );
 }
+
 
 export default PaginatedReviews; 

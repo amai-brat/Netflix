@@ -39,5 +39,20 @@ namespace API.Controllers.ReviewController
 
             return Ok();
         }
+
+        [Authorize]
+        [HttpPost("like/{reviewId:long}")]
+        public async Task<IActionResult> LikeReviewAsync(long reviewId)
+        {
+            var userId = GetUserId();
+            var result = await reviewService.LikeReviewAsync(reviewId, userId);
+
+            return Ok(result);
+        }
+        
+        private long GetUserId()
+        {
+            return long.Parse(HttpContext.User.FindFirst("id")!.Value);
+        }
     }
 }

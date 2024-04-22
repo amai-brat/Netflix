@@ -5,7 +5,8 @@ export const contentService = {
   getContentInfo,
   getReviewsCount,
   getReviews,
-  createReview
+  createReview,
+  likeReview
 };
 
 async function getContentInfo(id) {
@@ -30,6 +31,14 @@ async function createReview(reviewData) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(reviewData)
+  });
+  
+  return {response, data};
+}
+
+async function likeReview(reviewId) {
+  const {response, data} = await fetchAuth(`reviews/like/${reviewId}`, true, {
+    method: "POST"
   });
   
   return {response, data};

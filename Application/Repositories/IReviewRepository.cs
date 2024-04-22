@@ -15,6 +15,9 @@ namespace Application.Repositories
         Task<int?> GetScoreByUserAsync(long userId, long contentId);
         Task<Review?> GetReviewByIdAsync(long id);
         Review DeleteReview(Review review);
+        Task<bool> IsReviewLikedByUserAsync(long reviewId, long userId);
+        Task RemoveReviewLikeAsync(long reviewId, long userId);
+        Task AddReviewLikeAsync(long reviewId, long userId);
         Task SaveChangesAsync();
     }
 }
