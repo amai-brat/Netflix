@@ -5,7 +5,17 @@ import {jwtDecode} from "jwt-decode";
 const originalRequest = async (url, config, isJsonResponse)=> {
   url = `${baseUrl}${url}`
   let response = await fetch(url, config);
-  let data = isJsonResponse ? await response.json() : await response.text();
+  let data;
+  if (isJsonResponse) {
+    try {
+      data = await response.json();
+    } catch (e) {
+      console.log(e);
+    }
+  } else {
+    data = await response.text();
+  }
+  
   return {response, data}
 }
 

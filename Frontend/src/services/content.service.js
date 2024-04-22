@@ -6,7 +6,9 @@ export const contentService = {
   getReviewsCount,
   getReviews,
   createReview,
-  likeReview
+  likeReview,
+  addToFavourites,
+  removeFromFavourites
 };
 
 async function getContentInfo(id) {
@@ -39,6 +41,30 @@ async function createReview(reviewData) {
 async function likeReview(reviewId) {
   const {response, data} = await fetchAuth(`reviews/like/${reviewId}`, true, {
     method: "POST"
+  });
+  
+  return {response, data};
+}
+
+async function addToFavourites(contentId) {
+  const {response, data} = await fetchAuth(`content/favourite/add`, true, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(contentId)
+  });
+  
+  return {response, data};
+}
+
+async function removeFromFavourites(contentId) {
+  const {response, data} = await fetchAuth(`content/favourite/remove`, true, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(contentId)
   });
   
   return {response, data};

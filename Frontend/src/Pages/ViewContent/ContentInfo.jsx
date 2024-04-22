@@ -3,6 +3,7 @@ import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {useEffect, useState} from "react";
 import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {contentService} from "../../services/content.service.js";
 
 function ContentInfo({contentData}){
     const groupedByRole = contentData.personsInContent.reduce((acc, person) => {
@@ -54,19 +55,22 @@ function ContentInfo({contentData}){
     }
     async function addToFavourites() {
         try{
-            const resp = await fetch(baseUrl + "api/favourites/add", {
-                method: "POST",
-                //TODO: добавить токен
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({contentId: contentData.id})
-            });
-            const body = await resp.json();
-            if (resp.ok) {
-                notifyAboutResult(true, body.message);
+            const {response: respAdd, data: dataAdd} = await contentService.addToFavourites(contentData.id);
+            
+            if (respAdd.status === 400) {
+                const {response: respRem, data: dataRem} = await contentService.removeFromFavourites(contentData.id);
+                if (respRem.ok) {
+                    notifyAboutResult(true, "Убран из избранных");
+                } else {
+                    notifyAboutResult(false, dataRem.message);
+                }
+                return;
+            }
+            
+            if (respAdd.ok) {
+                notifyAboutResult(true, "Добавлен в избранное");
             } else {
-                notifyAboutResult(false, body.message);
+                notifyAboutResult(false, dataAdd.message);
             }
         } catch (e) {
             notifyAboutResult(false, e.message);
