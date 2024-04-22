@@ -10,7 +10,7 @@ const ReviewComment = ({comment}) => {
                     <span className={styles.username}>{comment.user.name}</span>
                 </div>
                 <div className={styles.dateLikesComments}>
-                    <span>{comment.writtenAt}</span>
+                    <span>{comment.writtenAt.toLocaleString().slice(0, 10)}</span>
                 </div>
             </div>
             <div className={styles.reviewText}>

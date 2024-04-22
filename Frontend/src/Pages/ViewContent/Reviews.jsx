@@ -122,8 +122,8 @@ const Reviews = ({contentId}) => {
                                 <li onClick={() => setFilterOption("negative")}
                                     className={filter === "negative" ? styles.active : ``}>Отрицательные
                                 </li>
-                                <li onClick={() => setFilterOption("score")}
-                                    className={filter === "score" ? styles.active : ``}>По оценкам
+                                <li onClick={() => setFilterOption("scoredesc")}
+                                    className={filter === "scoredesc" ? styles.active : ``}>По оценкам
                                 </li>
                                 <li onClick={() => setFilterOption("likesDesc")}
                                     className={filter === "likesDesc" ? styles.active : ``}>По лайкам(убывание)

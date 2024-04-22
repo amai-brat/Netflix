@@ -30,9 +30,9 @@ namespace API.Controllers.ReviewController
 
         [HttpPost("assign")]
         [Authorize]
-        public async Task<IActionResult> AssignReviewAsync([FromQuery] bool withScore, [FromBody] ReviewAssignDto review)
+        public async Task<IActionResult> AssignReviewAsync([FromBody] ReviewAssignDto review)
         {
-            if (withScore)
+            if (review.Score != null)
                 await reviewService.AssignReviewWithRatingAsync(review, long.Parse(User.FindFirst("Id")!.Value));
             else
                 await reviewService.AssignReviewAsync(review, long.Parse(User.FindFirst("Id")!.Value));
