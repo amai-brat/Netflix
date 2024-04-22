@@ -1,4 +1,4 @@
-import {baseUrl} from "../Pages/Shared/HttpClient/baseUrl.js";
+import {baseUrl} from "../httpClient/baseUrl.js";
 
 export const subscriptionService = {
 };

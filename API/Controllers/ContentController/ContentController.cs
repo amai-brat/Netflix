@@ -176,6 +176,20 @@ namespace API.Controllers.ContentController
             var result = await contentService.GetPromosAsync();
             return Ok(result);
         }
+
+        [HttpGet("types")]
+        public async Task<IActionResult> GetContentTypes()
+        {
+            var result = await contentService.GetContentTypesAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("genres")]
+        public async Task<IActionResult> GetContentGenres()
+        {
+            var result = await contentService.GetGenresAsync();
+            return Ok(result);
+        }
   
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {

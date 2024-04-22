@@ -18,4 +18,6 @@ public interface IContentService
     Task AddSerialContent(SerialContentAdminPageDto serialContentDto);
     Task<List<SectionDto>> GetSectionsAsync();
     Task<List<PromoDto>> GetPromosAsync();
+    Task<List<ContentTypeDto>> GetContentTypesAsync();
+    Task<List<GenreDto>> GetGenresAsync();
 }

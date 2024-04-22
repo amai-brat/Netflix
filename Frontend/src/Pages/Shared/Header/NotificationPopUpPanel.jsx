@@ -1,7 +1,5 @@
 import {useNavigate} from "react-router-dom";
 import "/src/Pages/Shared/Header/Styles/NotificationPopUpPanel.css";
-import {baseUrl} from "../HttpClient/baseUrl.js";
-import {notificationService} from "../../../services/notification.service.js";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 
 const NotificationPopUpPanel = ({notifications}) =>{

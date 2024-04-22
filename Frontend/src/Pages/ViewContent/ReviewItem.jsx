@@ -6,7 +6,6 @@ import {toast} from "react-toastify";
 import {useContext, useState} from "react";
 import Modal from "react-modal";
 import ReviewComment from "./ReviewComment.jsx";
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 import {useDataStore} from "../../store/dataStoreProvider.jsx";
 import {commentService} from "../../services/comment.service.js";
 import {ReviewsContext} from "./ReviewsContext.js";

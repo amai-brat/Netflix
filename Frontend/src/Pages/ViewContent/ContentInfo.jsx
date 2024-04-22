@@ -1,8 +1,6 @@
 ﻿import styles from './styles/ContentInfo.module.css';
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {useEffect, useState} from "react";
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 import {contentService} from "../../services/content.service.js";
 
 function ContentInfo({contentData}){

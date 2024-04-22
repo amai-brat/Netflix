@@ -9,7 +9,7 @@ import "/src/Pages/Shared/Header/Styles/Header.css"
 import NotificationPanel from "./NotificationPanel.jsx";
 import NotificationPopUpPanel from "./NotificationPopUpPanel.jsx";
 import * as signalR from "@microsoft/signalr";
-import {baseUrl} from "../HttpClient/baseUrl.js";
+import {baseUrl} from "../../../httpClient/baseUrl.js";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import {userService} from "../../../services/user.service.js";
 import {notificationService} from "../../../services/notification.service.js";

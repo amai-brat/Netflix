@@ -1,4 +1,4 @@
-import {baseUrl} from "../Pages/Shared/HttpClient/baseUrl.js";
+import {baseUrl} from "../httpClient/baseUrl.js";
 import {fetchAuth} from "../httpClient/fetchAuth.js";
 
 export const contentService = {
@@ -10,7 +10,10 @@ export const contentService = {
   addToFavourites,
   removeFromFavourites,
   getSections,
-  getPromos
+  getPromos,
+  getContentsByFilter,
+  getContentTypes,
+  getGenres
 };
 
 async function getContentInfo(id) {
@@ -79,5 +82,20 @@ async function getSections() {
 
 async function getPromos() {
   const response = await fetch(`${baseUrl}content/promos`);
+  return {response, data: await response.json()};
+}
+
+async function getContentsByFilter(queryParams) {
+  const response = await fetch(`${baseUrl}content/filter?${queryParams}`);
+  return {response, data: await response.json()};
+}
+
+async function getContentTypes() {
+  const response = await fetch(`${baseUrl}content/types`);
+  return {response, data: await response.json()};
+}
+
+async function getGenres() {
+  const response = await fetch(`${baseUrl}content/genres`);
   return {response, data: await response.json()};
 }

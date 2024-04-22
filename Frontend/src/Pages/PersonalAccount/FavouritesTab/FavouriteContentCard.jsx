@@ -1,7 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteContentCard.css";
-import {baseUrl} from '../../Shared/HttpClient/baseUrl.js';
 import {contentService} from "../../../services/content.service.js";
 
 

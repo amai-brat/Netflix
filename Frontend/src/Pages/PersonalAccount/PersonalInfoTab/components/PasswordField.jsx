@@ -1,6 +1,5 @@
 import { Typography, Button, Modal, TextField, Alert } from "@mui/material";
 import { useState } from "react";
-import {baseUrl} from "../../../Shared/HttpClient/baseUrl.js";
 import {userService} from "../../../../services/user.service.js";
 
 

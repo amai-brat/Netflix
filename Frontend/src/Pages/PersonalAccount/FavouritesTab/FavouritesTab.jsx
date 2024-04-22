@@ -5,7 +5,6 @@ import FavouritesFilterButton from "./FavouritesFilterButton.jsx";
 import FavouritesFilterPopUp from "./FavouritesFilterPopUp.jsx";
 import FavouriteContentCard from "./FavouriteContentCard.jsx";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTab.css";
-import {baseUrl} from '../../Shared/HttpClient/baseUrl.js';
 import {userService} from "../../../services/user.service.js";
 
 const FavouritesTab = () => {

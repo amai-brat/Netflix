@@ -3,9 +3,8 @@ import SelectionContentGrid from "./SelectionContentGrid.jsx";
 import SelectionContentFilterPanel from "./SelectionContentFilterPanel.jsx";
 import "/src/Pages/SelectionContent/Styles/SelectionContent.css";
 import SelectionContentSearchPanel from "./SelectionContentSearchPanel.jsx";
-import {contentsData, contentTypesData} from "./TestData.jsx";
 import {useLocation} from "react-router-dom";
-import {baseUrl} from "../Shared/HttpClient/baseUrl";
+import {contentService} from "../../services/content.service.js";
 
 const SelectionContent = () => {
     const getQueryParams = () =>
@@ -26,9 +25,9 @@ const SelectionContent = () => {
     
     const getAllContentByFilterAsync = async () => {
         try {
-            const response = await fetch(baseUrl + "content/filter?" + getQueryParams())
+            const {response, data} = await contentService.getContentsByFilter(getQueryParams());
             if(response.ok){
-                setContents(await response.json())
+                setContents(data)
             }else{
                 setContents(null)
             }
@@ -43,7 +42,7 @@ const SelectionContent = () => {
     const [contents, setContents] = useState(undefined)
     const [filter, setFilter] = useState({
         name: null,
-        types: [location?.state?.filter?.type],
+        types: location?.state?.filter?.type ? [location?.state?.filter?.type] : [],
         genres: [],
         country: null,
         releaseYearFrom : null,

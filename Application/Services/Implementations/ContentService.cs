@@ -13,6 +13,7 @@ public class ContentService(
     IContentRepository contentRepository,
     ISubscriptionRepository subscriptionRepository,
     IContentTypeRepository contentTypeRepository,
+    IGenreRepository genreRepository,
     IMapper mapper) : IContentService
 {
     private readonly HashSet<int> _resolutions = [480, 720, 1080, 1440, 2160];
@@ -144,6 +145,18 @@ public class ContentService(
     {
         var contents = await contentRepository.GetRandomContentsAsync(5);
         return mapper.Map<List<PromoDto>>(contents);
+    }
+
+    public async Task<List<ContentTypeDto>> GetContentTypesAsync()
+    {
+        var contentTypes = await contentTypeRepository.GetContentTypesAsync();
+        return mapper.Map<List<ContentTypeDto>>(contentTypes);
+    }
+
+    public async Task<List<GenreDto>> GetGenresAsync()
+    {
+        var genres = await genreRepository.GetGenresAsync();
+        return mapper.Map<List<GenreDto>>(genres);
     }
 
     private void CheckIfSubscriptionsHaveNewOne(List<Subscription> subscriptions, List<Subscription> dbSubscriptions)

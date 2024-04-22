@@ -132,5 +132,9 @@ public class ContentProfile : Profile
 
         CreateMap<ContentBase, SectionContentDto>();
         CreateMap<ContentBase, PromoDto>();
+        CreateMap<ContentType, ContentTypeDto>()
+            .ForMember(x => x.ContentType,
+                x => x.MapFrom(ct => ct.ContentTypeName));
+        CreateMap<Genre, GenreDto>();
     }
 }

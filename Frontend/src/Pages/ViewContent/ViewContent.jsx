@@ -4,7 +4,6 @@ import styles from './styles/ViewContent.module.css';
 import ContentPlayer from "./contentPlayer.jsx";
 import Reviews from "./Reviews.jsx";
 import {useParams} from "react-router-dom";
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 import {contentService} from "../../services/content.service.js";
 const ViewContent = () => {
     let { id } = useParams();

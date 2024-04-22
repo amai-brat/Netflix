@@ -22,6 +22,7 @@ namespace Tests.ContentAPITests
         private readonly Mock<IContentRepository> _mockContent = new();
         private readonly Mock<ISubscriptionRepository> _mockSubscription  = new();
         private readonly Mock<IContentTypeRepository> _mockContentType = new();
+        private readonly Mock<IGenreRepository> _mockGenre = new();
         private readonly IMapper _mapper;
         public ContentServiceTests(ITestOutputHelper testOutputHelper)
         {
@@ -48,7 +49,7 @@ namespace Tests.ContentAPITests
                 .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mapper);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
             //Act
             _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(movieContentDto.AllowedSubscriptions
                 .Select(dto => new Subscription(){Name = dto.Name}).ToList());
@@ -72,7 +73,7 @@ namespace Tests.ContentAPITests
                 .With(dto => dto.AllowedSubscriptions, _fixture.CreateMany<SubscriptionAdminPageDto>(3).ToList())
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mapper);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
             //Act
             _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto.AllowedSubscriptions
                 .Select(dto => new Subscription(){Id = dto.Id,Name = dto.Name,Description = dto.Description, MaxResolution = dto.MaxResolution.Value}).ToList());
@@ -90,7 +91,7 @@ namespace Tests.ContentAPITests
                 .Options;
             dbContext = new AppDbContext(options);
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mapper);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
             var content = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().First();
             dbContext.MovieContents.Add(content);
             await dbContext.SaveChangesAsync();
@@ -625,7 +626,7 @@ namespace Tests.ContentAPITests
 
         private ContentService GetService()
         {
-            return new ContentService(_mockContent.Object, _mockSubscription.Object, _mockContentType.Object, _mapper);
+            return new ContentService(_mockContent.Object, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
         }
     }
 }
