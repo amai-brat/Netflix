@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Alert } from '@mui/material';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {authenticationService} from "../../services/authentication.service.js";
 
 export const CustomForm = ({formType}) => {
     const [response, setResponse] = useState(null);
+    const navigate = useNavigate();
 
     const validateSignin = (values) => {
         const errors = {};
@@ -77,6 +78,8 @@ export const CustomForm = ({formType}) => {
             if (resp.ok){
                 let message = formType === "signin" ? "Успешный вход" : "Успешная регистрация";
                 setResponse({Success: true, Message: message});
+                await new Promise((resolve => setTimeout(resolve, 1000)));
+                navigate("/MainContent");
             }
             else {
                 let errorText = resp.data.message.match(/^[^(]*/)[0];

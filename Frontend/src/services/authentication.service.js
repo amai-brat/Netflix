@@ -1,8 +1,10 @@
 import {baseUrl} from "../httpClient/baseUrl.js";
+import {fetchAuth} from "../httpClient/fetchAuth.js";
 
 export const authenticationService = {
   signin,
-  signup
+  signup,
+  logout
 };
 
 async function signin(values){
@@ -51,5 +53,22 @@ async function signup(values) {
   } catch (e) {
     console.log(e);
     return {ok: false, data: e.message}
+  }
+}
+
+async function logout() {
+  try {
+    const response = await fetch(`${baseUrl}auth/revoke-token`,{
+      method: "POST",
+      credentials: "include"
+    });
+    if (response.ok) {
+      sessionStorage.removeItem("accessToken");
+      return {response, data: await response.text()};
+    }
+    
+    return {response, data: await response.json()}
+  } catch (e) {
+    console.log(e);
   }
 }

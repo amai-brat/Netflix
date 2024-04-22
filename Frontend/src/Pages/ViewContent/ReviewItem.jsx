@@ -141,6 +141,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                       })}
                       <h2>Оставить комментарий</h2>
                       <textarea
+                        style={{color: "black"}}
                           placeholder="Ответить в комментарии"
                           className={styles.commentForm} onChange={handleTextChange}
                           rows={10}>
