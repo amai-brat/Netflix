@@ -9,9 +9,11 @@ using Domain.Entities;
 
 namespace Application.Services.Implementations;
 
-public class ContentService(IContentRepository contentRepository,
-    ISubscriptionRepository? subscriptionRepository = null,
-    IMapper? mapper = null) : IContentService
+public class ContentService(
+    IContentRepository contentRepository,
+    ISubscriptionRepository subscriptionRepository,
+    IContentTypeRepository contentTypeRepository,
+    IMapper mapper) : IContentService
 {
     private readonly HashSet<int> _resolutions = [480, 720, 1080, 1440, 2160];
     // TODO: что делать с nullable: без него летят тесты
@@ -88,35 +90,58 @@ public class ContentService(IContentRepository contentRepository,
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
-        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
+        var movieContent = mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         await contentRepository.UpdateMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        var serialContent = mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
-        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
+        var serialContent = mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         await contentRepository.UpdateSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
-        var movieContent = mapper!.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
-        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
+        var movieContent = mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
+        CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         contentRepository.AddMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
     {
-        var serialContent = mapper!.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
-        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository!.GetAllSubscriptionsAsync());
+        var serialContent = mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
+        CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         contentRepository.AddSerialContent(serialContent);
         await contentRepository.SaveChangesAsync();
     }
+
+    public async Task<List<SectionDto>> GetSectionsAsync()
+    {
+        var result = new List<SectionDto>();
+        
+        var contentTypes = await contentTypeRepository.GetContentTypesAsync();
+        foreach (var contentType in contentTypes)
+        {
+            var contents = await contentRepository
+                .GetContentsByFilterWithAmountAsync(x => x.ContentTypeId == contentType.Id, 20);
+            
+            if (contents.Count <= 0) continue;
+            
+            result.Add(new SectionDto
+            {
+                Name = contentType.ContentTypeName,
+                Contents = mapper.Map<List<SectionContentDto>>(contents)
+            });
+        }
+
+        return result;
+    }
+
     private void CheckIfSubscriptionsHaveNewOne(List<Subscription> subscriptions, List<Subscription> dbSubscriptions)
     {
         foreach (var subscription in subscriptions)

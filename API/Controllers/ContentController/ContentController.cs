@@ -162,11 +162,14 @@ namespace API.Controllers.ContentController
             var serialContentDto = mapper.Map<SerialContentAdminPageDto>(serialContent);
             return serialContentDto;
         }
-        // [HttpPost("/test")]
-        // public async Task<IActionResult> TestMethod()
-        // {
-        //     return Ok();
-        // }
+
+        [HttpGet("sections")]
+        public async Task<IActionResult> GetSections()
+        {
+            var result = await contentService.GetSectionsAsync();
+            return Ok(result);
+        }
+  
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)

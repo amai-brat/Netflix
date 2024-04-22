@@ -23,6 +23,7 @@ namespace DataAccess.Extensions
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             serviceCollection.AddScoped<ITokenRepository, TokenRepository>();
+            serviceCollection.AddScoped<IContentTypeRepository, ContentTypeRepository>();
             
             return serviceCollection.AddDbContext<AppDbContext>(builder =>
             {

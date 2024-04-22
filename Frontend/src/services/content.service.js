@@ -8,7 +8,8 @@ export const contentService = {
   createReview,
   likeReview,
   addToFavourites,
-  removeFromFavourites
+  removeFromFavourites,
+  getSections
 };
 
 async function getContentInfo(id) {
@@ -68,4 +69,9 @@ async function removeFromFavourites(contentId) {
   });
   
   return {response, data};
+}
+
+async function getSections() {
+  const response = await fetch(`${baseUrl}content/sections`);
+  return {response, data: await response.json()};
 }

@@ -7,6 +7,7 @@ namespace Application.Repositories
     {
         Task<ContentBase?> GetContentByFilterAsync(Expression<Func<ContentBase, bool>> filter);
         Task<List<ContentBase>> GetContentsByFilterAsync(Expression<Func<ContentBase, bool>> filter);
+        Task<List<ContentBase>> GetContentsByFilterWithAmountAsync(Expression<Func<ContentBase, bool>> filter, int amount);
         Task<MovieContent?> GetMovieContentByFilterAsync(Expression<Func<MovieContent, bool>> filter);
         Task<SerialContent?> GetSerialContentByFilterAsync(Expression<Func<SerialContent, bool>> filter);
         Task UpdateMovieContent(MovieContent newMovieContent);

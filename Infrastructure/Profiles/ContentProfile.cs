@@ -129,5 +129,7 @@ public class ContentProfile : Profile
                         EpisodeNumber = e.EpisodeNumber
                     }).ToList()
                 }).ToList()));
+
+        CreateMap<ContentBase, SectionContentDto>();
     }
 }

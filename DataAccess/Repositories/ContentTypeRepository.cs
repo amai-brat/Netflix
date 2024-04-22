@@ -1,12 +1,13 @@
 ﻿using Application.Repositories;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories;
 
 public class ContentTypeRepository(AppDbContext appDbContext): IContentTypeRepository
 {
-    public List<ContentType> GetContentTypes()
+    public async Task<List<ContentType>> GetContentTypesAsync()
     {
-        return appDbContext.ContentTypes.ToList();
+        return await appDbContext.ContentTypes.ToListAsync();
     }
 }
