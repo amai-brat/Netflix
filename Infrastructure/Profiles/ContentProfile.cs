@@ -2,7 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Infrastructure.Mappers;
+namespace Infrastructure.Profiles;
 
 public class ContentProfile : Profile
 {
@@ -129,5 +129,12 @@ public class ContentProfile : Profile
                         EpisodeNumber = e.EpisodeNumber
                     }).ToList()
                 }).ToList()));
+
+        CreateMap<ContentBase, SectionContentDto>();
+        CreateMap<ContentBase, PromoDto>();
+        CreateMap<ContentType, ContentTypeDto>()
+            .ForMember(x => x.ContentType,
+                x => x.MapFrom(ct => ct.ContentTypeName));
+        CreateMap<Genre, GenreDto>();
     }
 }

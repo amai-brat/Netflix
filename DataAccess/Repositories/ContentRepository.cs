@@ -20,6 +20,13 @@ namespace DataAccess.Repositories
             await appDbContext.ContentBases.Where(filter)
                 .ToListAsync();
 
+        public async Task<List<ContentBase>> GetContentsByFilterWithAmountAsync(Expression<Func<ContentBase, bool>> filter, int amount)
+        {
+            return await appDbContext.ContentBases.Where(filter)
+                .Take(amount)
+                .ToListAsync();
+        }
+
         public async Task<MovieContent?> GetMovieContentByFilterAsync(Expression<Func<MovieContent, bool>> filter) =>
             await appDbContext.MovieContents.Include(m => m.AllowedSubscriptions)
                 .SingleOrDefaultAsync(filter);
@@ -266,6 +273,14 @@ namespace DataAccess.Repositories
                 serialContent.ContentType = existingContentTypes.First(ct => ct.ContentTypeName.Equals(serialContent.ContentType.ContentTypeName));
             }
             appDbContext.SerialContents.Add(serialContent);
+        }
+
+        public async Task<List<ContentBase>> GetRandomContentsAsync(int amount)
+        {
+            return await appDbContext.ContentBases
+                .OrderBy(_ => EF.Functions.Random())
+                .Take(amount)
+                .ToListAsync();
         }
 
         public async Task SaveChangesAsync()

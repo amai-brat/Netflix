@@ -3,7 +3,7 @@ import {useState} from "react";
 import PaginatedReviews from "./PaginatedReviews.jsx";
 import Modal from 'react-modal';
 import {toast} from "react-toastify";
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {contentService} from "../../services/content.service.js";
 const modalStyles = {
     content: {
         top: '50%',
@@ -60,22 +60,18 @@ const Reviews = ({contentId}) => {
         }
     }
     const sendReview = async () => {
-        //TODO правильный юрл
         try {
-            const resp = await fetch(baseUrl + "reviews/assign", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                //TODO: добавить токен
-                body: JSON.stringify({contentId: contentId, score: currentStarIndex + 1, text: reviewText,
-                isPositive: currentStarIndex + 1 > 5})
+            const {response, data} = await contentService.createReview({
+                contentId: contentId, 
+                score: currentStarIndex + 1, 
+                text: reviewText,
+                isPositive: currentStarIndex + 1 > 5
             });
-            const body = await resp.json();
-            if (resp.ok) {
-                notifyAboutResult(true, body.message);
+            
+            if (response.ok) {
+                notifyAboutResult(true, "Рецензия создана");
             } else {
-                notifyAboutResult(false, body.message);
+                notifyAboutResult(false, data.message);
             }
         } catch (e){
             notifyAboutResult(false, e.message);
@@ -126,8 +122,8 @@ const Reviews = ({contentId}) => {
                                 <li onClick={() => setFilterOption("negative")}
                                     className={filter === "negative" ? styles.active : ``}>Отрицательные
                                 </li>
-                                <li onClick={() => setFilterOption("score")}
-                                    className={filter === "score" ? styles.active : ``}>По оценкам
+                                <li onClick={() => setFilterOption("scoredesc")}
+                                    className={filter === "scoredesc" ? styles.active : ``}>По оценкам
                                 </li>
                                 <li onClick={() => setFilterOption("likesDesc")}
                                     className={filter === "likesDesc" ? styles.active : ``}>По лайкам(убывание)

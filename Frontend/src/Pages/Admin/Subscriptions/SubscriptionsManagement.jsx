@@ -2,18 +2,17 @@ import { SubscriptionsSidebar } from './components/SubscriptionsSidebar';
 import styles from './styles/page.module.scss';
 import React, {useEffect, useState} from "react";
 import {SubscriptionForm} from "./components/SubscriptionForm.jsx";
-import {baseUrl} from "../../Shared/HttpClient/baseUrl.js";
 import {SubscriptionsContext} from "./components/SubscriptionsContext.js";
-import {getSubscriptions} from "./httpClient.js";
+import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
 
 export const SubscriptionsManagement = () => {
     const [subscriptions, setSubscriptions] = useState([]);
     
     useEffect(() => {
         (async() => {
-            const res = await getSubscriptions();
-            if (res && res.ok) {
-                setSubscriptions(res.data);
+            const {response, data} = await adminSubscriptionService.getSubscriptions();
+            if (response.ok) {
+                setSubscriptions(data);
             }
         })();
     }, []);

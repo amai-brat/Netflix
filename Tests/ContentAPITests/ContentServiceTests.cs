@@ -9,7 +9,7 @@ using Application.Services.Implementations;
 using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
-using Infrastructure.Mappers;
+using Infrastructure.Profiles;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
@@ -21,6 +21,8 @@ namespace Tests.ContentAPITests
         private readonly Fixture _fixture = new();
         private readonly Mock<IContentRepository> _mockContent = new();
         private readonly Mock<ISubscriptionRepository> _mockSubscription  = new();
+        private readonly Mock<IContentTypeRepository> _mockContentType = new();
+        private readonly Mock<IGenreRepository> _mockGenre = new();
         private readonly IMapper _mapper;
         public ContentServiceTests(ITestOutputHelper testOutputHelper)
         {
@@ -47,7 +49,7 @@ namespace Tests.ContentAPITests
                 .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
             //Act
             _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(movieContentDto.AllowedSubscriptions
                 .Select(dto => new Subscription(){Name = dto.Name}).ToList());
@@ -71,7 +73,7 @@ namespace Tests.ContentAPITests
                 .With(dto => dto.AllowedSubscriptions, _fixture.CreateMany<SubscriptionAdminPageDto>(3).ToList())
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
             //Act
             _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto.AllowedSubscriptions
                 .Select(dto => new Subscription(){Id = dto.Id,Name = dto.Name,Description = dto.Description, MaxResolution = dto.MaxResolution.Value}).ToList());
@@ -89,7 +91,7 @@ namespace Tests.ContentAPITests
                 .Options;
             dbContext = new AppDbContext(options);
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mapper);
+            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
             var content = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().First();
             dbContext.MovieContents.Add(content);
             await dbContext.SaveChangesAsync();
@@ -111,7 +113,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.AddMovieContent(It.IsAny<MovieContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
-            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            var service = GetService();
             await service.AddMovieContent(movieContentDto);
             //Assert
             _mockContent.Verify(repository => repository.AddMovieContent(It.IsAny<MovieContent>()), Times.Once);
@@ -130,7 +132,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.AddSerialContent(It.IsAny<SerialContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
-            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            var service = GetService();
             await service.AddSerialContent(serialContentDto);
             //Assert
             _mockContent.Verify(repository => repository.AddSerialContent(It.IsAny<SerialContent>()), Times.Once);
@@ -143,7 +145,7 @@ namespace Tests.ContentAPITests
             var contentId = 1;
             //Act
             _mockContent.Setup(repository => repository.DeleteContent(contentId)).Returns(new ContentBase());
-            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            var service = GetService();
             await service.DeleteContent(contentId);
             //Assert
             _mockContent.Verify(repository => repository.DeleteContent(contentId), Times.Once);
@@ -161,7 +163,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
-            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            var service = GetService();
             await service.UpdateMovieContent(movieContentDto);
             //Assert
             _mockContent.Verify(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()), Times.Once);
@@ -179,7 +181,8 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
                 serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
-            var service = new ContentService(_mockContent.Object, _mockSubscription.Object, _mapper);
+            var service = GetService();
+
             await service.UpdateSerialContent(serialContentDto);
             //Assert
             _mockContent.Verify(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()), Times.Once);
@@ -196,7 +199,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetContentByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
                 .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => availableContent.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var result = await service.GetContentByIdAsync(id);
 
             //Assert
@@ -214,7 +217,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetContentByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
                 .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => availableContent.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var result = await service.GetContentByIdAsync(id);
 
             //Assert
@@ -235,7 +238,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
                 .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => availableContent.Where(filter.Compile()).ToList());
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var result = await service.GetContentsByFilterAsync(filter);
 
             //Assert
@@ -252,7 +255,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
                 .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => contents.Where(filter.Compile()).ToList());
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var result = await service.GetContentsByFilterAsync(new Filter());
 
             //Assert
@@ -277,7 +280,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var result = await service.GetMovieContentVideoUrlAsync(contentId, resolution, subId);
 
             //Assert
@@ -304,7 +307,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var result = await service.GetSerialContentVideoUrlAsync(contentId, season, episode, resolution, subId);
 
             //Assert
@@ -325,7 +328,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ContentServiceArgumentException>(async () => { await service.GetMovieContentVideoUrlAsync(_contentId, resolution, subId); });
 
             //Assert
@@ -350,7 +353,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ContentServiceArgumentException>(async () => { await service.GetSerialContentVideoUrlAsync(_contentId,_season, _episode, resolution, subId); });
 
             //Assert
@@ -373,7 +376,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetMovieContentVideoUrlAsync(contentId, _resolution, _subId); });
 
             //Assert
@@ -398,7 +401,7 @@ namespace Tests.ContentAPITests
             _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
                 .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
 
-            var service = new ContentService(_mockContent.Object);
+            var service = GetService();
             var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetSerialContentVideoUrlAsync(contentId, season, episode, _resolution, _subId); });
 
             //Assert
@@ -619,6 +622,11 @@ namespace Tests.ContentAPITests
                     content.Ratings!.KinopoiskRating = 11;
             }
             return contents.Cast<ContentBase>().ToList();
+        }
+
+        private ContentService GetService()
+        {
+            return new ContentService(_mockContent.Object, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mapper);
         }
     }
 }

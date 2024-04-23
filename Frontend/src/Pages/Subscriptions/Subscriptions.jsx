@@ -1,49 +1,44 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import pageStyles from "./styles/page.module.scss";
 import {SubscriptionInfo} from "./components/SubscriptionInfo.jsx";
 import Modal from "react-modal";
 import {BankCardForm} from "./components/BankCardForm.jsx";
+import {subscriptionService} from "../../services/subscription.service.js";
 
 const Subscriptions = () => {
-    const subscriptions = [
-        {
-            id: 1,
-            name: "Netflix Kids",
-            price: "300 рублей в месяц",
-            infos: [
-                "Любой контент с рейтингом 12+ и ниже",
-                "FullHD качество",
-                "Отмена в любое время",
-                "Неизмеримое удовольствие"
-            ],
-            isCurrentPurchased: true
-        },
-        {
-            id: 2,
-            name: "Netflix",
-            price: "300 bucks в месяц",
-            infos: [
-                "Любой контент с рейтингом 12+ и ниже",
-                "FullHD качество",
-                "Отмена в любое время",
-                "Неизмеримое удовольствие"
-            ],
-            isCurrentPurchased: false
-        },
-        {
-            id: 3,
-            name: "Netflix Pro",
-            price: "300 bucks в месяц",
-            infos: [
-                "Любой контент с рейтингом 12+ и ниже",
-                "FullHD качество",
-                "Отмена в любое время",
-                "Неизмеримое удовольствие"
-            ],
-            isCurrentPurchased: false
-        }
-    ];
+    const [purchasedSubscriptions, setPurchasedSubscriptions] = useState([]);
+    const [subscriptions, setSubscriptions] = useState([]);
 
+    useEffect(() => {
+        (async() => {
+            try {
+                const {response, data} = await subscriptionService.getAllSubscriptions();
+                if (response.ok) {
+                    setSubscriptions(data);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+
+            try {
+                const {response, data} = await subscriptionService.getPurchasedSubscriptions();
+                if (response.ok) {
+                    setPurchasedSubscriptions(data);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        })()
+    }, []);
+
+    useEffect(() => {
+        if (!subscriptions) return;
+        const purchasedIds = purchasedSubscriptions.map(x => x.subscriptionId); 
+        for (let i = 0; i < subscriptions.length; i++) {
+            subscriptions[i].isCurrentPurchased = purchasedIds.includes(subscriptions[i].id);
+        }
+    }, [subscriptions, purchasedSubscriptions]);
+    
     const modalStyles = {
         content: {
             display: "grid",
@@ -72,6 +67,7 @@ const Subscriptions = () => {
             <div className={pageStyles.subscriptionList}>
                 {subscriptions.map((subscription, index) => (
                     <SubscriptionInfo 
+                        key={index}
                         subscription={subscription} 
                         showPurchase={true}
                         setModalIsOpen={setModalIsOpen}

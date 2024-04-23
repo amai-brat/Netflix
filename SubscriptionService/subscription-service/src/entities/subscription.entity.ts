@@ -18,4 +18,8 @@ export class Subscription{
     @ApiProperty()
     @Column()
     max_resolution: number;
+    
+    @ApiProperty()
+    @Column()
+    price: number;
 }

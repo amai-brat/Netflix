@@ -4,5 +4,5 @@ namespace Application.Repositories;
 
 public interface IContentTypeRepository
 {
-    List<ContentType> GetContentTypes();
+    Task<List<ContentType>> GetContentTypesAsync();
 }

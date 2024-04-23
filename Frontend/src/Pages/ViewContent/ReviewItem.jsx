@@ -3,11 +3,13 @@ import heart from './Images/red-heart-icon.svg'
 import comment from './Images/comment-svgrepo-com.svg'
 import closeCross from './Images/icons8-close-96.svg'
 import {toast} from "react-toastify";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import Modal from "react-modal";
 import ReviewComment from "./ReviewComment.jsx";
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
 import {useDataStore} from "../../store/dataStoreProvider.jsx";
+import {commentService} from "../../services/comment.service.js";
+import {ReviewsContext} from "./ReviewsContext.js";
+import {contentService} from "../../services/content.service.js";
 
 const modalStyles = {
     content: {
@@ -31,6 +33,7 @@ const modalStyles = {
     }
 }
 const ReviewItem = ({review, customStyles, notOpenModal}) => {
+    const {setReviewsChanged} = useContext(ReviewsContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [commentText, setCommentText] = useState('')
     const store = useDataStore()
@@ -52,22 +55,15 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     }
     const sendComment = async () => {
         try {
-            const resp = await fetch(baseUrl + "comment/assign?reviewId=" + review.id, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                //TODO: добавить токен
-                body: JSON.stringify({Text: commentText})
-            });
-            const body = await resp.json();
-            if (resp.ok) {
-                store.data.connection.invoke("NotifyAboutCommentAsync", body)
-                toast.success(body.message, {
+            const {response, data} = await commentService.createComment(review.id, {Text: commentText});
+            if (response.ok) {
+                try {await store.data.connection.invoke("NotifyAboutCommentAsync", data);} catch (e) {console.log(e)}
+                setReviewsChanged(true);
+                toast.success("Комментарий отправлен", {
                     position: "bottom-center"
                 })
             } else {
-                toast.error(body.message, {
+                toast.error(data.message, {
                     position: "bottom-center"
                 })
             }
@@ -81,19 +77,15 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     }
     const likeReview = async () => {
         try{
-            //TODO: напистаь правильный юрл
-            const resp = await fetch(baseUrl + "api/review/like", {
-                method: "post",
-                // TODO: написать поля с идентификацией юзера
-                body: {reviewId: review.id}
-            })
-            const body = await resp.json()
-            if (resp.ok){
-                toast.success(body.message, {
+            const {response, data} = await contentService.likeReview(review.id);
+            if (response.ok){
+                setReviewsChanged(true);
+                
+                toast.success(data === true ? "Лайк поставлен" : "Лайк удалён", {
                     position: "bottom-center"
                 })
             } else{
-                toast.error(body.message, {
+                toast.error(data.message, {
                     position: "bottom-center"
                 })
             }
@@ -112,17 +104,16 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                   <span className={styles.username}>{review.user.name}</span>
                     </div>
                   <div className={styles.dateLikesComments}>
-                      <span>{review.writtenAt}</span>
-                      {review.comments.length > 0 &&
-                          <span className={styles.commentsLikes}>
-                              {review.comments.length} <img src={comment} alt={"Комментариев:"} className={styles.comment} onClick={notOpenModal? null: openReviewModal}/>
-                              {review.likesScore} <img src={heart} alt={"Лайков:"} className={styles.heart} onClick={likeReview}/>
-                          </span>}
+                      <span>{review.writtenAt.toLocaleString().slice(0, 10)}</span>
+                      <span className={styles.commentsLikes}>
+                          {review.comments.length} <img src={comment} alt={"Комментариев:"} className={styles.comment} onClick={notOpenModal? null: openReviewModal}/>
+                          {review.likesScore} <img src={heart} alt={"Лайков:"} className={styles.heart} onClick={likeReview}/>
+                      </span>
                   </div>
               </div>
               <div className={styles.reviewText} onClick={notOpenModal? null: openReviewModal}>
                   <span className={styles.text}>
-                      {review.text +" Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad adipisci amet asperiores, assumenda autem culpa eos fugiat id, ipsam neque nihil non obcaecati odit quod recusandae, rerum tempora? Dolore, dolorum!" + " Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut consectetur, cumque debitis dolore modi quia totam ut. Excepturi incidunt, inventore molestias omnis placeat quisquam tempora. Adipisci dolorem et laboriosam rem."}
+                      {review.text}
                   </span>
                   <span className={styles.score}>{review.score}/10</span>
               </div>
@@ -149,6 +140,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                       })}
                       <h2>Оставить комментарий</h2>
                       <textarea
+                        style={{color: "black"}}
                           placeholder="Ответить в комментарии"
                           className={styles.commentForm} onChange={handleTextChange}
                           rows={10}>

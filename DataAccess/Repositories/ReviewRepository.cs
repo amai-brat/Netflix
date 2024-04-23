@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Application.Dto;
 using Application.Repositories;
-using Application.Services.Abstractions;
 
 namespace DataAccess.Repositories
 {
@@ -14,7 +13,13 @@ namespace DataAccess.Repositories
             await appDbContext.AddAsync(review);
             await appDbContext.SaveChangesAsync();
         }
-        
+
+        public async Task<int> GetReviewsCountAsync(long contentId)
+        {
+            return await appDbContext.Reviews.Where(x => x.ContentId == contentId)
+                .CountAsync();
+        }
+
         public async Task<Review?> GetReviewByFilterAsync(Expression<Func<Review, bool>> filter) =>
             await appDbContext.Reviews.SingleOrDefaultAsync(filter);
 
@@ -77,6 +82,28 @@ namespace DataAccess.Repositories
         public Review DeleteReview(Review review)
         {
             return appDbContext.Reviews.Remove(review).Entity;
+        }
+
+        public async Task<bool> IsReviewLikedByUserAsync(long reviewId, long userId)
+        {
+            var reviewLike = await appDbContext
+                .UsersReviews
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.ReviewId == reviewId);
+            return reviewLike != null;
+        }
+
+        public Task RemoveReviewLikeAsync(long reviewId, long userId)
+        {
+            appDbContext.UsersReviews.Remove(new UsersReviews { ReviewId = reviewId, UserId = userId });
+            return Task.CompletedTask;
+        }
+
+        public async Task AddReviewLikeAsync(long reviewId, long userId)
+        {
+            await appDbContext
+                .UsersReviews
+                .AddAsync(new UsersReviews { ReviewId = reviewId, UserId = userId, IsLiked = true });
         }
 
         public async Task<Review?> GetReviewByIdAsync(long id)

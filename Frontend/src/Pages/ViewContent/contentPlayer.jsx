@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
-import {baseUrl} from "../Shared/HttpClient/baseUrl.js";
+import {baseUrl} from "../../httpClient/baseUrl.js";
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(720)
     const [error, setError] = useState(null)
@@ -10,16 +10,25 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [currentSeason, setCurrentSeason] = useState(1)
     const getUrl = () => {
-        // TODO: написать url на сервер правильный
-        return baseUrl + "content/movie/video/" + contentId + "?resolution=" + resolution +
-            (contentType === "сериал"? `&episode=${currentEpisode}&season=${currentSeason}` : ``)
+        let path;
+        if (contentType === "сериал") {
+            path = `${baseUrl}content/serial/${currentSeason}/${currentEpisode}/video/${contentId}?`
+        } else {
+            path = `${baseUrl}content/movie/video/${contentId}?`
+        }
+        
+        return path + `resolution=${resolution}&access_token=${sessionStorage.getItem("accessToken")}`;
     }
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
     useEffect(() => {
         async function fetchData() {
             try {
                 setDataFetching(true)
-                const resp = await fetch(getUrl());
+                const resp = await fetch(getUrl(), {
+                    headers: {
+                        "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+                    }
+                });
                 if (!resp.ok) {
                     setError("Ошибка загрузки видео")
                 }
@@ -80,13 +89,11 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                     </select>
                                 </div>
                             </div>
-                            <ReactPlayer
-                                url={getUrl()}
-                                id="videoPlayer"
-                                controls={true}
-                                height={"720px"}
-                                width={"1280px"}>
-                            </ReactPlayer>
+                            <ReactPlayer url={getUrl()}
+                                         controls={true}
+                                         height={"720px"}
+                                         id="videoPlayer"
+                                         width={"1280px"}/>
                         </div>
                     </div>
                 </>

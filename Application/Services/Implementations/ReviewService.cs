@@ -2,6 +2,7 @@
 using Application.Exceptions;
 using Application.Repositories;
 using Application.Services.Abstractions;
+using AutoMapper;
 using Domain.Entities;
 
 namespace Application.Services.Implementations
@@ -9,10 +10,31 @@ namespace Application.Services.Implementations
     public class ReviewService(
         IReviewRepository reviewRepository,
         IContentRepository contentRepository,
-        IUserRepository userRepository
+        IUserRepository userRepository,
+        IMapper mapper
         ) : IReviewService
     {
-        public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
+	    public async Task<int> GetReviewsCountByContentIdAsync(long contentId)
+	    {
+		    return await reviewRepository.GetReviewsCountAsync(contentId);
+	    }
+
+	    public async Task<bool> LikeReviewAsync(long reviewId, long userId)
+	    {
+		    if (!await reviewRepository.IsReviewLikedByUserAsync(reviewId, userId))
+		    {
+			    await reviewRepository.AddReviewLikeAsync(reviewId, userId);
+			    await reviewRepository.SaveChangesAsync();
+			    return true;
+		    }
+
+		    await reviewRepository.RemoveReviewLikeAsync(reviewId, userId);
+		    await reviewRepository.SaveChangesAsync();
+
+		    return false;
+	    }
+
+	    public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
         {
             if(!IsValidReview(review, out var errorMessage, out var param))
                 throw new ReviewServiceArgumentException(errorMessage!, param!);
@@ -57,13 +79,14 @@ namespace Application.Services.Implementations
 				var (_, _) => throw new ReviewServiceArgumentException(ErrorMessages.IncorrectSortType, sort)
 			}).ToList();
 
-		public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId, string sort, int offset, int limit)
+		public async Task<List<ReviewDto>> GetReviewsByContentIdAsync(long contentId, string sort, int offset, int limit)
 		{
 			if (offset < 0 || limit < 0)
 				throw new ReviewServiceArgumentException(ErrorMessages.ArgumentsMustBePositive, $"offset = {offset}; limit = {limit}");
 
 			var reviews = await GetReviewsByContentIdAsync(contentId, sort);
-			return reviews[Math.Min(reviews.Count, offset)..Math.Min(reviews.Count, offset + limit)];
+			var reviewDtos = mapper.Map<List<ReviewDto>>(reviews);
+			return reviewDtos[Math.Min(reviews.Count, offset)..Math.Min(reviews.Count, offset + limit)];
 		}
 
 		public async Task<Review> DeleteReviewByIdAsync(long id)

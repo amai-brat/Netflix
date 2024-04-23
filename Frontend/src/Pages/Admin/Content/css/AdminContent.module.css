@@ -12,7 +12,7 @@
     .arrow{
         display: inline-block;
         position: relative;
-        background-image: url(../../SubscriptionsTab/images/icons8-expand-arrow-50.png);
+        background-image: url(../../../../assets/icons8-expand-arrow-50.png);
         background-size: cover;
         margin-left: 10px;
         bottom: 0;
@@ -32,6 +32,7 @@
         border: none;
         border-radius: 5px;
         padding: 7px;
+        color: black;
     }
     button:hover{
         cursor: pointer;

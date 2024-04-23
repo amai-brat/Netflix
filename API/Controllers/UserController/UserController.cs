@@ -74,7 +74,7 @@ public class UserController(
     }
 
     [HttpGet("get-reviews")]
-    [ProducesResponseType<List<ReviewDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<UserReviewDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetReviewsAsync(
         [FromQuery] string? sort, 
         [FromQuery] string? input, 

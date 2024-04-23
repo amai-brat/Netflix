@@ -9,8 +9,10 @@ import "/src/Pages/Shared/Header/Styles/Header.css"
 import NotificationPanel from "./NotificationPanel.jsx";
 import NotificationPopUpPanel from "./NotificationPopUpPanel.jsx";
 import * as signalR from "@microsoft/signalr";
-import {baseUrl} from "../HttpClient/baseUrl.js";
+import {baseUrl} from "../../../httpClient/baseUrl.js";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
+import {userService} from "../../../services/user.service.js";
+import {notificationService} from "../../../services/notification.service.js";
 const Header = () => {
     const [notifications, setNotifications] = useState([])
     const [alarmed, setAlarmed] = useState(false)
@@ -21,10 +23,9 @@ const Header = () => {
         let isUserAuth = false
         const getCurrentUserDataAsync = async () => {
             try{
-                const response = await fetch(baseUrl + "user/get-personal-info")
+                const {response, data} = await userService.getPersonalInfo();
                 if(response.ok){
-                    const userData = await response.json()
-                    setUser({name: userData.nickname, icon: userData.profilePictureUrl })
+                    setUser({name: data.nickname, icon: data.profilePictureUrl })
                     isUserAuth = true
                 }else{
                     setUser(null)
@@ -37,14 +38,14 @@ const Header = () => {
         }
         
         const getNotificationHistory = async () => {
+            if (!isUserAuth) return;
             try{
-                const response = await fetch(baseUrl + "comment/notifications")
+                const {response, data} = await notificationService.getNotificationHistory();
                 if(response.ok){
-                    const notificationsData = await response.json()
-                    if(notificationsData.filter(x => !x.readed).length !== 0){
+                    if(data.filter(x => !x.readed).length !== 0){
                         setAlarmed(true)   
                     }
-                    setNotifications(notificationsData)
+                    setNotifications(data.filter(x => !x.readed));
                 }else{
                     setAlarmed(false)
                     setNotifications([])
@@ -63,7 +64,9 @@ const Header = () => {
                         return
                     }
                     const connection = new signalR.HubConnectionBuilder()
-                        .withUrl(baseUrl + "hub/notification")
+                        .withUrl(baseUrl + "hub/notification", {accessTokenFactory: () => {
+                            return sessionStorage.getItem("accessToken");
+                            }})
                         .configureLogging(signalR.LogLevel.Information)
                         .build();
 
@@ -74,6 +77,10 @@ const Header = () => {
                     connection.on("ReceiveNotification", (notification) => {
                         setAlarmed(true)
                         setNotifications(notifications => [...notifications, notification])
+                    });
+                    
+                    connection.on("DeleteNotification", (notificationId) => {
+                        setNotifications(nots => nots.filter(x => x.id !== +notificationId))
                     });
                 }
             )  

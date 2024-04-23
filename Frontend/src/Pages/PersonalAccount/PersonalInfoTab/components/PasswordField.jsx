@@ -1,6 +1,6 @@
 import { Typography, Button, Modal, TextField, Alert } from "@mui/material";
 import { useState } from "react";
-import {baseUrl} from "../../../Shared/HttpClient/baseUrl.js";
+import {userService} from "../../../../services/user.service.js";
 
 
 export const PasswordField = () => {
@@ -25,18 +25,13 @@ export const PasswordField = () => {
         }
 
         try {
-            const response = await fetch(baseUrl + "user/change-password", {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({previousPassword, newPassword})
-            });
+            const {response, data} = await userService.changePassword(previousPassword, newPassword);
+            
             if (response.ok){
                 setResponse({Success: true, Message: "Пароль поменялся"});
             }
             else {
-                setResponse({Success: false, Message: await response.text()})
+                setResponse({Success: false, Message: data.message.match(/^[^(]*/)[0]})
             }
 
         } catch (error) {
@@ -82,6 +77,7 @@ export const PasswordField = () => {
                     <Button variant="contained" onClick={handlePasswordChange}>Сохранить</Button>
 
                     <Alert severity={response != null && response.Success ? "success" : "error"} 
+                           variant="filled"
                         onClose = {() => setResponse(null)}
                         icon={false}
                         sx={{

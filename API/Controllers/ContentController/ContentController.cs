@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Text.Json;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dto;
@@ -60,11 +61,15 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> GetContentVideo(long id, [FromQuery] int resolution)
         {
-            var subscribeId = User.FindFirst("SubscribeId")?.Value;
-            if (subscribeId is null)
+            var subscribeIdStr = User.FindFirst("subscribeId")?.Value;
+            if (subscribeIdStr is null)
+                return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
+            
+            var subscribeIds = JsonSerializer.Deserialize<List<int>>(subscribeIdStr);
+            if (subscribeIds is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
+            var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, subscribeIds!);
 
             var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp4", enableRangeProcessing:true );
@@ -74,16 +79,20 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> GetContentVideo(int season, int episode, long id, [FromQuery] int resolution)
         {
-            var subscribeId = User.FindFirst("SubscribeId")?.Value;
-            if (subscribeId is null)
+            var subscribeIdStr = User.FindFirst("subscribeId")?.Value;
+            if (subscribeIdStr is null)
+                return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
+            
+            var subscribeIds = JsonSerializer.Deserialize<List<int>>(subscribeIdStr);
+            if (subscribeIds is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var videoPath = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, int.Parse(subscribeId));
+            var videoPath = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, subscribeIds);
             
             var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp4", enableRangeProcessing:true );
         }
-        // TODO: авторизация
+        
         [HttpPost("serial/add")]
         public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
         {
@@ -95,7 +104,8 @@ namespace API.Controllers.ContentController
             await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpPost("serial/update/{id}")]
         public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
         {
@@ -108,7 +118,8 @@ namespace API.Controllers.ContentController
             await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpPost("movie/add")]
         public async Task<IActionResult> AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
         {
@@ -120,7 +131,8 @@ namespace API.Controllers.ContentController
             await contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpPost("movie/update/{id}")]
         public async Task<IActionResult> UpdateMovieContent(long id, MovieContentAdminPageDto movieContentAdminPageDto)
         {
@@ -133,14 +145,16 @@ namespace API.Controllers.ContentController
             await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
-        [HttpGet("delete/{id}")]
+        
+        [Authorize(Roles = "admin")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteContent(long id)
         {
             await contentService.DeleteContent(id);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/movie/{id}")]
         public async Task<MovieContentAdminPageDto> GetMovieContentAdminPageDto(long id)
         {
@@ -162,11 +176,35 @@ namespace API.Controllers.ContentController
             var serialContentDto = mapper.Map<SerialContentAdminPageDto>(serialContent);
             return serialContentDto;
         }
-        // [HttpPost("/test")]
-        // public async Task<IActionResult> TestMethod()
-        // {
-        //     return Ok();
-        // }
+
+        [HttpGet("sections")]
+        public async Task<IActionResult> GetSections()
+        {
+            var result = await contentService.GetSectionsAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("promos")]
+        public async Task<IActionResult> GetPromos()
+        {
+            var result = await contentService.GetPromosAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("types")]
+        public async Task<IActionResult> GetContentTypes()
+        {
+            var result = await contentService.GetContentTypesAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("genres")]
+        public async Task<IActionResult> GetContentGenres()
+        {
+            var result = await contentService.GetGenresAsync();
+            return Ok(result);
+        }
+  
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase
         {
             content.PersonsInContent = content.PersonsInContent.GroupBy(p => p.ProfessionId)

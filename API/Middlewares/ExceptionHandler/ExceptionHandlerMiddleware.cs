@@ -23,7 +23,7 @@ namespace API.Middlewares.ExceptionHandler
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = $"{ex.Message}. {ex.ParamName}",
+                    Message = $"{ex.Message}",
                     Code = 400
                 });
             }
@@ -36,6 +36,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 403
                 });
             }
+            // TODO: бизнес ошибки отправляются, нужно 500
             catch (Exception ex)
             {
                 context.Response.StatusCode = 400;

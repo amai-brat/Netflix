@@ -1,6 +1,8 @@
 ﻿import styles from './css/AddMovieOptions.module.css'
 import {useEffect, useState} from "react";
 import { ToastContainer, toast } from 'react-toastify';
+import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
+import {adminContentService} from "../../../services/admin.content.service.js";
 
 const AddMovieOptions = () => {
     const [id, setId] = useState(0)
@@ -38,21 +40,15 @@ const AddMovieOptions = () => {
         setPersonsInContent([...personsInContent, {name: personName, profession: personProfession}])
     }
     useEffect(() => {
-        const resp = fetch("http://localhost:3000/subscription/getAll", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
+        (async() => {
+            const {response, data} = await adminSubscriptionService.getSubscriptions();
+            if (response.ok) {
+                setAllSubscriptions(data)
             }
-        })
-        if (resp.ok) {
-            resp.then(r => r.json()).then(r => setAllSubscriptions(r))
-        }
-        else{
-            //only for tests TODO: remove
-            setAllSubscriptions([
-                {id: 1, name: "Сериалы", description: "Базовая подписка", maxResolution: 1080},
-                {id: 2, name: "Фильмы", description: "Базовая подписка", maxResolution: 720}])
-        }
+            else{
+                setAllSubscriptions([])
+            }
+        })()
     }, [])
     const handleKeyDown = (e) => {
         if (genres == null){
@@ -64,37 +60,31 @@ const AddMovieOptions = () => {
         }
     };
     const Submit = async () => {
-        const resp = await fetch("http://localhost:5114/content/movie/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                id: id,
-                name: name,
-                description: description,
-                slogan: slogan,
-                posterUrl: posterUrl,
-                country: country,
-                contentType: contentType,
-                ageRatings: ageRating,
-                ratings: ratings,
-                releaseDate: releaseDate,
-                videoUrl: videoUrl,
-                trailerInfo: trailerInfo,
-                budget: budget,
-                movieLength: movieLength,
-                genres: genres,
-                personsInContent: personsInContent,
-                allowedSubscriptions: allowedSubscriptions,
-            })
-        })
+        const {response: resp, data: json} = await adminContentService.addMovie({
+            id: id,
+            name: name,
+            description: description,
+            slogan: slogan,
+            posterUrl: posterUrl,
+            country: country,
+            contentType: contentType,
+            ageRatings: ageRating,
+            ratings: ratings,
+            releaseDate: releaseDate,
+            videoUrl: videoUrl,
+            trailerInfo: trailerInfo,
+            budget: budget,
+            movieLength: movieLength,
+            genres: genres,
+            personsInContent: personsInContent,
+            allowedSubscriptions: allowedSubscriptions,
+        });
+        
         if (resp.ok) {
             toast.success("Фильм успешно добавлен", {
                 position: "bottom-center"
             })
         } else {
-            const json = await resp.json()
             const errorMessage = json.message;
             toast.error(errorMessage , {
                 position: "bottom-center"

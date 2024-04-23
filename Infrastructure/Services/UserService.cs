@@ -24,7 +24,7 @@ public class UserService(
 
     public async Task<PersonalInfoDto> GetPersonalInfoAsync(long id)
     {
-        var user = await userRepository.GetUserByFilterAsync(x => x.Id == id);
+        var user = await userRepository.GetUserWithSubscriptionsAsync(id);
         if (user is null)
         {
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(id));
@@ -75,6 +75,11 @@ public class UserService(
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
+        if (!await userRepository.IsEmailUniqueAsync(newEmail))
+        {
+            throw new UserServiceArgumentException(ErrorMessages.EmailNotUnique, nameof(newEmail));
+        }
+        
         var validator = new EmailValidator();
         var validationResult = await validator.ValidateAsync(newEmail);
         if (!validationResult.IsValid)
@@ -155,10 +160,10 @@ public class UserService(
         return user;
     }
 
-    public async Task<List<ReviewDto>> GetReviewsAsync(ReviewSearchDto dto)
+    public async Task<List<UserReviewDto>> GetReviewsAsync(ReviewSearchDto dto)
     {
         var reviews = await reviewRepository.GetByReviewSearchDtoAsync(dto, ReviewsPerPage);
-        var reviewDtos = mapper.Map<List<ReviewDto>>(reviews);
+        var reviewDtos = mapper.Map<List<UserReviewDto>>(reviews);
         return reviewDtos;
     }
 
