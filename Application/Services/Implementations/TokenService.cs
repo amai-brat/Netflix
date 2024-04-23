@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Options;
@@ -30,7 +31,7 @@ public class TokenService(
             {
                 new Claim("id", user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
-//                new Claim("SubscribeId", user.UserSubscriptions.)
+                new Claim("subscribeId", JsonSerializer.Serialize(user.UserSubscriptions?.Select(x => x.SubscriptionId).ToList()))
             }),
             
             Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenLifetimeInMinutes),

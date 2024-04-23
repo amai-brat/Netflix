@@ -31,6 +31,7 @@ public class TokenRepository(AppDbContext dbContext) : ITokenRepository
     {
         return await dbContext.RefreshTokens
             .Include(x => x.User)
+                .ThenInclude(x => x.UserSubscriptions)
             .SingleOrDefaultAsync(x => x.Token == token);
     }
 

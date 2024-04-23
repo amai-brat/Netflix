@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Text.Json;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dto;
@@ -60,11 +61,12 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> GetContentVideo(long id, [FromQuery] int resolution)
         {
-            var subscribeId = User.FindFirst("SubscribeId")?.Value;
-            if (subscribeId is null)
+            var subscribeIdStr = User.FindFirst("subscribeId")?.Value;
+            if (subscribeIdStr is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 
-            var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, int.Parse(subscribeId));
+            var subscribeIds = JsonSerializer.Deserialize<List<int>>(subscribeIdStr);
+            var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, subscribeIds[0]);
 
             var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp4", enableRangeProcessing:true );
@@ -74,7 +76,7 @@ namespace API.Controllers.ContentController
         [Authorize]
         public async Task<IActionResult> GetContentVideo(int season, int episode, long id, [FromQuery] int resolution)
         {
-            var subscribeId = User.FindFirst("SubscribeId")?.Value;
+            var subscribeId = User.FindFirst("subscribeId")?.Value;
             if (subscribeId is null)
                 return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
 

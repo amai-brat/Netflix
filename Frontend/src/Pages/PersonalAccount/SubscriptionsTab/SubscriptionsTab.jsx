@@ -3,38 +3,6 @@ import {useEffect, useState} from 'react'
 import styles from './styles/styles.module.css'
 import Entry from "./Entry.jsx";
 import {subscriptionService} from "../../../services/subscription.service.js";
-const subscriptionsForTests = [
-    {
-        name: "Netflix Premium1",
-        expiresAt: "2022-07-01",
-        boughtAt: "2021-07-01",
-        info: [
-            "Просмотр в HD и Ultra HD",
-            "Просмотр на 4 устройствах одновременно",
-            "Просмотр на телевизорах, планшетах, смартфонах и компьютерах"
-        ]
-    },
-    {
-        name: "Netflix Premium2",
-        expiresAt: "2022-07-01",
-        boughtAt: "2021-07-01",
-        info: [
-            "Просмотр в HD и Ultra HD",
-            "Просмотр на 4 устройствах одновременно",
-            "Просмотр на телевизорах, планшетах, смартфонах и компьютерах"
-        ]
-    },
-    {
-        name: "Netflix Premium3",
-        expiresAt: "2022-07-01",
-        boughtAt: "2021-07-01",
-        info: [
-            "Просмотр в HD и Ultra HD",
-            "Просмотр на 4 устройствах одновременно",
-            "Просмотр на телевизорах, планшетах, смартфонах и компьютерах"
-        ]
-    }
-]
 const SubscriptionsTab = () => {
     const [subscriptions, setSubscriptions] = useState([])
     const [response, setResponse] = useState(null)

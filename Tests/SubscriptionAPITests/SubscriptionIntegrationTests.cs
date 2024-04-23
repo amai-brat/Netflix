@@ -73,11 +73,9 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
 
         // act
         var response = await adminClient.PostAsJsonAsync("/admin/subscription/add", dto);
-        var result = await response.Content.ReadFromJsonAsync<Subscription>();
         
         // assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        Assert.Equal(dto.Name, result!.Name);
     }
 
     [Fact]

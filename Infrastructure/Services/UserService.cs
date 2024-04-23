@@ -24,7 +24,7 @@ public class UserService(
 
     public async Task<PersonalInfoDto> GetPersonalInfoAsync(long id)
     {
-        var user = await userRepository.GetUserByFilterAsync(x => x.Id == id);
+        var user = await userRepository.GetUserWithSubscriptionsAsync(id);
         if (user is null)
         {
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(id));

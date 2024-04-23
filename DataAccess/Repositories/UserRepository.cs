@@ -10,6 +10,14 @@ namespace DataAccess.Repositories
         public async Task<User?> GetUserByFilterAsync(Expression<Func<User, bool>> filter) =>
             await appDbContext.Users.SingleOrDefaultAsync(filter);
 
+        public async Task<User?> GetUserWithSubscriptionsAsync(long userId)
+        {
+            return await appDbContext.Users
+                .Include(x => x.UserSubscriptions)
+                .Where(x => x.Id == userId)
+                .SingleOrDefaultAsync();
+        }
+
         public async Task<User?> AddAsync(User user)
         {
             var entry = await appDbContext.Users.AddAsync(user);
