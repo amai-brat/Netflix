@@ -40,6 +40,17 @@
     border-radius: 10px;
     padding: 1rem;
 }
+.buySubscription{
+    text-align: center;
+    span{
+        padding: 5px;
+        background-color: red;
+        border-radius: 5px;
+    }
+    span:hover{
+        cursor: pointer;
+    }
+}
 .container{
     overflow-y: auto;
 }
