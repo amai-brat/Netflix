@@ -1,24 +1,23 @@
 using Application.Dto;
 using Application.Services.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.UserController;
 
-// [Authorize]
+[Authorize]
 [ApiController]
 [Route("user")]
 public class UserController(
     IUserService userService) : ControllerBase
 {
-    // TODO: HttpContext.User.FindFirst("id")
-    private int _userId = -2;
-    
     [HttpGet("get-personal-info")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPersonalInfoAsync()
     {
-        var result = await userService.GetPersonalInfoAsync(_userId);
+        var userId = GetUserId();
+        var result = await userService.GetPersonalInfoAsync(userId);
         return Ok(result);
     }
 
@@ -27,8 +26,9 @@ public class UserController(
     [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> ChangeEmailAsync([FromBody] string email)
     {
-        var result = await userService.ChangeEmailAsync(_userId, email);
-        var infoDto = await userService.GetPersonalInfoAsync(_userId);
+        var userId = GetUserId();
+        _ = await userService.ChangeEmailAsync(userId, email);
+        var infoDto = await userService.GetPersonalInfoAsync(userId);
        
         return Ok(infoDto);
     }
@@ -43,8 +43,9 @@ public class UserController(
             return BadRequest("Неправильная дата");
         }
         
-        var result = await userService.ChangeBirthdayAsync(_userId, date);
-        var infoDto = await userService.GetPersonalInfoAsync(_userId);
+        var userId = GetUserId();
+        _ = await userService.ChangeBirthdayAsync(userId, date);
+        var infoDto = await userService.GetPersonalInfoAsync(userId);
         
         return Ok(infoDto);
     }
@@ -54,7 +55,8 @@ public class UserController(
     [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordDto dto)
     {
-        var result = await userService.ChangePasswordAsync(_userId, dto);
+        var userId = GetUserId();
+        var result = await userService.ChangePasswordAsync(userId, dto);
 
         return Ok(result.Id);
     }
@@ -64,8 +66,9 @@ public class UserController(
     [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> ChangeProfilePictureAsync(IFormFile image)
     {
-        var result = await userService.ChangeProfilePictureAsync(_userId, image.OpenReadStream(), image.ContentType);
-        var infoDto = await userService.GetPersonalInfoAsync(_userId);
+        var userId = GetUserId();
+        _ = await userService.ChangeProfilePictureAsync(userId, image.OpenReadStream(), image.ContentType);
+        var infoDto = await userService.GetPersonalInfoAsync(userId);
         
         return Ok(infoDto);
     }
@@ -77,10 +80,11 @@ public class UserController(
         [FromQuery] string? input, 
         [FromQuery] int page)
     {
+        var userId = GetUserId();
         var dto = new ReviewSearchDto
         {
             Page = page,
-            UserId = _userId,
+            UserId = userId,
             Search = input,
             SortType = sort?.ToLower() switch
             {
@@ -100,9 +104,10 @@ public class UserController(
     public async Task<IActionResult> GetReviewsPagesCountAsync(
         [FromQuery] string? input)
     {
+        var userId = GetUserId();
         var dto = new ReviewSearchDto
         {
-            UserId = _userId,
+            UserId = userId,
             Search = input
         };
 
@@ -114,8 +119,14 @@ public class UserController(
     [HttpGet("get-favourites")]
     public async Task<IActionResult> GetFavouritesAsync()
     {
-        var result = await userService.GetFavouritesAsync(_userId);
+        var userId = GetUserId();
+        var result = await userService.GetFavouritesAsync(userId);
        
         return Ok(result);
+    }
+
+    private long GetUserId()
+    {
+        return int.Parse(HttpContext.User.FindFirst("id")!.Value);
     }
 }
