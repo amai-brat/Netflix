@@ -51,6 +51,30 @@ public class ContentService(
 
         return movie.VideoUrl.Replace("resolution", resolution.ToString());
     }
+    
+    public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, List<int> subscriptionIds)
+    {
+        var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
+        if (movie is null)
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{movieId}");
+        if (!_resolutions.Contains(resolution))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
+
+        var allowedSubscriptionIds = subscriptionIds
+            .Where(subscriptionId =>
+                !movie.AllowedSubscriptions
+                    .Select(s => s.Id)
+                    .Contains(subscriptionId))
+            .ToList();
+        
+        if (allowedSubscriptionIds.Count > 0 ||
+            allowedSubscriptionIds
+                .Any(subscriptionId => movie.AllowedSubscriptions
+                    .First(s => s.Id == subscriptionId).MaxResolution < resolution))
+            throw new ContentServiceNotPermittedException(ErrorMessages.UserDoesNotHavePermissionBySubscription);
+
+        return movie.VideoUrl.Replace("resolution", resolution.ToString());
+    }
 
     public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
         int subscriptionId)
@@ -74,6 +98,44 @@ public class ContentService(
         if (!serial.AllowedSubscriptions.Select(s => s.Id)
                 .Contains(subscriptionId) ||
             serial.AllowedSubscriptions.First(s => s.Id == subscriptionId).MaxResolution < resolution)
+            throw new ContentServiceNotPermittedException(ErrorMessages.UserDoesNotHavePermissionBySubscription);
+
+        return serial.SeasonInfos.Single(s => s.SeasonNumber == season).Episodes
+            .Single(e => e.EpisodeNumber == episode).VideoUrl
+            .Replace("resolution", resolution.ToString());
+    }
+    
+    public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
+        List<int> subscriptionIds)
+    {
+        var serial = await contentRepository.GetSerialContentByFilterAsync(s => s.Id == serialId);
+        if (serial is null)
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{serialId}");
+
+        if (!_resolutions.Contains(resolution))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
+
+        if (!serial.SeasonInfos.Select(s => s.SeasonNumber)
+                .Contains(season))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundSeason, $"{season}");
+
+        if (!serial.SeasonInfos.Single(s => s.SeasonNumber == season).Episodes
+                .Select(e => e.EpisodeNumber)
+                .Contains(episode))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundEpisode, $"{episode}");
+
+        
+        var allowedSubscriptionIds = subscriptionIds
+            .Where(subscriptionId =>
+                !serial.AllowedSubscriptions
+                    .Select(s => s.Id)
+                    .Contains(subscriptionId))
+            .ToList();
+        
+        if (allowedSubscriptionIds.Count > 0 ||
+            allowedSubscriptionIds
+                .Any(subscriptionId => serial.AllowedSubscriptions
+                    .First(s => s.Id == subscriptionId).MaxResolution < resolution))
             throw new ContentServiceNotPermittedException(ErrorMessages.UserDoesNotHavePermissionBySubscription);
 
         return serial.SeasonInfos.Single(s => s.SeasonNumber == season).Episodes

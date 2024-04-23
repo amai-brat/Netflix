@@ -43,7 +43,7 @@ export const fetchAuth = async (url, isJsonResponse = false, config = {}, base =
   
   accessToken = await refreshToken();
   config['headers'].Authorization = `Bearer ${accessToken}`;
-  return await originalRequest(url, config, isJsonResponse);
+  return await originalRequest(url, config, isJsonResponse, base);
 }
 
 const refreshToken = async () => {
@@ -51,10 +51,13 @@ const refreshToken = async () => {
     method: "POST",
     credentials: "include"
   });
+  let data = await response.text();
+  if (response.ok) {
+    sessionStorage.setItem('accessToken', data);
+    return data;
+  }
   
-  let data = await response.text()
-  sessionStorage.setItem('accessToken', data);
-  return data
+  return "";
 }
 
 const isTokenValid = (token) => {

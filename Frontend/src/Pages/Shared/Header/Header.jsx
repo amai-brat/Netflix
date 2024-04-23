@@ -38,6 +38,7 @@ const Header = () => {
         }
         
         const getNotificationHistory = async () => {
+            if (!isUserAuth) return;
             try{
                 const {response, data} = await notificationService.getNotificationHistory();
                 if(response.ok){

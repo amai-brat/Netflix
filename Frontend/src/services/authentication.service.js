@@ -1,10 +1,12 @@
 import {baseUrl} from "../httpClient/baseUrl.js";
 import {fetchAuth} from "../httpClient/fetchAuth.js";
+import {jwtDecode} from "jwt-decode";
 
 export const authenticationService = {
   signin,
   signup,
-  logout
+  logout,
+  getUser
 };
 
 async function signin(values){
@@ -71,4 +73,12 @@ async function logout() {
   } catch (e) {
     console.log(e);
   }
+}
+
+function getUser() {
+  const token = sessionStorage.getItem("accessToken");
+  if (!token) {
+    return null
+  }
+  return jwtDecode(token);
 }
