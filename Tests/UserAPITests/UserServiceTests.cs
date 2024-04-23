@@ -86,6 +86,9 @@ public class UserServiceTests
         
         _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
+        _mockUserRepo.Setup(x => x.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+            .ReturnsAsync((long userId) => users.Single(x => x.Id == userId));
+
         
         var userService = GetUserService();
         
