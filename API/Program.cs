@@ -1,4 +1,5 @@
 using System.Text;
+using API;
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
 using Application.Options;
@@ -25,75 +26,10 @@ builder.Services.AddAutoMapper(typeof(ContentProfile));
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidators();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:Key"]!))
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-                var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) &&
-                    (path.StartsWithSegments("/hub/notification")))
-                {
-                    context.Token = accessToken;
-                }
-                return Task.CompletedTask;
-            }
-        };
-    });
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.ApiKey,
-        Description = """
-                      Authorization using JWT by adding header
-                      Authorization: Bearer [token]
-                      """,
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Scheme = "Bearer"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Name = "Bearer",
-                In = ParameterLocation.Header,
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-            },
-            Array.Empty<string>()
-        }
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "Frontend",
-        policy  =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
-});
+builder.Services.AddSwaggerGenWithBearer();
+builder.Services.AddCorsWithFrontendPolicy();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

@@ -10,8 +10,14 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [currentSeason, setCurrentSeason] = useState(1)
     const getUrl = () => {
-        return baseUrl + "content/movie/video/" + contentId + "?resolution=" + resolution +
-            (contentType === "сериал"? `&episode=${currentEpisode}&season=${currentSeason}` : ``)
+        let path;
+        if (contentType === "сериал") {
+            path = `${baseUrl}content/serial/${currentSeason}/${currentEpisode}/video/${contentId}?`
+        } else {
+            path = `${baseUrl}content/movie/video/${contentId}?`
+        }
+        
+        return path + `resolution=${resolution}&access_token=${sessionStorage.getItem("accessToken")}`;
     }
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
     useEffect(() => {
@@ -83,7 +89,11 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                     </select>
                                 </div>
                             </div>
-                            <CustomVideo videoUrl={getUrl()}></CustomVideo>
+                            <ReactPlayer url={getUrl()}
+                                         controls={true}
+                                         height={"720px"}
+                                         id="videoPlayer"
+                                         width={"1280px"}/>
                         </div>
                     </div>
                 </>
@@ -92,29 +102,3 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     );
 }
 export default contentPlayer;
-
-const CustomVideo = ({ videoUrl }) => {
-    const options = {
-        headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
-        }
-    }
-    const [url, setUrl] = useState()
-    useEffect(() => {
-        fetch(videoUrl, options)
-          .then(response => response.blob())
-          .then(blob => {
-              setUrl(URL.createObjectURL(blob))
-
-          });
-    }, [videoUrl])
-
-
-    return (
-      <ReactPlayer url={url}   
-                   controls 
-                   height={"720px"}
-                   id="videoPlayer"
-                   width={"1280px"}/>
-    )
-}
