@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react'
 
 import styles from './styles/styles.module.css'
 import Entry from "./Entry.jsx";
+import {subscriptionService} from "../../../services/subscription.service.js";
 const subscriptionsForTests = [
     {
         name: "Netflix Premium1",
@@ -35,9 +36,6 @@ const subscriptionsForTests = [
     }
 ]
 const SubscriptionsTab = () => {
-    //TODO: обработать аутентификацию.
-    //TODO: сделать правильный url
-    //TODO: убрать тестовые данные
     const [subscriptions, setSubscriptions] = useState([])
     const [response, setResponse] = useState(null)
     const [isDataFetching, setDataFetching] = useState(false)
@@ -46,18 +44,12 @@ const SubscriptionsTab = () => {
         const fetchSubscriptions = async () => {
             try {
                 setDataFetching(true)
-                const response = await fetch('https://localhost:5000/subscriptions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
+                const {response, data} = await subscriptionService.getPurchasedSubscriptions();
                 setDataFetching(false)
                 if (!response.ok) {
                     setResponse(`Ошибка: ${response.statusText}`)
                     return;
                 }
-                const data = await response.json();
                 setSubscriptions(data);
             } catch (error) {
                 setDataFetching(false)
@@ -74,11 +66,11 @@ const SubscriptionsTab = () => {
             {response && <div>{response}</div>}
             </div>
             <div className={styles.container}>
-                {subscriptionsForTests.map((value, index) =>
-                    <div className={styles.subscriptionBlock}>
+                {subscriptions.map((value, index) =>
+                    <div key={index} className={styles.subscriptionBlock}>
                         <Entry
-                            key={index}
                             data={value}
+                            setSubscriptions={setSubscriptions}
                         ></Entry>
                     </div>
                 )}

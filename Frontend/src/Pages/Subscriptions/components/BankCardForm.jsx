@@ -1,6 +1,7 @@
 import formStyles from '../styles/cardForm.module.scss';
 import { useFormik } from "formik";
 import {useNavigate} from "react-router-dom";
+import {subscriptionService} from "../../../services/subscription.service.js";
 
 export const BankCardForm = ({ subscriptionId }) => {
     const validate = values => {
@@ -41,14 +42,7 @@ export const BankCardForm = ({ subscriptionId }) => {
         },
         validate,
         onSubmit: async (values) => {
-            // TODO: добавить настоящий путь
-            let response = await fetch("/buySubscription", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"  
-                },
-                body: JSON.stringify(values, null, 2)
-            });
+            let {response, data} = await subscriptionService.buySubscription(values);
             
             if (response.ok)
             {

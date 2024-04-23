@@ -22,11 +22,11 @@ describe('SubscriptionService', () => {
     ]
     
     const mockUserRepository = {
-        findOneByOrFail: jest.fn().mockImplementation(async ( findOptions: { nickname: string }) => {
-            let user = fakeUsers.find(us => us.nickname == findOptions.nickname);
+        findOneByOrFail: jest.fn().mockImplementation(async ( findOptions: { id: number }) => {
+            let user = fakeUsers.find(us => us.id == findOptions.id);
 
             if (!user){
-                throw new EntityNotFoundError(User, findOptions.nickname);
+                throw new EntityNotFoundError(User, findOptions.id);
             }
 
             return Promise.resolve(user);
@@ -131,7 +131,7 @@ describe('SubscriptionService', () => {
         expectedUserSubscription.subscriptionId = randomSubscriptionId;
         expectedUserSubscription.userId = user.id;
 
-        const result = await service.processSubscriptionPurchase(user.nickname, randomSubscriptionId);
+        const result = await service.processSubscriptionPurchase(user.id, randomSubscriptionId);
 
         expect(mockUserSubscriptionRepository.save).toHaveBeenCalledWith({
             boughtAt: expect.any(Date),
@@ -158,7 +158,7 @@ describe('SubscriptionService', () => {
 
         const expectedUserSubscriptions = fakeUserSubscriptions.filter(us => us.userId == randomUser.id);
 
-        const result = await service.getBoughtSubscriptionsByNickname(randomUser.nickname);
+        const result = await service.getBoughtSubscriptionsByNickname(randomUser.id);
 
         expect(result).toEqual(expectedUserSubscriptions);
     });
@@ -166,9 +166,9 @@ describe('SubscriptionService', () => {
     it('should cancel subscription and remove it by subscription id', async() => {
         const randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
         const randomSubscriptionId = fakeSubscriptions[Math.floor(Math.random() * fakeSubscriptions.length)].id;
-        await service.processSubscriptionPurchase(randomUser.nickname, randomSubscriptionId);
+        await service.processSubscriptionPurchase(randomUser.id, randomSubscriptionId);
 
-        await service.cancelSubscription(randomUser.nickname, randomSubscriptionId);
+        await service.cancelSubscription(randomUser.id, randomSubscriptionId);
 
         expect(fakeUserSubscriptions).not.toContainEqual({
             subscriptionId: randomSubscriptionId,

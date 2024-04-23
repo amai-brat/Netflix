@@ -30,6 +30,7 @@ public class TokenService(
             {
                 new Claim("id", user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
+//                new Claim("SubscribeId", user.UserSubscriptions.)
             }),
             
             Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenLifetimeInMinutes),

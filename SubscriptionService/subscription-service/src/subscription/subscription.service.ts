@@ -26,16 +26,16 @@ export class SubscriptionService {
         return await this.subscriptionRepository.findOneByOrFail({ id: id });
     }
 
-    async getBoughtSubscriptionsByNickname(userNickname: string){
-        const user = await this.userRepository.findOneByOrFail({ nickname: userNickname })
+    async getBoughtSubscriptionsByNickname(userId: number){
+        const user = await this.userRepository.findOneByOrFail({ id: userId })
 
         const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id });
 
         return Array.isArray(subscriptions) ? subscriptions: [subscriptions];
     }
 
-    async processSubscriptionPurchase(userNickname: string, subscriptionId: number){
-        const user = await this.userRepository.findOneByOrFail({ nickname: userNickname });
+    async processSubscriptionPurchase(userId: number, subscriptionId: number){
+        const user = await this.userRepository.findOneByOrFail({ id: userId });
         
         const userSubscription = this.userSubscriptionRepository.create();
         userSubscription.boughtAt = new Date();
@@ -47,8 +47,8 @@ export class SubscriptionService {
         return await this.userSubscriptionRepository.save(userSubscription);
     }
 
-    async cancelSubscription(userNickname: string, subscriptionId: number){
-        const user = await this.userRepository.findOneByOrFail({ nickname: userNickname })
+    async cancelSubscription(userId: number, subscriptionId: number){
+        const user = await this.userRepository.findOneByOrFail({ id: userId })
         const userSubscription = await this.userSubscriptionRepository.findOneByOrFail({ 
             userId: user.id, 
             subscriptionId: subscriptionId 

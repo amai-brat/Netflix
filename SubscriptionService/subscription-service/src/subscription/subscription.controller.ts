@@ -38,10 +38,10 @@ export class SubscriptionController {
     @ApiOkResponse({type: [Subscription], description: "User's subscriptions have been successfully received"})
     @ApiUnauthorizedResponse({description: "User is not authorized - JWT token was not correct/was not provided."})
     async getUserSubscriptions(@Request() req): Promise<UserSubscription[]>{
-        const userNickname = req.user.nickname;
+        const userId = req.user.id;
 
         try{  
-            return await this.subscriptionService.getBoughtSubscriptionsByNickname(userNickname);
+            return await this.subscriptionService.getBoughtSubscriptionsByNickname(userId);
         }
         catch{
             throw new BadRequestException("Invalid operation!")
@@ -57,7 +57,7 @@ export class SubscriptionController {
     @ApiBadRequestResponse({description: "Provided request body was wrong"})
     @ApiUnauthorizedResponse({description: "User is not authorized - JWT token was not correct/was not provided."})
     async buySubscription(@Request() req): Promise<UserSubscription> {
-        const userNickname = req.user.nickname;
+        const userId = req.user.id;
         
         const subscriptionId = req.body.subscriptionId;
         if (!subscriptionId || typeof subscriptionId !== 'number'){
@@ -65,7 +65,7 @@ export class SubscriptionController {
         }
 
         try{  
-            return await this.subscriptionService.processSubscriptionPurchase(userNickname, subscriptionId);
+            return await this.subscriptionService.processSubscriptionPurchase(userId, subscriptionId);
         }
         catch{
             throw new BadRequestException("Invalid operation!")
@@ -82,7 +82,7 @@ export class SubscriptionController {
     @ApiNotFoundResponse({description: "User does not have subscription with id, that was provided in request body"})
     @ApiUnauthorizedResponse({description: "User is not authorized - JWT token was not correct/was not provided."})
     async cancelSubscription(@Request() req): Promise<void>{
-        const userNickname = req.user.nickname;
+        const userId = req.user.id;
         
         const subscriptionId = req.body.subscriptionId;
         if (!subscriptionId || typeof subscriptionId !== 'number'){
@@ -90,7 +90,7 @@ export class SubscriptionController {
         }
 
         try{
-            await this.subscriptionService.cancelSubscription(userNickname, subscriptionId);
+            await this.subscriptionService.cancelSubscription(userId, subscriptionId);
         }
         catch{
             throw new NotFoundException("User does not have such subscription");

@@ -2,8 +2,8 @@ import {baseUrl} from "./baseUrl.js";
 import {jwtDecode} from "jwt-decode";
 
 
-const originalRequest = async (url, config, isJsonResponse)=> {
-  url = `${baseUrl}${url}`
+const originalRequest = async (url, config, isJsonResponse, base)=> {
+  url = `${base}${url}`
   let response = await fetch(url, config);
   let data;
   if (isJsonResponse) {
@@ -19,7 +19,7 @@ const originalRequest = async (url, config, isJsonResponse)=> {
   return {response, data}
 }
 
-export const fetchAuth = async (url, isJsonResponse = false, config = {}) => {
+export const fetchAuth = async (url, isJsonResponse = false, config = {}, base = baseUrl) => {
   let accessToken = sessionStorage.getItem("accessToken");
   if (!config.headers) {
     config = {...config, headers: {}};
@@ -28,12 +28,12 @@ export const fetchAuth = async (url, isJsonResponse = false, config = {}) => {
   if (isTokenValid(accessToken)) {
     config['headers'].Authorization = `Bearer ${accessToken}`;
 
-    let {response, data} = await originalRequest(url, config, isJsonResponse);
+    let {response, data} = await originalRequest(url, config, isJsonResponse, base);
     if (response.status === 401) {
       accessToken = await refreshToken();
       config['headers'].Authorization = `Bearer ${accessToken}`;
 
-      let newResponse = await originalRequest(url, config, isJsonResponse)
+      let newResponse = await originalRequest(url, config, isJsonResponse, base)
       response = newResponse.response
       data = newResponse.data
     }

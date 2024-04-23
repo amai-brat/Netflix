@@ -15,7 +15,7 @@ describe('AppController (e2e)', () => {
     let subscriptionService: SubscriptionService;
     let userRepository: Repository<User>;
     let subscriptionRepository: Repository<Subscription>;
-    const jwt = sign({ nickname: "testUser1"}, "somekey"); //Брать ключ из переменной среды тот же, что в ASP
+    const jwt = sign({ id: 1}, "somekey"); //Брать ключ из переменной среды тот же, что в ASP
 
     beforeAll(async () => {
         const moduleFixture = await Test.createTestingModule({
@@ -58,8 +58,8 @@ describe('AppController (e2e)', () => {
             subscriptionRepository.create({ id: 3, name: "Сериалы", description: "Подписка на сериалы", max_resolution: 1080 })
         )).toBeDefined();
 
-        await subscriptionService.processSubscriptionPurchase("testUser1", 1);
-        await subscriptionService.processSubscriptionPurchase("testUser1", 2);
+        await subscriptionService.processSubscriptionPurchase(1, 1);
+        await subscriptionService.processSubscriptionPurchase(1, 2);
     })
 
     it('/getAllSubscriptions (GET)', () => {
