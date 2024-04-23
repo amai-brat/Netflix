@@ -16,7 +16,7 @@ import Error404 from "./Pages/Error/Error404.jsx";
 import "/src/Pages/Shared/Styles/App.css";
 import { SubscriptionsManagement } from './Pages/Admin/Subscriptions/SubscriptionsManagement.jsx';
 import {ToastContainer} from "react-toastify";
-import AdminContent from "./Pages/PersonalAccount/AdminContent/AdminContent.jsx";
+import AdminContent from "./Pages/Admin/Content/AdminContent.jsx";
 import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
         <>
             <ToastContainer theme={"dark"} />
             {location.pathname !== "/" && location.pathname !== "/signin" 
-                && location.pathname !== "/signup" && !location.pathname.startsWith("/admin") && <Header/>}
+                && location.pathname !== "/signup" && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
@@ -38,7 +38,6 @@ function App() {
                         <Route path="FavouritesTab" element={<FavouritesTab/>}/>
                         <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
-                        {/*<Route path="admin/content" element={<AdminContent/>}></Route>*/}
                     </Route>
                 </Route>
                 <Route path={"/admin"} element={<ProtectedRoute roles={"admin"}/>}>

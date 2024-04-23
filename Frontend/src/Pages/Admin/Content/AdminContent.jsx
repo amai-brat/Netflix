@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import AddMovieOptions from "./AddMovieOptions.jsx";
 import EditMovieOptions from "./EditMovieOptions.jsx";
 import EditSerialOptions from "./EditSerialOptions.jsx";
+import {adminContentService} from "../../../services/admin.content.service.js";
 const AdminContent = () => {
     const [AddMovieClicked, setAddMovieClicked] = useState(false)
     const [AddSerialClicked, setAddSerialClicked] = useState(false)
@@ -22,13 +23,7 @@ const AdminContent = () => {
         setEditSerialClicked(false)
     }
     const editMovieClickedAction = async () => {
-        const resp = await fetch(`http://localhost:5114/content/admin/movie/${editMovieId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        const json = await resp.json()
+        const {response: resp, data: json} = await adminContentService.getEditMovieContent(editMovieId);
         if (resp.ok) {
             setEditMovieOptions(json)
             setEditMovieClicked(true)
@@ -40,13 +35,7 @@ const AdminContent = () => {
         }
     }
     const editSerialClickedAction = async () => {
-        const resp = await fetch(`http://localhost:5114/content/admin/serial/${editSerialId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        const json = await resp.json()
+        const {response: resp, data: json} = await adminContentService.getEditSerialContent(editSerialId);
         if (resp.ok) {
             setEditSerialClicked(true)
             setEditSerialOptions(json)
@@ -61,18 +50,12 @@ const AdminContent = () => {
             toast.error("Введите id")
             return
         }
-        const resp = await fetch(`http://localhost:5114/content/delete/${idToDelete}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
+        const {response: resp, data: json} = await adminContentService.deleteContent(idToDelete);
         if (resp.status === 200) {
             toast.success("Успешно удалено", {
                 position: "bottom-center"
             })
         } else {
-            const json = await resp.json()
             toast.error(json.message, {
                 position: "bottom-center"
             })

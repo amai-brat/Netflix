@@ -1,6 +1,8 @@
 ﻿import styles from './css/EditSerialOptions.module.css'
 import {useEffect, useState} from "react";
 import { ToastContainer, toast } from 'react-toastify';
+import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
+import {adminContentService} from "../../../services/admin.content.service.js";
 const EditSerialOptions = (serialOptions) => {
     const {
         id: initialId = 0,
@@ -66,21 +68,15 @@ const EditSerialOptions = (serialOptions) => {
         setPersonsInContent([...personsInContent, {name: personName, profession: personProfession}])
     }
     useEffect(() => {
-        const resp = fetch("http://localhost:3000/subscription/getAll", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
+        (async() => {
+            const {response, data} = await adminSubscriptionService.getSubscriptions();
+            if (response.ok) {
+                setAllSubscriptions(data)
             }
-        })
-        if (resp.ok) {
-            resp.then(r => r.json()).then(r => setAllSubscriptions(r))
-        }
-        else{
-            //only for tests TODO: remove
-            setAllSubscriptions([
-                {id: 1, name: "Сериалы", description: "Базовая подписка", maxResolution: 1080},
-                {id: 2, name: "Фильмы", description: "Базовая подписка", maxResolution: 720}])
-        }
+            else{
+                setAllSubscriptions([])
+            }
+        })()
     }, [])
     const handleKeyDown = (e) => {
         if (genres == null){
@@ -128,12 +124,7 @@ const EditSerialOptions = (serialOptions) => {
         return newSeasons
     }
     const Submit = async () => {
-        const resp = await fetch(`http://localhost:5114/content/serial/update/${id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
+        const {response: resp, data: json} = await adminContentService.updateSerial(id, {
                 id: id,
                 name: name,
                 description: description,
@@ -150,14 +141,12 @@ const EditSerialOptions = (serialOptions) => {
                 personsInContent: getNotNullPersons(),
                 allowedSubscriptions: allowedSubscriptions,
                 seasonInfos: getNotNullSeasons()
-            })
-        })
+            });
         if (resp.ok) {
             toast.success("Сериал успешно обновлен", {
                 position: "bottom-center"
             })
         } else {
-            const json = await resp.json()
             const errorMessage = json.message;
             toast.error(errorMessage , {
                 position: "bottom-center"

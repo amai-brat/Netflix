@@ -92,7 +92,7 @@ namespace API.Controllers.ContentController
             var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp4", enableRangeProcessing:true );
         }
-        // TODO: авторизация
+        
         [HttpPost("serial/add")]
         public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
         {
@@ -104,7 +104,8 @@ namespace API.Controllers.ContentController
             await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpPost("serial/update/{id}")]
         public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
         {
@@ -117,7 +118,8 @@ namespace API.Controllers.ContentController
             await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpPost("movie/add")]
         public async Task<IActionResult> AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
         {
@@ -129,7 +131,8 @@ namespace API.Controllers.ContentController
             await contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpPost("movie/update/{id}")]
         public async Task<IActionResult> UpdateMovieContent(long id, MovieContentAdminPageDto movieContentAdminPageDto)
         {
@@ -142,14 +145,16 @@ namespace API.Controllers.ContentController
             await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
-        // TODO: авторизация
-        [HttpGet("delete/{id}")]
+        
+        [Authorize(Roles = "admin")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteContent(long id)
         {
             await contentService.DeleteContent(id);
             return Ok();
         }
-        // TODO: авторизация
+        
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/movie/{id}")]
         public async Task<MovieContentAdminPageDto> GetMovieContentAdminPageDto(long id)
         {
