@@ -5,6 +5,7 @@ import FavouritesFilterButton from "./FavouritesFilterButton.jsx";
 import FavouritesFilterPopUp from "./FavouritesFilterPopUp.jsx";
 import FavouriteContentCard from "./FavouriteContentCard.jsx";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTab.css";
+import {userService} from "../../../services/user.service.js";
 
 const FavouritesTab = () => {
     const cardPerPage = 5;
@@ -25,7 +26,7 @@ const FavouritesTab = () => {
                 return filteredFavourites.slice((currentPage * cardPerPage) - cardPerPage, Math.min((currentPage * cardPerPage), filteredFavourites.length))
                     .map((content, index) => 
                     <div key={index}>
-                        <FavouriteContentCard content={content.ContentBase} addedAt={content.AddedAt} userScore={content.UserScore}/>
+                        <FavouriteContentCard content={content.contentBase} addedAt={content.addedAt} score={content.score}/>
                     </div>
                 )
             }
@@ -39,120 +40,15 @@ const FavouritesTab = () => {
     useEffect(() => {
         const getCurrentUserFavouritesAsync = async () => {
             try{
-                //TODO: Указать действительный url запроса
-                const response = await fetch("https://localhost:5000/GetAllCurrentUserFavouritesContentWithScore")
+                const {response, data} = await userService.getFavourites();
                 if(response.ok){
-                    const favourites = await response.json()
-                    setFavourites(favourites)
-                    setFilteredFavourites(favourites)
+                    setFavourites(data)
+                    setFilteredFavourites(data)
                 }else{
                     setFavourites(null)
                     setFilteredFavourites(null)
                 }
-            }catch(error){
-                const testData = [
-                    {
-                        AddedAt: "2020-01-15",
-                        UserScore: 10,
-                        ContentBase:{
-                            Id: 1,
-                            Name: "Какой-то фильм",
-                            PosterUrl: "/src/assets/poster_main.png"
-                        }
-                    },
-                    {
-                        AddedAt: "2020-02-15",
-                        UserScore: 4,
-                        ContentBase:{
-                            Id: 2,
-                            Name: "фильм",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2020-01-18",
-                        UserScore: 7,
-                        ContentBase:{
-                            Id: 3,
-                            Name: "Абракадабра",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2020-11-15",
-                        UserScore: 9,
-                        ContentBase:{
-                            Id: 4,
-                            Name: "Бука",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2021-01-16",
-                        UserScore: 10,
-                        ContentBase:{
-                            Id: 5,
-                            Name: "Ясь",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2021-01-15",
-                        UserScore: 3,
-                        ContentBase:{
-                            Id: 6,
-                            Name: "Гоголь",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2023-01-01",
-                        UserScore: 2,
-                        ContentBase:{
-                            Id: 7,
-                            Name: "Груша",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2020-01-12",
-                        UserScore: 8,
-                        ContentBase:{
-                            Id: 8,
-                            Name: "Какой-то фильм",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2019-01-10",
-                        UserScore: 5,
-                        ContentBase:{
-                            Id: 9,
-                            Name: "Какой-то фильм",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2019-10-15",
-                        UserScore: 5,
-                        ContentBase:{
-                            Id: 10,
-                            Name: "Титаник",
-                            PosterUrl: ""
-                        }
-                    },
-                    {
-                        AddedAt: "2020-07-18",
-                        UserScore: 1,
-                        ContentBase:{
-                            Id: 11,
-                            Name: "Какой-то фильм",
-                            PosterUrl: ""
-                        }
-                    },
-                ]
-                setFavourites(testData)
-                setFilteredFavourites(testData)
+            } catch(error) {
                 console.error(error)
             }
         }

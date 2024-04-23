@@ -9,18 +9,18 @@ const SelectionContentContentTypeFilter = ({filter, contentTypes}) => {
             return <label className="selection-content-info-label">Что-то пошло не так</label>
         } else{
             return contentTypes.map((type, index) => {
-                    const [checked, setChecked] = useState(filter.types.includes(type.Id))
+                    const [checked, setChecked] = useState(filter.types.includes(type.id))
                     return (
                         <div key={index}>
                             <input className="selection-content-filter-panel-type-name-cb" type="checkbox" checked={checked} onChange={(e) => {
                                 setChecked(!checked)
                                 if(e.target.checked) {
-                                    filter.types.push(type.Id)
+                                    filter.types.push(type.id)
                                 }else {
-                                    filter.types = filter.types.filter((id) => id !== type.Id)
+                                    filter.types = filter.types.filter((id) => id !== type.id)
                                 }
                             }}/>
-                            <label className="selection-content-filter-panel-type-name">{type.ContentType}</label>
+                            <label className="selection-content-filter-panel-type-name">{type.contentType}</label>
                         </div>
                     )
                 }

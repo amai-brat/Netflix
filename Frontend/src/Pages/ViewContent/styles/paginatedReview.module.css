@@ -1,0 +1,37 @@
+﻿.previous{
+    display: none;
+}
+.next{
+    display: none;
+}
+.pagination{
+    list-style-type: none;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    text-align: center;
+}
+.pageLinkClassName{
+    padding: 5px 15px;
+    border: 1px solid white;
+    background-color: black;
+}
+.pageLinkClassName:hover{
+    background-color: gray;
+    cursor: pointer;
+}
+.activeLinkClassName{
+    background-color: gray;
+}
+.pageClassName{
+    display: inline-block;
+    padding: 5px;
+}
+.breakClassName{
+    display: inline-block;
+}
+.errorMessage{
+    color: red;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}

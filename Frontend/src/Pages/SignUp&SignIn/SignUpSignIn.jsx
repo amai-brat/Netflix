@@ -17,7 +17,7 @@ const SignUpSignIn = ({ formType }) => {
                 </div>
                 <div className="formContainer">
                     <div className="formHeader">
-                        {formType == "signup" ? "Зарегистрироваться" : "Войти"}
+                        {formType === "signup" ? "Зарегистрироваться" : "Войти"}
                     </div>
 
                     <div className="servicesContainer">

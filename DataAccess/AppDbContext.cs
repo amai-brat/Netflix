@@ -8,6 +8,7 @@ namespace DataAccess
 	public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 	{
 		public DbSet<User> Users => Set<User>();
+		public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
 		public DbSet<FavouriteContent> FavouriteContents => Set<FavouriteContent>();
 
@@ -25,14 +26,19 @@ namespace DataAccess
 		public DbSet<UsersReviews> UsersReviews => Set<UsersReviews>();
 		public DbSet<Review> Reviews => Set<Review>();
 		public DbSet<Comment> Comments => Set<Comment>();
+		public DbSet<CommentNotification> CommentNotifications => Set<CommentNotification>();
 
 		public DbSet<Subscription> Subscriptions => Set<Subscription>();
+		public DbSet<Currency> Currencies => Set<Currency>();
 		public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
+		public DbSet<Episode> Episodes => Set<Episode>();
+		
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.ApplyConfiguration(new CommentEntityConfiguration());
+			modelBuilder.ApplyConfiguration(new CommentNotificationEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new ContentBaseEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new ContentTypeEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new EpisodeEntityConfiguration());
@@ -44,6 +50,7 @@ namespace DataAccess
 			modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UsersReviewsEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UserSubsciptionConfiguration());
+			modelBuilder.ApplyConfiguration(new RefreshTokenEntityConfiguration());
 
 			modelBuilder.SeedWithTestData();
 

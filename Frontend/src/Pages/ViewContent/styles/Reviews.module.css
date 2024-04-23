@@ -1,0 +1,116 @@
+﻿.reviews{
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    .writeReviewAndFilter {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        .writeReview{
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px;
+            width: fit-content;
+            background: linear-gradient(90deg, rgba(75,1,221,1) 4%, rgba(218,7,21,1) 100%);
+            border-radius: 10px;
+        }
+        .writeReview:hover{
+            cursor: pointer;
+        }
+        .filterContainer{
+            position: relative;
+            display: flex;
+            right: 0;
+            .filter{
+                height: min-content;
+                margin-top:20px;
+                padding: 8px;
+                border: 1px solid white;
+                border-radius: 10px;
+            }
+            .filterOptions{
+                list-style-type: none;
+                padding: 5px;
+                border: 1px solid white;
+                border-radius: 10px;
+                background-color: black;
+                position: absolute;
+                top: 100%;
+                margin-top:2px;
+            }
+            .filter:hover{
+                background-color: gray;
+                cursor: pointer;
+            }
+            li{
+                padding: 3px;
+            }
+            li:hover{
+                background-color: gray;
+                cursor: pointer;
+            }
+            h2{
+                align-self: center;
+            }
+        }
+    }
+        .reviewList{
+            display:flex;
+            width:100%;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 125%;
+        }
+
+    }
+.active{
+    color:blue;
+}
+.closeModal{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background-image: url('../Images/icons8-close-96.svg');
+    padding: 10px;
+    background-color: transparent;
+    border: transparent;
+    margin: 15px;
+    background-size: cover;
+}
+.closeModal:hover{
+    cursor: pointer;
+}
+.stars{
+    display: flex;
+}
+.star:hover{
+    cursor: pointer;
+    fill:#3688ff;
+}
+.reviewText{
+    width: 80%;
+    height: 50%;
+    margin-top: 20px;
+    background-color: #181a1b;
+    overflow-y: auto;
+    color: white;
+    border: 1px solid white;
+    font-size: 125%;
+}
+.sendReview{
+    margin-top: 40px;
+    padding: 10px 40px;
+    background: #ff2400;
+    border-radius: 10px;
+    border: transparent;
+    color: white;
+}
+.sendReview:hover{
+    cursor: pointer;
+}

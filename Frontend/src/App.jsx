@@ -14,25 +14,37 @@ import Header from "./Pages/Shared/Header/Header.jsx";
 import GeneralPart from "./Pages/PersonalAccount/GeneralPart/GeneralPart.jsx";
 import Error404 from "./Pages/Error/Error404.jsx";
 import "/src/Pages/Shared/Styles/App.css";
+import { SubscriptionsManagement } from './Pages/Admin/Subscriptions/SubscriptionsManagement.jsx';
+import {ToastContainer} from "react-toastify";
+import AdminContent from "./Pages/Admin/Content/AdminContent.jsx";
+import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
 
 function App() {
+    
     const location = useLocation();
 
     return (
         <>
+            <ToastContainer theme={"dark"} />
             {location.pathname !== "/" && location.pathname !== "/signin" 
                 && location.pathname !== "/signup" && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
-                <Route path="PersonalAccount" element={<GeneralPart/> }>
-                    <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
-                    <Route path="FavouritesTab" element={<FavouritesTab/>}/>
-                    <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
-                    <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={"user, admin"}/>}>
+                    <Route path={"/PersonalAccount"} element={<GeneralPart/>}>
+                        <Route index element={<PersonalInfoTab/>}/>
+                        <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
+                        <Route path="FavouritesTab" element={<FavouritesTab/>}/>
+                        <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
+                        <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                    </Route>
+                </Route>
+                <Route path={"/admin"} element={<ProtectedRoute roles={"admin"}/>}>
+                    <Route path={"/admin/subscriptions"} element={<SubscriptionsManagement/>}></Route>
+                    <Route path={"/admin/content"} element={<AdminContent/>}></Route>
                 </Route>
                 <Route path="SelectionContent" element={<SelectionContent/>}/>
-                {/*Здесь должен быть Route для админовской части*/}
                 <Route path="signup" element={<SignUpSignIn formType="signup"/>}/>
                 <Route path="signin" element={<SignUpSignIn formType="signin"/>}/>
                 <Route path="Subscriptions" element={<Subscriptions/>}/>

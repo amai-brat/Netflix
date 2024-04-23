@@ -1,8 +1,8 @@
 .notification-message{
     display: block;
     width: inherit;
-    height: 30px;
-    line-height: 40px;
+    height: auto;
+    line-height: 20px;
     font-size: 18px;
     font-weight: normal;
     font-family: "Helvetica", serif;
@@ -37,4 +37,5 @@
     padding: 4px 16px 4px 16px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    overflow: auto;
 }

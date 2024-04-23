@@ -9,20 +9,23 @@ import "/src/Pages/Shared/Header/Styles/Header.css"
 import NotificationPanel from "./NotificationPanel.jsx";
 import NotificationPopUpPanel from "./NotificationPopUpPanel.jsx";
 import * as signalR from "@microsoft/signalr";
+import {baseUrl} from "../../../httpClient/baseUrl.js";
+import {useDataStore} from "../../../store/dataStoreProvider.jsx";
+import {userService} from "../../../services/user.service.js";
+import {notificationService} from "../../../services/notification.service.js";
 const Header = () => {
     const [notifications, setNotifications] = useState([])
     const [alarmed, setAlarmed] = useState(false)
     const [user, setUser] = useState(undefined)
+    const store = useDataStore()
     
     useEffect(() => {
         let isUserAuth = false
         const getCurrentUserDataAsync = async () => {
             try{
-                //TODO: Указать действительный url запроса и body с query при необходимости
-                const response = await fetch("https://localhost:5000/GetCurrentUserData")
+                const {response, data} = await userService.getPersonalInfo();
                 if(response.ok){
-                    const userData = await response.json()
-                    setUser({name: userData.Nickname, icon: userData.ProfilePictureUrl })
+                    setUser({name: data.nickname, icon: data.profilePictureUrl })
                     isUserAuth = true
                 }else{
                     setUser(null)
@@ -33,23 +36,55 @@ const Header = () => {
                 console.error(error)
             }
         }
-        getCurrentUserDataAsync().then(()=>{
-                if(!isUserAuth){
-                    return
+        
+        const getNotificationHistory = async () => {
+            if (!isUserAuth) return;
+            try{
+                const {response, data} = await notificationService.getNotificationHistory();
+                if(response.ok){
+                    if(data.filter(x => !x.readed).length !== 0){
+                        setAlarmed(true)   
+                    }
+                    setNotifications(data.filter(x => !x.readed));
+                }else{
+                    setAlarmed(false)
+                    setNotifications([])
                 }
-                //Todo: Установить действительный url
-                const connection = new signalR.HubConnectionBuilder()
-                    .withUrl("http://localhost:5000/NotificationHub", {accessTokenFactory: () => user})
-                    .configureLogging(signalR.LogLevel.Information)
-                    .build();
-    
-                connection.start().then(() => {}).catch(err => console.error(err))
-                connection.on("ReceiveMessage", (notification) => {
-                    setAlarmed(true)
-                    setNotifications([...notifications, notification])
-                });
             }
-        )
+            catch (error){
+                setAlarmed(false)
+                setNotifications([])
+                console.error(error)
+            }
+        }
+        
+        getCurrentUserDataAsync().then(() => {
+            getNotificationHistory().then(()=>{
+                    if(!isUserAuth){
+                        return
+                    }
+                    const connection = new signalR.HubConnectionBuilder()
+                        .withUrl(baseUrl + "hub/notification", {accessTokenFactory: () => {
+                            return sessionStorage.getItem("accessToken");
+                            }})
+                        .configureLogging(signalR.LogLevel.Information)
+                        .build();
+
+                    connection.start().then(() => {
+                        store.setConnection(connection)
+                    }).catch(err => console.error(err))
+                
+                    connection.on("ReceiveNotification", (notification) => {
+                        setAlarmed(true)
+                        setNotifications(notifications => [...notifications, notification])
+                    });
+                    
+                    connection.on("DeleteNotification", (notificationId) => {
+                        setNotifications(nots => nots.filter(x => x.id !== +notificationId))
+                    });
+                }
+            )  
+        })
     }, []);
     
     const navigate = useNavigate()

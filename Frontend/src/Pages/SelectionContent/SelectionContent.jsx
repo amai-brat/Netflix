@@ -3,30 +3,37 @@ import SelectionContentGrid from "./SelectionContentGrid.jsx";
 import SelectionContentFilterPanel from "./SelectionContentFilterPanel.jsx";
 import "/src/Pages/SelectionContent/Styles/SelectionContent.css";
 import SelectionContentSearchPanel from "./SelectionContentSearchPanel.jsx";
-import {contentsData, contentTypesData} from "./TestData.jsx";
 import {useLocation} from "react-router-dom";
+import {contentService} from "../../services/content.service.js";
 
 const SelectionContent = () => {
+    const getQueryParams = () =>
+        Object.keys(filter)
+            .map(key => {
+                if (Array.isArray(filter[key])) {
+                    if(filter[key].length === 0)
+                        return '';
+                    return filter[key].map(value => `${key}=${value}`).join('&');
+                } else {
+                    if(filter[key] === null)
+                        return '';
+                    return `${key}=${filter[key]}`;
+                }
+            })
+            .filter(param => param !== '')
+            .join('&');
+    
     const getAllContentByFilterAsync = async () => {
         try {
-            //TODO: Указать действительный url запроса
-            const response = await fetch("https://localhost:5000/GetAllContentByFilter", {
-                method: "post",
-                headers:{
-                    "Accept": "application/json",
-                    "Content-Type": 'application/json'
-                },
-                body: JSON.stringify(filter)
-            })
+            const {response, data} = await contentService.getContentsByFilter(getQueryParams());
             if(response.ok){
-                setContents(await response.json())
+                setContents(data)
             }else{
                 setContents(null)
             }
         }
         catch (error){
-            //TODO: изменить на null после разработки API
-            setContents(contentsData)
+            setContents(null)
             console.error(error)
         }
     }
@@ -35,7 +42,7 @@ const SelectionContent = () => {
     const [contents, setContents] = useState(undefined)
     const [filter, setFilter] = useState({
         name: null,
-        types: [location?.state?.filter?.type],
+        types: location?.state?.filter?.type ? [location?.state?.filter?.type] : [],
         genres: [],
         country: null,
         releaseYearFrom : null,

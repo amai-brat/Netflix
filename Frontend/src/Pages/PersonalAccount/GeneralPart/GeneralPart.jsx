@@ -10,7 +10,8 @@ const GeneralPart = ({component: Component}) => {
         {name: "Личные данные", link: "PersonalInfoTab"},
         {name: "Избранное", link: "FavouritesTab"},
         {name: "Рецензии", link: "PersonalReviewsTab"},
-        {name: "Подписки", link: "SubscriptionsTab"}
+        {name: "Подписки", link: "SubscriptionsTab"},
+        {name: "Контент", link: "admin/content"}
     ];
     const location = useLocation();
     const setInitialTab = () => {

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import SelectionContentContentTypeFilter from "./SelectionContentContentTypeFilter.jsx";
 import SelectionContentGenresFilter from "./SelectionContentGenresFilter.jsx";
 import "/src/Pages/SelectionContent/Styles/SelectionContentFilterPanel.css";
-import {contentTypesData, genresData} from "./TestData.jsx";
+import {contentService} from "../../services/content.service.js";
 
 const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
     const [selectedGenres, setSelectedGenres] = useState([])
@@ -13,33 +13,29 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
     useEffect(() => {
         const getAllContentTypesAsync = async () => {
             try {
-                //TODO: Указать действительный url запроса
-                const response = await fetch("https://localhost:5000/GetAllContentTypes")
+                const {response, data} = await contentService.getContentTypes();
                 if(response.ok){
-                    setContentTypes(await response.json())
+                    setContentTypes(data);
                 }else{
-                    setContentTypes(null)
+                    setContentTypes(null);
                 }
             }
             catch (error){
-                //TODO: изменить на null после разработки API
-                setContentTypes(contentTypesData)
+                setContentTypes(null);
                 console.error(error)
             }
         }
         const getAllGenresAsync = async () => {
             try{
-                //TODO: Указать действительный url запроса
-                const response = await fetch("https://localhost:5000/GetAllGenres")
+                const {response, data} = await contentService.getGenres();
                 if(response.ok){
-                    setGenres(await response.json())
+                    setGenres(data)
                 }else{
                     setContentTypes(null)
                 }
             }
             catch (error){
-                //TODO: изменить на null после разработки API
-                setGenres(genresData)
+                setGenres(null)
                 console.error(error)
             }
         }
@@ -52,7 +48,7 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
             <div id="selection-content-filter-panel-genres-only" style={{display: genresDisplayed ? "flex": "none"}}>
                 <div id="selection-content-filter-panel-genres-only-control">
                     <label className="selection-content-filter-panel-genres-only-back" onClick={() => {
-                        setSelectedGenres(filter.genres.map((id) => genres.find((genre) => genre.Id === id).Name))
+                        setSelectedGenres(filter.genres.map((id) => genres.find((genre) => genre.id === id).name))
                         setGenresDisplayed(false)
                     }}>
                         <img className="selection-content-filter-panel-genres-only-forward"
@@ -98,13 +94,13 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                 <div id="selection-content-filter-panel-country">
                     <label htmlFor="selection-content-filter-panel-country-select" className="selection-content-filter-panel-filter-name">Страна</label>
                     <select id="selection-content-filter-panel-country-select" onChange={(e) => {
-                        if (e.target.value === "-1") {
+                        if (e.target.value === "0") {
                             filter.country = null
                         } else {
-                            filter.country = parseInt(e.target.value)
+                            filter.country = e.target[parseInt(e.target.value)].innerHTML
                         }
                     }}>
-                        <option className="selection-content-filter-panel-country-select-option" value={-1}>Любая</option>
+                        <option className="selection-content-filter-panel-country-select-option" value={0}>Любая</option>
                         <option className="selection-content-filter-panel-country-select-option" value={1}>США</option>
                         <option className="selection-content-filter-panel-country-select-option" value={2}>Россия</option>
                         <option className="selection-content-filter-panel-country-select-option" value={3}>Китай</option>
