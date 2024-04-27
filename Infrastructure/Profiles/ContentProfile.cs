@@ -83,6 +83,8 @@ public class ContentProfile : Profile
                     Name = p.Name,
                     Profession = p.Profession.ProfessionName
                 }).ToList()))
+            .ForMember(src => src.ContentType,
+                opt => opt.MapFrom(src => src.ContentType.ContentTypeName))
             .ForMember(dest => dest.AgeRatings,
                 opt => opt.MapFrom(src => src.AgeRatings != null
                     ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
