@@ -46,7 +46,7 @@ const AdminContent = () => {
         }
     }
     const deleteContent = async () => {
-        if (idToDelete <= 0) {
+        if (idToDelete < 0) {
             toast.error("Введите id")
             return
         }
@@ -65,7 +65,7 @@ const AdminContent = () => {
         <div className={styles.main}>
             <div className={styles.delete}>
                 <h2>Удалить контент по id</h2>
-                <input type="number" placeholder="id" onChange={e => setIdToDelete(Number.parseInt(e.target.value))}/>
+                <input type="number" placeholder="id" onChange={e => setIdToDelete(Number.parseInt(e.target.value))} defaultValue={0}/>
                 <button onClick={deleteContent}>Удалить</button>
             </div>
             <div className={styles.separator}></div>

@@ -17,47 +17,45 @@
     margin-top: 20px;
     width: 100%;
     height: 720px;
-    .player{
-        .resAndSeasons{
-            display:flex;
-            flex-direction: row;
-            position: absolute;
-            right:0;
-            z-index: 1;
-            .resolutionSettings{
+}
+.resAndSeasons{
+    display:flex;
+    flex-direction: row;
+    position: absolute;
+    right:0;
+    z-index: 1;
+    .resolutionSettings{
+        padding: 5px;
+        select{
+            background-color: black;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #000;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    }
+    .episodeSettings{
+        right:0;
+        padding: 5px;
+        select{
+            background-color: black;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #000;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        optgroup{
+            background-color: red;
+            option{
+                background-color: black;
                 padding: 5px;
-                select{
-                    background-color: black;
-                    padding: 5px;
-                    border-radius: 5px;
-                    border: 1px solid #000;
-                    color: #fff;
-                    font-size: 16px;
-                    cursor: pointer;
-                }
-            }
-            .episodeSettings{
-                right:0;
-                padding: 5px;
-                select{
-                    background-color: black;
-                    padding: 5px;
-                    border-radius: 5px;
-                    border: 1px solid #000;
-                    color: #fff;
-                    font-size: 16px;
-                    cursor: pointer;
-                }
-                optgroup{
-                    background-color: red;
-                    option{
-                            background-color: black;
-                            padding: 5px;
-                            color: #fff;
-                            font-size: 16px;
-                            cursor: pointer;
-                    }
-                }
+                color: #fff;
+                font-size: 16px;
+                cursor: pointer;
             }
         }
     }

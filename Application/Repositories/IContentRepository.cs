@@ -16,7 +16,9 @@ namespace Application.Repositories
         void AddMovieContent(MovieContent movieContent);
         void AddSerialContent(SerialContent serialContent);
         Task<ContentBase?> GetContentByIdAsync(long id);
+        Task<ContentBase?> GetContentWithAllowedSubscriptionsByIdAsync(long id);
         Task<List<ContentBase>> GetRandomContentsAsync(int amount);
+        
         Task SaveChangesAsync();
     }
 }

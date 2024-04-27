@@ -214,7 +214,7 @@ public class UserService(
 
     public async Task<TokensDto> AuthenticateAsync(LoginDto dto)
     {
-        var user = await userRepository.GetUserByFilterAsync(x => x.Email == dto.Email);
+        var user = await userRepository.GetUserWithSubscriptionsAndRolesByFilterAsync(x => x.Email == dto.Email);
         if (user is null)
         {
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(dto.Email));
@@ -224,7 +224,6 @@ public class UserService(
         {
             throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
         }
-        
         var tokens = await tokenService.GenerateTokensAsync(user, dto.RememberMe);
         return tokens;
     }

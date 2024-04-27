@@ -417,5 +417,12 @@ namespace DataAccess.Repositories
         {
             return await appDbContext.ContentBases.FindAsync(id);
         }
+
+        public async Task<ContentBase?> GetContentWithAllowedSubscriptionsByIdAsync(long id)
+        {
+            return await appDbContext.ContentBases
+                .Include(c => c.AllowedSubscriptions)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }

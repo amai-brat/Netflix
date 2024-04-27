@@ -52,7 +52,7 @@ public class TokenService(
         };
     }
 
-    public async Task<TokensDto> GenerateTokensAsync(User user, bool withRefreshToken = true)
+    public async Task<TokensDto> GenerateTokensAsync(User user, bool withRefreshToken = false)
     {
         var accessToken = GenerateAccessToken(user);
         RefreshToken? refreshToken = null;

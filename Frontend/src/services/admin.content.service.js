@@ -38,14 +38,28 @@ async function getEditMovieContent(editMovieId) {
 }
 
 async function addMovie(values) {
+  const formData = new FormData();
+  for (const key in values) {
+    if (values[key] instanceof Array) {
+      if (key === "personsInContent") {
+        values[key].forEach((item, index) => formData.append(`${key}[${index}].Name`, item.name));
+        values[key].forEach((item, index) => formData.append(`${key}[${index}].Profession`, item.profession));
+      } else if (key === "allowedSubscriptions") {
+        values[key].forEach((item, index) => formData.append(`${key}[${index}].Name`, item.name));
+        values[key].forEach((item, index) => formData.append(`${key}[${index}].MaxResolution`, item.maxResolution));
+      } else {
+        values[key].forEach((item, index) => formData.append(`${key}[${index}]`, item));
+      }
+    } else {
+      formData.append(key, values[key]);
+    }
+  }
   return await fetchAuth(`content/movie/add`, true, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(values)
+    body: formData
   });
 }
+
 
 async function addSerial(values) {
   return await fetchAuth(`content/serial/add`, true, {
@@ -58,12 +72,26 @@ async function addSerial(values) {
 }
 
 async function updateMovie(id, values) {
+  const formData = new FormData();
+  for (const key in values) {
+    if (values[key] instanceof Array) {
+      if (key === "personsInContent"){
+        values[key].forEach((item,index) => formData.append(`${key}[${index}].Name`, item.name));
+        values[key].forEach((item,index) => formData.append(`${key}[${index}].Profession`, item.profession));
+      } else if(key === "allowedSubscriptions"){
+        values[key].forEach((item,index) => formData.append(`${key}[${index}].Name`, item.name));
+        values[key].forEach((item,index) => formData.append(`${key}[${index}].MaxResolution`, item.maxResolution));
+      }
+      else{
+        values[key].forEach((item,index) => formData.append(`${key}[${index}]`, item));
+      }
+    } else {
+      formData.append(key, values[key]);
+    }
+  }
   return await fetchAuth(`content/movie/update/${id}`, true, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(values)
+    body: formData
   });
 }
 

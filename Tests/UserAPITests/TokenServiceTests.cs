@@ -3,6 +3,7 @@ using Application.Repositories;
 using Application.Services.Implementations;
 using AutoFixture;
 using Domain.Entities;
+using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Moq;
 

@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Text;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
@@ -6,6 +8,7 @@ using Application.Services.Abstractions;
 using Application.Services.Extensions;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Services.Implementations;
 
@@ -14,10 +17,163 @@ public class ContentService(
     ISubscriptionRepository subscriptionRepository,
     IContentTypeRepository contentTypeRepository,
     IGenreRepository genreRepository,
+    IContentVideoProvider contentVideoProvider,
+    IUserRepository userRepository,
     IMapper mapper) : IContentService
 {
-    private readonly HashSet<int> _resolutions = [480, 720, 1080, 1440, 2160];
+    private readonly HashSet<int> _resolutions = [360, 480, 720, 1080, 1440, 2160];
+    public async Task<Stream> GetMovieContentM3U8Async(long userId,long movieId, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+        var movieUrl = await GetMovieVideoUrlAsync(movieId, resolution) + ".m3u8";
+        return await contentVideoProvider.GetAsync(movieUrl);
+    }
 
+    public async Task<Stream> GetSerialContentM3U8Async(long userId,long serialId, int seasonNumber, int episodeNumber, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+        
+        var serialUrl = await GetSerialEpisodeVideoUrlAsync(serialId, resolution, seasonNumber, episodeNumber) + ".m3u8";
+        return await contentVideoProvider.GetAsync(serialUrl);
+    }
+
+    public async Task<Stream> GetMovieContentStreamAsync(long userId,long movieId, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+
+        var movieUrl = await GetMovieVideoUrlAsync(movieId, resolution) + ".ts";
+        return await contentVideoProvider.GetAsync(movieUrl);
+    }
+
+    public async Task<Stream> GetSerialContentStreamAsync(long userId,long serialId, int seasonNumber, int episodeNumber, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+
+        var serialUrl = await GetSerialEpisodeVideoUrlAsync(serialId, resolution, seasonNumber, episodeNumber) + ".ts";
+        return await contentVideoProvider.GetAsync(serialUrl);
+    }
+
+    public async Task PutMovieContentVideoAsync(long movieId, int resolution, IFormFile videoStream)
+    {
+        // сохраняет видео из формы временно на сервере
+        var tempFilePath = await SaveVideoToTempFile(videoStream);
+        
+        // берем сохраненное видео и генерируем из него .m3u8 и .ts файлы, возвращает путь к этим файлам
+        var pathToGeneratedHlsFiles = await ConvertMovieFileToHls(tempFilePath, movieId, resolution);
+        
+        // эти файлы сохраняем в minio
+        await SaveMovieHlsFilesToMinio(pathToGeneratedHlsFiles, movieId, resolution);
+    }
+
+    public Task PutSerialContentVideoAsync(long serialId, int season, int episode, int resolution, IFormFile videoStream)
+    {
+        throw new NotImplementedException();
+    }
+    private async Task<string> SaveVideoToTempFile(IFormFile file)
+    {
+        var tempFilePath = Path.GetTempFileName();
+
+        await using var stream = new FileStream(tempFilePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+        return tempFilePath;
+    }
+    // берет сохраненное видео и генерирует из него .m3u8 и .ts файлы, возвращает путь к этим файлам
+    private async Task<string> ConvertMovieFileToHls(string inputPath, long id, int resolution)
+    {
+        string outputPath = Path.Combine(Path.GetTempPath(), $"content/{id}/res/{resolution}");
+        Directory.CreateDirectory(outputPath);
+
+        var resolutionString = GetResolutionByIntValue(resolution);
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "ffmpeg",
+            Arguments = $"-i {inputPath} -c:v libx264 -profile:v high -level 4.0 -s {resolutionString} -start_number 0" +
+                        $" -hls_time 5 -hls_list_size 0 -hls_base_url \"https://localhost:7173/content/movie/{id}/res/{resolution}/stream/chunk/\"" +
+                        $" -hls_segment_filename {outputPath + "/output.ts"} -hls_flags single_file -f hls {outputPath + "/output.m3u8"}",
+            RedirectStandardOutput = false,
+            RedirectStandardError = false,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        using var process = new Process();
+        process.StartInfo = startInfo;
+        try
+        {
+            process.Start();
+        }
+        catch(Exception e)
+        {
+            Directory.Delete(outputPath,true);
+        }
+        
+        
+        await process.WaitForExitAsync();
+        return outputPath;
+    }
+
+    private async Task SaveMovieHlsFilesToMinio(string pathToFiles, long id, int resolution)
+    {
+        try
+        {
+            await using var m3U8Stream = new FileStream(Path.Combine(pathToFiles,"output.m3u8"), FileMode.Open);
+            await using var tsStream = new FileStream(Path.Combine(pathToFiles,"output.ts"), FileMode.Open);
+            await contentVideoProvider.PutAsync($"/movie/{id}/res/{resolution}/output.m3u8", m3U8Stream,
+                "application/x-mpegURL");
+            await contentVideoProvider.PutAsync($"/movie/{id}/res/{resolution}/output.ts", tsStream, "video/mp2t");
+        }
+        finally
+        {
+            // удаляем временные файлы
+            Directory.Delete(pathToFiles,true); 
+        }
+    }
+    private string GetResolutionByIntValue(int resolution)
+    {
+        switch (resolution)
+        {
+            case 360: return "480x360";
+            case 480: return "640x480";
+            case 720: return "1280x720";
+            case 1080: return "1920x1080";
+            case 1440: return "2560x1440";
+            case 2160: return "3840x2160";
+            default: throw new Exception("Неподдерживаемое разрешение");
+        }
+    }
+    public async Task<bool> CheckIfContentAllowedWithSubscriptionIdAsync(long contentId, List<int>? subscriptionIds)
+    {
+        var content = await contentRepository.GetContentWithAllowedSubscriptionsByIdAsync(contentId);
+        if (content == null || subscriptionIds == null || subscriptionIds.Count == 0)
+        {
+            return false;
+        }
+
+        return content.AllowedSubscriptions.Any(s => subscriptionIds.Contains(s.Id));
+    }
     public async Task<ContentBase?> GetContentByIdAsync(long id) =>
         await contentRepository.GetContentByFilterAsync(c => c.Id == id);
 
@@ -37,6 +193,53 @@ public class ContentService(
                 .CombineExpressions(IsContentRatingBetween(filter))
         );
 
+    public async Task<string> GetMovieVideoUrlAsync(long movieId, int resolution)
+    {
+        var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
+        if (movie is null)
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{movieId}");
+        if (!_resolutions.Contains(resolution))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
+
+        string url = movie.VideoUrl;
+        url = url.Replace("{res}", resolution.ToString());
+        url = url.Replace("{id}", movieId.ToString());
+
+        return url;
+    }
+    public async Task<string> GetSerialEpisodeVideoUrlAsync(long serialId, int resolution, int seasonNumber, int episodeNumber)
+    {
+        var serial = await contentRepository.GetSerialContentByFilterAsync(s => s.Id == serialId);
+        if (serial is null)
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundContent, $"{serialId}");
+
+        if (!_resolutions.Contains(resolution))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundResolution, $"{resolution}");
+
+        if (!serial.SeasonInfos.Select(s => s.SeasonNumber)
+                .Contains(seasonNumber))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundSeason, $"{seasonNumber}");
+
+        if (!serial.SeasonInfos.Single(s => s.SeasonNumber == seasonNumber).Episodes
+                .Select(e => e.EpisodeNumber)
+                .Contains(episodeNumber))
+            throw new ContentServiceArgumentException(ErrorMessages.NotFoundEpisode, $"{episodeNumber}");
+
+        var url = serial
+            .SeasonInfos
+            .First(s => s.SeasonNumber == seasonNumber)
+            .Episodes
+            .First(e => e.EpisodeNumber == episodeNumber)
+            .VideoUrl;
+        url = url.Replace("{res}", resolution.ToString());
+        url = url.Replace("{id}", serialId.ToString());
+        url = url.Replace("{season}", seasonNumber.ToString());
+        url = url.Replace("{episode}", episodeNumber.ToString());
+        
+        return url;
+    }
+
+    [Obsolete("Валидация подписок должна быть в контроллере. Используйте GetMovieVideoUrlAsync")]
     public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, int subscriptionId)
     {
         var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
@@ -51,7 +254,7 @@ public class ContentService(
 
         return movie.VideoUrl.Replace("resolution", resolution.ToString());
     }
-    
+    [Obsolete("Валидация подписок должна быть в контроллере, используйте GetMovieVideoUrlAsync")]
     public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, List<int> subscriptionIds)
     {
         var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
@@ -75,7 +278,7 @@ public class ContentService(
 
         return movie.VideoUrl.Replace("resolution", resolution.ToString());
     }
-
+    [Obsolete("Валидация подписок должна быть в контроллере, используйте GetSerialVideoUrlAsync")]
     public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
         int subscriptionId)
     {
@@ -104,7 +307,7 @@ public class ContentService(
             .Single(e => e.EpisodeNumber == episode).VideoUrl
             .Replace("resolution", resolution.ToString());
     }
-    
+    [Obsolete("Валидация подписок должна быть в контроллере, используйте GetSerialVideoUrlAsync")]
     public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
         List<int> subscriptionIds)
     {
@@ -151,6 +354,10 @@ public class ContentService(
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
+        if (movieContentAdminPageDto.VideoFile != null)
+        {
+            await PutMovieContentVideoAsync(movieContentAdminPageDto.Id, movieContentAdminPageDto.Resolution, movieContentAdminPageDto.VideoFile);
+        }
         var movieContent = mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
         CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         await contentRepository.UpdateMovieContent(movieContent);
@@ -171,6 +378,10 @@ public class ContentService(
         CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         contentRepository.AddMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
+        if (movieContentAdminPageDto.VideoFile != null)
+        {
+            await PutMovieContentVideoAsync(movieContent.Id, movieContentAdminPageDto.Resolution, movieContentAdminPageDto.VideoFile);
+        }
     }
 
     public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Dto;
 
@@ -14,6 +15,8 @@ public class MovieContentAdminPageDto
     public long MovieLength { get; set; }
     public DateOnly ReleaseDate { get; set; }
     public string VideoUrl { get; set; } = null!;
+    public IFormFile? VideoFile { get; set; }
+    public int Resolution { get; set; }
 
     public AgeRatings? AgeRatings { get; set; }
     public Ratings? Ratings { get; set; }

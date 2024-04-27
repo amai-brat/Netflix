@@ -16,6 +16,9 @@ function ContentInfo({contentData}){
     // если их пришло 11, то последний получает , ...
     // это не гарантия что их больше 11, но хоть что-то
     function printAllPersonsByRole(profession){
+        if (!groupedByRole[profession]) {
+            return "Нет данных";
+        }
         return groupedByRole[profession].map((person, index) => {
             if (groupedByRole[profession].length < 11){
                 if (index === (groupedByRole[profession].length - 1)) {
@@ -143,12 +146,12 @@ function ContentInfo({contentData}){
                     }
                     <span className={styles.ratings}>
                         <strong>Рейтинги:</strong>
-                        {contentData.ratings.imdbRating &&
+                        {contentData?.ratings?.imdbRating &&
                             <span className={styles.ratingImdb}>IMDb: {contentData.ratings.imdbRating}</span>}
-                        {contentData.ratings.kinopoiskRating && <span
+                        {contentData?.ratings?.kinopoiskRating && <span
                             className={styles.ratingKinopoisk}>Кинопоиск: {contentData.ratings.kinopoiskRating}</span>}
                         <span
-                            className={styles.ratingLocal}>Локальный: {contentData.ratings.localRating == null ? "недостаточно оценок" : contentData.ratings.localRating}</span></span>
+                            className={styles.ratingLocal}>Локальный: {contentData?.ratings?.localRating == null ? "недостаточно оценок" : contentData.ratings.localRating}</span></span>
                     <h2>В главных ролях:</h2>
                     <span>{printAllPersonsByRole("Актер")}</span>
                     <h2>Также работали</h2>

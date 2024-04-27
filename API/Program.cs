@@ -2,14 +2,11 @@ using System.Text;
 using API;
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
-using Application.Options;
 using DataAccess.Extensions;
 using Infrastructure;
 using Infrastructure.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Application;
+using Application.Options;
 using Infrastructure.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);

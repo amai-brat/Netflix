@@ -18,7 +18,7 @@ const AddMovieOptions = () => {
     // но с Date нельзя создать намеренно неправильное значение, биндер asp.net core выбрасывает свое исключение
     // до самого валидатора. поэтому будем считать что у всех фильмов есть дата по умолчанию( мое день рождение )
     const [releaseDate,setReleaseDate] = useState("2004-03-15")
-    const [videoUrl,setVideoUrl] = useState("")
+    const [videoUrl] = useState("/movie/{id}/res/{res}/output")
     const [movieLength, setMovieLength] = useState(0)
     
     const [ageRating, setAgeRating] = useState(null)
@@ -35,6 +35,8 @@ const AddMovieOptions = () => {
     const [allSubscriptions, setAllSubscriptions] = useState([])
     const [personName, setPersonName] = useState("")
     const [personProfession, setPersonProfession] = useState("")
+    const [resolution, setResolution] = useState(360)
+    const [videoFile, setVideoFile] = useState(null)
 
     const addPerson = () => {
         setPersonsInContent([...personsInContent, {name: personName, profession: personProfession}])
@@ -78,6 +80,8 @@ const AddMovieOptions = () => {
             genres: genres,
             personsInContent: personsInContent,
             allowedSubscriptions: allowedSubscriptions,
+            resolution: resolution,
+            videoFile: videoFile
         });
         
         if (resp.ok) {
@@ -166,12 +170,11 @@ const AddMovieOptions = () => {
             <input type="text" placeholder="URL постера" onChange={e => setPosterUrl(e.target.value)}/>
             <h2>Страна</h2>
             <input type="text" placeholder="Страна" onChange={e => setCountry(e.target.value)}/>
-            <h2>Ссылка на видео</h2>
-            <input type={"text"} placeholder={"Ссылка на видео"} onChange={e => setVideoUrl(e.target.value)}/>
             <h2>Длительность фильма</h2>
-            <input type={"number"} placeholder={"Длительность"} onChange={e => setMovieLength(Number.parseInt(e.target.value))}/>
+            <input type={"number"} placeholder={"Длительность"}
+                   onChange={e => setMovieLength(Number.parseInt(e.target.value))}/>
             <h2>Тип контента</h2>
-            <select onChange={e => setContentType(e.target.value)} defaultValue={""}>
+            <select onChange={e => setContentType(e.target.value)} value={contentType}>
                 <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
                 <option value="Фильм">Фильм</option>
                 <option value="Сериал">Сериал</option>
@@ -227,8 +230,21 @@ const AddMovieOptions = () => {
             <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
             <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
             <button onClick={addPerson}>Добавить</button>
-            
+
             <h2>Дата выхода</h2> <input type="date" onChange={e => setReleaseDate(e.target.value)}/>
+            <h2>Разрешение</h2>
+            {/*<input type={"number"} placeholder={"Разрешение"} value={resolution}*/}
+            {/*       onChange={e => setResolution(Number.parseInt(e.target.value))}/>*/}
+            <select onChange={e => setResolution(Number.parseInt(e.target.value))} value={resolution}>
+                <option value="" disabled={true} style={{color: "#b2aba1"}}>Разрешение</option>
+                <option value="360">360</option>
+                <option value="480">480</option>
+                <option value="720">720</option>
+                <option value="1080">1080</option>
+            </select>
+            <h2>Видео файл</h2>
+            <input type={"file"} onChange={e => setVideoFile(e.target.files[0])} style={{display: "inline-block"}}/>
+            <span style={{display: "inline-block"}}>{videoFile?.name}</span>
             <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>
         </div>
     )

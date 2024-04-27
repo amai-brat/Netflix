@@ -7,6 +7,13 @@ namespace DataAccess.Repositories
 {
     public class UserRepository(AppDbContext appDbContext) : IUserRepository
     {
+        public async Task<User?> GetUserWithSubscriptionsAndRolesByFilterAsync(Expression<Func<User, bool>> filter)
+        {
+            return await appDbContext.Users
+                .Include(u => u.UserSubscriptions)
+                .Where(filter).SingleOrDefaultAsync();
+        }
+
         public async Task<User?> GetUserByFilterAsync(Expression<Func<User, bool>> filter) =>
             await appDbContext.Users.SingleOrDefaultAsync(filter);
 
