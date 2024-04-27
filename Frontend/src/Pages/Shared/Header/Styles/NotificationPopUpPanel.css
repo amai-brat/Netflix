@@ -38,4 +38,5 @@
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     overflow: auto;
+    border: 2px solid white;
 }

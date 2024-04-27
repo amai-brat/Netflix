@@ -18,6 +18,7 @@
 
 .client-pop-up-panel-label:hover {
     color: var(--main-text-color);
+    cursor: pointer;
 }
 
 #client-name,
