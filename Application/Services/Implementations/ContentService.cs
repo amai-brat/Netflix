@@ -22,6 +22,61 @@ public class ContentService(
     IMapper mapper) : IContentService
 {
     private readonly HashSet<int> _resolutions = [360, 480, 720, 1080, 1440, 2160];
+    public async Task<string> GetMovieContentM3U8UrlAsync(long userId, long movieId, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+        var resource = await GetMovieVideoUrlAsync(movieId, resolution)  + ".m3u8";
+        return await contentVideoProvider.GetUrlAsync(resource);
+    }
+
+    public async Task<string> GetSerialContentM3U8UrlAsync(long userId, long serialId, int seasonNumber, int episodeNumber, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+
+        var serialUrl = await GetSerialEpisodeVideoUrlAsync(serialId, resolution, seasonNumber, episodeNumber) + ".m3u8";
+        return await contentVideoProvider.GetUrlAsync(serialUrl);
+    }
+
+    public async Task<string> GetMovieContentStreamUrlAsync(long userId, long movieId, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+        var resource = await GetMovieVideoUrlAsync(movieId, resolution)  + ".ts";
+
+        return await contentVideoProvider.GetUrlAsync(resource);
+    }
+
+    public async Task<string> GetSerialContentStreamUrlAsync(long userId, long serialId, int seasonNumber, int episodeNumber, int resolution)
+    {
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
+        if (!userCanViewContent)
+        {
+            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+        }
+
+        var serialUrl = await GetSerialEpisodeVideoUrlAsync(serialId, resolution, seasonNumber, episodeNumber) + ".ts";
+        return await contentVideoProvider.GetUrlAsync(serialUrl);
+    }
+
     public async Task<Stream> GetMovieContentM3U8Async(long userId,long movieId, int resolution)
     {
         var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
@@ -62,7 +117,7 @@ public class ContentService(
         var movieUrl = await GetMovieVideoUrlAsync(movieId, resolution) + ".ts";
         return await contentVideoProvider.GetAsync(movieUrl);
     }
-
+    
     public async Task<Stream> GetSerialContentStreamAsync(long userId,long serialId, int seasonNumber, int episodeNumber, int resolution)
     {
         var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?

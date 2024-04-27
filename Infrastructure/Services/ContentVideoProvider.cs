@@ -46,20 +46,26 @@ public class ContentVideoProvider: IContentVideoProvider
         StatObjectArgs statObjectArgs = new StatObjectArgs()
             .WithBucket(BucketName)
             .WithObject(name);
-        // checks if object exists & we have permissions to access it
-        // otherwise throws an exception
         await _minioClient.StatObjectAsync(statObjectArgs);
 
         GetObjectArgs getObjectArgs = new GetObjectArgs()
             .WithBucket(BucketName)
             .WithObject(name)
-            .WithCallbackStream(async stream =>
+            .WithCallbackStream(stream =>
             {
-                await stream.CopyToAsync(data);
+                stream.CopyTo(data);
             });
-        await _minioClient.GetObjectAsync(getObjectArgs);
+        var stats = await _minioClient.GetObjectAsync(getObjectArgs);
         data.Position = 0;
         return data;
     }
-
+    public async Task<string> GetUrlAsync(string name)
+    {
+        var args = new PresignedGetObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name)
+            .WithExpiry(60 * 60 * 24);
+        var url = await _minioClient.PresignedGetObjectAsync(args);
+        return url;
+    }
 }

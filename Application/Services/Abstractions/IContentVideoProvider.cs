@@ -4,4 +4,5 @@ public interface IContentVideoProvider
 {
     Task PutAsync(string name, Stream data, string contentType);
     Task<Stream> GetAsync(string name);
+    Task<string> GetUrlAsync(string name);
 }

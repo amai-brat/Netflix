@@ -22,6 +22,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
             setError("вам нужно авторизироваться")
         }
         try{
+            console.log(getUrl())
             const {response} = await fetchAuth(getUrl())
             if (response.ok){
                 retries = 0
@@ -37,7 +38,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const getUrl = (contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode) => {
         let path;
         if (contentType === "сериал") {
-            path = `${baseUrl}content/serial/${currentSeason}/${currentEpisode}/video/${contentId}`;
+            path = `${baseUrl}content/serial/${contentId}/season/${currentSeason}/${currentEpisode}/video/${contentId}`;
         } else {
             path = `${baseUrl}content/movie/${contentId}/res/${resolution}/output.m3u8`;
         }

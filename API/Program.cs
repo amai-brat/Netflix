@@ -20,6 +20,7 @@ builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidators();

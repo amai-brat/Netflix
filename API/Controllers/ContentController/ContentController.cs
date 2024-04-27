@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +20,8 @@ namespace API.Controllers.ContentController
         IFavouriteService favouriteService,
         IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
         IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator,
-        IMapper mapper) : ControllerBase
+        IMapper mapper,
+        IHttpClientFactory clientFactory) : ControllerBase
     {
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
@@ -67,24 +70,62 @@ namespace API.Controllers.ContentController
             return Ok();
         }
 
-        // [HttpGet("movie/video/{id}")]
-        // [Authorize]
-        // public async Task<IActionResult> GetContentVideo(long id, [FromQuery] int resolution)
-        // {
-        //     var subscribeIdStr = User.FindFirst("subscribeId")?.Value;
-        //     if (subscribeIdStr is null)
-        //         return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
-        //     
-        //     var subscribeIds = JsonSerializer.Deserialize<List<int>>(subscribeIdStr);
-        //     if (subscribeIds is null)
-        //         return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
-        //
-        //     var videoPath = await contentService.GetMovieContentVideoUrlAsync(id, resolution, subscribeIds!);
-        //
-        //     var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        //     return File(videoStream,"video/mp4", enableRangeProcessing:true );
-        // }
-        
+        [HttpGet("movie/{id}/res/{resolution}/stream/chunk/output.ts")]
+        [Authorize]
+        public async Task<IActionResult> GetContentVideoStreamChunk(int id, int resolution)
+        {
+            // получаем id пользователя
+            var userId = User.FindFirst("id")?.Value;
+            if (userId is null)
+                return StatusCode(StatusCodes.Status403Forbidden, "Нужен id пользователя");
+            var userIdLong = long.Parse(userId);
+            
+            // получаем диапазон байтов
+            var range = Request.Headers.Range.ToString();
+            var start = 0L;
+            var end = 0L;
+            if (!string.IsNullOrEmpty(range))
+            {
+                var rangeParts = range.Replace("bytes=", "").Split('-');
+                start = long.Parse(rangeParts[0]);
+                end = rangeParts.Length > 1 && !string.IsNullOrEmpty(rangeParts[1]) ? long.Parse(rangeParts[1]) : 0;
+            }
+            // создаем http клиент
+            var httpClient = clientFactory.CreateClient();
+            var videoStreamUrl = await contentService.GetMovieContentStreamUrlAsync(userIdLong, id, resolution);
+            var request = new HttpRequestMessage(HttpMethod.Get, videoStreamUrl);
+            if (start != 0 || end != 0)
+            {
+                request.Headers.Range = new RangeHeaderValue(start, end);
+            }
+            
+            // отправляем запрос
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode, "Не удалось получить видео");
+            }
+            var contentLength = response.Content.Headers.ContentLength;
+            if (!contentLength.HasValue)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Не удалось получить длину контента");
+            }
+
+            end = end == 0 ? contentLength.Value - 1 : end;
+
+            var videoStream = await response.Content.ReadAsStreamAsync();
+            Response.Headers.Append("Content-Range", $"bytes {start}-{end}/{contentLength}");
+            Response.Headers.Append("Accept-Ranges", "bytes");
+            Response.Headers.Append("Content-Length", (end - start + 1).ToString());
+            Response.StatusCode = (int)HttpStatusCode.PartialContent;
+            // TODO: я не понимаю почему я не могу передать videoStream в File и сделать enableRangeProcessing:true
+            // в таком случае он загружает файл полностью. приходится настраивать клиент чтобы он сам делал запросы на чанки
+            // если кто-то поймет, скажите пж
+            return new FileStreamResult(videoStream, "video/mp2t")
+            {
+                FileDownloadName = "output.ts"
+            };
+        }
         
         [HttpGet("movie/{id}/res/{resolution}/output.m3u8")]
         [Authorize]
@@ -93,27 +134,22 @@ namespace API.Controllers.ContentController
             var userId = User.FindFirst("id")?.Value;
             if (userId is null)
                 return StatusCode(StatusCodes.Status403Forbidden, "Нужен id пользователя");
-            
             var userIdLong = long.Parse(userId);
-            var videoStream = await contentService.GetMovieContentM3U8Async(userIdLong, id, resolution);
+            
+            var videoStreamUrl = await contentService.GetMovieContentM3U8UrlAsync(userIdLong,id, resolution);
+            
+            var resp = await clientFactory.CreateClient().GetAsync(videoStreamUrl, HttpCompletionOption.ResponseHeadersRead);
+            if (!resp.IsSuccessStatusCode)
+            {
+                return StatusCode((int)resp.StatusCode, "Не удалось получить видео");
+            }
+            var videoStream = await resp.Content.ReadAsStreamAsync();
+            
+            
             return File(videoStream,"application/x-mpegURL",fileDownloadName:"output.m3u8");
         }
 
-        [HttpGet("movie/{id}/res/{resolution}/stream/chunk/output.ts")]
-        [Authorize]
-        public async Task<IActionResult> GetContentVideoStreamChunk(int id, int resolution)
-        {
-            var userId = User.FindFirst("id")?.Value;
-            if (userId is null)
-                return StatusCode(StatusCodes.Status403Forbidden, "Нужен id пользователя");
-            
-            var userIdLong = long.Parse(userId);
-            var videoStream = await contentService.GetMovieContentStreamAsync(userIdLong,id, resolution);
-            
-            return File(videoStream,"video/mp2t",fileDownloadName:"output.ts", enableRangeProcessing:true );
-        }
-
-        [HttpGet("serial/{id}/season/{season}/episode/episode/res/{resolution}/output.m3u8")]
+        [HttpGet("serial/{id}/season/{season}/episode/res/{resolution}/output.m3u8")]
         public async Task<IActionResult> GetContentSerialStream(int id, int resolution, int season, int episode)
         {
             var userId = User.FindFirst("id")?.Value;
@@ -124,7 +160,7 @@ namespace API.Controllers.ContentController
             var videoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"application/x-mpegURL",fileDownloadName:"output.m3u8");
         }
-
+        
         [HttpGet("serial/{id}/season/{season}/episode/{episode}/res/{resolution}/stream/chunk/output.ts")]  
         public async Task<IActionResult> GetContentSerialStreamChunk(int id, int resolution, int season, int episode)
         {
@@ -136,24 +172,6 @@ namespace API.Controllers.ContentController
             var videoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return File(videoStream,"video/mp2t",fileDownloadName:"output.ts", enableRangeProcessing:true );
         }
-        
-        // [HttpGet("serial/{season}/{episode}/video/{id}")]
-        // [Authorize]
-        // public async Task<IActionResult> GetContentVideo(int season, int episode, long id, [FromQuery] int resolution)
-        // {
-        //     var subscribeIdStr = User.FindFirst("subscribeId")?.Value;
-        //     if (subscribeIdStr is null)
-        //         return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
-        //     
-        //     var subscribeIds = JsonSerializer.Deserialize<List<int>>(subscribeIdStr);
-        //     if (subscribeIds is null)
-        //         return Forbid(ErrorMessages.UserDoesNotHaveSubscription);
-        //
-        //     var videoPath = await contentService.GetSerialContentVideoUrlAsync(id, season, episode, resolution, subscribeIds);
-        //     
-        //     var videoStream = new FileStream(videoPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        //     return File(videoStream,"video/mp4", enableRangeProcessing:true );
-        // }
         
         [HttpPost("serial/add")]
         public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
