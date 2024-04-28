@@ -467,7 +467,7 @@ public class ContentService(
             {
                 if (episode.VideoFile != null)
                 {
-                    await PutSerialContentVideoAsync(serialContentDto.Id, episode.Resolution,
+                    await PutSerialContentVideoAsync(serialContent.Id, episode.Resolution,
                         season.SeasonNumber, episode.EpisodeNumber, episode.VideoFile);
                 }
             }

@@ -297,8 +297,6 @@ const EditMovieOptions = (movieOptions) => {
 
             <h2>Дата выхода</h2> <input type="date" value={releaseDate} onChange={e => setReleaseDate(e.target.value)}/>
             <h2>Разрешение</h2>
-            {/*<input type={"number"} placeholder={"Разрешение"} value={resolution}*/}
-            {/*       onChange={e => setResolution(Number.parseInt(e.target.value))}/>*/}
             <select onChange={e => setResolution(Number.parseInt(e.target.value))} value={resolution}>
                 <option value="" disabled={true} style={{color: "#b2aba1"}}>Разрешение</option>
                 <option value="360">360</option>

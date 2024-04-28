@@ -55,7 +55,7 @@ const EditSerialOptions = (serialOptions) => {
     }
     const addSeasonAndEpisodes = () => {
         // if season already exists, then add episodes to it
-        // если честно такой говнокод
+        // если честно такой говнокод, да страница в целом говнокод
         const seasonIndex = seasonInfos.findIndex(s => s.seasonNumber === seasonNumber);
         if(seasonIndex !== -1) {
             const seasonInfosWithNewEpisodes = [...seasonInfos];
