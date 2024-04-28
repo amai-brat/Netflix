@@ -306,7 +306,7 @@ const EditMovieOptions = (movieOptions) => {
                 <option value="720">720</option>
                 <option value="1080">1080</option>
             </select>
-            <h2>Видео файл</h2>
+            <h2  style={{width:"fit-content"}}>Видео файл</h2>
             <input type={"file"} onChange={e => setVideoFile(e.target.files[0])} style={{display:"inline-block"}}/>
             <span style={{display:"inline-block"}}>{videoFile?.name}</span>
             <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>

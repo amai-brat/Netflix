@@ -61,11 +61,15 @@ public class ContentVideoProvider: IContentVideoProvider
     }
     public async Task<string> GetUrlAsync(string name)
     {
+        Console.WriteLine("----------------");
+        Console.WriteLine(name);
         var args = new PresignedGetObjectArgs()
             .WithBucket(BucketName)
             .WithObject(name)
             .WithExpiry(60 * 60 * 24);
         var url = await _minioClient.PresignedGetObjectAsync(args);
+        Console.WriteLine(url);
+        Console.WriteLine("----------------");
         return url;
     }
 }

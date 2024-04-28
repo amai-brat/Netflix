@@ -16,6 +16,9 @@
     select{
         display:inherit;
         margin-bottom:10px;
+        option{
+            color: black;
+        }
     }
     button{
         display:inherit;

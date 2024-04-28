@@ -32,3 +32,11 @@
         }
     }
 }
+.resSelect{
+    width: fit-content;
+    margin-left: 5px;
+    margin-bottom: 0;
+    option{
+        color: black;
+    }
+}

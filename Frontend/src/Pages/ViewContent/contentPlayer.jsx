@@ -8,7 +8,7 @@ import {get} from "mobx";
 import {fetchAuth} from "../../httpClient/fetchAuth.js";
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(1080)
-    const [error, setError] = useState(null)
+    const [occuredError, setOccuredError] = useState(null)
     const [dataFetching, setDataFetching] = useState(false)
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [currentSeason, setCurrentSeason] = useState(1)
@@ -19,10 +19,9 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     // то выводим ошибку 
     const updateTokenAndRetry = async () => {
         if (retries > maxRetries){
-            setError("вам нужно авторизироваться")
+            setOccuredError("вам нужно авторизироваться")
         }
         try{
-            console.log(getUrl())
             const {response} = await fetchAuth(getUrl())
             if (response.ok){
                 retries = 0
@@ -31,14 +30,15 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                 retries++;
             }
         } catch (error){
-            setError(error)
+            setOccuredError("произошла ошибка")
             retries++;
         } 
     } 
     const getUrl = (contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode) => {
         let path;
-        if (contentType === "сериал") {
-            path = `${baseUrl}content/serial/${contentId}/season/${currentSeason}/${currentEpisode}/video/${contentId}`;
+        if (contentType.contentTypeName === "Сериал") {
+            // serial/{id}/season/{season}/episode/{episode}/res/{resolution}/
+            path = `${baseUrl}content/serial/${contentId}/season/${currentSeason}/episode/${currentEpisode}/res/${resolution}/output.m3u8`;
         } else {
             path = `${baseUrl}content/movie/${contentId}/res/${resolution}/output.m3u8`;
         }
@@ -46,7 +46,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     };
     // Обновляем URL каждый раз при изменении параметров
     useEffect(() => {
-        setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution));
+        setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution,currentSeason,currentEpisode));
     }, [contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode]);
     
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
@@ -54,18 +54,18 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
         async function fetchData() {
             try {
                 setDataFetching(true)
-                const resp = await fetch(getUrl(contentId, contentType, seasonInfos, resolution), {
+                const resp = await fetch(videoUrl, {
                     headers: {
                         "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
                     }
                 });
                 if (!resp.ok) {
-                    setError("Ошибка загрузки видео")
+                    setOccuredError("Ошибка загрузки видео")
                     return;
                 }
-                setError(null)
+                setOccuredError(null)
             } catch (e) {
-                setError(e.message)
+                setOccuredError(e.message)
                 setDataFetching(false)
             } finally {
                 setDataFetching(false)
@@ -76,9 +76,9 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     return (
         <>
             {dataFetching && <img src={gif} alt="грузится" className={styles.loading}></img>}
-            {error && <div className={styles.error}>
+            {occuredError && <div className={styles.error}>
                 <div className={styles.resAndSeasons}>
-                    {contentType === "сериал" &&
+                    {contentType.contentTypeName === "Сериал" &&
                         <div className={styles.episodeSettings}>
                             <select value={`${currentSeason}-${currentEpisode}`} onChange={(e) => {
                                 const selectedOption = e.target.value.split('-');
@@ -115,14 +115,14 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                         </select>
                     </div>
                 </div>
-                {error}
+                {occuredError}
             </div>}
-            {error == null && !dataFetching &&
+            {occuredError == null && !dataFetching &&
                 <>
                     <div className={styles.playerWindow}>
                         <div className={styles.player}>
                             <div className={styles.resAndSeasons}>
-                                {contentType === "сериал" &&
+                                {contentType.contentTypeName === "Сериал" &&
                                     <div className={styles.episodeSettings}>
                                         <select value={`${currentSeason}-${currentEpisode}`} onChange={(e) => {
                                             const selectedOption = e.target.value.split('-');
@@ -160,7 +160,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                 </div>
                             </div>
                             <ReactPlayer
-                                key={getUrl(contentId, contentType, seasonInfos, resolution) + retries}
+                                key={videoUrl + retries}
                                 url={videoUrl}
                                 config={{
                                     file: {

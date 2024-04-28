@@ -99,7 +99,7 @@ namespace API.Controllers.ContentController
                 request.Headers.Range = new RangeHeaderValue(start, end);
             }
             
-            // отправляем запрос
+            // отправляем запрос на сервер с видео(minio)
             var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             if (!response.IsSuccessStatusCode)
             {
@@ -112,7 +112,7 @@ namespace API.Controllers.ContentController
             }
 
             end = end == 0 ? contentLength.Value - 1 : end;
-
+            // получаем стрим и отдаем его клиенту
             var videoStream = await response.Content.ReadAsStreamAsync();
             Response.Headers.Append("Content-Range", $"bytes {start}-{end}/{contentLength}");
             Response.Headers.Append("Accept-Ranges", "bytes");
@@ -121,10 +121,7 @@ namespace API.Controllers.ContentController
             // TODO: я не понимаю почему я не могу передать videoStream в File и сделать enableRangeProcessing:true
             // в таком случае он загружает файл полностью. приходится настраивать клиент чтобы он сам делал запросы на чанки
             // если кто-то поймет, скажите пж
-            return new FileStreamResult(videoStream, "video/mp2t")
-            {
-                FileDownloadName = "output.ts"
-            };
+            return File(videoStream, "video/mp2t", fileDownloadName: "output.ts");
         }
         
         [HttpGet("movie/{id}/res/{resolution}/output.m3u8")]
@@ -145,36 +142,80 @@ namespace API.Controllers.ContentController
             }
             var videoStream = await resp.Content.ReadAsStreamAsync();
             
-            
             return File(videoStream,"application/x-mpegURL",fileDownloadName:"output.m3u8");
         }
 
-        [HttpGet("serial/{id}/season/{season}/episode/res/{resolution}/output.m3u8")]
+        [HttpGet("serial/{id}/season/{season}/episode/{episode}/res/{resolution}/output.m3u8")]
         public async Task<IActionResult> GetContentSerialStream(int id, int resolution, int season, int episode)
         {
             var userId = User.FindFirst("id")?.Value;
             if (userId is null)
                 return StatusCode(StatusCodes.Status403Forbidden, "Нужен id пользователя");
-
-            var filePath = $"../MovieStorage/serial/{resolution}/{id}/{season}/{episode}/output.m3u8";
-            var videoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var userIdLong = long.Parse(userId);
+            
+            var videoStreamUrl = await contentService.GetSerialContentM3U8UrlAsync(userIdLong,id, season,episode,resolution);
+            
+            var resp = await clientFactory.CreateClient().GetAsync(videoStreamUrl, HttpCompletionOption.ResponseHeadersRead);
+            if (!resp.IsSuccessStatusCode)
+            {
+                return StatusCode((int)resp.StatusCode, "Не удалось получить видео");
+            }
+            var videoStream = await resp.Content.ReadAsStreamAsync();
+            
             return File(videoStream,"application/x-mpegURL",fileDownloadName:"output.m3u8");
         }
         
         [HttpGet("serial/{id}/season/{season}/episode/{episode}/res/{resolution}/stream/chunk/output.ts")]  
         public async Task<IActionResult> GetContentSerialStreamChunk(int id, int resolution, int season, int episode)
         {
+            // получаем id пользователя
             var userId = User.FindFirst("id")?.Value;
             if (userId is null)
                 return StatusCode(StatusCodes.Status403Forbidden, "Нужен id пользователя");
-
-            var filePath = $"../MovieStorage/serial/{resolution}/{id}/{season}/{episode}/output.ts";
-            var videoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return File(videoStream,"video/mp2t",fileDownloadName:"output.ts", enableRangeProcessing:true );
+            var userIdLong = long.Parse(userId);
+            
+            // получаем диапазон байтов
+            var range = Request.Headers.Range.ToString();
+            var start = 0L;
+            var end = 0L;
+            if (!string.IsNullOrEmpty(range))
+            {
+                var rangeParts = range.Replace("bytes=", "").Split('-');
+                start = long.Parse(rangeParts[0]);
+                end = rangeParts.Length > 1 && !string.IsNullOrEmpty(rangeParts[1]) ? long.Parse(rangeParts[1]) : 0;
+            }
+            // создаем http клиент
+            var httpClient = clientFactory.CreateClient();
+            var videoStreamUrl = await contentService.GetSerialContentStreamUrlAsync(userIdLong,id, season,episode,resolution);
+            var request = new HttpRequestMessage(HttpMethod.Get, videoStreamUrl);
+            if (start != 0 || end != 0)
+            {
+                request.Headers.Range = new RangeHeaderValue(start, end);
+            }
+            
+            // отправляем запрос на сервер с видео(minio)
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode, "Не удалось получить видео");
+            }
+            var contentLength = response.Content.Headers.ContentLength;
+            if (!contentLength.HasValue)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Не удалось получить длину контента");
+            }
+            end = end == 0 ? contentLength.Value - 1 : end;
+            // получаем стрим и отдаем его клиенту
+            var videoStream = await response.Content.ReadAsStreamAsync();
+            Response.Headers.Append("Content-Range", $"bytes {start}-{end}/{contentLength}");
+            Response.Headers.Append("Accept-Ranges", "bytes");
+            Response.Headers.Append("Content-Length", (end - start + 1).ToString());
+            Response.StatusCode = (int)HttpStatusCode.PartialContent;
+            return File(videoStream, "video/mp2t", fileDownloadName: "output.ts");
         }
         
-        [HttpPost("serial/add")]
-        public async Task<IActionResult> AddSerialContent(SerialContentAdminPageDto serialContentAdminPageDto)
+        [HttpPost("serial/add"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
+        public async Task<IActionResult> AddSerialContent([FromForm] SerialContentAdminPageDto serialContentAdminPageDto)
         {
             var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
             if (!validationResult.IsValid)
@@ -186,8 +227,8 @@ namespace API.Controllers.ContentController
         }
         
         [Authorize(Roles = "admin")]
-        [HttpPost("serial/update/{id}")]
-        public async Task<IActionResult> UpdateSerialContent(long id, SerialContentAdminPageDto serialContentAdminPageDto)
+        [HttpPost("serial/update/{id}"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
+        public async Task<IActionResult> UpdateSerialContent([FromRoute] long id, [FromForm] SerialContentAdminPageDto serialContentAdminPageDto)
         {
             serialContentAdminPageDto.Id = id;
             var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
@@ -195,6 +236,7 @@ namespace API.Controllers.ContentController
             {
                 throw new Exception(validationResult.ToString());
             }
+            
             await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
         }
@@ -214,7 +256,7 @@ namespace API.Controllers.ContentController
         
         [Authorize(Roles = "admin")]
         [HttpPost("movie/update/{id}"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
-        public async Task<IActionResult> UpdateMovieContent(long id,
+        public async Task<IActionResult> UpdateMovieContent([FromRoute] long id,
             [FromForm] MovieContentAdminPageDto movieContentAdminPageDto)
         {
             movieContentAdminPageDto.Id = id;
