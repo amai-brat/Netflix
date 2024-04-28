@@ -222,7 +222,7 @@ namespace API.Controllers.ContentController
             {
                 throw new Exception(validationResult.ToString());
             }
-            await contentService.AddSerialContent(serialContentAdminPageDto);
+            // await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
         }
         

@@ -92,6 +92,10 @@ async function addSerial(values) {
       formData.append(`${key}.Start`, values[key].start);
       formData.append(`${key}.End`, values[key].end);
     }
+    else if (key === "ageRating"){
+      formData.append(`${key}.Age`, values[key].age);
+      formData.append(`${key}.AgeMpaa`, values[key].ageMpaa);
+    }
     else {
       formData.append(key, values[key]);
     }
@@ -157,7 +161,11 @@ async function updateSerial(id, values) {
     else if (key === "releaseYears"){
      formData.append(`${key}.Start`, values[key].start);
       formData.append(`${key}.End`, values[key].end);
-    }     
+    }
+    else if (key === "ageRating"){
+      formData.append(`${key}.Age`, values[key].age);
+      formData.append(`${key}.AgeMpaa`, values[key].ageMpaa);
+    }
     else {
       formData.append(key, values[key]);
     }
