@@ -224,7 +224,7 @@ public class UserService(
         {
             throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
         }
-        var tokens = await tokenService.GenerateTokensAsync(user, dto.RememberMe);
+        var tokens = await tokenService.GenerateTokensAsync(user);
         return tokens;
     }
 

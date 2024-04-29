@@ -514,7 +514,7 @@ public class UserServiceTests
         
         _mockTokenService.Setup(x => x.GenerateTokensAsync(It.IsAny<User>(), It.IsAny<bool>()))
             .ReturnsAsync((User u, bool b) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
-        _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
+        _mockUserRepo.Setup(x => x.GetUserWithSubscriptionsAndRolesByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
 
         var service = GetUserService();
@@ -545,7 +545,7 @@ public class UserServiceTests
         
         _mockTokenService.Setup(x => x.GenerateTokensAsync(It.IsAny<User>(), It.IsAny<bool>()))
             .ReturnsAsync((User u, bool b) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
-        _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
+        _mockUserRepo.Setup(x => x.GetUserWithSubscriptionsAndRolesByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
 
         var service = GetUserService();
