@@ -11,6 +11,7 @@ using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
 using Infrastructure.Profiles;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
@@ -50,6 +51,7 @@ namespace Tests.ContentAPITests
             var movieContentDto = _fixture
                 .Build<MovieContentAdminPageDto>()
                 .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
+                .With(dto => dto.VideoFile,() => null)
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
             var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mockContentProvider.Object,_mockUserRepository.Object, _mapper);
@@ -74,6 +76,7 @@ namespace Tests.ContentAPITests
                 .Build<SerialContentAdminPageDto>()
                 .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
                 .With(dto => dto.AllowedSubscriptions, _fixture.CreateMany<SubscriptionAdminPageDto>(3).ToList())
+                .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
             var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mockContentProvider.Object,_mockUserRepository.Object, _mapper);
@@ -111,6 +114,7 @@ namespace Tests.ContentAPITests
             var movieContentDto = _fixture
                 .Build<MovieContentAdminPageDto>()
                 .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
+                .With(dto => dto.VideoFile,() => null)
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.AddMovieContent(It.IsAny<MovieContent>()));
@@ -130,6 +134,7 @@ namespace Tests.ContentAPITests
             var serialContentDto = _fixture
                 .Build<SerialContentAdminPageDto>()
                 .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
+                .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.AddSerialContent(It.IsAny<SerialContent>()));
@@ -161,6 +166,7 @@ namespace Tests.ContentAPITests
             var movieContentDto = _fixture
                 .Build<MovieContentAdminPageDto>()
                 .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
+                .With(dto => dto.VideoFile,() => null)
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()));
@@ -179,6 +185,7 @@ namespace Tests.ContentAPITests
             var serialContentDto = _fixture
                 .Build<SerialContentAdminPageDto>()
                 .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
+                .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()));
