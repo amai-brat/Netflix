@@ -1,5 +1,8 @@
 .addSerialOptions{
-    display: block;
+    *{
+        display: block;
+    }
+
     *{
         width: 50%;
     }
@@ -24,13 +27,23 @@
         display:inherit;
         margin-bottom:10px
     }
+    .trash{
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        background-image: url(../images/trash-can-svgrepo-com.svg);
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+    }
     .subscriptions{
         .subscription{
+            display: block;
+            *{
+                display: inline-block;
+            }
             input{
                 width: unset;
-            }
-            *{
-                display:inline-block;
             }
         }
     }

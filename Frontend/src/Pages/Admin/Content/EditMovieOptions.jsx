@@ -8,9 +8,9 @@ const EditMovieOptions = (movieOptions) => {
         id: initialId = 0,
         name: initialName = "",
         description: initialDescription = "",
-        slogan: initialSlogan = null,
+        slogan: initialSlogan = "",
         posterUrl: initialPosterUrl = "",
-        country: initialCountry = null,
+        country: initialCountry = "",
         contentType: initialContentType = "",
         ReleaseDate: initialReleaseDate = "2004-03-15",
         videoUrl: initialVideoUrl = "",
@@ -150,7 +150,7 @@ const EditMovieOptions = (movieOptions) => {
     }
     const popUpAgeRating = () => {
         if (!ageRatingClicked) {
-            setAgeRatings({age: 0, ageMpaa: null})
+            setAgeRatings({age: 0, ageMpaa: ""})
         }
         else {
             setAgeRatings(null)

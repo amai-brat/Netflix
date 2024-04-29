@@ -9,7 +9,9 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(100);
+            .WithMessage("Name must be not empty")
+            .MaximumLength(100)
+            .WithMessage("Name must be less than 100 characters");
         RuleFor(x => x.Description)
             .NotEmpty()
             .MaximumLength(1000);

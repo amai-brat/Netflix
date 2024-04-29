@@ -245,6 +245,10 @@ namespace API.Controllers.ContentController
         [HttpPost("movie/add"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
         public async Task<IActionResult> AddMovieContent([FromForm] MovieContentAdminPageDto movieContentAdminPageDto)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new Exception("ошибка валидацци");
+            }
             var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
             if (!validationResult.IsValid)
             {
