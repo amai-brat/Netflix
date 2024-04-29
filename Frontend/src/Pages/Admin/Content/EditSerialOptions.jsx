@@ -34,13 +34,13 @@ const EditSerialOptions = (serialOptions) => {
     const [releaseYearEnd, setReleaseYearsEnd] = useState(initialEndDate);
     const [seasonInfos, setSeasonInfos] = useState(initialSeasonInfos)
     const [ageRating, setAgeRating] = useState(initialAgeRating);
-    const [ageRatingClicked, setAgeRatingClicked] = useState(false)
+    const [ageRatingClicked, setAgeRatingClicked] = useState(ageRating !== null)
     const [ratings, setRatings] = useState(initialRatings)
-    const [ratingClicked, setRatingClicked] = useState(false)
+    const [ratingClicked, setRatingClicked] = useState(ratings !== null && (ratings.kinopoiskRating !== null || ratings.imdbRating !== null))
     const [trailerInfo, setTrailerInfo] = useState(initialTrailerInfo)
-    const [trailerInfoClicked, setTrailerInfoClicked] = useState(false)
+    const [trailerInfoClicked, setTrailerInfoClicked] = useState(trailerInfo !== null)
     const [budget, setBudget] = useState(initialBudget)
-    const [budgetClicked, setBudgetClicked] = useState(false)
+    const [budgetClicked, setBudgetClicked] = useState(budget !== null)
     const [genres, setGenres] = useState(initialGenres)
     const [personsInContent, setPersonsInContent] = useState(initialPersonsInContent)
     const [allowedSubscriptions, setAllowedSubscriptions] = useState(initialAllowedSubscriptions)

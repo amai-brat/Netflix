@@ -1,6 +1,7 @@
 using System.Text;
 using API;
 using API.Hubs;
+using API.MetadataProviders;
 using API.Middlewares.ExceptionHandler;
 using DataAccess.Extensions;
 using Infrastructure;
@@ -17,7 +18,7 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOpti
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastructure();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddMvcOptions(options => options.ModelMetadataDetailsProviders.Add(new CustomMetadataProvider ()));
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
 builder.Services.AddHttpClient();

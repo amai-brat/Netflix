@@ -23,6 +23,14 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
             .MaximumLength(50);
         RuleFor(x => x.ContentType)
             .NotEmpty();
+        RuleFor(x => x.Genres)
+            .NotEmpty();
+        RuleFor(x => x.PersonsInContent)
+            .NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions)
+            .NotEmpty();
+        RuleFor(x => x.SeasonInfos)
+            .NotEmpty();
         RuleFor(x => x.AgeRating)
             .ChildRules(ageRating =>
             {

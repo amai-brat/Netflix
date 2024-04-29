@@ -65,6 +65,9 @@ namespace DataAccess.Repositories
             dbMovieContent.ReleaseDate = newMovieContent.ReleaseDate;
             // обновляем навигационные свойства
             UpdateContentBase(dbMovieContent, newMovieContent);
+            Console.WriteLine(dbMovieContent.AgeRatings == null);
+            Console.WriteLine(dbMovieContent.AgeRatings?.Age);
+            Console.WriteLine(dbMovieContent.AgeRatings?.AgeMpaa);
         }
         
         public async Task UpdateSerialContent(SerialContent serialContent)

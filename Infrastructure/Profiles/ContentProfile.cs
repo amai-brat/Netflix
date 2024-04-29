@@ -18,7 +18,7 @@ public class ContentProfile : Profile
             .ForMember(dest => dest.AgeRatings,
                 opt => opt.MapFrom(src => src.AgeRatings != null 
                     ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
-                    : new AgeRatings()))
+                    : null))
             .ForMember(dest => dest.PersonsInContent,
                 opt => opt.MapFrom(src =>
                     src.PersonsInContent.Select(pdto =>
@@ -46,7 +46,7 @@ public class ContentProfile : Profile
             .ForMember(dest => dest.AgeRatings,
                 opt => opt.MapFrom(src => src.AgeRating != null 
                     ? new AgeRatings { Age = src.AgeRating.Age, AgeMpaa = src.AgeRating.AgeMpaa }
-                    : new AgeRatings()))
+                    : null))
             .ForMember(dest => dest.PersonsInContent,
                 opt => opt.MapFrom(src =>
                     src.PersonsInContent.Select(pdto =>

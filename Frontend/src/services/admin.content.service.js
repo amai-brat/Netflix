@@ -122,22 +122,30 @@ async function addSerial(values) {
       formData.append(`${key}.Start`, values[key].start);
       formData.append(`${key}.End`, values[key].end);
     }
-    else if (key === "ageRatings"){
-      formData.append(`${key}.Age`, values[key]?.age ?? 0);
-      formData.append(`${key}.AgeMpaa`, values[key]?.ageMpaa ?? "");
+    else if (key === "ageRating"){
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.Age`, values[key].age);
+        formData.append(`${key}.AgeMpaa`, values[key].ageMpaa);
+      }
     }
     else if (key === "ratings"){
-      formData.append(`${key}.KinopoiskRating`, values[key]?.kinopoiskRating ?? 0);
-      formData.append(`${key}.ImdbRating`, values[key]?.imdbRating ?? 0);
-      formData.append(`${key}.LocalRating`, values[key]?.localRating ?? 0);
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.KinopoiskRating`, values[key].kinopoiskRating);
+        formData.append(`${key}.ImdbRating`, values[key].imdbRating);
+        formData.append(`${key}.LocalRating`, values[key].localRating);
+      }
     }
     else if(key === "trailerInfo"){
-      formData.append(`${key}.name`, values[key]?.name?? "");
-      formData.append(`${key}.url`, values[key]?.url ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.name`, values[key].name);
+        formData.append(`${key}.url`, values[key].url);
+      }
     }
     else if(key === "budget"){
-      formData.append(`${key}.budgetValue`, values[key]?.budgetValue ?? 0);
-      formData.append(`${key}.budgetCurrencyName`, values[key]?.budgetCurrencyName ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.budgetValue`, values[key].budgetValue);
+        formData.append(`${key}.budgetCurrencyName`, values[key].budgetCurrencyName);
+      }
     }
     else {
       formData.append(key, values[key]);
@@ -152,6 +160,7 @@ async function addSerial(values) {
 
 async function updateMovie(id, values) {
   const formData = new FormData();
+  console.log(values)
   for (const key in values) {
     if (values[key] instanceof Array) {
       if (key === "personsInContent"){
@@ -166,21 +175,29 @@ async function updateMovie(id, values) {
       }
     }
     else if (key === "ageRatings"){
-      formData.append(`${key}.Age`, values[key]?.age ?? 0);
-      formData.append(`${key}.AgeMpaa`, values[key]?.ageMpaa ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.Age`, values[key].age);
+        formData.append(`${key}.AgeMpaa`, values[key].ageMpaa);
+      }
     }
     else if (key === "ratings"){
-      formData.append(`${key}.KinopoiskRating`, values[key]?.kinopoiskRating ?? 0);
-      formData.append(`${key}.ImdbRating`, values[key]?.imdbRating ?? 0);
-      formData.append(`${key}.LocalRating`, values[key]?.localRating ?? 0);
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.KinopoiskRating`, values[key].kinopoiskRating);
+        formData.append(`${key}.ImdbRating`, values[key].imdbRating);
+        formData.append(`${key}.LocalRating`, values[key].localRating);
+      }
     }
     else if(key === "trailerInfo"){
-      formData.append(`${key}.name`, values[key]?.name?? "");
-      formData.append(`${key}.url`, values[key]?.url ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.name`, values[key].name);
+        formData.append(`${key}.url`, values[key].url);
+      }
     }
     else if(key === "budget"){
-      formData.append(`${key}.budgetValue`, values[key]?.budgetValue ?? 0);
-      formData.append(`${key}.budgetCurrencyName`, values[key]?.budgetCurrencyName ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.budgetValue`, values[key].budgetValue);
+        formData.append(`${key}.budgetCurrencyName`, values[key].budgetCurrencyName);
+      }
     }
     else {
       formData.append(key, values[key]);
@@ -223,22 +240,30 @@ async function updateSerial(id, values) {
      formData.append(`${key}.Start`, values[key].start);
       formData.append(`${key}.End`, values[key].end);
     }
-    else if (key === "ageRatings"){
-      formData.append(`${key}.Age`, values[key]?.age ?? 0);
-      formData.append(`${key}.AgeMpaa`, values[key]?.ageMpaa ?? "");
+    else if (key === "ageRating"){
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.Age`, values[key].age);
+        formData.append(`${key}.AgeMpaa`, values[key].ageMpaa);
+      }
     }
     else if (key === "ratings"){
-      formData.append(`${key}.KinopoiskRating`, values[key]?.kinopoiskRating ?? 0);
-      formData.append(`${key}.ImdbRating`, values[key]?.imdbRating ?? 0);
-      formData.append(`${key}.LocalRating`, values[key]?.localRating ?? 0);
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.KinopoiskRating`, values[key].kinopoiskRating);
+        formData.append(`${key}.ImdbRating`, values[key].imdbRating);
+        formData.append(`${key}.LocalRating`, values[key].localRating);
+      }
     }
     else if(key === "trailerInfo"){
-      formData.append(`${key}.name`, values[key]?.name?? "");
-      formData.append(`${key}.url`, values[key]?.url ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.name`, values[key].name);
+        formData.append(`${key}.url`, values[key].url);
+      }
     }
     else if(key === "budget"){
-      formData.append(`${key}.budgetValue`, values[key]?.budgetValue ?? 0);
-      formData.append(`${key}.budgetCurrencyName`, values[key]?.budgetCurrencyName ?? "");
+      if (values[key] !== null && values[key] !== undefined){
+        formData.append(`${key}.budgetValue`, values[key].budgetValue);
+        formData.append(`${key}.budgetCurrencyName`, values[key].budgetCurrencyName);
+      }
     }
     else {
       formData.append(key, values[key]);

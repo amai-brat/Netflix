@@ -420,6 +420,9 @@ public class ContentService(
         }
         var movieContent = mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
         CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
+        Console.WriteLine(movieContent.AgeRatings == null);
+        Console.WriteLine(movieContent.AgeRatings?.Age);
+        Console.WriteLine(movieContent.AgeRatings?.AgeMpaa);
         await contentRepository.UpdateMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }

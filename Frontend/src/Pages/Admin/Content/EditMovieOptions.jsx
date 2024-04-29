@@ -36,13 +36,13 @@ const EditMovieOptions = (movieOptions) => {
     const [movieLength, setMovieLength] = useState(initialMovieLength);
 
     const [ageRatings, setAgeRatings] = useState(initialAgeRating);
-    const [ageRatingClicked, setAgeRatingClicked] = useState(false)
+    const [ageRatingClicked, setAgeRatingClicked] = useState(ageRatings !== null)
     const [ratings, setRatings] = useState(initialRatings)
-    const [ratingClicked, setRatingClicked] = useState(false)
+    const [ratingClicked, setRatingClicked] = useState(ratings !== null && (ratings.kinopoiskRating !== null || ratings.imdbRating !== null))
     const [trailerInfo, setTrailerInfo] = useState(initialTrailerInfo)
-    const [trailerInfoClicked, setTrailerInfoClicked] = useState(false)
+    const [trailerInfoClicked, setTrailerInfoClicked] = useState(trailerInfo !== null)
     const [budget, setBudget] = useState(initialBudget)
-    const [budgetClicked, setBudgetClicked] = useState(false)
+    const [budgetClicked, setBudgetClicked] = useState(budget !== null)
     const [genres, setGenres] = useState(initialGenres)
     const [personsInContent, setPersonsInContent] = useState(initialPersonsInContent)
     const [allowedSubscriptions, setAllowedSubscriptions] = useState(initialAllowedSubscriptions)

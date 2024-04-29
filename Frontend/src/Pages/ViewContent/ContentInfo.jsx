@@ -146,9 +146,9 @@ function ContentInfo({contentData}){
                     }
                     <span className={styles.ratings}>
                         <strong>Рейтинги:</strong>
-                        {contentData?.ratings?.imdbRating &&
+                        {contentData.ratings !== null && contentData.ratings.imdbRating !== null &&
                             <span className={styles.ratingImdb}>IMDb: {contentData.ratings.imdbRating}</span>}
-                        {contentData?.ratings?.kinopoiskRating && <span
+                        {contentData.ratings !== null && contentData.ratings.kinopoiskRating !== null && <span
                             className={styles.ratingKinopoisk}>Кинопоиск: {contentData.ratings.kinopoiskRating}</span>}
                         <span
                             className={styles.ratingLocal}>Локальный: {contentData?.ratings?.localRating == null ? "недостаточно оценок" : contentData.ratings.localRating}</span></span>

@@ -33,6 +33,7 @@ const AdminContent = () => {
                 position: "bottom-center"
             })
         }
+        console.log(json)
     }
     const editSerialClickedAction = async () => {
         const {response: resp, data: json} = await adminContentService.getEditSerialContent(editSerialId);
@@ -44,6 +45,7 @@ const AdminContent = () => {
                 position: "bottom-center"
             })
         }
+        console.log(json)
     }
     const deleteContent = async () => {
         if (idToDelete < 0) {

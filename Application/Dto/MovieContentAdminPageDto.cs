@@ -23,7 +23,7 @@ public class MovieContentAdminPageDto
     public TrailerInfo? TrailerInfo { get; set; }
     public Budget? Budget { get; set; }
     
-    public List<string> Genres { get; set; } = null!;
-    public List<PersonInContentAdminPageDto> PersonsInContent { get; set; } = null!;
-    public List<SubscriptionAdminPageDto> AllowedSubscriptions { get; set; } = null!;
+    public List<string> Genres { get; set; } = new();
+    public List<PersonInContentAdminPageDto> PersonsInContent { get; set; } = new();
+    public List<SubscriptionAdminPageDto> AllowedSubscriptions { get; set; } = new();
 }

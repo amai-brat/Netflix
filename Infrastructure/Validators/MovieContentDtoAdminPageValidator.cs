@@ -29,6 +29,12 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
             .NotEmpty();
         RuleFor(x => x.VideoUrl)
             .NotEmpty();
+        RuleFor(x => x.Genres)
+            .NotEmpty();
+        RuleFor(x => x.PersonsInContent)
+            .NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions)
+            .NotEmpty();
         RuleFor(x => x.AgeRatings)
             .ChildRules(ageRating =>
             {

@@ -10,6 +10,7 @@ using Application.Exceptions;
 using Application.Services.Abstractions;
 using AutoMapper;
 using FluentValidation;
+using Infrastructure.Validators;
 
 namespace API.Controllers.ContentController
 {
@@ -23,6 +24,17 @@ namespace API.Controllers.ContentController
         IMapper mapper,
         IHttpClientFactory clientFactory) : ControllerBase
     {
+        [HttpPost("test")]
+        public async Task<IActionResult> Test()
+        {
+            var moviedto = new MovieContentAdminPageDto(){Name = "123123"};
+            var movie = new MovieContent();
+            Console.Write(moviedto.AgeRatings == null);
+            Console.Write(movie.AgeRatings == null);
+            var reuslt = mapper.Map(moviedto, movie);
+            Console.Write(reuslt.AgeRatings == null);
+            return Ok(reuslt);
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
@@ -265,6 +277,9 @@ namespace API.Controllers.ContentController
             {
                 throw new Exception(validationResult.ToString());
             }
+            Console.WriteLine(movieContentAdminPageDto.AgeRatings == null);
+            Console.WriteLine(movieContentAdminPageDto.AgeRatings?.Age);
+            Console.WriteLine(movieContentAdminPageDto.AgeRatings?.AgeMpaa);
             await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }
