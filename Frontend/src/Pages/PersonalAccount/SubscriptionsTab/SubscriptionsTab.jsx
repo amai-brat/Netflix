@@ -45,11 +45,9 @@ const SubscriptionsTab = () => {
                     </div>
                 )}
             </div>
-            {subscriptions.length === 0 &&
-                <div className={styles.buySubscription}>
-                    <span onClick={() => navigate("/Subscriptions")}>Купить подписку</span>
-                </div>
-            }
+            <div className={styles.buySubscription}>
+                <span onClick={() => navigate("/Subscriptions")}>Купить подписку</span>
+            </div>
         </>
     )
 }

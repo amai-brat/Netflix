@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CustomForm } from './CustomForm';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import netflixLogo from '../../assets/NetflixLogo.svg';
 import googleLogo from '../../assets/GoogleLogo.svg';
 import vkLogo from '../../assets/VkLogo.svg'
 import "./Styles/pagestyle.css";
+import { userService } from '../../services/user.service';
 
 const SignUpSignIn = ({ formType }) => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const getCurrentUserDataToCheckAuthenticationAsync = async () => {
+            try{
+                const {response, data} = await userService.getPersonalInfo();
+                if(response.ok){
+                    navigate("/MainContent")
+                }
+            }
+            catch (error){
+                console.log(error);
+            }
+        }
+
+        getCurrentUserDataToCheckAuthenticationAsync();
+    }, [])
+
     return (
         <>
             <div className="page">

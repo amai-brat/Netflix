@@ -3,10 +3,11 @@ import background from './styles/background.module.css'
 import {NavLink, Outlet, useLocation} from "react-router-dom";
 import content from './styles/content.module.css'
 import tabContent from './styles/tabContent.module.css'
+import { authenticationService } from '../../../services/authentication.service';
 
 const GeneralPart = ({component: Component}) => {
     const [currentTab, setCurrentTab] = useState(0);
-    const tabs = [
+    let tabs = [
         {name: "Личные данные", link: "PersonalInfoTab"},
         {name: "Избранное", link: "FavouritesTab"},
         {name: "Рецензии", link: "PersonalReviewsTab"},
@@ -14,6 +15,12 @@ const GeneralPart = ({component: Component}) => {
         {name: "Контент", link: "admin/content"},
         {name: "Подписки управление", link:"admin/subscriptions"}
     ];
+
+    const user = authenticationService.getUser();
+    if (user.role == "user") {
+        tabs = tabs.slice(0, -2)
+    }
+
     const location = useLocation();
     const setInitialTab = () => {
         const pathSegments = location.pathname.split('/');
