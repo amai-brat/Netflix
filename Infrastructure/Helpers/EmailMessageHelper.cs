@@ -5,7 +5,7 @@ namespace Infrastructure.Helpers;
 public static class EmailMessageHelper
 {
     private const string EmailConfirmationEndpoint = "https://localhost:7173/auth/confirm-email";
-    private const string EmailChangeConfirmationEndpoint = "http://localhost:7173/auth/confirm-email-change";
+    private const string EmailChangeConfirmationEndpoint = "https://localhost:7173/auth/confirm-email-change";
     
     public static string GetEmailConfirmationMessage(string confirmationToken, long userId)
     {

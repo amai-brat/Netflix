@@ -54,7 +54,6 @@ public class AuthService(
 
             return user?.Id;   
         }
-        
         throw new IdentityException(string.Join(" ", identityResult.Errors.Select(x => x.Description)));
     }
 

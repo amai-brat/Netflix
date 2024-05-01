@@ -1,16 +1,20 @@
 using Application.Dto;
+using Application.Options;
 using Application.Services.Abstractions;
 using FluentValidation;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Data;
+using Infrastructure.Options;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Implementations;
 using Infrastructure.Validators;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Infrastructure;
 
@@ -18,13 +22,24 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection serviceCollection,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IWebHostEnvironment environment)
     {
         serviceCollection.AddValidators();
         serviceCollection.AddAutoMapper(typeof(DependencyInjection).Assembly);
         serviceCollection.AddScoped<IUserService, UserService>();
         serviceCollection.AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>();
         serviceCollection.AddIdentity(configuration);
+        serviceCollection.AddOptions(configuration);
+
+        if (environment.IsDevelopment())
+        {
+            serviceCollection.AddScoped<IEmailSender, FakeEmailSender>();
+        }
+        else
+        {
+            serviceCollection.AddScoped<IEmailSender, EmailSender>();
+        }
 
         return serviceCollection;
     }
@@ -65,7 +80,19 @@ public static class DependencyInjection
                 options.SignIn.RequireConfirmedEmail = true;
             })
             .AddRoles<AppRole>()
+            .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<IdentityDbContext>();
+
+        return serviceCollection;
+    }
+
+    private static IServiceCollection AddOptions(
+        this IServiceCollection serviceCollection, 
+        IConfiguration configuration)
+    {
+        serviceCollection.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
+        serviceCollection.Configure<MinioOptions>(configuration.GetSection("Minio"));
+        serviceCollection.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
 
         return serviceCollection;
     }

@@ -18,8 +18,9 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Id
     private static void SeedRoles(ModelBuilder builder)
     {
         builder.Entity<AppRole>().HasData(
-            new AppRole("user"), 
-            new AppRole("moderator"), 
-            new AppRole("admin"));
+            new AppRole("user"){Id = 1}, 
+            new AppRole("moderator"){Id = 2}, 
+            new AppRole("admin"){Id = 3}
+            );
     }
 }
