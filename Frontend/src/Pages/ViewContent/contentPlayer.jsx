@@ -1,11 +1,11 @@
 ﻿import styles from './styles/contentPlayer.module.css';
 import React, {useEffect, useState} from 'react';
+import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
 import {baseUrl} from "../../httpClient/baseUrl.js";
+import Hls from 'hls.js';
+import {get} from "mobx";
 import {fetchAuth} from "../../httpClient/fetchAuth.js";
-import {CustomPlayer} from "./CustomPlayer.jsx";
-
-
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(1080)
     const [occuredError, setOccuredError] = useState(null)
@@ -120,7 +120,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
             {occuredError == null && !dataFetching &&
                 <>
                     <div className={styles.playerWindow}>
-                        <div className={styles.player} style={{boxSizing: "border-box"}}>
+                        <div className={styles.player}>
                             <div className={styles.resAndSeasons}>
                                 {contentType.contentTypeName === "Сериал" &&
                                     <div className={styles.episodeSettings}>
@@ -159,7 +159,26 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                     </select>
                                 </div>
                             </div>
-                            <CustomPlayer videoUrl={videoUrl}></CustomPlayer>
+                            <ReactPlayer
+                                key={videoUrl + retries}
+                                url={videoUrl}
+                                config={{
+                                    file: {
+                                        hlsOptions: {
+                                            forceHLS: true,
+                                            debug: false,
+                                            xhrSetup: function (xhr) {
+                                                xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("accessToken"));
+                                            },
+                                        },
+                                    },
+                                }}
+                                controls={true}
+                                height={"720px"}
+                                id="videoPlayer"
+                                width={"1280px"}
+                            onError={updateTokenAndRetry}>
+                            </ReactPlayer>
                         </div>
                     </div>
                 </>
