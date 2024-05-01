@@ -16,7 +16,7 @@ using Infrastructure.Providers.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
-builder.Configuration.AddJsonFile("authAppSettings.json");
+//builder.Configuration.AddJsonFile("authAppSettings.json");
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("Auth:Google"));
