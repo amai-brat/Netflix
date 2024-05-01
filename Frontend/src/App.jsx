@@ -26,7 +26,7 @@ function App() {
     return (
         <>
             <ToastContainer theme={"dark"} />
-            {location.pathname !== "/" && location.pathname !== "/signin" 
+            {location.pathname !== "/" && !location.pathname.includes("signin") 
                 && location.pathname !== "/signup" && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>

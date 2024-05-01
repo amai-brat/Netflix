@@ -8,7 +8,7 @@ import {Alert} from "@mui/material";
 
 const ExternalSignIn = () => {
     const [response, setResponse] = useState(null);
-    const [query, setQuery] = useSearchParams()
+    const [query] = useSearchParams()
     const location = useLocation()
     const provider = location.pathname.split('/').at(-1)
     const code = query.get("code")
@@ -16,14 +16,16 @@ const ExternalSignIn = () => {
     
     
     const authAsync = async () => {
-        const response = await authenticationService.externalSignIn(provider, code)
-        if(response.ok){
+        const resp = await authenticationService.externalSignIn(provider, code)
+        if(resp.ok){
             setResponse({Success: true, Message: "Успешный вход"});
             await new Promise((resolve => setTimeout(resolve, 1000)));
             navigate("/MainContent");
         }else{
-            const errorText = response.data.message.match(/^[^(]*/)[0];
-            setResponse({Success: false, Message: errorText})
+            if(response === null){
+                const errorText = resp.data.message.match(/^[^(]*/)[0];
+                setResponse({Success: false, Message: errorText})   
+            }
         }
     }
 
