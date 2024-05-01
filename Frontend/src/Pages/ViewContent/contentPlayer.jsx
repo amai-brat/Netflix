@@ -151,7 +151,9 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                 id="videoPlayer"
                                 width={"1280px"}
                             onError={updateTokenAndRetry}
-                            onProgress={() => {setOccuredError(null)}}>
+                            onProgress={() => {setOccuredError(null)}}
+                                
+                            >
                             </ReactPlayer>
                         </div>
                     </div>
