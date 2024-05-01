@@ -36,6 +36,9 @@
 .servicesContainer {
     text-align: center;
     margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .divider {
