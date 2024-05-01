@@ -117,8 +117,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                 </div>
                 {occuredError}
             </div>}
-            {occuredError == null && !dataFetching &&
-                <>
+                <div style={{display: occuredError == null && !dataFetching ? "block" : "none"}}>
                     <div className={styles.playerWindow}>
                         <div className={styles.player}>
                             <div className={styles.resAndSeasons}>
@@ -160,7 +159,6 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                 </div>
                             </div>
                             <ReactPlayer
-                                key={videoUrl + retries}
                                 url={videoUrl}
                                 config={{
                                     file: {
@@ -181,8 +179,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                             </ReactPlayer>
                         </div>
                     </div>
-                </>
-            }
+                </div>
         </>
     );
 }
