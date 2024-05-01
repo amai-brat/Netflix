@@ -9,7 +9,8 @@ namespace DataAccess.Configurations
 		public void Configure(EntityTypeBuilder<User> builder)
 		{
 			builder.HasKey(u => u.Id);
-
+			builder.HasAlternateKey(u => u.Email);
+			
 			builder.Property(u => u.Nickname).IsRequired();
 			builder.Property(u => u.Email).IsRequired();
 			builder.Property(u => u.Password).IsRequired();
