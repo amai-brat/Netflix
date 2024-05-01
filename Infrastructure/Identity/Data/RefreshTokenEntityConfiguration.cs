@@ -1,8 +1,7 @@
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataAccess.Configurations;
+namespace Infrastructure.Identity.Data;
 
 public class RefreshTokenEntityConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
@@ -11,6 +10,6 @@ public class RefreshTokenEntityConfiguration : IEntityTypeConfiguration<RefreshT
         builder.HasKey(x => x.Id);
         builder.HasOne(x => x.User)
             .WithMany()
-            .HasForeignKey(x => x.UserId);
+            .HasForeignKey(x => x.AppUserId);
     }
 }

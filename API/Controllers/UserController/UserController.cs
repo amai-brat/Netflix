@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Application.Dto;
 using Application.Services.Abstractions;
+using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +11,8 @@ namespace API.Controllers.UserController;
 [ApiController]
 [Route("user")]
 public class UserController(
-    IUserService userService) : ControllerBase
+    IUserService userService,
+    IAuthService authService) : ControllerBase
 {
     [HttpGet("get-personal-info")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
@@ -27,7 +30,8 @@ public class UserController(
     public async Task<IActionResult> ChangeEmailAsync([FromBody] string email)
     {
         var userId = GetUserId();
-        _ = await userService.ChangeEmailAsync(userId, email);
+        var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)!.Value;
+        await authService.ChangeEmailRequestAsync(userEmail, email);
         var infoDto = await userService.GetPersonalInfoAsync(userId);
        
         return Ok(infoDto);
@@ -55,10 +59,10 @@ public class UserController(
     [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordDto dto)
     {
-        var userId = GetUserId();
-        var result = await userService.ChangePasswordAsync(userId, dto);
+        var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)!.Value;
+        var result = await authService.ChangePasswordAsync(userEmail, dto);
 
-        return Ok(result.Id);
+        return Ok(result);
     }
 
     [HttpPatch("change-profile-picture")]

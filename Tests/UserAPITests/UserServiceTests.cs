@@ -9,6 +9,7 @@ using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastructure.Profiles;
 using Infrastructure.Services;
+using Infrastructure.Services.Abstractions;
 using Moq;
 
 namespace Tests.UserAPITests;
@@ -512,7 +513,7 @@ public class UserServiceTests
             Password = "Qwe123!@#"
         };
         
-        _mockTokenService.Setup(x => x.GenerateTokensAsync(It.IsAny<User>(), It.IsAny<bool>()))
+        _mockTokenService.Setup(x => x.GenerateTokensAsync(TODO, It.IsAny<User>(), It.IsAny<bool>()))
             .ReturnsAsync((User u, bool b) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
         _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));
@@ -543,7 +544,7 @@ public class UserServiceTests
             Password = "PassWord229*"
         };
         
-        _mockTokenService.Setup(x => x.GenerateTokensAsync(It.IsAny<User>(), It.IsAny<bool>()))
+        _mockTokenService.Setup(x => x.GenerateTokensAsync(TODO, It.IsAny<User>(), It.IsAny<bool>()))
             .ReturnsAsync((User u, bool b) => new TokensDto(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
         _mockUserRepo.Setup(x => x.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync((Expression<Func<User, bool>> filter) => users.SingleOrDefault(filter.Compile()));

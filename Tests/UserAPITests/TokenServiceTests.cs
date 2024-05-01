@@ -3,6 +3,8 @@ using Application.Repositories;
 using Application.Services.Implementations;
 using AutoFixture;
 using Domain.Entities;
+using Infrastructure.Identity;
+using Infrastructure.Services;
 using Microsoft.Extensions.Options;
 using Moq;
 
@@ -46,7 +48,7 @@ public class TokenServiceTests
         var service = GetTokenService();
         
         // act
-        await service.GenerateTokensAsync(user);
+        await service.GenerateTokensAsync(TODO, user);
         
         // assert
         Assert.True(tokens.All(x => x.IsActive && x.Expires > DateTime.Now.AddDays(-_mockMonitor.Object.CurrentValue.RefreshTokenLifetimeInDays)));

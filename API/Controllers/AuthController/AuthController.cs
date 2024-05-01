@@ -1,6 +1,6 @@
 using Application.Dto;
-using Application.Services.Abstractions;
 using FluentValidation;
+using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.AuthController;
@@ -8,7 +8,7 @@ namespace API.Controllers.AuthController;
 [ApiController]
 [Route("auth")]
 public class AuthController(
-    IUserService userService,
+    IAuthService authService,
     IValidator<SignUpDto> signUpDtoValidator) : ControllerBase
 {
     [HttpPost("signup")]
@@ -20,14 +20,14 @@ public class AuthController(
             return BadRequest(validationResult.Errors);
         }
         
-        var userId = await userService.RegisterAsync(dto);
+        var userId = await authService.RegisterAsync(dto);
         return Created("", userId);
     }
 
     [HttpPost("signin")]
     public async Task<IActionResult> SignInAsync(LoginDto dto)
     {
-        var tokens = await userService.AuthenticateAsync(dto);
+        var tokens = await authService.AuthenticateAsync(dto);
         
         if (tokens.RefreshToken != null)
         {
@@ -54,7 +54,7 @@ public class AuthController(
             return Unauthorized("Refresh token is not found");
         }
 
-        var tokens = await userService.RefreshTokenAsync(refreshToken);
+        var tokens = await authService.RefreshTokenAsync(refreshToken);
         HttpContext.Response.Cookies.Append("refresh-token", 
             tokens.RefreshToken!, 
             new CookieOptions
@@ -77,8 +77,22 @@ public class AuthController(
             return Unauthorized("Refresh token is not found");
         }
 
-        await userService.RevokeTokenAsync(refreshToken);
+        await authService.RevokeTokenAsync(refreshToken);
 
         return NoContent();
+    }
+
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmailAsync([FromQuery]long userId, [FromQuery] string token)
+    {
+        _ = await authService.ConfirmEmailAsync(userId, token);
+        return Redirect(Consts.FrontendUrl);
+    }
+
+    [HttpGet("confirm-email-change")]
+    public async Task<IActionResult> ConfirmEmailChange([FromQuery]long userId, [FromQuery]string newEmail, [FromQuery]string token)
+    {
+        _ = await authService.ChangeEmailAsync(userId, newEmail, token);
+        return Redirect(Consts.FrontendUrl);
     }
 }
