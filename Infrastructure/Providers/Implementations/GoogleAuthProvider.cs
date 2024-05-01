@@ -18,7 +18,6 @@ public class GoogleAuthProvider(IOptionsMonitor<GoogleAuthOptions> monitor): IAu
         uri.Append($"&redirect_uri={_options.RedirectUri}");
         uri.Append("&response_type=code");
         uri.Append("&scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile");
-        uri.Append("&access_type=offline");
 
         return uri.ToString();
     }
