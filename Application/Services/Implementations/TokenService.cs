@@ -46,6 +46,7 @@ public class TokenService(
         return new RefreshToken
         {
             UserId = user.Id,
+            User = user,
             Token = RandomNumberGenerator.GetHexString(32),
             Expires = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenLifetimeInDays),
             Created = DateTime.UtcNow,

@@ -22,6 +22,7 @@
         public const string InvalidEmail = "Дана некорректная почта";
         public const string InvalidBirthday = "Невозможный день рождения";
         public const string IncorrectPassword = "Неправильный пароль";
+        public const string CannotAccessToAccountByPassword = "Для входа в аккаунт нужно войти через сторонний сайт";
         public const string IncorrectRole = "Неправильная роль (user/admin/moderator)";
         public const string RefreshTokenNotFound = "Refresh токен не найден";
         public const string NotActiveRefreshToken = "Refresh токен не активен";

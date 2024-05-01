@@ -220,6 +220,11 @@ public class UserService(
             throw new UserServiceArgumentException(ErrorMessages.NotFoundUser, nameof(dto.Email));
         }
 
+        if (user.Password == "NoPassword")
+        {
+            throw new UserServiceArgumentException(ErrorMessages.CannotAccessToAccountByPassword, nameof(dto.Password));
+        }
+
         if (!passwordHasher.Verify(dto.Password, user.Password))
         {
             throw new UserServiceArgumentException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
@@ -237,5 +242,34 @@ public class UserService(
     public Task RevokeTokenAsync(string token)
     {
         return tokenService.RevokeTokenAsync(token);
+    }
+
+    public async Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto)
+    {
+        var user = 
+            await userRepository.GetUserByFilterAsync(x => x.Email == dto.Email) ??
+            await RegisterFromExternalAsync(dto);
+        
+        var tokens = await tokenService.GenerateTokensAsync(user);
+        
+        return tokens;
+    }
+
+    private async Task<User> RegisterFromExternalAsync(ExternalLoginDto dto)
+    {
+        if (!await userRepository.IsEmailUniqueAsync(dto.Email))
+            throw new UserServiceArgumentException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
+        
+        var user = new User
+        {
+            Email = dto.Email,
+            Nickname = dto.Login,
+            Password = "NoPassword",
+            ProfilePictureUrl = dto.PictureUrl,
+            Role = "user"
+        };
+
+        var res = await userRepository.AddAsync(user);
+        return res!;
     }
 }

@@ -1,5 +1,6 @@
 using Application.Dto;
 using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services.Abstractions;
 
@@ -19,4 +20,6 @@ public interface IUserService
     public Task<TokensDto> AuthenticateAsync(LoginDto dto);
     public Task<TokensDto> RefreshTokenAsync(string token);
     public Task RevokeTokenAsync(string token);
+    
+    public Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto);
 }
