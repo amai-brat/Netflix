@@ -11,38 +11,33 @@ namespace DataAccess.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddUniqueConstraint(
-                name: "ak_users_email",
-                table: "users",
-                column: "email");
-
             migrationBuilder.UpdateData(
                 table: "comments",
                 keyColumn: "id",
                 keyValue: -1L,
                 column: "written_at",
-                value: new DateTimeOffset(new DateTime(2024, 5, 1, 16, 44, 31, 475, DateTimeKind.Unspecified).AddTicks(6021), new TimeSpan(0, 3, 0, 0, 0)));
+                value: new DateTimeOffset(new DateTime(2024, 5, 1, 18, 56, 32, 404, DateTimeKind.Unspecified).AddTicks(9729), new TimeSpan(0, 3, 0, 0, 0)));
 
             migrationBuilder.UpdateData(
                 table: "favourite_contents",
                 keyColumns: new[] { "content_id", "user_id" },
                 keyValues: new object[] { -1L, -1L },
                 column: "added_at",
-                value: new DateTimeOffset(new DateTime(2024, 5, 1, 16, 4, 31, 475, DateTimeKind.Unspecified).AddTicks(6006), new TimeSpan(0, 3, 0, 0, 0)));
+                value: new DateTimeOffset(new DateTime(2024, 5, 1, 18, 16, 32, 404, DateTimeKind.Unspecified).AddTicks(9720), new TimeSpan(0, 3, 0, 0, 0)));
 
             migrationBuilder.UpdateData(
                 table: "reviews",
                 keyColumn: "id",
                 keyValue: -1L,
                 column: "written_at",
-                value: new DateTimeOffset(new DateTime(2024, 5, 1, 16, 34, 31, 475, DateTimeKind.Unspecified).AddTicks(6016), new TimeSpan(0, 3, 0, 0, 0)));
+                value: new DateTimeOffset(new DateTime(2024, 5, 1, 18, 46, 32, 404, DateTimeKind.Unspecified).AddTicks(9725), new TimeSpan(0, 3, 0, 0, 0)));
 
             migrationBuilder.UpdateData(
                 table: "user_subscriptions",
                 keyColumns: new[] { "subscription_id", "user_id" },
                 keyValues: new object[] { 1, -1L },
                 columns: new[] { "bought_at", "expires_at" },
-                values: new object[] { new DateTimeOffset(new DateTime(2024, 4, 29, 16, 34, 31, 475, DateTimeKind.Unspecified).AddTicks(5829), new TimeSpan(0, 3, 0, 0, 0)), new DateTimeOffset(new DateTime(2024, 5, 31, 16, 34, 31, 475, DateTimeKind.Unspecified).AddTicks(5865), new TimeSpan(0, 3, 0, 0, 0)) });
+                values: new object[] { new DateTimeOffset(new DateTime(2024, 4, 29, 18, 46, 32, 404, DateTimeKind.Unspecified).AddTicks(9570), new TimeSpan(0, 3, 0, 0, 0)), new DateTimeOffset(new DateTime(2024, 5, 31, 18, 46, 32, 404, DateTimeKind.Unspecified).AddTicks(9602), new TimeSpan(0, 3, 0, 0, 0)) });
 
             migrationBuilder.UpdateData(
                 table: "users",
@@ -57,13 +52,19 @@ namespace DataAccess.Migrations
                 keyValue: -1L,
                 column: "birth_day",
                 value: new DateOnly(2004, 5, 1));
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_email",
+                table: "users",
+                column: "email",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropUniqueConstraint(
-                name: "ak_users_email",
+            migrationBuilder.DropIndex(
+                name: "ix_users_email",
                 table: "users");
 
             migrationBuilder.UpdateData(

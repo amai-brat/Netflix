@@ -152,7 +152,7 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 5, 1, 16, 44, 31, 475, DateTimeKind.Unspecified).AddTicks(6021), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 5, 1, 18, 56, 32, 404, DateTimeKind.Unspecified).AddTicks(9729), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -356,7 +356,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 5, 1, 16, 4, 31, 475, DateTimeKind.Unspecified).AddTicks(6006), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 5, 1, 18, 16, 32, 404, DateTimeKind.Unspecified).AddTicks(9720), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -575,7 +575,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 5, 1, 16, 34, 31, 475, DateTimeKind.Unspecified).AddTicks(6016), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 5, 1, 18, 46, 32, 404, DateTimeKind.Unspecified).AddTicks(9725), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -706,8 +706,9 @@ namespace DataAccess.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.HasAlternateKey("Email")
-                        .HasName("ak_users_email");
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
 
@@ -765,8 +766,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 29, 16, 34, 31, 475, DateTimeKind.Unspecified).AddTicks(5829), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 31, 16, 34, 31, 475, DateTimeKind.Unspecified).AddTicks(5865), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 29, 18, 46, 32, 404, DateTimeKind.Unspecified).AddTicks(9570), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 31, 18, 46, 32, 404, DateTimeKind.Unspecified).AddTicks(9602), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
