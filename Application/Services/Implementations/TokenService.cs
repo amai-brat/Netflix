@@ -55,7 +55,6 @@ public class TokenService(
 
     public async Task<TokensDto> GenerateTokensAsync(User user, bool withRefreshToken = true)
     {
-        var accessToken = GenerateAccessToken(user);
         RefreshToken? refreshToken = null;
         if (withRefreshToken)
         {
@@ -66,6 +65,8 @@ public class TokenService(
         await RemoveOldRefreshTokens(user);
         await unitOfWork.SaveChangesAsync();
 
+        var accessToken = GenerateAccessToken(user);
+        
         return new TokensDto(accessToken, refreshToken?.Token);
     }
 
