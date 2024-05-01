@@ -14,30 +14,34 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [currentSeason, setCurrentSeason] = useState(1)
     const [videoUrl, setVideoUrl] = useState('');
     const maxRetries = 3;
-    let retries = 0;
+    const [retries,setRetries] = useState(0)
+    const [rerender, setRerender] = useState(false)
     // это нужно в случае если токен протухнет при просмотре видео. 3 раза пытаемся получить новый, если не получается
     // то выводим ошибку 
     const updateTokenAndRetry = async () => {
-        if (retries > maxRetries){
+        if (retries >= maxRetries){
             setOccuredError("вам нужно авторизироваться")
+            return;
         }
         try{
-            const {response} = await fetchAuth(getUrl())
+            const {response} = await fetchAuth(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode),false,{},"")
             if (response.ok){
-                retries = 0
+                setRetries(0)
+                setOccuredError(null)
             }
             else{
-                retries++;
+                setRetries(retries + 1)
             }
         } catch (error){
-            setOccuredError("произошла ошибка")
-            retries++;
-        } 
+            setOccuredError("произошла ошибка, блок catch:" + error.message)
+            setRetries(retries + 1)
+        }  finally {
+            
+        }
     } 
     const getUrl = (contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode) => {
         let path;
         if (contentType.contentTypeName === "Сериал") {
-            // serial/{id}/season/{season}/episode/{episode}/res/{resolution}/
             path = `${baseUrl}content/serial/${contentId}/season/${currentSeason}/episode/${currentEpisode}/res/${resolution}/output.m3u8`;
         } else {
             path = `${baseUrl}content/movie/${contentId}/res/${resolution}/output.m3u8`;
@@ -46,33 +50,33 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     };
     // Обновляем URL каждый раз при изменении параметров
     useEffect(() => {
-        setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution,currentSeason,currentEpisode));
-    }, [contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode]);
+        setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode));
+    }, [resolution, currentSeason, currentEpisode, contentType]);
     
     // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                setDataFetching(true)
-                const resp = await fetch(videoUrl, {
-                    headers: {
-                        "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
-                    }
-                });
-                if (!resp.ok) {
-                    setOccuredError("Ошибка загрузки видео")
-                    return;
-                }
-                setOccuredError(null)
-            } catch (e) {
-                setOccuredError(e.message)
-                setDataFetching(false)
-            } finally {
-                setDataFetching(false)
-            }
-        }
-        fetchData();
-    }, [videoUrl]);
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         try {
+    //             setDataFetching(true)
+    //             const resp = await fetch(videoUrl, {
+    //                 headers: {
+    //                     "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
+    //                 }
+    //             });
+    //             if (!resp.ok) {
+    //                 setOccuredError("Ошибка загрузки видео")
+    //                 return;
+    //             }
+    //             setOccuredError(null)
+    //         } catch (e) {
+    //             setOccuredError(e.message)
+    //             setDataFetching(false)
+    //         } finally {
+    //             setDataFetching(false)
+    //         }
+    //     }
+    //     fetchData();
+    // }, [videoUrl]);
     return (
         <>
             {dataFetching && <img src={gif} alt="грузится" className={styles.loading}></img>}
@@ -175,7 +179,8 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                 height={"720px"}
                                 id="videoPlayer"
                                 width={"1280px"}
-                            onError={updateTokenAndRetry}>
+                            onError={updateTokenAndRetry}
+                            onProgress={() => setRetries(0)}>
                             </ReactPlayer>
                         </div>
                     </div>
