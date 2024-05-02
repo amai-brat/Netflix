@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
@@ -8,6 +6,7 @@ using Application.Services.Abstractions;
 using Application.Services.Extensions;
 using AutoMapper;
 using Domain.Entities;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Services.Implementations;
@@ -19,6 +18,8 @@ public class ContentService(
     IGenreRepository genreRepository,
     IContentVideoProvider contentVideoProvider,
     IUserRepository userRepository,
+    IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
+    IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator,
     IMapper mapper) : IContentService
 {
     private readonly HashSet<int> _resolutions = [360, 480, 720, 1080, 1440, 2160];
@@ -314,7 +315,7 @@ public class ContentService(
 
         return movie.VideoUrl.Replace("resolution", resolution.ToString());
     }
-    [Obsolete("Валидация подписок должна быть в контроллере, используйте GetMovieVideoUrlAsync")]
+    
     public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, List<int> subscriptionIds)
     {
         var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
@@ -338,7 +339,7 @@ public class ContentService(
 
         return movie.VideoUrl.Replace("resolution", resolution.ToString());
     }
-    [Obsolete("Валидация подписок должна быть в контроллере, используйте GetSerialVideoUrlAsync")]
+
     public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
         int subscriptionId)
     {
@@ -367,7 +368,7 @@ public class ContentService(
             .Single(e => e.EpisodeNumber == episode).VideoUrl
             .Replace("resolution", resolution.ToString());
     }
-    [Obsolete("Валидация подписок должна быть в контроллере, используйте GetSerialVideoUrlAsync")]
+    
     public async Task<string> GetSerialContentVideoUrlAsync(long serialId, int season, int episode, int resolution,
         List<int> subscriptionIds)
     {
@@ -414,21 +415,28 @@ public class ContentService(
 
     public async Task UpdateMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
+        var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+        if (!validationResult.IsValid)
+        {
+            throw new Exception(validationResult.ToString());
+        }
         if (movieContentAdminPageDto.VideoFile != null)
         {
             await PutMovieContentVideoAsync(movieContentAdminPageDto.Id, movieContentAdminPageDto.Resolution, movieContentAdminPageDto.VideoFile);
         }
         var movieContent = mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
         CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
-        Console.WriteLine(movieContent.AgeRatings == null);
-        Console.WriteLine(movieContent.AgeRatings?.Age);
-        Console.WriteLine(movieContent.AgeRatings?.AgeMpaa);
         await contentRepository.UpdateMovieContent(movieContent);
         await contentRepository.SaveChangesAsync();
     }
 
     public async Task UpdateSerialContent(SerialContentAdminPageDto serialContentDto)
     {
+        var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentDto);
+        if (!validationResult.IsValid)
+        {
+            throw new Exception(validationResult.ToString());
+        }
         var serialContent = mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
         CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         foreach (var season in serialContentDto.SeasonInfos)
@@ -448,6 +456,11 @@ public class ContentService(
 
     public async Task AddMovieContent(MovieContentAdminPageDto movieContentAdminPageDto)
     {
+        var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
+        if (!validationResult.IsValid)
+        {
+            throw new Exception(validationResult.ToString());
+        }
         var movieContent = mapper.Map<MovieContentAdminPageDto, MovieContent>(movieContentAdminPageDto);
         CheckIfSubscriptionsHaveNewOne(movieContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         contentRepository.AddMovieContent(movieContent);
@@ -460,6 +473,11 @@ public class ContentService(
 
     public async Task AddSerialContent(SerialContentAdminPageDto serialContentDto)
     {
+        var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentDto);
+        if (!validationResult.IsValid)
+        {
+            throw new Exception(validationResult.ToString());
+        }
         var serialContent = mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentDto);
         CheckIfSubscriptionsHaveNewOne(serialContent.AllowedSubscriptions, await subscriptionRepository.GetAllSubscriptionsAsync());
         contentRepository.AddSerialContent(serialContent);

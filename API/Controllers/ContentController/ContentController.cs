@@ -19,22 +19,8 @@ namespace API.Controllers.ContentController
     public class ContentController(
         IContentService contentService,
         IFavouriteService favouriteService,
-        IValidator<MovieContentAdminPageDto> movieContentAdminPageDtoValidator,
-        IValidator<SerialContentAdminPageDto> serialContentAdminPageDtoValidator,
-        IMapper mapper,
-        IHttpClientFactory clientFactory) : ControllerBase
+        IMapper mapper) : ControllerBase
     {
-        [HttpPost("test")]
-        public async Task<IActionResult> Test()
-        {
-            var moviedto = new MovieContentAdminPageDto(){Name = "123123"};
-            var movie = new MovieContent();
-            Console.Write(moviedto.AgeRatings == null);
-            Console.Write(movie.AgeRatings == null);
-            var reuslt = mapper.Map(moviedto, movie);
-            Console.Write(reuslt.AgeRatings == null);
-            return Ok(reuslt);
-        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
@@ -242,13 +228,6 @@ namespace API.Controllers.ContentController
         [HttpPost("serial/update/{id}"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
         public async Task<IActionResult> UpdateSerialContent([FromRoute] long id, [FromForm] SerialContentAdminPageDto serialContentAdminPageDto)
         {
-            serialContentAdminPageDto.Id = id;
-            var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
-            if (!validationResult.IsValid)
-            {
-                throw new Exception(validationResult.ToString());
-            }
-            
             await contentService.UpdateSerialContent(serialContentAdminPageDto);
             return Ok();
         }
@@ -271,15 +250,6 @@ namespace API.Controllers.ContentController
         public async Task<IActionResult> UpdateMovieContent([FromRoute] long id,
             [FromForm] MovieContentAdminPageDto movieContentAdminPageDto)
         {
-            movieContentAdminPageDto.Id = id;
-            var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
-            if (!validationResult.IsValid)
-            {
-                throw new Exception(validationResult.ToString());
-            }
-            Console.WriteLine(movieContentAdminPageDto.AgeRatings == null);
-            Console.WriteLine(movieContentAdminPageDto.AgeRatings?.Age);
-            Console.WriteLine(movieContentAdminPageDto.AgeRatings?.AgeMpaa);
             await contentService.UpdateMovieContent(movieContentAdminPageDto);
             return Ok();
         }

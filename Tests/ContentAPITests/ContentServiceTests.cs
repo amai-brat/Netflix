@@ -2,6 +2,8 @@
 using Domain.Entities;
 using Moq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text.Json;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
@@ -10,58 +12,72 @@ using Application.Services.Implementations;
 using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
+using FluentValidation;
+using FluentValidation.Results;
+using FluentValidation.TestHelper;
 using Infrastructure.Profiles;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Tests.SpecimenBuilders;
 using Xunit.Abstractions;
+using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 namespace Tests.ContentAPITests
 {
-    public class ContentServiceTests 
+    public class ContentServiceTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-        private readonly Fixture _fixture = new();
-        private readonly Mock<IContentRepository> _mockContent = new();
-        private readonly Mock<ISubscriptionRepository> _mockSubscription  = new();
-        private readonly Mock<IContentTypeRepository> _mockContentType = new();
-        private readonly Mock<IGenreRepository> _mockGenre = new();
-        private readonly Mock<IContentVideoProvider> _mockContentProvider = new();
-        private readonly Mock<IUserRepository> _mockUserRepository = new();
-        private readonly IMapper _mapper;
+        private ITestOutputHelper _testOutputHelper;
+        private Fixture _fixture = new();
+        private Mock<IContentRepository> _mockContent = new();
+        private Mock<ISubscriptionRepository> _mockSubscription = new();
+        private Mock<IContentTypeRepository> _mockContentType = new();
+        private Mock<IGenreRepository> _mockGenre = new();
+        private Mock<IValidator<MovieContentAdminPageDto>> _mockMovieContentValidator = new();
+        private Mock<IValidator<SerialContentAdminPageDto>> _mockSerialContentValidator = new();
+        private IMapper _mapper;
+
         public ContentServiceTests(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new ContentProfile());
-            });
+            var mapperConfig = new MapperConfiguration(cfg => { cfg.AddProfile(new ContentProfile()); });
             _mapper = mapperConfig.CreateMapper();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            // потому что DateOnly не поддерживается AutoFixture.
+            _fixture.Customizations.Add(new DateOnlySpecimenBuilder());
+        }
 
-        }
         [Fact]
-        public async Task AddMovieContent_ShouldAddContent_Unit()
+        public async Task AddMovieContent_WithValidData_ShouldAddMovieContent()
         {
-            //Arrange
-            AppDbContext dbContext;
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            dbContext = new AppDbContext(options);
-            var movieContentDto = _fixture
-                .Build<MovieContentAdminPageDto>()
-                .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
-                .With(dto => dto.VideoFile,() => null)
-                .Create();
-            var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mockContentProvider.Object,_mockUserRepository.Object, _mapper);
-            //Act
-            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(movieContentDto.AllowedSubscriptions
-                .Select(dto => new Subscription(){Name = dto.Name}).ToList());
-            await contentService.AddMovieContent(movieContentDto);
-            //Assert
-            Assert.NotNull(dbContext.MovieContents.SingleOrDefault());
+            // Arrange
+            var subscriptions = GetDefaultSubscriptions();
+            var movieContent = _fixture.Build<MovieContentAdminPageDto>()
+                .With(dto => dto.AllowedSubscriptions,
+                    subscriptions.Select(s =>
+                        new SubscriptionAdminPageDto
+                        {
+                            Name = s.Name,
+                            Description = s.Description,
+                            Id = s.Id,
+                            MaxResolution = s.MaxResolution
+                        }).ToList).Create();
+            var dataSource = new List<MovieContent>();
+            
+            _mockContent.Setup(repo => repo.AddMovieContent(It.IsAny<MovieContent>()))
+                .Callback<MovieContent>(mc => dataSource.Add(mc));
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync())
+                .ReturnsAsync(subscriptions);
+            _mockMovieContentValidator.Setup(v => v.Validate(It.IsAny<MovieContentAdminPageDto>()))
+                .Returns(new FluentValidation.Results.ValidationResult());
+            var contentService = GetService();
+            
+            // Act
+            await contentService.AddMovieContent(movieContent);
+            
+            // Assert
+            Assert.Single(dataSource);
         }
+
         [Fact]
         public async Task AddSerialContent_ShouldAddContent_Unit()
         {
@@ -74,19 +90,25 @@ namespace Tests.ContentAPITests
             dbContext = new AppDbContext(options);
             var serialContentDto = _fixture
                 .Build<SerialContentAdminPageDto>()
-                .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
+                .With(dto => dto.ReleaseYears,
+                    new YearRange() { Start = new DateOnly(2000, 10, 10), End = new DateOnly(2010, 10, 10) })
                 .With(dto => dto.AllowedSubscriptions, _fixture.CreateMany<SubscriptionAdminPageDto>(3).ToList())
                 .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
                 .Create();
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mockContentProvider.Object,_mockUserRepository.Object, _mapper);
+            var contentService = GetService();
             //Act
-            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto.AllowedSubscriptions
-                .Select(dto => new Subscription(){Id = dto.Id,Name = dto.Name,Description = dto.Description, MaxResolution = dto.MaxResolution.Value}).ToList());
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto
+                .AllowedSubscriptions
+                .Select(dto => new Subscription()
+                {
+                    Id = dto.Id, Name = dto.Name, Description = dto.Description, MaxResolution = dto.MaxResolution.Value
+                }).ToList());
             await contentService.AddSerialContent(serialContentDto);
             //Assert
             Assert.NotNull(dbContext.SerialContents.SingleOrDefault());
         }
+
         [Fact]
         public async Task DeleteContent_ShouldDeleteContent_Unit()
         {
@@ -97,7 +119,7 @@ namespace Tests.ContentAPITests
                 .Options;
             dbContext = new AppDbContext(options);
             var contentRepo = new ContentRepository(dbContext);
-            var contentService = new ContentService(contentRepo, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mockContentProvider.Object,_mockUserRepository.Object, _mapper);
+            var contentService = GetService();
             var content = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().First();
             dbContext.MovieContents.Add(content);
             await dbContext.SaveChangesAsync();
@@ -107,6 +129,7 @@ namespace Tests.ContentAPITests
             //Assert
             Assert.Null(dbContext.MovieContents.SingleOrDefault());
         }
+
         [Fact]
         public async Task AddMovieContent_ShouldAddContentInRepo_Unit()
         {
@@ -119,7 +142,7 @@ namespace Tests.ContentAPITests
             //Act
             _mockContent.Setup(repository => repository.AddMovieContent(It.IsAny<MovieContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+                movieContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
             var service = GetService();
             await service.AddMovieContent(movieContentDto);
             //Assert
@@ -127,25 +150,27 @@ namespace Tests.ContentAPITests
             _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
 
         }
+
         [Fact]
         public async Task AddSerialContent_ShouldAddContentInRepo_Unit()
         {
             //Arrange
             var serialContentDto = _fixture
                 .Build<SerialContentAdminPageDto>()
-                .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
-                .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
+                .With(dto => dto.ReleaseYears,
+                    new YearRange() { Start = new DateOnly(2000, 10, 10), End = new DateOnly(2010, 10, 10) })
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.AddSerialContent(It.IsAny<SerialContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+                serialContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
             var service = GetService();
             await service.AddSerialContent(serialContentDto);
             //Assert
             _mockContent.Verify(repository => repository.AddSerialContent(It.IsAny<SerialContent>()), Times.Once);
             _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
         }
+
         [Fact]
         public async Task DeleteContent_ShouldDeleteContentInRepo_Unit()
         {
@@ -159,6 +184,7 @@ namespace Tests.ContentAPITests
             _mockContent.Verify(repository => repository.DeleteContent(contentId), Times.Once);
             _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
         }
+
         [Fact]
         public async Task UpdateMovieContent_ShouldUpdateContentInRepo_Unit()
         {
@@ -171,26 +197,27 @@ namespace Tests.ContentAPITests
             //Act
             _mockContent.Setup(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                movieContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+                movieContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
             var service = GetService();
             await service.UpdateMovieContent(movieContentDto);
             //Assert
             _mockContent.Verify(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()), Times.Once);
             _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
         }
+
         [Fact]
         public async Task UpdateSerialContent_ShouldUpdateContentInRepo_Unit()
         {
             //Arrange
             var serialContentDto = _fixture
                 .Build<SerialContentAdminPageDto>()
-                .With(dto => dto.ReleaseYears, new YearRange(){Start = new DateOnly(2000,10,10), End = new DateOnly(2010,10,10)})
-                .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
+                .With(dto => dto.ReleaseYears,
+                    new YearRange() { Start = new DateOnly(2000, 10, 10), End = new DateOnly(2010, 10, 10) })
                 .Create();
             //Act
             _mockContent.Setup(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()));
             _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                serialContentDto.AllowedSubscriptions.Select(s => new Subscription(){Name = s.Name}).ToList());
+                serialContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
             var service = GetService();
 
             await service.UpdateSerialContent(serialContentDto);
@@ -198,16 +225,20 @@ namespace Tests.ContentAPITests
             _mockContent.Verify(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()), Times.Once);
             _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
         }
+
         [Fact]
         public async Task GetExistedContentByIdShouldReturnContent()
         {
             //Arrange
-            var availableContent = BuildDefaultMovieContentBaseList().Concat(BuildDefaultSerialContentBaseList()).ToList();
+            var availableContent =
+                BuildDefaultMovieContentBaseList().Concat(BuildDefaultSerialContentBaseList()).ToList();
             var id = availableContent[Random.Shared.Next(0, availableContent.Count)].Id;
 
             //Act
-            _mockContent.Setup(repository => repository.GetContentByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
-                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => availableContent.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetContentByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
+                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) =>
+                    availableContent.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
             var result = await service.GetContentByIdAsync(id);
@@ -220,12 +251,15 @@ namespace Tests.ContentAPITests
         public async Task GetNotExistedContentByIdShouldReturnNull()
         {
             //Arrange
-            var availableContent = BuildDefaultMovieContentBaseList().Concat(BuildDefaultSerialContentBaseList()).ToList();
+            var availableContent =
+                BuildDefaultMovieContentBaseList().Concat(BuildDefaultSerialContentBaseList()).ToList();
             var id = -1;
 
             //Act
-            _mockContent.Setup(repository => repository.GetContentByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
-                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => availableContent.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetContentByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
+                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) =>
+                    availableContent.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
             var result = await service.GetContentByIdAsync(id);
@@ -239,14 +273,18 @@ namespace Tests.ContentAPITests
         public async Task GetContentByNotDefaultFilterShouldReturnFilteredContent(Filter filter)
         {
             //Arrange
-            var filteredContent = BuildFilteredMovieContentBaseList(filter).Concat(BuildFilteredSerialContentBaseList(filter));
-            var unfilteredContent = BuildUnFilteredMovieContentBaseList(filter).Concat(BuildUnFilteredSerialContentBaseList(filter));
+            var filteredContent = BuildFilteredMovieContentBaseList(filter)
+                .Concat(BuildFilteredSerialContentBaseList(filter));
+            var unfilteredContent = BuildUnFilteredMovieContentBaseList(filter)
+                .Concat(BuildUnFilteredSerialContentBaseList(filter));
             var availableContent = filteredContent.Concat(unfilteredContent).ToArray();
             Random.Shared.Shuffle(availableContent);
 
             //Act
-            _mockContent.Setup(repository => repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
-                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => availableContent.Where(filter.Compile()).ToList());
+            _mockContent.Setup(repository =>
+                    repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
+                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) =>
+                    availableContent.Where(filter.Compile()).ToList());
 
             var service = GetService();
             var result = await service.GetContentsByFilterAsync(filter);
@@ -262,8 +300,10 @@ namespace Tests.ContentAPITests
             var contents = BuildDefaultMovieContentBaseList().Concat(BuildDefaultSerialContentBaseList()).ToList();
 
             //Act
-            _mockContent.Setup(repository => repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
-                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) => contents.Where(filter.Compile()).ToList());
+            _mockContent.Setup(repository =>
+                    repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
+                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) =>
+                    contents.Where(filter.Compile()).ToList());
 
             var service = GetService();
             var result = await service.GetContentsByFilterAsync(new Filter());
@@ -287,8 +327,10 @@ namespace Tests.ContentAPITests
             contents.First(x => x.Id == contentId).VideoUrl = "a/resolution/a";
 
             //Act
-            _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
-                .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
+                .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) =>
+                    contents.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
             var result = await service.GetMovieContentVideoUrlAsync(contentId, resolution, subId);
@@ -311,11 +353,14 @@ namespace Tests.ContentAPITests
             var subId = contents.First(x => x.Id == contentId).AllowedSubscriptions.First().Id;
             var season = 1;
             var episode = 2;
-            contents.First(x => x.Id == contentId).SeasonInfos[season - 1].Episodes[episode - 1].VideoUrl = "a/resolution/a";
+            contents.First(x => x.Id == contentId).SeasonInfos[season - 1].Episodes[episode - 1].VideoUrl =
+                "a/resolution/a";
 
             //Act
-            _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
-                .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
+                .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) =>
+                    contents.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
             var result = await service.GetSerialContentVideoUrlAsync(contentId, season, episode, resolution, subId);
@@ -327,7 +372,8 @@ namespace Tests.ContentAPITests
         [Theory]
         [InlineData(400, 1, ErrorMessages.NotFoundResolution)]
         [InlineData(480, -1, ErrorMessages.NotFoundContent)]
-        public async Task GetMovieContentUrlWithInCorrectDataShouldThrowArgException(int resolution, int contentId, string errorMsg)
+        public async Task GetMovieContentUrlWithInCorrectDataShouldThrowArgException(int resolution, int contentId,
+            string errorMsg)
         {
             //Arrange
             var contents = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().ToList();
@@ -335,11 +381,16 @@ namespace Tests.ContentAPITests
             var subId = contentId == -1 ? -1 : contents.First(x => x.Id == _contentId).AllowedSubscriptions.First().Id;
 
             //Act
-            _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
-                .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
+                .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) =>
+                    contents.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
-            var ex = await Assert.ThrowsAsync<ContentServiceArgumentException>(async () => { await service.GetMovieContentVideoUrlAsync(_contentId, resolution, subId); });
+            var ex = await Assert.ThrowsAsync<ContentServiceArgumentException>(async () =>
+            {
+                await service.GetMovieContentVideoUrlAsync(_contentId, resolution, subId);
+            });
 
             //Assert
             Assert.Contains(errorMsg, ex.Message);
@@ -350,7 +401,8 @@ namespace Tests.ContentAPITests
         [InlineData(480, -1, 1, 2, ErrorMessages.NotFoundContent)]
         [InlineData(480, 1, -1, 2, ErrorMessages.NotFoundSeason)]
         [InlineData(480, 1, 1, -1, ErrorMessages.NotFoundEpisode)]
-        public async Task GetSerialContentUrlWithInCorrectDataShouldThrowArgException(int resolution, long contentId, int season, int episode, string errorMsg)
+        public async Task GetSerialContentUrlWithInCorrectDataShouldThrowArgException(int resolution, long contentId,
+            int season, int episode, string errorMsg)
         {
             //Arrange
             var contents = BuildDefaultSerialContentBaseListWithAllowedSub().Cast<SerialContent>().ToList();
@@ -360,11 +412,16 @@ namespace Tests.ContentAPITests
             var _episode = episode == -1 ? episode : 2;
 
             //Act
-            _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
-                .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
+                .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) =>
+                    contents.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
-            var ex = await Assert.ThrowsAsync<ContentServiceArgumentException>(async () => { await service.GetSerialContentVideoUrlAsync(_contentId,_season, _episode, resolution, subId); });
+            var ex = await Assert.ThrowsAsync<ContentServiceArgumentException>(async () =>
+            {
+                await service.GetSerialContentVideoUrlAsync(_contentId, _season, _episode, resolution, subId);
+            });
 
             //Assert
             Assert.Contains(errorMsg, ex.Message);
@@ -373,7 +430,8 @@ namespace Tests.ContentAPITests
         [Theory]
         [InlineData(480, -1)]
         [InlineData(2160, 1)]
-        public async Task GetMovieContentUrlWithInCorrectSubIdOrResShouldThrowNotPermittedException(int resolution, int subId)
+        public async Task GetMovieContentUrlWithInCorrectSubIdOrResShouldThrowNotPermittedException(int resolution,
+            int subId)
         {
             //Arrange
             var contents = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().ToList();
@@ -383,11 +441,16 @@ namespace Tests.ContentAPITests
             var _resolution = resolution;
 
             //Act
-            _mockContent.Setup(repository => repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
-                .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetMovieContentByFilterAsync(It.IsAny<Expression<Func<MovieContent, bool>>>()))
+                .ReturnsAsync((Expression<Func<MovieContent, bool>> filter) =>
+                    contents.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
-            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetMovieContentVideoUrlAsync(contentId, _resolution, _subId); });
+            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () =>
+            {
+                await service.GetMovieContentVideoUrlAsync(contentId, _resolution, _subId);
+            });
 
             //Assert
             Assert.Contains(ErrorMessages.UserDoesNotHavePermissionBySubscription, ex.Message);
@@ -396,7 +459,8 @@ namespace Tests.ContentAPITests
         [Theory]
         [InlineData(480, -1)]
         [InlineData(2160, 1)]
-        public async Task GetSerialContentUrlWithInCorrectSubIdOrResShouldThrowNotPermittedException(int resolution, int subId)
+        public async Task GetSerialContentUrlWithInCorrectSubIdOrResShouldThrowNotPermittedException(int resolution,
+            int subId)
         {
             //Arrange
             var contents = BuildDefaultSerialContentBaseListWithAllowedSub().Cast<SerialContent>().ToList();
@@ -408,11 +472,16 @@ namespace Tests.ContentAPITests
             var _resolution = resolution;
 
             //Act
-            _mockContent.Setup(repository => repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
-                .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) => contents.SingleOrDefault(filter.Compile()));
+            _mockContent.Setup(repository =>
+                    repository.GetSerialContentByFilterAsync(It.IsAny<Expression<Func<SerialContent, bool>>>()))
+                .ReturnsAsync((Expression<Func<SerialContent, bool>> filter) =>
+                    contents.SingleOrDefault(filter.Compile()));
 
             var service = GetService();
-            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () => { await service.GetSerialContentVideoUrlAsync(contentId, season, episode, _resolution, _subId); });
+            var ex = await Assert.ThrowsAsync<ContentServiceNotPermittedException>(async () =>
+            {
+                await service.GetSerialContentVideoUrlAsync(contentId, season, episode, _resolution, _subId);
+            });
 
             //Assert
             Assert.Contains(ErrorMessages.UserDoesNotHavePermissionBySubscription, ex.Message);
@@ -422,59 +491,91 @@ namespace Tests.ContentAPITests
         {
             var dataList = new List<object[]>()
             {
-                new object[]{new Filter() {
-                    Name = "d"
-                }},
-                new object[]{new Filter() {
-                    Types = [3, 4]
-                }},
-                new object[]{new Filter() {
-                    Genres = [1, 3]
-                }},
-                new object[]{new Filter() {
-                    Country = "USA"
-                }},
-                new object[]{new Filter() {
-                    ReleaseYearFrom = 2014
-                }},
-                new object[]{new Filter() {
-                    ReleaseYearTo = 2020
-                }},
-                new object[]{new Filter() {
-                    RatingFrom = 5
-                }},
-                new object[]{new Filter() {
-                    RatingTo = 9
-                }}
+                new object[]
+                {
+                    new Filter()
+                    {
+                        Name = "d"
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        Types = [3, 4]
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        Genres = [1, 3]
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        Country = "USA"
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        ReleaseYearFrom = 2014
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        ReleaseYearTo = 2020
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        RatingFrom = 5
+                    }
+                },
+                new object[]
+                {
+                    new Filter()
+                    {
+                        RatingTo = 9
+                    }
+                }
             };
-            foreach(var data in dataList)
+            foreach (var data in dataList)
                 yield return data;
         }
 
         private List<ContentBase> BuildDefaultMovieContentBaseList() =>
             _fixture.Build<MovieContent>()
-            .Without(c => c.PersonsInContent)
-            .Without(c => c.AllowedSubscriptions)
-            .Without(c => c.ContentType)
-            .Without(c => c.Genres)
-            .Without(c => c.Reviews)
-            .Without(c => c.ReleaseDate)
-            .Do(c => { c.Id = Math.Abs(c.Id); })
-            .CreateMany(20)
-            .Cast<ContentBase>().ToList();
+                .Without(c => c.PersonsInContent)
+                .Without(c => c.AllowedSubscriptions)
+                .Without(c => c.ContentType)
+                .Without(c => c.Genres)
+                .Without(c => c.Reviews)
+                .Without(c => c.ReleaseDate)
+                .Do(c => { c.Id = Math.Abs(c.Id); })
+                .CreateMany(20)
+                .Cast<ContentBase>().ToList();
 
         private List<ContentBase> BuildDefaultSerialContentBaseList() =>
             _fixture.Build<SerialContent>()
-            .Without(c => c.PersonsInContent)
-            .Without(c => c.AllowedSubscriptions)
-            .Without(c => c.ContentType)
-            .Without(c => c.Genres)
-            .Without(c => c.Reviews)
-            .Without(c => c.YearRange)
-            .Without(c => c.SeasonInfos)
-            .Do(c => { c.Id = Math.Abs(c.Id); })
-            .CreateMany(20)
-            .Cast<ContentBase>().ToList();
+                .Without(c => c.PersonsInContent)
+                .Without(c => c.AllowedSubscriptions)
+                .Without(c => c.ContentType)
+                .Without(c => c.Genres)
+                .Without(c => c.Reviews)
+                .Without(c => c.YearRange)
+                .Without(c => c.SeasonInfos)
+                .Do(c => { c.Id = Math.Abs(c.Id); })
+                .CreateMany(20)
+                .Cast<ContentBase>().ToList();
 
         private List<ContentBase> BuildDefaultMovieContentBaseListWithAllowedSub()
         {
@@ -505,19 +606,23 @@ namespace Tests.ContentAPITests
                 .Do(c => { c.Id = Math.Abs(c.Id); })
                 .CreateMany(20)
                 .ToList();
-            serials.ForEach(s => {
+            serials.ForEach(s =>
+            {
                 s.AllowedSubscriptions = BuildDefaultAllowedSub();
-                s.SeasonInfos = [ 
-                    new SeasonInfo(){
+                s.SeasonInfos =
+                [
+                    new SeasonInfo()
+                    {
                         SeasonNumber = 1,
-                        Episodes = [ new Episode() { EpisodeNumber = 1}, new Episode() { EpisodeNumber = 2}]
+                        Episodes = [new Episode() { EpisodeNumber = 1 }, new Episode() { EpisodeNumber = 2 }]
                     },
-                    new SeasonInfo(){
+                    new SeasonInfo()
+                    {
                         SeasonNumber = 2,
-                        Episodes = [ new Episode() { EpisodeNumber = 1}, new Episode() { EpisodeNumber = 2}]
+                        Episodes = [new Episode() { EpisodeNumber = 1 }, new Episode() { EpisodeNumber = 2 }]
                     }
                 ];
-                });
+            });
             return serials.Cast<ContentBase>().ToList();
         }
 
@@ -554,6 +659,7 @@ namespace Tests.ContentAPITests
                 if (filter.RatingTo is not null)
                     content.Ratings!.KinopoiskRating = 0;
             }
+
             return contents.Cast<ContentBase>().ToList();
         }
 
@@ -580,9 +686,10 @@ namespace Tests.ContentAPITests
                 if (filter.RatingTo is not null)
                     content.Ratings!.KinopoiskRating = 11;
             }
+
             return contents.Cast<ContentBase>().ToList();
         }
-        
+
         private List<ContentBase> BuildFilteredSerialContentBaseList(Filter filter)
         {
             var contents = BuildDefaultSerialContentBaseList().Cast<SerialContent>().ToList();
@@ -599,12 +706,13 @@ namespace Tests.ContentAPITests
                 if (filter.ReleaseYearFrom is not null)
                     content.YearRange = new YearRange() { Start = DateOnly.MaxValue };
                 if (filter.ReleaseYearTo is not null)
-                    content.YearRange = new YearRange() { End = DateOnly.MinValue};
+                    content.YearRange = new YearRange() { End = DateOnly.MinValue };
                 if (filter.RatingFrom is not null)
                     content.Ratings!.KinopoiskRating = 10;
                 if (filter.RatingTo is not null)
                     content.Ratings!.KinopoiskRating = 0;
             }
+
             return contents.Cast<ContentBase>().ToList();
         }
 
@@ -625,18 +733,25 @@ namespace Tests.ContentAPITests
                 if (filter.ReleaseYearFrom is not null)
                     content.YearRange = new YearRange() { Start = DateOnly.MinValue };
                 if (filter.ReleaseYearTo is not null)
-                    content.YearRange= new YearRange() { End = DateOnly.MaxValue };
+                    content.YearRange = new YearRange() { End = DateOnly.MaxValue };
                 if (filter.RatingFrom is not null)
                     content.Ratings!.KinopoiskRating = -1;
                 if (filter.RatingTo is not null)
                     content.Ratings!.KinopoiskRating = 11;
             }
+
             return contents.Cast<ContentBase>().ToList();
         }
 
         private ContentService GetService()
         {
-            return new ContentService(_mockContent.Object, _mockSubscription.Object, _mockContentType.Object, _mockGenre.Object, _mockContentProvider.Object,_mockUserRepository.Object, _mapper);
+            return new ContentService(_mockContent.Object, _mockSubscription.Object, _mockContentType.Object,
+                _mockGenre.Object,_mockMovieContentValidator.Object,_mockSerialContentValidator.Object, _mapper);
+        }
+
+        private List<Subscription> GetDefaultSubscriptions()
+        {
+            return _fixture.CreateMany<Subscription>().ToList();
         }
     }
 }
