@@ -32,8 +32,10 @@ public class ContentProfile : Profile
                     src.AllowedSubscriptions.Select(sdto =>
                         new Subscription
                         {
+                            Id = sdto.Id,
                             Name = sdto.Name,
-                            Description = sdto.Description??""
+                            Description = sdto.Description ?? "",
+                            MaxResolution = sdto.MaxResolution ?? 0
                         })));
 
         CreateMap<SerialContentAdminPageDto, SerialContent>()
@@ -57,8 +59,10 @@ public class ContentProfile : Profile
                     src.AllowedSubscriptions.Select(sdto =>
                         new Subscription
                         {
+                            Id = sdto.Id,
                             Name = sdto.Name,
-                            Description = sdto.Description??""
+                            Description = sdto.Description??"",
+                            MaxResolution = sdto.MaxResolution ?? 0
                         })))
             .ForMember(dest => dest.YearRange,
                 opt => opt.MapFrom(src
@@ -92,6 +96,7 @@ public class ContentProfile : Profile
             .ForMember(dest => dest.AllowedSubscriptions,
                 opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
                 {
+                    Id = s.Id,
                     Name = s.Name,
                     Description = s.Description,
                     MaxResolution = s.MaxResolution
@@ -115,6 +120,7 @@ public class ContentProfile : Profile
             .ForMember(dest => dest.AllowedSubscriptions,
                 opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
                 {
+                    Id = s.Id,
                     Name = s.Name,
                     Description = s.Description,
                     MaxResolution = s.MaxResolution

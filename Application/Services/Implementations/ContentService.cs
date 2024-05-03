@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
@@ -300,7 +301,6 @@ public class ContentService(
         return url;
     }
 
-    [Obsolete("Валидация подписок должна быть в контроллере. Используйте GetMovieVideoUrlAsync")]
     public async Task<string> GetMovieContentVideoUrlAsync(long movieId, int resolution, int subscriptionId)
     {
         var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);

@@ -1,6 +1,6 @@
 ﻿using AutoFixture.Kernel;
 
-namespace Tests.SpecimenBuilders;
+namespace Tests.Customizations;
 
 public class DateOnlySpecimenBuilder: ISpecimenBuilder
 {

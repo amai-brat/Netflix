@@ -19,7 +19,8 @@ namespace API.Controllers.ContentController
     public class ContentController(
         IContentService contentService,
         IFavouriteService favouriteService,
-        IMapper mapper) : ControllerBase
+        IMapper mapper,
+        IHttpClientFactory clientFactory) : ControllerBase
     {
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
@@ -215,11 +216,6 @@ namespace API.Controllers.ContentController
         [HttpPost("serial/add"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
         public async Task<IActionResult> AddSerialContent([FromForm] SerialContentAdminPageDto serialContentAdminPageDto)
         {
-            var validationResult = serialContentAdminPageDtoValidator.Validate(serialContentAdminPageDto);
-            if (!validationResult.IsValid)
-            {
-                throw new Exception(validationResult.ToString());
-            }
             await contentService.AddSerialContent(serialContentAdminPageDto);
             return Ok();
         }
@@ -236,11 +232,6 @@ namespace API.Controllers.ContentController
         [HttpPost("movie/add"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
         public async Task<IActionResult> AddMovieContent([FromForm] MovieContentAdminPageDto movieContentAdminPageDto)
         {
-            var validationResult = movieContentAdminPageDtoValidator.Validate(movieContentAdminPageDto);
-            if (!validationResult.IsValid)
-            {
-                throw new Exception(validationResult.ToString());
-            }
             await contentService.AddMovieContent(movieContentAdminPageDto);
             return Ok();
         }

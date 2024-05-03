@@ -2,8 +2,6 @@
 using Domain.Entities;
 using Moq;
 using System.Linq.Expressions;
-using System.Security.Cryptography;
-using System.Text.Json;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Repositories;
@@ -13,14 +11,10 @@ using AutoMapper;
 using DataAccess;
 using DataAccess.Repositories;
 using FluentValidation;
-using FluentValidation.Results;
-using FluentValidation.TestHelper;
 using Infrastructure.Profiles;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Tests.SpecimenBuilders;
+using Tests.Customizations;
 using Xunit.Abstractions;
-using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 namespace Tests.ContentAPITests
 {
@@ -32,8 +26,10 @@ namespace Tests.ContentAPITests
         private Mock<ISubscriptionRepository> _mockSubscription = new();
         private Mock<IContentTypeRepository> _mockContentType = new();
         private Mock<IGenreRepository> _mockGenre = new();
+        private Mock<IUserRepository> _mockUser = new();
         private Mock<IValidator<MovieContentAdminPageDto>> _mockMovieContentValidator = new();
         private Mock<IValidator<SerialContentAdminPageDto>> _mockSerialContentValidator = new();
+        private Mock<IContentVideoProvider> _mockContentVideoProvider = new();
         private IMapper _mapper;
 
         public ContentServiceTests(ITestOutputHelper testOutputHelper)
@@ -42,8 +38,8 @@ namespace Tests.ContentAPITests
             var mapperConfig = new MapperConfiguration(cfg => { cfg.AddProfile(new ContentProfile()); });
             _mapper = mapperConfig.CreateMapper();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            // потому что DateOnly не поддерживается AutoFixture.
             _fixture.Customizations.Add(new DateOnlySpecimenBuilder());
+            _fixture.Customizations.Add(new FormFileSpecimenBuilder());
         }
 
         [Fact]
@@ -60,7 +56,9 @@ namespace Tests.ContentAPITests
                             Description = s.Description,
                             Id = s.Id,
                             MaxResolution = s.MaxResolution
-                        }).ToList).Create();
+                        }).ToList)
+                .Without(dto => dto.VideoFile)
+                .Create();
             var dataSource = new List<MovieContent>();
             
             _mockContent.Setup(repo => repo.AddMovieContent(It.IsAny<MovieContent>()))
@@ -745,8 +743,15 @@ namespace Tests.ContentAPITests
 
         private ContentService GetService()
         {
-            return new ContentService(_mockContent.Object, _mockSubscription.Object, _mockContentType.Object,
-                _mockGenre.Object,_mockMovieContentValidator.Object,_mockSerialContentValidator.Object, _mapper);
+            return new ContentService(_mockContent.Object,
+                _mockSubscription.Object,
+                _mockContentType.Object,
+                _mockGenre.Object,
+                _mockContentVideoProvider.Object,
+                _mockUser.Object,
+                _mockMovieContentValidator.Object,
+                _mockSerialContentValidator.Object,
+                _mapper);
         }
 
         private List<Subscription> GetDefaultSubscriptions()
