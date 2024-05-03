@@ -14,5 +14,6 @@ public interface IAuthService
     public Task<string> ChangeEmailAsync(long userId, string newEmail, string changeToken);
     public Task<string> ChangeRoleAsync(long userId, string newRole);
     public Task EnableTwoFactorAuthAsync(string userEmail);
+    public Task<bool> IsEnabledTwoFactorAuthAsync(string userEmail);
     public Task<TokensDto> TwoFactorAuthenticateAsync(TwoFactorTokenDto dto);
 }

@@ -5,6 +5,8 @@ import {Link, useNavigate} from 'react-router-dom';
 import {authenticationService} from "../../services/authentication.service.js";
 
 export const CustomForm = ({formType}) => {
+    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+    const [rememberMe, setRememberme] = useState(true);
     const [response, setResponse] = useState(null);
     const navigate = useNavigate();
 
@@ -54,6 +56,16 @@ export const CustomForm = ({formType}) => {
         return errors;
     };
     
+    const validateTwoFactor = (values) => {
+        const errors = {};
+
+        if (!values.twoFactorToken){
+            errors.twoFactorToken = 'Обязательное поле';
+        }
+
+        return errors;
+    };
+
     const initialSignupValues = {
         login: '',
         email: '',
@@ -63,23 +75,28 @@ export const CustomForm = ({formType}) => {
     const initialSigninValues = {
         email: '',
         password: '',
-        rememberMe: false,
+        rememberMe: false
     }
 
     const handleSubmit = async (values) => {    
         try {
             let resp;
             if (formType === "signin") {
+                setRememberme(values.rememberMe);
                 resp = await authenticationService.signin(values);
             } else {
                 resp = await authenticationService.signup(values);
             }
 
             if (resp.ok){
+                if (resp.data === "2FA"){
+                    setTwoFactorEnabled(true);
+                    return;
+                }
                 let message = formType === "signin" ? "Успешный вход" : "Успешная регистрация";
                 setResponse({Success: true, Message: message});
                 await new Promise((resolve => setTimeout(resolve, 1000)));
-                navigate("/MainContent");
+                navigate(formType === "signin" ? "/MainContent" : "/signin");
             }
             else {
                 let errorText = resp.data.message.match(/^[^(]*/)[0];
@@ -91,7 +108,20 @@ export const CustomForm = ({formType}) => {
         }
     };
 
+    const handleTwoFactorTokenSubmit = async (values) => {
+        const resp2fa = await authenticationService.sendTwoFactorToken(values.twoFactorToken, rememberMe);
+        if (!resp2fa.ok) {
+            let errorText = resp2fa.data.message.match(/^[^(]*/)[0];
+            setResponse({Success: false, Message: errorText})
+        }
+        let message = "Успешный вход";
+        setResponse({Success: true, Message: message});
+        await new Promise((resolve => setTimeout(resolve, 1000)));
+        navigate("/MainContent");
+    }
+
     return (
+    <>
         <Formik 
             initialValues={formType === "signup" ? initialSignupValues : initialSigninValues} 
             onSubmit={handleSubmit} 
@@ -117,7 +147,6 @@ export const CustomForm = ({formType}) => {
                 <div className="inputWrapper">
                     <button type="submit" className="submitButton">{formType === 'signin' ? 'Войти' : 'Зарегистрироваться'}</button>
                 </div>
-
                 {formType === 'signin' ? (
                     <div className="rememberCheckbox">
                         <Field type="checkbox" name="rememberMe" />
@@ -144,5 +173,23 @@ export const CustomForm = ({formType}) => {
                 </Alert>
             </Form>
         </Formik>
+        {twoFactorEnabled && 
+            <Formik 
+                initialValues={{
+                    twoFactorToken: ''
+                }}
+                validate={validateTwoFactor}
+                onSubmit={handleTwoFactorTokenSubmit}>
+                <Form>
+                    <div className="inputWrapper">
+                        <Field type="text" name="twoFactorToken" placeholder="Токен двухфакторной аутентификации"/>
+                        <ErrorMessage name="twoFactorToken" component="span"/>
+                    </div>
+                    <div className="inputWrapper">
+                        <button type="submit" className="submitButton">Войти</button>
+                    </div>
+                </Form>
+            </Formik>}
+    </>
     );
 };

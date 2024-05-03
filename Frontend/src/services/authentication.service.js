@@ -6,6 +6,9 @@ export const authenticationService = {
   signin,
   signup,
   logout,
+  enableTwoFactorAuth,
+  getWhetherTwoFactorEnabled,
+  sendTwoFactorToken,
   getUser
 };
 
@@ -75,10 +78,46 @@ async function logout() {
   }
 }
 
+async function getWhetherTwoFactorEnabled() {
+  const {response, data} = await fetchAuth("auth/is-enabled-2fa", true);
+  return {response, data};
+}
+
+async function enableTwoFactorAuth() {
+  return await fetchAuth("auth/enable-2fa", true, {method: "POST"});
+}
+
+async function sendTwoFactorToken(token, rememberMe) {
+  try {
+    const resp = await fetch(`${baseUrl}auth/send-2fa`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({token, rememberMe})
+    });
+
+    if (resp.ok) {
+      const token = await resp.text();
+      sessionStorage.setItem("accessToken", token);
+      return {ok: true, data: token};
+    } else {
+      const error = await resp.json()
+      return {ok: false, data: error};
+    }
+  } catch (e) {
+    console.log(e);
+    return {ok: false, data: e.message}
+  }
+}
+
 function getUser() {
   const token = sessionStorage.getItem("accessToken");
   if (!token) {
     return null
   }
-  return jwtDecode(token);
+  const user = jwtDecode(token);
+  user.role = JSON.parse(user.role);
+  return user;
 }

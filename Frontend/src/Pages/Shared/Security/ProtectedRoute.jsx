@@ -8,7 +8,7 @@ export const ProtectedRoute = ({roles}) => {
     return <Navigate to={"/signin"}/>
   }
 
-  if (user && roles.indexOf(user.role) === -1) {
+  if (user && roles.filter(x => user.role.includes(x)).length < 1) {
     return <Navigate to={"/"}/>
   }
 

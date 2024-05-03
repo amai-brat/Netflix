@@ -100,6 +100,15 @@ public class AuthController(
         return Ok();
     }
 
+    [Authorize]
+    [HttpGet("is-enabled-2fa")]
+    public async Task<IActionResult> IsEnabledTwoFactor()
+    {
+        var email = User.FindFirst(ClaimTypes.Email)!.Value;
+        var result = await authService.IsEnabledTwoFactorAuthAsync(email);
+        return Ok(result);
+    }
+    
     [HttpPost("send-2fa")]
     public async Task<IActionResult> SendTwoFactorToken(TwoFactorTokenDto dto)
     {
@@ -109,7 +118,7 @@ public class AuthController(
             SetRefreshTokenCookie(result.RefreshToken);
         }
         
-        return Ok(result);
+        return Ok(result.AccessToken);
     }
 
     private void SetRefreshTokenCookie(string refreshToken)

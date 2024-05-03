@@ -247,6 +247,17 @@ public class AuthService(
         await userManager.SetTwoFactorEnabledAsync(appUser, true);
     }
 
+    public async Task<bool> IsEnabledTwoFactorAuthAsync(string userEmail)
+    {
+        var appUser = await userManager.FindByEmailAsync(userEmail);
+        if (appUser == null)
+        {
+            throw new AuthServiceException(ErrorMessages.NotFoundUser);
+        }
+        
+        return await userManager.GetTwoFactorEnabledAsync(appUser);
+    }
+    
     public async Task<TokensDto> TwoFactorAuthenticateAsync(TwoFactorTokenDto dto)
     {
         var appUser = await signInManager.GetTwoFactorAuthenticationUserAsync();
