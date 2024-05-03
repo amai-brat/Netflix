@@ -18,12 +18,14 @@ namespace Infrastructure.Services.Implementations;
 
 public class AuthService(
     UserManager<AppUser> userManager,
+    SignInManager<AppUser> signInManager,
     IUserRepository userRepository,
     IMapper mapper,
     IIdentityUnitOfWork unitOfWork,
     ITokenGenerator tokenGenerator,
     ITokenRepository tokenRepository,
     IEmailSender emailSender,
+    ITwoFactorTokenSender twoFactorTokenSender,
     IOptionsMonitor<JwtOptions> monitor) : IAuthService
 {
     private readonly JwtOptions _jwtOptions = monitor.CurrentValue;
@@ -57,7 +59,7 @@ public class AuthService(
         throw new IdentityException(string.Join(" ", identityResult.Errors.Select(x => x.Description)));
     }
 
-    public async Task<TokensDto> AuthenticateAsync(LoginDto dto)
+    public async Task<TokensDto?> AuthenticateAsync(LoginDto dto)
     {
         var appUser = await userManager.FindByEmailAsync(dto.Email);
         if (appUser is null)
@@ -79,25 +81,18 @@ public class AuthService(
 
             throw new AuthServiceException(AuthErrorMessages.EmailNotConfirmed);
         }
+
+        await signInManager.PasswordSignInAsync(appUser, dto.Password, false, false);
         
-        var user = await userRepository.GetUserWithSubscriptionsAsync(x => x.Email == dto.Email);
-        if (user is null)
+        if (appUser.TwoFactorEnabled)
         {
-            throw new BusinessException(ErrorMessages.NotFoundUser);
+            var token = await userManager.GenerateTwoFactorTokenAsync(appUser, GetTokenProvider(appUser));
+            await twoFactorTokenSender.SendAsync(appUser, token);
+            
+            return null;
         }
 
-        var claims = await GetClaimsAsync(user, appUser);
-        var accessToken = tokenGenerator.GenerateAccessToken(claims);
-        RefreshToken? refreshToken = null;
-        if (dto.RememberMe)
-        {
-            refreshToken = tokenGenerator.GenerateRefreshToken(user.Id, appUser.Id);
-            await tokenRepository.AddAsync(refreshToken);
-        }
-        
-        await RemoveOldRefreshTokens(appUser);
-        await unitOfWork.SaveChangesAsync();
-        return new TokensDto(accessToken, refreshToken?.Token);
+        return await GetTokens(appUser, dto.RememberMe);
     }
 
     public async Task<string> ConfirmEmailAsync(long userId, string token)
@@ -240,7 +235,36 @@ public class AuthService(
 
         throw new IdentityException(string.Join(" ", result.Errors.Select(x => x.Description)));
     }
-    
+
+    public async Task EnableTwoFactorAuthAsync(string userEmail)
+    {
+        var appUser = await userManager.FindByEmailAsync(userEmail);
+        if (appUser == null)
+        {
+            throw new AuthServiceException(ErrorMessages.NotFoundUser);
+        }
+
+        await userManager.SetTwoFactorEnabledAsync(appUser, true);
+    }
+
+    public async Task<TokensDto> TwoFactorAuthenticateAsync(TwoFactorTokenDto dto)
+    {
+        var appUser = await signInManager.GetTwoFactorAuthenticationUserAsync();
+        if (appUser == null)
+        {
+            throw new AuthServiceException(ErrorMessages.NotFoundUser);
+        }
+        
+        var result = await userManager.VerifyTwoFactorTokenAsync(appUser, GetTokenProvider(appUser), dto.Token);
+        if (result)
+        {
+            var tokens = await GetTokens(appUser, dto.RememberMe);
+            return tokens;
+        }
+
+        throw new AuthServiceException(AuthErrorMessages.InvalidTwoFactorToken);
+    }
+
     private async Task<List<Claim>> GetClaimsAsync(User user, AppUser appUser)
     {
         return
@@ -285,5 +309,36 @@ public class AuthService(
         newRefreshToken.UserId = refreshToken.UserId;
         RevokeRefreshToken(refreshToken, "Replaced by new token", newRefreshToken.Token);
         return newRefreshToken;
+    }
+
+    private async Task<TokensDto> GetTokens(AppUser appUser, bool rememberMe)
+    {
+        var user = await userRepository.GetUserWithSubscriptionsAsync(x => x.Email == appUser.Email);
+        if (user is null)
+        {
+            throw new BusinessException(ErrorMessages.NotFoundUser);
+        }
+        
+        var claims = await GetClaimsAsync(user, appUser);
+        var accessToken = tokenGenerator.GenerateAccessToken(claims);
+        RefreshToken? refreshToken = null;
+        if (rememberMe)
+        {
+            refreshToken = tokenGenerator.GenerateRefreshToken(user.Id, appUser.Id);
+            await tokenRepository.AddAsync(refreshToken);
+        }
+        
+        await RemoveOldRefreshTokens(appUser);
+        await unitOfWork.SaveChangesAsync();
+        return new TokensDto(accessToken, refreshToken?.Token);
+    }
+
+    private string GetTokenProvider(AppUser appUser)
+    {
+        return appUser.TwoFactorType switch
+        {
+            TwoFactorType.Email => "Email",
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

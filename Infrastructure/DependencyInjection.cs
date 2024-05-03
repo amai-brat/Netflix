@@ -61,6 +61,7 @@ public static class DependencyInjection
         serviceCollection.AddScoped<ITokenGenerator, TokenGenerator>();
         serviceCollection.AddScoped<IAuthService, AuthService>();
         serviceCollection.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
+        serviceCollection.AddScoped<ITwoFactorTokenSender, TwoFactorTokenSender>();
         
         serviceCollection.AddDbContext<IdentityDbContext>(builder =>
         {

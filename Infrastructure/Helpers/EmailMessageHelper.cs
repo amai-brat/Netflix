@@ -22,4 +22,11 @@ public static class EmailMessageHelper
                 Чтобы изменить почту, нажмите на <a href="{EmailChangeConfirmationEndpoint + $"?token={encodedToken}&userId={userId}"}&newEmail={newEmail}">ссылку</a>"
                 """; 
     }
+
+    public static string GetTwoFactorTokenMessage(string token)
+    {
+        return $"""
+                Введите токен на сайте: <h1 style="color:red;">{token}</h1>
+                """;
+    }
 }

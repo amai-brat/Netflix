@@ -1,4 +1,5 @@
 using API;
+using API.Controllers;
 using API.Hubs;
 using API.Middlewares.ExceptionHandler;
 using DataAccess.Extensions;
@@ -9,6 +10,7 @@ using Infrastructure.Profiles;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
+builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("FrontendConfig"));
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
@@ -20,7 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGenWithBearer();
-builder.Services.AddCorsWithFrontendPolicy();
+builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

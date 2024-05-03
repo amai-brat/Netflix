@@ -85,14 +85,14 @@ public static class DependencyInjection
         return serviceCollection;
     }
 
-    public static IServiceCollection AddCorsWithFrontendPolicy(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddCorsWithFrontendPolicy(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddCors(options =>
         {
             options.AddPolicy(name: "Frontend",
                 policy  =>
                 {
-                    policy.WithOrigins(Consts.FrontendUrl)
+                    policy.WithOrigins(configuration["FrontendConfig:Url"]!)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
