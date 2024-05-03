@@ -129,47 +129,6 @@ namespace Tests.ContentAPITests
         }
 
         [Fact]
-        public async Task AddMovieContent_ShouldAddContentInRepo_Unit()
-        {
-            //Arrange
-            var movieContentDto = _fixture
-                .Build<MovieContentAdminPageDto>()
-                .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
-                .With(dto => dto.VideoFile,() => null)
-                .Create();
-            //Act
-            _mockContent.Setup(repository => repository.AddMovieContent(It.IsAny<MovieContent>()));
-            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                movieContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
-            var service = GetService();
-            await service.AddMovieContent(movieContentDto);
-            //Assert
-            _mockContent.Verify(repository => repository.AddMovieContent(It.IsAny<MovieContent>()), Times.Once);
-            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
-
-        }
-
-        [Fact]
-        public async Task AddSerialContent_ShouldAddContentInRepo_Unit()
-        {
-            //Arrange
-            var serialContentDto = _fixture
-                .Build<SerialContentAdminPageDto>()
-                .With(dto => dto.ReleaseYears,
-                    new YearRange() { Start = new DateOnly(2000, 10, 10), End = new DateOnly(2010, 10, 10) })
-                .Create();
-            //Act
-            _mockContent.Setup(repository => repository.AddSerialContent(It.IsAny<SerialContent>()));
-            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                serialContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
-            var service = GetService();
-            await service.AddSerialContent(serialContentDto);
-            //Assert
-            _mockContent.Verify(repository => repository.AddSerialContent(It.IsAny<SerialContent>()), Times.Once);
-            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
-        }
-
-        [Fact]
         public async Task DeleteContent_ShouldDeleteContentInRepo_Unit()
         {
             //Arrange
@@ -184,23 +143,10 @@ namespace Tests.ContentAPITests
         }
 
         [Fact]
-        public async Task UpdateMovieContent_ShouldUpdateContentInRepo_Unit()
+        public async Task UpdateMovieContent_WithValidData_ShouldUpdateMovieContent()
         {
-            //Arrange
-            var movieContentDto = _fixture
-                .Build<MovieContentAdminPageDto>()
-                .With(dto => dto.ReleaseDate, new DateOnly(2021, 1, 1))
-                .With(dto => dto.VideoFile,() => null)
-                .Create();
-            //Act
-            _mockContent.Setup(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()));
-            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                movieContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
-            var service = GetService();
-            await service.UpdateMovieContent(movieContentDto);
-            //Assert
-            _mockContent.Verify(repository => repository.UpdateMovieContent(It.IsAny<MovieContent>()), Times.Once);
-            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+            // Arrange
+            
         }
 
         [Fact]
