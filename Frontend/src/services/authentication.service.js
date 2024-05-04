@@ -118,6 +118,5 @@ function getUser() {
     return null
   }
   const user = jwtDecode(token);
-  user.role = JSON.parse(user.role);
   return user;
 }
