@@ -280,13 +280,17 @@ public class AuthService(
     private async Task<List<Claim>> 
         GetClaimsAsync(User user, AppUser appUser)
     {
-        return
-        [
-            new Claim("id", user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, string.Join(", ", await userManager.GetRolesAsync(appUser))),
-            new Claim("subscribeId", JsonSerializer.Serialize(user.UserSubscriptions!.Select(x => x.SubscriptionId).ToList()))
-        ];
+        var claims = new List<Claim>
+        {
+            new("id", user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email),
+            new("subscribeId", JsonSerializer.Serialize(user.UserSubscriptions!.Select(x => x.SubscriptionId).ToList()))
+        };
+        
+        var roles = await userManager.GetRolesAsync(appUser);
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        return claims;
     }
     
     private async Task RemoveOldRefreshTokens(AppUser user)
