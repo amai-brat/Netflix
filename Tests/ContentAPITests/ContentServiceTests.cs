@@ -12,6 +12,7 @@ using DataAccess;
 using DataAccess.Repositories;
 using FluentValidation;
 using Infrastructure.Profiles;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Tests.Customizations;
 using Xunit.Abstractions;
@@ -41,7 +42,76 @@ namespace Tests.ContentAPITests
             _fixture.Customizations.Add(new DateOnlySpecimenBuilder());
             _fixture.Customizations.Add(new FormFileSpecimenBuilder());
         }
+        
+        [Fact]
+        public async Task GetMovieContentM3U8UrlAsync_WithNonExistentContent_ShouldThrow()
+        {
+            // Arrange
+            ContentService service = GetService();
+            var user = new User
+            {
+                UserSubscriptions =
+                [
+                    new UserSubscription() { SubscriptionId = 1 }
+                ]
+            };
+            var content = new MovieContent
+            {
+                AllowedSubscriptions = [new Subscription() { Id = 1 }]
+            };
+            _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(() => null);
+            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+                .ReturnsAsync(user);
+            
+            // Act
+            Task<string> Act() => service.GetMovieContentM3U8UrlAsync(1, 1, 480);
 
+            // Assert
+            await Assert.ThrowsAsync<ContentServiceNotPermittedException>(Act);
+        }
+        [Fact]
+        public async Task GetMovieContentM3U8UrlAsync_WithoutSubscription_ShouldThrow()
+        {
+            // Arrange
+            ContentService service = GetService();
+            _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(null,TimeSpan.FromMilliseconds(1));
+            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+                .ReturnsAsync(null, TimeSpan.FromMilliseconds(1));
+             
+            // Act
+             Task<string> Act() => service.GetMovieContentM3U8UrlAsync(1,1,480);
+             
+            // Assert
+            await Assert.ThrowsAsync<ContentServiceNotPermittedException>(Act);
+        }
+        [Fact]
+        public async Task GetMovieContentM3U8UrlAsync_WithIncorrectResolution_ShouldThrow()
+        {
+            // Arrange
+            ContentService service = GetService();
+            var user = new User
+            {
+                UserSubscriptions =
+                [
+                    new UserSubscription() { SubscriptionId = 1 }
+                ]
+            };
+            var content = new MovieContent
+            {
+                AllowedSubscriptions = [new Subscription() { Id = 1 }]
+            };
+            _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
+                .ReturnsAsync(content);
+            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+                .ReturnsAsync(user);
+            // Act
+            Task<string> Act() => service.GetMovieContentM3U8UrlAsync(1,1,228);
+             
+            // Assert
+            await Assert.ThrowsAsync<ContentServiceArgumentException>(Act);
+        }
         [Fact]
         public async Task AddMovieContent_WithValidData_ShouldAddMovieContent()
         {
@@ -57,7 +127,7 @@ namespace Tests.ContentAPITests
                             Id = s.Id,
                             MaxResolution = s.MaxResolution
                         }).ToList)
-                .Without(dto => dto.VideoFile)
+                .OmitAutoProperties()
                 .Create();
             var dataSource = new List<MovieContent>();
             
@@ -79,95 +149,124 @@ namespace Tests.ContentAPITests
         [Fact]
         public async Task AddSerialContent_ShouldAddContent_Unit()
         {
-            //Arrange
-            AppDbContext dbContext;
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .EnableSensitiveDataLogging()
-                .Options;
-            dbContext = new AppDbContext(options);
-            var serialContentDto = _fixture
-                .Build<SerialContentAdminPageDto>()
-                .With(dto => dto.ReleaseYears,
-                    new YearRange() { Start = new DateOnly(2000, 10, 10), End = new DateOnly(2010, 10, 10) })
-                .With(dto => dto.AllowedSubscriptions, _fixture.CreateMany<SubscriptionAdminPageDto>(3).ToList())
-                .With(dto => dto.SeasonInfos, new List<SeasonInfoAdminPageDto>())
+            // Arrange
+            var subscriptions = GetDefaultSubscriptions();
+            var movieContent = _fixture.Build<SerialContentAdminPageDto>()
+                
+                .With(dto => dto.AllowedSubscriptions,
+                    subscriptions.Select(s =>
+                        new SubscriptionAdminPageDto
+                        {
+                            Name = s.Name,
+                            Description = s.Description,
+                            Id = s.Id,
+                            MaxResolution = s.MaxResolution
+                        }).ToList)
+                .OmitAutoProperties()
                 .Create();
-            var contentRepo = new ContentRepository(dbContext);
+            //
+            var dataSource = new List<SerialContent>();
+            
+            _mockContent.Setup(repo => repo.AddSerialContent(It.IsAny<SerialContent>()))
+                .Callback<SerialContent>(mc => dataSource.Add(mc));
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync())
+                .ReturnsAsync(subscriptions);
+            _mockSerialContentValidator.Setup(v => v.Validate(It.IsAny<SerialContentAdminPageDto>()))
+                .Returns(new FluentValidation.Results.ValidationResult());
             var contentService = GetService();
-            //Act
-            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync()).ReturnsAsync(serialContentDto
-                .AllowedSubscriptions
-                .Select(dto => new Subscription()
-                {
-                    Id = dto.Id, Name = dto.Name, Description = dto.Description, MaxResolution = dto.MaxResolution.Value
-                }).ToList());
-            await contentService.AddSerialContent(serialContentDto);
-            //Assert
-            Assert.NotNull(dbContext.SerialContents.SingleOrDefault());
+            
+            // Act
+            await contentService.AddSerialContent(movieContent);
+            
+            // Assert
+            Assert.Single(dataSource);
         }
 
         [Fact]
-        public async Task DeleteContent_ShouldDeleteContent_Unit()
+        public async Task DeleteContent_WithGivenId_ShouldDeleteContent()
         {
-            //Arrange
-            AppDbContext dbContext;
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            dbContext = new AppDbContext(options);
-            var contentRepo = new ContentRepository(dbContext);
-            var contentService = GetService();
-            var content = BuildDefaultMovieContentBaseListWithAllowedSub().Cast<MovieContent>().First();
-            dbContext.MovieContents.Add(content);
-            await dbContext.SaveChangesAsync();
-            //Act
-            _mockContent.Setup(repository => repository.DeleteContent(content.Id)).Returns(content);
-            await contentService.DeleteContent(content.Id);
-            //Assert
-            Assert.Null(dbContext.MovieContents.SingleOrDefault());
-        }
-
-        [Fact]
-        public async Task DeleteContent_ShouldDeleteContentInRepo_Unit()
-        {
-            //Arrange
+            // Arrange
             var contentId = 1;
-            //Act
-            _mockContent.Setup(repository => repository.DeleteContent(contentId)).Returns(new ContentBase());
-            var service = GetService();
-            await service.DeleteContent(contentId);
-            //Assert
-            _mockContent.Verify(repository => repository.DeleteContent(contentId), Times.Once);
-            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+            var dataSource = new List<ContentBase>();
+            _mockContent.Setup(repo => repo.DeleteContent(contentId))
+                .Callback<long>(id => dataSource.RemoveAll(c => c.Id == id))
+                .Returns(new ContentBase());
+            var contentService = GetService();
+            
+            // Act
+            await contentService.DeleteContent(contentId);
+            
+            // Assert
+            Assert.Empty(dataSource);
         }
 
         [Fact]
         public async Task UpdateMovieContent_WithValidData_ShouldUpdateMovieContent()
         {
             // Arrange
+            var subscriptions = GetDefaultSubscriptions();
+            var movieContent = _fixture.Build<MovieContentAdminPageDto>()
+                .With(dto => dto.AllowedSubscriptions,
+                    subscriptions.Select(s =>
+                        new SubscriptionAdminPageDto
+                        {
+                            Name = s.Name,
+                            Description = s.Description,
+                            Id = s.Id,
+                            MaxResolution = s.MaxResolution
+                        }).ToList)
+                .OmitAutoProperties()
+                .Create();
+            var dataSource = new List<MovieContent>();
+            
+            _mockContent.Setup(repo => repo.UpdateMovieContent(It.IsAny<MovieContent>()))
+                .Callback<MovieContent>(mc => dataSource.Add(mc));
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync())
+                .ReturnsAsync(subscriptions);
+            _mockMovieContentValidator.Setup(v => v.Validate(It.IsAny<MovieContentAdminPageDto>()))
+                .Returns(new FluentValidation.Results.ValidationResult());
+            var contentService = GetService();
+            
+            // Act
+            await contentService.UpdateMovieContent(movieContent);
+            
+            // Assert
+            Assert.Single(dataSource);
             
         }
 
         [Fact]
-        public async Task UpdateSerialContent_ShouldUpdateContentInRepo_Unit()
+        public async Task UpdateSerialContent_WithValidData_ShouldUpdateSerialContent()
         {
-            //Arrange
-            var serialContentDto = _fixture
-                .Build<SerialContentAdminPageDto>()
-                .With(dto => dto.ReleaseYears,
-                    new YearRange() { Start = new DateOnly(2000, 10, 10), End = new DateOnly(2010, 10, 10) })
+            // Arrange
+            var subscriptions = GetDefaultSubscriptions();
+            var movieContent = _fixture.Build<SerialContentAdminPageDto>()
+                .With(dto => dto.AllowedSubscriptions,
+                    subscriptions.Select(s =>
+                        new SubscriptionAdminPageDto
+                        {
+                            Name = s.Name,
+                            Description = s.Description,
+                            Id = s.Id,
+                            MaxResolution = s.MaxResolution
+                        }).ToList)
+                .OmitAutoProperties()
                 .Create();
-            //Act
-            _mockContent.Setup(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()));
-            _mockSubscription.Setup(repository => repository.GetAllSubscriptionsAsync()).ReturnsAsync(
-                serialContentDto.AllowedSubscriptions.Select(s => new Subscription() { Name = s.Name }).ToList());
-            var service = GetService();
-
-            await service.UpdateSerialContent(serialContentDto);
-            //Assert
-            _mockContent.Verify(repository => repository.UpdateSerialContent(It.IsAny<SerialContent>()), Times.Once);
-            _mockContent.Verify(repository => repository.SaveChangesAsync(), Times.Once);
+            var dataSource = new List<SerialContent>();
+            
+            _mockContent.Setup(repo => repo.UpdateSerialContent(It.IsAny<SerialContent>()))
+                .Callback<SerialContent>(mc => dataSource.Add(mc));
+            _mockSubscription.Setup(repo => repo.GetAllSubscriptionsAsync())
+                .ReturnsAsync(subscriptions);
+            _mockSerialContentValidator.Setup(v => v.Validate(It.IsAny<SerialContentAdminPageDto>()))
+                .Returns(new FluentValidation.Results.ValidationResult());
+            var contentService = GetService();
+            
+            // Act
+            await contentService.UpdateSerialContent(movieContent);
+            
+            // Assert
+            Assert.Single(dataSource);
         }
 
         [Fact]

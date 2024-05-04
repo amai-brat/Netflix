@@ -26,12 +26,12 @@ public class ContentService(
     private readonly HashSet<int> _resolutions = [360, 480, 720, 1080, 1440, 2160];
     public async Task<string> GetMovieContentM3U8UrlAsync(long userId, long movieId, int resolution)
     {
-        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
-            .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))
+            ?.UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
         if (!userCanViewContent)
         {
-            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+            throw new ContentServiceNotPermittedException("Вам нужна подписка чтобы смотреть этот контент");
         }
         var resource = await GetMovieVideoUrlAsync(movieId, resolution)  + ".m3u8";
         return await contentVideoProvider.GetUrlAsync(resource);
@@ -255,7 +255,7 @@ public class ContentService(
                 .CombineExpressions(IsContentRatingBetween(filter))
         );
 
-    public async Task<string> GetMovieVideoUrlAsync(long movieId, int resolution)
+    private async Task<string> GetMovieVideoUrlAsync(long movieId, int resolution)
     {
         var movie = await contentRepository.GetMovieContentByFilterAsync(m => m.Id == movieId);
         if (movie is null)
@@ -269,7 +269,8 @@ public class ContentService(
 
         return url;
     }
-    public async Task<string> GetSerialEpisodeVideoUrlAsync(long serialId, int resolution, int seasonNumber, int episodeNumber)
+
+    private async Task<string> GetSerialEpisodeVideoUrlAsync(long serialId, int resolution, int seasonNumber, int episodeNumber)
     {
         var serial = await contentRepository.GetSerialContentByFilterAsync(s => s.Id == serialId);
         if (serial is null)
