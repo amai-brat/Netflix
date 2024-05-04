@@ -29,11 +29,12 @@ public class AuthService(
     IOptionsMonitor<JwtOptions> monitor) : IAuthService
 {
     private readonly JwtOptions _jwtOptions = monitor.CurrentValue;
+    
     public async Task<long?> RegisterAsync(SignUpDto dto)
     {
         if (!await userRepository.IsEmailUniqueAsync(dto.Email))
         {
-            throw new Exception(ErrorMessages.EmailNotUnique);
+            throw new AuthServiceException(ErrorMessages.EmailNotUnique);
         }
         
         var user = new User
@@ -70,7 +71,7 @@ public class AuthService(
         var correctPassword = await userManager.CheckPasswordAsync(appUser, dto.Password);
         if (!correctPassword)
         {
-            throw new Exception(ErrorMessages.IncorrectPassword);
+            throw new AuthServiceException(ErrorMessages.IncorrectPassword);
         }
 
         if (!appUser.EmailConfirmed)
@@ -117,7 +118,7 @@ public class AuthService(
         var refreshToken = await tokenRepository.GetRefreshTokenWithUserByTokenAsync(token);
 
         if (refreshToken is null)
-            throw new TokenServiceArgumentException(ErrorMessages.RefreshTokenNotFound, nameof(token));
+            throw new AuthServiceException(ErrorMessages.RefreshTokenNotFound);
                 
         if (refreshToken.IsRevoked)
         {
@@ -126,7 +127,7 @@ public class AuthService(
         }
 
         if (!refreshToken.IsActive)
-            throw new TokenServiceArgumentException(ErrorMessages.NotActiveRefreshToken, nameof(token));
+            throw new AuthServiceException(ErrorMessages.NotActiveRefreshToken);
         
         var newRefreshToken = RotateRefreshToken(refreshToken);
         await tokenRepository.AddAsync(newRefreshToken);
@@ -276,13 +277,14 @@ public class AuthService(
         throw new AuthServiceException(AuthErrorMessages.InvalidTwoFactorToken);
     }
 
-    private async Task<List<Claim>> GetClaimsAsync(User user, AppUser appUser)
+    private async Task<List<Claim>> 
+        GetClaimsAsync(User user, AppUser appUser)
     {
         return
         [
             new Claim("id", user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, JsonSerializer.Serialize(await userManager.GetRolesAsync(appUser))),
+            new Claim(ClaimTypes.Role, string.Join(", ", await userManager.GetRolesAsync(appUser))),
             new Claim("subscribeId", JsonSerializer.Serialize(user.UserSubscriptions!.Select(x => x.SubscriptionId).ToList()))
         ];
     }
