@@ -1,0 +1,18 @@
+{
+  "Auth": {
+    "Vk": {
+      "AuthUri": "",
+      "TokenUri": "",
+      "RedirectUri": "",
+      "ClientId": "",
+      "ClientSecret": ""
+    },
+    "Google": {
+      "AuthUri": "",
+      "TokenUri": "",
+      "RedirectUri": "",
+      "ClientId": "",
+      "ClientSecret": ""
+    }
+  }
+}
