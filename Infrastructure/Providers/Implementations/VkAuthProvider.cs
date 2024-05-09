@@ -17,35 +17,62 @@ public class VkAuthProvider(IOptionsMonitor<VkAuthOptions> monitor): IAuthProvid
         
         uri.Append($"client_id={_options.ClientId}");
         uri.Append($"&redirect_uri={_options.RedirectUri}");
-        uri.Append("&response_type=code");
         uri.Append("&scope=email");
+        uri.Append("&response_type=code");
 
         return uri.ToString();
     }
 
-    public async Task<OAuthResponse> ExchangeCodeAsync(string code)
+    public async Task<ExternalLoginDto> ExchangeCodeAsync(string code)
     {
-        var dicData = new Dictionary<string, string>
-        {
-            ["code"] = code,
-            ["client_id"] = _options.ClientId,
-            ["client_secret"] = _options.ClientSecret,
-            ["redirect_uri"] = _options.RedirectUri,
-            ["grant_type"] = "authorization_code",
-            ["scope"] = "email"
-        };
-            
         try
         {
             using var client = new HttpClient();
-            using var content = new FormUrlEncodedContent(dicData);
-            var response = await client.PostAsync(_options.TokenUri, content);
+
+            var response = await client.PostAsync(GetExchangeUri(code), new StringContent(""));
             var result = await response.Content.ReadFromJsonAsync<OAuthResponse>();
-            return result!;
+
+            if (!result!.IsSuccess)
+                return new ExternalLoginDto { Error = result.Error, ErrorDescription = result.ErrorDescription };
+            
+            var personInfoResponse = await client.PostAsync(GetInfoUri(result!.AccessToken), new StringContent(""));
+            var personInfoResult = (await personInfoResponse.Content.ReadFromJsonAsync<AuthVkResponse>())!.AuthVkPersonInfos.First();
+            
+            return new ExternalLoginDto
+            {
+                Login = personInfoResult!.FullName,
+                Email = result.Email,
+                PictureUrl = personInfoResult.Photo
+            };
         }
         catch (Exception)
         {
             return null!;
         }
+    }
+
+    private string GetInfoUri(string accessToken)
+    {
+        var uri = new StringBuilder($"{_options.InfoReqUri}?");
+        
+        uri.Append("fields=photo_50");
+        uri.Append($"&access_token={accessToken}");
+        uri.Append("&v=5.199");
+
+        return uri.ToString();
+    }
+
+    private string GetExchangeUri(string code)
+    {
+        var uri = new StringBuilder($"{_options.TokenUri}?");
+        
+        uri.Append($"code={code}");
+        uri.Append($"&client_id={_options.ClientId}");
+        uri.Append($"&client_secret={_options.ClientSecret}");
+        uri.Append($"&redirect_uri={_options.RedirectUri}");
+        uri.Append("&grant_type=authorization_code");
+        uri.Append("&scope=email");
+
+        return uri.ToString();
     }
 }

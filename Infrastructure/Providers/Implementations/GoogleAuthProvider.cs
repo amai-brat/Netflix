@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Text;
 using Application.Dto;
@@ -23,9 +24,36 @@ public class GoogleAuthProvider(IOptionsMonitor<GoogleAuthOptions> monitor): IAu
         return uri.ToString();
     }
 
-    public async Task<OAuthResponse> ExchangeCodeAsync(string code)
+    public async Task<ExternalLoginDto> ExchangeCodeAsync(string code)
     {
-        var dicData = new Dictionary<string, string>
+        try
+        {
+            using var client = new HttpClient();
+            using var content = new FormUrlEncodedContent(GetDictParams(code));
+            var response = await client.PostAsync(_options.TokenUri, content);
+            var result = await response.Content.ReadFromJsonAsync<OAuthResponse>();
+            
+            if (!result!.IsSuccess)
+                return new ExternalLoginDto { Error = result.Error, ErrorDescription = result.ErrorDescription };
+            
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(result!.IdToken);
+            
+            return new ExternalLoginDto
+            {
+                Login = jwt.Claims.First(c => c.Type == "name").Value,
+                Email = jwt.Claims.First(c => c.Type == "email").Value,
+                PictureUrl = jwt.Claims.First(c => c.Type == "picture").Value
+            };
+        }
+        catch (Exception)
+        {
+            return null!;
+        }
+    }
+
+    private Dictionary<string, string> GetDictParams(string code) =>
+        new()
         {
             ["code"] = code,
             ["client_id"] = _options.ClientId,
@@ -34,18 +62,4 @@ public class GoogleAuthProvider(IOptionsMonitor<GoogleAuthOptions> monitor): IAu
             ["grant_type"] = "authorization_code",
             ["scope"] = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
         };
-            
-        try
-        {
-            using var client = new HttpClient();
-            using var content = new FormUrlEncodedContent(dicData);
-            var response = await client.PostAsync(_options.TokenUri, content);
-            var result = await response.Content.ReadFromJsonAsync<OAuthResponse>();
-            return result!;
-        }
-        catch (Exception)
-        {
-            return null!;
-        }
-    }
 }
