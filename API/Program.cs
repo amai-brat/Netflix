@@ -1,6 +1,7 @@
 using API;
 using API.Controllers;
 using API.Hubs;
+using API.MetadataProviders;
 using API.Middlewares.ExceptionHandler;
 using DataAccess.Extensions;
 using Infrastructure;
@@ -14,9 +15,10 @@ builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("Fro
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddMvcOptions(options => options.ModelMetadataDetailsProviders.Add(new CustomMetadataProvider ()));
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddJwtAuthentication(builder.Configuration);

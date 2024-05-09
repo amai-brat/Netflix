@@ -8,9 +8,9 @@ const EditMovieOptions = (movieOptions) => {
         id: initialId = 0,
         name: initialName = "",
         description: initialDescription = "",
-        slogan: initialSlogan = null,
+        slogan: initialSlogan = "",
         posterUrl: initialPosterUrl = "",
-        country: initialCountry = null,
+        country: initialCountry = "",
         contentType: initialContentType = "",
         ReleaseDate: initialReleaseDate = "2004-03-15",
         videoUrl: initialVideoUrl = "",
@@ -36,19 +36,21 @@ const EditMovieOptions = (movieOptions) => {
     const [movieLength, setMovieLength] = useState(initialMovieLength);
 
     const [ageRatings, setAgeRatings] = useState(initialAgeRating);
-    const [ageRatingClicked, setAgeRatingClicked] = useState(false)
+    const [ageRatingClicked, setAgeRatingClicked] = useState(ageRatings !== null)
     const [ratings, setRatings] = useState(initialRatings)
-    const [ratingClicked, setRatingClicked] = useState(false)
+    const [ratingClicked, setRatingClicked] = useState(ratings !== null && (ratings.kinopoiskRating !== null || ratings.imdbRating !== null))
     const [trailerInfo, setTrailerInfo] = useState(initialTrailerInfo)
-    const [trailerInfoClicked, setTrailerInfoClicked] = useState(false)
+    const [trailerInfoClicked, setTrailerInfoClicked] = useState(trailerInfo !== null)
     const [budget, setBudget] = useState(initialBudget)
-    const [budgetClicked, setBudgetClicked] = useState(false)
+    const [budgetClicked, setBudgetClicked] = useState(budget !== null)
     const [genres, setGenres] = useState(initialGenres)
     const [personsInContent, setPersonsInContent] = useState(initialPersonsInContent)
     const [allowedSubscriptions, setAllowedSubscriptions] = useState(initialAllowedSubscriptions)
     const [allSubscriptions, setAllSubscriptions] = useState(initialAllSubscriptions)
     const [personName, setPersonName] = useState("")
     const [personProfession, setPersonProfession] = useState("")
+    const [resolution, setResolution] = useState(360)
+    const [videoFile, setVideoFile] = useState(null)
 
     const getNotNullPersons = () => {
         const newPersons = []
@@ -110,6 +112,8 @@ const EditMovieOptions = (movieOptions) => {
                 genres: getNotNullGenres(),
                 personsInContent: getNotNullPersons(),
                 allowedSubscriptions: allowedSubscriptions,
+                resolution: resolution,
+                videoFile: videoFile
             });
         if (resp.ok) {
             toast.success("Фильм успешно Изменен", {
@@ -146,7 +150,7 @@ const EditMovieOptions = (movieOptions) => {
     }
     const popUpAgeRating = () => {
         if (!ageRatingClicked) {
-            setAgeRatings({age: 0, ageMpaa: null})
+            setAgeRatings({age: 0, ageMpaa: ""})
         }
         else {
             setAgeRatings(null)
@@ -211,14 +215,11 @@ const EditMovieOptions = (movieOptions) => {
                    onChange={e => setPosterUrl(e.target.value)}/>
             <h2>Страна</h2>
             <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
-            <h2>Ссылка на видео</h2>
-            <input type={"text"} placeholder={"Ссылка на видео"} value={videoUrl}
-                   onChange={e => setVideoUrl(e.target.value)}/>
             <h2>Длительность фильма</h2>
             <input type={"number"} placeholder={"Длительность"} value={movieLength}
                    onChange={e => setMovieLength(Number.parseInt(e.target.value))}/>
             <h2>Тип контента</h2>
-            <select onChange={e => setContentType(e.target.value)} defaultValue={""} value={contentType}>
+            <select onChange={e => setContentType(e.target.value)} value={contentType}>
                 <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
                 <option value="Фильм">Фильм</option>
                 <option value="Сериал">Сериал</option>
@@ -295,6 +296,17 @@ const EditMovieOptions = (movieOptions) => {
             <button onClick={addPerson}>Добавить</button>
 
             <h2>Дата выхода</h2> <input type="date" value={releaseDate} onChange={e => setReleaseDate(e.target.value)}/>
+            <h2>Разрешение</h2>
+            <select onChange={e => setResolution(Number.parseInt(e.target.value))} value={resolution}>
+                <option value="" disabled={true} style={{color: "#b2aba1"}}>Разрешение</option>
+                <option value="360">360</option>
+                <option value="480">480</option>
+                <option value="720">720</option>
+                <option value="1080">1080</option>
+            </select>
+            <h2  style={{width:"fit-content"}}>Видео файл</h2>
+            <input type={"file"} onChange={e => setVideoFile(e.target.files[0])} style={{display:"inline-block"}}/>
+            <span style={{display:"inline-block"}}>{videoFile?.name}</span>
             <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>
         </div>
     )

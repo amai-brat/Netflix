@@ -28,6 +28,7 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
+                logger.LogInformation(ex.Message + ex.StackTrace);
             }
             catch (IdentityException ex)
             {
@@ -37,6 +38,7 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
+                logger.LogInformation(ex.Message + ex.StackTrace);
             }
             catch (ContentServiceNotPermittedException ex)
             {
@@ -46,6 +48,8 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 403
                 });
+                logger.LogInformation(ex.Message + ex.StackTrace);
+
             }
             catch (BusinessException ex)
             {
@@ -60,6 +64,7 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 400
                 });
+                logger.LogInformation(ex.Message + ex.StackTrace);
             }
         }
         private class ExceptionDetails

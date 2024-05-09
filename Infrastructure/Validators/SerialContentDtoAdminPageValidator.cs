@@ -9,7 +9,9 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(100);
+            .WithMessage("Name must be not empty")
+            .MaximumLength(100)
+            .WithMessage("Name must be less than 100 characters");
         RuleFor(x => x.Description)
             .NotEmpty()
             .MaximumLength(1000);
@@ -20,6 +22,14 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
         RuleFor(x => x.Country)
             .MaximumLength(50);
         RuleFor(x => x.ContentType)
+            .NotEmpty();
+        RuleFor(x => x.Genres)
+            .NotEmpty();
+        RuleFor(x => x.PersonsInContent)
+            .NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions)
+            .NotEmpty();
+        RuleFor(x => x.SeasonInfos)
             .NotEmpty();
         RuleFor(x => x.AgeRating)
             .ChildRules(ageRating =>

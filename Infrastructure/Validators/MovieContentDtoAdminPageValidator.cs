@@ -9,7 +9,9 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(100);
+            .WithMessage("Name must be not empty")
+            .MaximumLength(100)
+            .WithMessage("Name must be less than 100 characters");
         RuleFor(x => x.Description)
             .NotEmpty()
             .MaximumLength(1000);
@@ -26,6 +28,12 @@ public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentA
         RuleFor(x => x.ReleaseDate)
             .NotEmpty();
         RuleFor(x => x.VideoUrl)
+            .NotEmpty();
+        RuleFor(x => x.Genres)
+            .NotEmpty();
+        RuleFor(x => x.PersonsInContent)
+            .NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions)
             .NotEmpty();
         RuleFor(x => x.AgeRatings)
             .ChildRules(ageRating =>

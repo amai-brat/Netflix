@@ -40,6 +40,8 @@ public static class DependencyInjection
         {
             serviceCollection.AddScoped<IEmailSender, EmailSender>();
         }
+        
+        serviceCollection.AddScoped<IContentVideoProvider,ContentVideoProvider>();
 
         return serviceCollection;
     }
