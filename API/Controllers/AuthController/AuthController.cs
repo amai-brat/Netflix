@@ -37,20 +37,12 @@ public class AuthController(
         if (authProvider is null)
             return BadRequest("Incorrect provider");
 
-        var oAuthResult = await authProvider.ExchangeCodeAsync(code.Code);
+        var externalLoginDto = await authProvider.ExchangeCodeAsync(code.Code);
 
-        if (!oAuthResult.IsSuccess)
-            return Unauthorized(oAuthResult.ErrorDescription);
+        if (!externalLoginDto.IsSuccess)
+            return Unauthorized(externalLoginDto.ErrorDescription);
         
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(oAuthResult.IdToken);
-        
-        var tokens = await authService.AuthenticateFromExternalAsync(new ExternalLoginDto
-        {
-            Login = jwt.Claims.First(c => c.Type == "name").Value,
-            Email = jwt.Claims.First(c => c.Type == "email").Value,
-            PictureUrl = jwt.Claims.First(c => c.Type == "picture").Value
-        });
+        var tokens = await authService.AuthenticateFromExternalAsync(externalLoginDto);
         
         SetRefreshTokenCookie(tokens.RefreshToken!);
 
