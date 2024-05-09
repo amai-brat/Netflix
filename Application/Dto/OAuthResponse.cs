@@ -17,6 +17,9 @@ public class OAuthResponse
     public string TokenType { get; set; } = null!;
     [JsonPropertyName("id_token")] 
     public string IdToken { get; set; } = null!;
+    [JsonPropertyName("email")] 
+    public string Email { get; set; } = null!;
+    
     [JsonPropertyName("error")] 
     public string Error { get; set; } = null!;
     [JsonPropertyName("error_description")]
