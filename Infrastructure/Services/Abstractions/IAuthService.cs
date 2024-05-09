@@ -16,4 +16,5 @@ public interface IAuthService
     public Task EnableTwoFactorAuthAsync(string userEmail);
     public Task<bool> IsEnabledTwoFactorAuthAsync(string userEmail);
     public Task<TokensDto> TwoFactorAuthenticateAsync(TwoFactorTokenDto dto);
+    public Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto);
 }

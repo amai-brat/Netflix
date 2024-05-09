@@ -5,7 +5,7 @@ using Application.Services.Abstractions;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
-using Infrastructure.Services.Abstractions;
+using Infrastructure.Providers.Abstractions;
 
 namespace Infrastructure.Services;
 
@@ -110,34 +110,5 @@ public class UserService(
         }
 
         return favouriteDtos;
-    }
-    
-    public async Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto)
-    {
-        var user = 
-            await userRepository.GetUserByFilterAsync(x => x.Email == dto.Email) ??
-            await RegisterFromExternalAsync(dto);
-        
-        var tokens = await tokenService.GenerateTokensAsync(user);
-        
-        return tokens;
-    }
-
-    private async Task<User> RegisterFromExternalAsync(ExternalLoginDto dto)
-    {
-        if (!await userRepository.IsEmailUniqueAsync(dto.Email))
-            throw new UserServiceArgumentException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
-        
-        var user = new User
-        {
-            Email = dto.Email,
-            Nickname = dto.Login,
-            Password = "NoPassword",
-            ProfilePictureUrl = dto.PictureUrl,
-            Role = "user"
-        };
-
-        var res = await userRepository.AddAsync(user);
-        return res!;
     }
 }

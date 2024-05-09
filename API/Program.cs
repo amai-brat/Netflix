@@ -7,16 +7,11 @@ using DataAccess.Extensions;
 using Infrastructure;
 using Application;
 using Infrastructure.Profiles;
-using Infrastructure.Providers.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("FrontendConfig"));
-//builder.Configuration.AddJsonFile("authAppSettings.json");
-builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("Auth:Google"));
-builder.Services.Configure<VkAuthOptions>(builder.Configuration.GetSection("Auth:Vk"));
-builder.Services.AddAuthProviderResolver();
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);

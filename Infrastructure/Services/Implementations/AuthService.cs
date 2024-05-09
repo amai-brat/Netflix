@@ -2,13 +2,13 @@ using System.Security.Claims;
 using System.Text.Json;
 using Application.Dto;
 using Application.Exceptions;
-using Application.Options;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Helpers;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Data;
+using Infrastructure.Options;
 using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Exceptions;
 using Microsoft.AspNetCore.Identity;
@@ -275,6 +275,43 @@ public class AuthService(
         }
 
         throw new AuthServiceException(AuthErrorMessages.InvalidTwoFactorToken);
+    }
+    
+    public async Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto)
+    {
+        var user = 
+            await userManager.FindByEmailAsync(dto.Email) ??
+            await RegisterFromExternalAsync(dto);
+        
+        var tokens = await GetTokens(user, true);
+        
+        return tokens;
+    }
+
+    private async Task<AppUser> RegisterFromExternalAsync(ExternalLoginDto dto)
+    {
+        if (!await userRepository.IsEmailUniqueAsync(dto.Email))
+            throw new AuthServiceException(ErrorMessages.EmailNotUnique);
+        
+        var user = new User
+        {
+            Email = dto.Email,
+            Nickname = dto.Login,
+            ProfilePictureUrl = dto.PictureUrl
+        };
+
+        await userRepository.AddAsync(user);
+        
+        var appUser = mapper.Map<AppUser>(user);
+        appUser.EmailConfirmed = true;
+        var identityResult = await userManager.CreateAsync(appUser);
+        
+        if (identityResult.Succeeded)
+        {
+            await userManager.AddToRoleAsync(appUser, "user");
+        }
+
+        return appUser;
     }
 
     private async Task<List<Claim>> 

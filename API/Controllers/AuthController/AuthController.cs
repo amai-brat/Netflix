@@ -45,22 +45,14 @@ public class AuthController(
         var handler = new JwtSecurityTokenHandler();
         var jwt = handler.ReadJwtToken(oAuthResult.IdToken);
         
-        var tokens = await userService.AuthenticateFromExternalAsync(new ExternalLoginDto
+        var tokens = await authService.AuthenticateFromExternalAsync(new ExternalLoginDto
         {
             Login = jwt.Claims.First(c => c.Type == "name").Value,
             Email = jwt.Claims.First(c => c.Type == "email").Value,
             PictureUrl = jwt.Claims.First(c => c.Type == "picture").Value
         });
         
-        HttpContext.Response.Cookies.Append("refresh-token",
-            tokens.RefreshToken!,
-            new CookieOptions
-            {
-                SameSite = SameSiteMode.None,
-                HttpOnly = true,
-                Secure = true,
-                MaxAge = TimeSpan.FromDays(30)
-            });
+        SetRefreshTokenCookie(tokens.RefreshToken!);
 
         return Ok(tokens.AccessToken);
     }
