@@ -10,12 +10,12 @@ describe('SubscriptionService', () => {
     let service: SubscriptionService;
 
     const fakeUsers: User[] = [
-        { id: 1, nickname: "mockUser", role: 'user' },
-        { id: 2, nickname: "mockUser2", role: 'user' }
+        { id: 1, nickname: "mockUser" },
+        { id: 2, nickname: "mockUser2" }
     ]
     const fakeSubscriptions: Subscription[] = [
-        { id: 1, name: "Фильмы", description: "Фильмы подписка", max_resolution: 720 },
-        { id: 2, name: "Мультфильмы", description: "Мультфильмы подписка", max_resolution: 1080 }
+        { id: 1, name: "Фильмы", description: "Фильмы подписка", max_resolution: 720, price: 228 },
+        { id: 2, name: "Мультфильмы", description: "Мультфильмы подписка", max_resolution: 1080, price: 322 }
     ]
     const fakeUserSubscriptions: UserSubscription[] = [
         { userId: 1, subscriptionId: 1, boughtAt: new Date(), expiresAt: new Date() }

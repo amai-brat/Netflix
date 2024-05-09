@@ -1,16 +1,16 @@
 ﻿import styles from './css/AddSerialOptions.module.css'
 import {useEffect, useState} from "react";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
 import {adminContentService} from "../../../services/admin.content.service.js";
 const AddSerialOptions = () => {
     
-    const [id, setId] = useState(0)
+    const [id] = useState(0)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
-    const [slogan, setSlogan] = useState(null)
+    const [slogan, setSlogan] = useState("")
     const [posterUrl, setPosterUrl] = useState("")
-    const [country, setCountry] = useState(null)
+    const [country, setCountry] = useState("")
     const [contentType, setContentType] = useState("")
     const [ageRating, setAgeRating] = useState(null)
     const [ageRatingClicked, setAgeRatingClicked] = useState(false)
@@ -36,18 +36,26 @@ const AddSerialOptions = () => {
     const [seasonNumber, setSeasonNumber] = useState(0)
     const [seasonEpisodes, setSeasonEpisodes] = useState([])
     const addEpisode = () => {
-        setSeasonEpisodes([...seasonEpisodes, {episodeNumber: 0, videoUrl: ""}])
+        setSeasonEpisodes([...seasonEpisodes, {episodeNumber: 0, videoFile: null, res: 360, videoUrl: "serial/{id}/season/{season}/episode/{episode}/res/{res}/output"}])
     }
     const addSeasonAndEpisodes = () => {
         // if season already exists, then add episodes to it
-        for (let i = 0; i < seasonInfos.length; i++) {
-            if (seasonInfos[i].seasonNumber === seasonNumber) {
-                seasonInfos[i].episodes = seasonEpisodes;
-                setSeasonInfos([...seasonInfos]);
-                return;
+        // если честно такой говнокод, да страница в целом говнокод
+        const seasonIndex = seasonInfos.findIndex(s => s.seasonNumber === seasonNumber);
+        if(seasonIndex !== -1) {
+            const seasonInfosWithNewEpisodes = [...seasonInfos];
+            seasonInfosWithNewEpisodes[seasonIndex].episodes.push(...seasonEpisodes
+                .filter(item => item !== null &&
+                    !seasonInfosWithNewEpisodes[seasonIndex].episodes
+                        .some(e => e !== null && e.episodeNumber === item.episodeNumber)));
+            setSeasonInfos(seasonInfosWithNewEpisodes);
+        }
+        else{
+            // or if season doesn't exist, then create new season and add episodes to it
+            for(let i = 0; i < seasonEpisodes.length; i++) {
+                setSeasonInfos([...seasonInfos, {seasonNumber: seasonNumber,episodes: seasonEpisodes}]);
             }
         }
-        setSeasonInfos([...seasonInfos, {seasonNumber: seasonNumber, episodes: seasonEpisodes}]);
         setSeasonEpisodes([]);
     }
     const addPerson = () => {
@@ -73,8 +81,53 @@ const AddSerialOptions = () => {
             e.preventDefault();
         }
     };
+    const setGenresGenres = (value) => {
+        setGenres([...genres, value])
+    }
+    const getNotNullGenres = () => {
+        const newGenres = []
+        for (let i = 0; i < genres.length; i++) {
+            if (genres[i] != null) {
+                newGenres.push(genres[i])
+            }
+        }
+        return newGenres
+    }
+    const getNotNullPersons = () => {
+        const newPersons = []
+        for (let i = 0; i < personsInContent.length; i++) {
+            if (personsInContent[i] != null) {
+                newPersons.push(personsInContent[i])
+            }
+        }
+        return newPersons
+    }
+    const getNotNullSeasonsAndEpisodes = () => {
+        const newSeasons = []
+        for (let i = 0; i < seasonInfos.length; i++) {
+            if (seasonInfos[i] != null) {
+                const newEpisodes = []
+                for (let j = 0; j < seasonInfos[i].episodes.length; j++) {
+                    if (seasonInfos[i].episodes[j] != null) {
+                        const res = seasonInfos[i].episodes[j].res;
+                        if (res === null || res === undefined) {
+                            // Если res null или undefined, устанавливаем значение 360
+                            newEpisodes.push({
+                                ...seasonInfos[i].episodes[j],
+                                res: 360
+                            });
+                        } else {
+                            // Иначе, просто добавляем эпизод, как есть
+                            newEpisodes.push(seasonInfos[i].episodes[j]);
+                        }
+                    }
+                }
+                newSeasons.push({seasonNumber: seasonInfos[i].seasonNumber, episodes: newEpisodes})
+            }
+        }
+        return newSeasons
+    }
     const Submit = async () => {
-        console.log(JSON.stringify(ageRating))
         const {response: resp, data: json} = await adminContentService.addSerial({
             id: id,
             name: name,
@@ -87,14 +140,14 @@ const AddSerialOptions = () => {
             ratings: ratings,
             trailerInfo: trailerInfo,
             budget: budget,
-            genres: genres,
-            releaseYears: releaseYears,
-            personsInContent: personsInContent,
+            genres: getNotNullGenres(),
+            releaseYears: {start: releaseYears.start, end: releaseYears.end},
+            personsInContent: getNotNullPersons(),
             allowedSubscriptions: allowedSubscriptions,
-            seasonInfos: seasonInfos
+            seasonInfos: getNotNullSeasonsAndEpisodes()
         });
         if (resp.ok) {
-            toast.success("Сериал успешно добавлен", {
+            toast.success("Сериал успешно обновлен", {
                 position: "bottom-center"
             })
         } else {
@@ -104,50 +157,49 @@ const AddSerialOptions = () => {
             })
         }
     }
-    const setGenresGenres = (value) => {
-        setGenres([...genres, value])
-    }
     const popUpTrailerInfo = () => {
-        setTrailerInfoClicked(!trailerInfoClicked)
-        if (trailerInfoClicked) {
+        if (!trailerInfoClicked) {
             setTrailerInfo({url: "", name: ""})
         }
         else {
             setTrailerInfo(null)
         }
+        setTrailerInfoClicked(!trailerInfoClicked)
     }
     const popUpBudget = () => {
-        setBudgetClicked(!budgetClicked)
-        if (budgetClicked) {
+        if (!budgetClicked) {
             setBudget({budgetValue: 0, budgetCurrencyName: ""})
         }
         else {
             setBudget(null)
         }
+        setBudgetClicked(!budgetClicked)
     }
     const popUpAgeRating = () => {
+        //hindi code here ask me for details if you don't understand
         setAgeRatingClicked(!ageRatingClicked)
-        if (ageRatingClicked) {
-            setAgeRating({age: 0, ageMpaa: null})
+        if (!ageRatingClicked) {
+            setAgeRating({age: 0, ageMpaa: ""})
         }
         else {
             setAgeRating(null)
         }
-    }
-    const popUpRating = () => {
-        setRatingClicked(!ratingClicked)
-        if (ratingClicked) {
-            setRatings({kinopoiskRating: 0, imdbRating: 0, localRating: 0})
-        }
-        else {
-            setRatings(null)
-        }
+        setAgeRatingClicked(!ageRatingClicked)
     }
     const setAgeRatingAge = (value) => {
         setAgeRating({...ageRating, age: value})
     }
     const setAgeRatingAgeMpaa = (value) => {
         setAgeRating({...ageRating, ageMpaa: value})
+    }
+    const popUpRating = () => {
+        if (!ratingClicked) {
+            setRatings({kinopoiskRating: 0, imdbRating: 0, localRating: 0})
+        }
+        else {
+            setRatings(null)
+        }
+        setRatingClicked(!ratingClicked)
     }
     const setRatingsKinopoiskRating = (value) => {
         setRatings({...ratings, kinopoiskRating: value})
@@ -167,119 +219,181 @@ const AddSerialOptions = () => {
     const setBudgetBudgetCurrencyName = (value) => {
         setBudget({...budget, budgetCurrencyName: value})
     }
-    const setReleaseYearsStart = (value) => {
-        setReleaseYears({...releaseYears, start: value})
+    const handleRemoveGenre = index => {
+        const newGenres = [...genres];
+        newGenres[index] = null;
+        setGenres(newGenres);
+    };
+    const handleRemovePerson = index => {
+        const newPersons = [...personsInContent];
+        newPersons[index] = null;
+        setPersonsInContent(newPersons);
     }
-    const setReleaseYearsEnd = (value) => {
-        setReleaseYears({...releaseYears, end: value})
+    const handleRemoveSeason = index => {
+        const newSeasons = [...seasonInfos];
+        newSeasons[index] = null;
+        setSeasonInfos(newSeasons);
+    }
+    const handleRemoveEpisode = (seasonIndex, episodeIndex) => {
+        const newSeasons = [...seasonInfos];
+        newSeasons[seasonIndex].episodes[episodeIndex] = null;
+        setSeasonInfos(newSeasons);
     }
     return (
-        <div className={styles.addSerialOptions}>
-            <h2>Название сериала</h2>
-            <input type="text" placeholder="Название" onChange={e => setName(e.target.value)}/>
-            <h2>Описание</h2>
-            <textarea placeholder="Описание" onChange={e => setDescription(e.target.value)}/>
-            <h2>Слоган</h2>
-            <input type="text" placeholder="Слоган" onChange={e => setSlogan(e.target.value)}/>
-            <h2>Постер</h2>
-            <input type="text" placeholder="URL постера" onChange={e => setPosterUrl(e.target.value)}/>
-            <h2>Страна</h2>
-            <input type="text" placeholder="Страна" onChange={e => setCountry(e.target.value)}/>
-            <h2>Тип контента</h2>
-            <select onChange={e => setContentType(e.target.value)} defaultValue={""}>
-                <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
-                <option value="Фильм">Фильм</option>
-                <option value="Сериал">Сериал</option>
-            </select>
-            <button onClick={popUpAgeRating}>Указать возрастные рейтинги</button>
-            {ageRatingClicked && <div>
-                <input type="number" placeholder="Возрастной рейтинг" onChange={e => setAgeRatingAge(e.target.value)}/>
-                <input type="text" placeholder="Возрастной рейтинг MPAA"
-                       onChange={e => setAgeRatingAgeMpaa(e.target.value)}/>
-            </div>}
-            <button onClick={popUpRating}>Указать рейтинги</button>
-            {ratingClicked && <div>
-                <input type="number" placeholder="Рейтинг Кинопоиска"
-                       onChange={e => setRatingsKinopoiskRating(e.target.value)}/>
-                <input type="number" placeholder="Рейтинг IMDB" onChange={e => setRatingsImdbRating(e.target.value)}/>
-            </div>}
-            <button onClick={popUpBudget}>Указать бюджет</button>
-            {budgetClicked && <div>
-                <input type="number" placeholder="Бюджет" onChange={e => setBudgetBudgetValue(e.target.value)}/>
-                <input type="text" placeholder="Валюта бюджета"
-                       onChange={e => setBudgetBudgetCurrencyName(e.target.value)}/>
-            </div>}
-            <button onClick={popUpTrailerInfo}>Указать трейлер</button>
-            {trailerInfoClicked && <div>
-                <input type="text" placeholder="Название трейлера" onChange={e => setTrailerInfoName(e.target.value)}/>
-                <input type="text" placeholder="URL трейлера" onChange={e => setTrailerInfoUrl(e.target.value)}/>
-            </div>}
-            <h2>Добавить жанры(enter - сохранение)</h2>
-            {genres !== null &&
-                <div className={styles.existingGenres}>
-                    {genres.map((genre, index) => <div key={index}>{genre.toString()}</div>)}
-                </div>
-            }
-            <input type="text" placeholder="Жанр" onKeyDown={handleKeyDown}/>
-            <h2>Выберите подписки</h2>
-            <div className={styles.subscriptions}>
-                {allSubscriptions.map((subscription, index) =>
-                    <div key={index} className={styles.subscription}>
-                        <input type="checkbox" onChange={e => {
-                            if (e.target.checked) {
-                                setAllowedSubscriptions([...allowedSubscriptions, subscription])
-                            } else {
-                                setAllowedSubscriptions(allowedSubscriptions.filter(sub => sub.name !== subscription.name))
-                            }
-                        }}/>
-                        <label>{subscription.name}</label>
-                    </div>)}
-            </div>
-            <h2>Добавить новые персоны</h2>
-            {personsInContent.map((p, i) =>
-                <div key={i}>{p.name} - {p.profession}</div>)
-            }
-            <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
-            <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
-            <button onClick={addPerson}>Добавить</button>
-            <h2>Добавить сезоны</h2>
-            {seasonInfos.map((s, i) =>
-                <div key={i}>
-                    <h3>Сезон: {s.seasonNumber}</h3>
-                    {s.episodes.map((episode, j) =>
-                        <div key={j}>
-                            <p>Номер эпизода: {episode.episodeNumber}</p>
-                            <p>URL видео: {episode.videoUrl}</p>
-                        </div>
+        <>
+            <div className={styles.addSerialOptions}>
+                <h2>Имя сериала</h2>
+                <input type="text" value={name} placeholder="Название" onChange={e => setName(e.target.value)}></input>
+                <h2>Описание</h2>
+                <textarea placeholder="Описание" value={description} onChange={e => setDescription(e.target.value)}/>
+                <h2>Слоган</h2>
+                <input type="text" placeholder="Слоган" value={slogan} onChange={e => setSlogan(e.target.value)}/>
+                <h2>Постер</h2>
+                <input type="text" placeholder="URL постера" value={posterUrl} onChange={e => setPosterUrl(e.target.value)}/>
+                <h2>Страна</h2>
+                <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
+                <h2>Тип контента</h2>
+                <select onChange={e => setContentType(e.target.value)} value={contentType}>
+                    <option value="" disabled={true} style={{color: "#b2aba1"}}>Тип контента</option>
+                    <option value="Фильм">Фильм</option>
+                    <option value="Сериал">Сериал</option>
+                </select>
+                <button onClick={popUpAgeRating} style={{display:"block"}}>Указать возрастные рейтинги</button>
+                {(ageRatingClicked || ageRating != null)&& <div>
+                    <input type="number" value={ageRating.age} placeholder="Возрастной рейтинг" onChange={e => setAgeRatingAge(e.target.value)}/>
+                    <input type="text" value={ageRating.ageMpaa} placeholder="Возрастной рейтинг MPAA"
+                           onChange={e => setAgeRatingAgeMpaa(e.target.value)}/>
+                </div>}
+                <button onClick={popUpRating} style={{display:"block"}}>Указать рейтинги</button>
+                {(ratingClicked || ratings != null) && <div>
+                    <input type="number" placeholder="Рейтинг Кинопоиска"
+                           onChange={e => setRatingsKinopoiskRating(e.target.value)}/>
+                    <input type="number" placeholder="Рейтинг IMDB" onChange={e => setRatingsImdbRating(e.target.value)}/>
+                </div>}
+                <button onClick={popUpBudget} style={{display:"block"}}>Указать бюджет</button>
+                {(budgetClicked || budget != null) && <div>
+                    <input type="number" value={budget.budgetValue} placeholder="Бюджет" onChange={e => setBudgetBudgetValue(e.target.value)}/>
+                    <input type="text" value={budget.budgetCurrencyName} placeholder="Валюта бюджета"
+                           onChange={e => setBudgetBudgetCurrencyName(e.target.value)}/>
+                </div>}
+                <button onClick={popUpTrailerInfo} style={{display:"block"}}>Указать трейлер</button>
+                {(trailerInfoClicked || trailerInfo != null) && <div>
+                    <input type="text" value={trailerInfo.name} placeholder="Название трейлера" onChange={e => setTrailerInfoName(e.target.value)}/>
+                    <input type="text" value={trailerInfo.url} placeholder="URL трейлера" onChange={e => setTrailerInfoUrl(e.target.value)}/>
+                </div>}
+                <h2>Добавить жанры(enter - сохранение)</h2>
+                <div>
+                    {genres.map((genre, index) =>
+                        genre !== null ? (
+                            <div style={{ display: "block" }} key={index}>
+                                <span>{genre}</span>
+                                <span className={styles.trash} onClick={() => handleRemoveGenre(index)}></span>
+                            </div>
+                        ) : null
                     )}
                 </div>
-            )}
-            <input type="number" placeholder="Номер сезона"
-                   onChange={e => setSeasonNumber(Number.parseInt(e.target.value))}/>
-            <h4 style={{marginTop: "0px", marginBottom: "10px"}}>Добавить серии в сезон</h4>
-
-
-            {seasonEpisodes.map((episode, i) =>
-                <div key={i}>
-                    <input type="number" placeholder="Номер эпизода"
-                           onChange={e => {
-                               const newEpisodes = [...seasonEpisodes];
-                               newEpisodes[i].episodeNumber = Number.parseInt(e.target.value);
-                               setSeasonEpisodes(newEpisodes);
-                           }}/>
-                    <input type="text" placeholder="URL видео" onChange={e => {
-                        const newEpisodes = [...seasonEpisodes];
-                        newEpisodes[i].videoUrl = e.target.value;
-                        setSeasonEpisodes(newEpisodes);
-                    }}/>
+                <input type="text" placeholder="Жанр" onKeyDown={handleKeyDown}/>
+                <h2>Выберите подписки</h2>
+                <div className={styles.subscriptions}>
+                    {allSubscriptions.map((subscription, index) =>
+                        <div key={index} className={styles.subscription}>
+                            <input type="checkbox"
+                                   checked={allowedSubscriptions.find(s => s.name === subscription.name) != null}
+                                   onChange={e => {
+                                       if (e.target.checked) {
+                                           setAllowedSubscriptions([...allowedSubscriptions, subscription])
+                                       } else {
+                                           setAllowedSubscriptions(allowedSubscriptions.filter(sub => sub.name !== subscription.name))
+                                       }
+                                   }}/>
+                            <label>{subscription.name}</label>
+                        </div>)}
                 </div>
-            )}
-            <button onClick={addEpisode}>+</button>
-            <button onClick={addSeasonAndEpisodes}>Добавить сезон с эпизодами</button>
-            <h2>Дата выхода</h2> <input type="date" onChange={e => setReleaseYearsStart(e.target.value)}/>
-            <h2>Дата окончания</h2> <input type="date" onChange={e => setReleaseYearsEnd(e.target.value)}/>
-            <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>
-        </div>
+                <h2>Добавить новые персоны</h2>
+                <div>
+                    {personsInContent.map((person, index) =>
+                        person !== null ? (
+                            <div style={{ display: "block" }} key={index}>
+                                <span>{person.name} - {person.profession}</span>
+                                <span className={styles.trash} onClick={() => handleRemovePerson(index)}></span>
+                            </div>
+                        ) : null
+                    )}
+                </div>
+                <input type="text" placeholder="Имя" onChange={e => setPersonName(e.target.value)}/>
+                <input type="text" placeholder="Профессия" onChange={e => setPersonProfession(e.target.value)}/>
+                <button onClick={addPerson}>Добавить</button>
+                <h2 style={{display:"block"}}>Добавить сезоны</h2>
+                {seasonInfos.map((s, i) =>
+                    {if (s !== null) return(
+                        <div key={i}>
+                            <h3 style={{display:"inline"}}>Сезон: {s.seasonNumber}</h3>
+                            <span className={styles.trash} onClick={() => handleRemoveSeason(i)}></span>
+                            {s.episodes.map((episode, j) =>
+                                {if (episode !== null) return(
+                                    <div key={j} style={{width: "auto", display: "flex"}}>
+
+                                        <p style={{display: "inline", marginRight: "1px", width: "unset"}}>Номер эпизода: <span
+                                            style={{
+                                                border: "1px solid white",
+                                                paddingLeft: "3px",
+                                                paddingRight: "3px",
+                                                borderRadius: "3px"
+                                            }}>{episode.episodeNumber}</span></p>
+
+                                        <select className={styles.resSelect}
+                                                onChange={e => {
+                                                    const newSeasonInfos = [...seasonInfos];
+                                                    newSeasonInfos[i].episodes[j].res = Number.parseInt(e.target.value);
+                                                    setSeasonInfos(newSeasonInfos)
+                                                }}>
+                                            <option value="" disabled={true} style={{color: "#b2aba1"}}>Разрешение</option>
+                                            <option value="360">360</option>
+                                            <option value="480">480</option>
+                                            <option value="720">720</option>
+                                            <option value="1080">1080</option>
+                                        </select>
+
+                                        <div style={{display: "inline-flex", width: "fit-content"}}>
+                                            <input type={"file"} style={{paddingTop: "0px"}} onChange={e => {
+                                                const newSeasonInfos = [...seasonInfos];
+                                                newSeasonInfos[i].episodes[j].videoFile = e.target.files[0];
+                                                setSeasonInfos(newSeasonInfos)
+                                            }}></input>
+                                        </div>
+
+                                        <span className={styles.trash} onClick={() => handleRemoveEpisode(i, j)}></span>
+                                    </div>
+                                )
+                                }
+                            )}
+                        </div>
+                    )
+                    }
+                )}
+                <input type="number" placeholder="Номер сезона"
+                       onChange={e => setSeasonNumber(Number.parseInt(e.target.value))}/>
+                <h4 style={{marginTop: "0px", marginBottom: "10px"}}>Добавить серии в сезон</h4>
+
+                {seasonEpisodes.map((episode, i) =>
+                    <div key={i} style={{display: "flex"}}>
+                        <input type="number" placeholder="Номер эпизода" style={{height:"max-content"}}
+                               onChange={e => {
+                                   if (Number.parseInt(e.target.value)) {
+                                       const newEpisodes = [...seasonEpisodes];
+                                       newEpisodes[i].episodeNumber = Number.parseInt(e.target.value);
+                                       setSeasonEpisodes(newEpisodes);
+                                   }
+                               }}/>
+                    </div>
+                )}
+                <button onClick={addEpisode} style={{display:"block"}}>+</button>
+                <button onClick={addSeasonAndEpisodes} style={{display:"block"}}>Добавить сезон с эпизодами</button>
+                <h2>Дата выхода</h2> <input type="date" value={releaseYears.start} onChange={e => setReleaseYears({...releaseYears, start: e.target.value})}/>
+                <h2>Дата окончания</h2> <input type="date" value={releaseYears.end} onChange={e => setReleaseYears( {...releaseYears, end: e.target.value})}/>
+                <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>
+            </div>
+        </>
     )
 }
 export default AddSerialOptions

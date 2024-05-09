@@ -65,6 +65,9 @@ namespace DataAccess.Repositories
             dbMovieContent.ReleaseDate = newMovieContent.ReleaseDate;
             // обновляем навигационные свойства
             UpdateContentBase(dbMovieContent, newMovieContent);
+            Console.WriteLine(dbMovieContent.AgeRatings == null);
+            Console.WriteLine(dbMovieContent.AgeRatings?.Age);
+            Console.WriteLine(dbMovieContent.AgeRatings?.AgeMpaa);
         }
         
         public async Task UpdateSerialContent(SerialContent serialContent)
@@ -416,6 +419,13 @@ namespace DataAccess.Repositories
         public async Task<ContentBase?> GetContentByIdAsync(long id)
         {
             return await appDbContext.ContentBases.FindAsync(id);
+        }
+
+        public async Task<ContentBase?> GetContentWithAllowedSubscriptionsByIdAsync(long id)
+        {
+            return await appDbContext.ContentBases
+                .Include(c => c.AllowedSubscriptions)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }

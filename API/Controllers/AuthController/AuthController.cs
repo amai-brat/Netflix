@@ -1,19 +1,25 @@
+using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Application.Dto;
-using Application.Services.Abstractions;
 using FluentValidation;
+using Infrastructure.Services.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Providers.ProviderFactory;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace API.Controllers.AuthController;
 
 [ApiController]
 [Route("auth")]
 public class AuthController(
-    IUserService userService,
+    IAuthService authService,
+    IOptionsMonitor<FrontendConfig> monitor,
     AuthProviderResolver authProviderResolver,
     IValidator<SignUpDto> signUpDtoValidator) : ControllerBase
 {
+    private readonly FrontendConfig _frontendConfig = monitor.CurrentValue;
+    
     [HttpGet("external/{provider}")]
     public IActionResult GetRedirectUri(string provider)
     {
@@ -68,26 +74,23 @@ public class AuthController(
             return BadRequest(validationResult.Errors);
         }
         
-        var userId = await userService.RegisterAsync(dto);
+        var userId = await authService.RegisterAsync(dto);
         return Created("", userId);
     }
 
     [HttpPost("signin")]
     public async Task<IActionResult> SignInAsync(LoginDto dto)
     {
-        var tokens = await userService.AuthenticateAsync(dto);
+        var tokens = await authService.AuthenticateAsync(dto);
+
+        if (tokens == null)
+        {
+            return Accepted("", "2FA");
+        }
         
         if (tokens.RefreshToken != null)
         {
-            HttpContext.Response.Cookies.Append("refresh-token",
-                tokens.RefreshToken,
-                new CookieOptions
-                {
-                    SameSite = SameSiteMode.None,
-                    HttpOnly = true,
-                    Secure = true,
-                    MaxAge = TimeSpan.FromDays(30)
-                });
+            SetRefreshTokenCookie(tokens.RefreshToken);
         }
 
         return Ok(tokens.AccessToken);
@@ -102,16 +105,8 @@ public class AuthController(
             return Unauthorized("Refresh token is not found");
         }
 
-        var tokens = await userService.RefreshTokenAsync(refreshToken);
-        HttpContext.Response.Cookies.Append("refresh-token", 
-            tokens.RefreshToken!, 
-            new CookieOptions
-            {
-                SameSite = SameSiteMode.None,
-                HttpOnly = true,
-                Secure = true,
-                MaxAge = TimeSpan.FromDays(30)
-            });
+        var tokens = await authService.RefreshTokenAsync(refreshToken);
+        SetRefreshTokenCookie(tokens.RefreshToken!);
 
         return Ok(tokens.AccessToken);
     }
@@ -125,8 +120,65 @@ public class AuthController(
             return Unauthorized("Refresh token is not found");
         }
 
-        await userService.RevokeTokenAsync(refreshToken);
+        await authService.RevokeTokenAsync(refreshToken);
 
         return NoContent();
+    }
+
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmailAsync([FromQuery]long userId, [FromQuery] string token)
+    {
+        _ = await authService.ConfirmEmailAsync(userId, token);
+        return Redirect(_frontendConfig.Url);
+    }
+
+    [HttpGet("confirm-email-change")]
+    public async Task<IActionResult> ConfirmEmailChange([FromQuery]long userId, [FromQuery]string newEmail, [FromQuery]string token)
+    {
+        _ = await authService.ChangeEmailAsync(userId, newEmail, token);
+        return Redirect(_frontendConfig.Url);
+    }
+
+    [Authorize]
+    [HttpPost("enable-2fa")]
+    public async Task<IActionResult> EnableTwoFactorAuth()
+    {
+        var email = User.FindFirst(ClaimTypes.Email)!.Value;
+        await authService.EnableTwoFactorAuthAsync(email);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("is-enabled-2fa")]
+    public async Task<IActionResult> IsEnabledTwoFactor()
+    {
+        var email = User.FindFirst(ClaimTypes.Email)!.Value;
+        var result = await authService.IsEnabledTwoFactorAuthAsync(email);
+        return Ok(result);
+    }
+    
+    [HttpPost("send-2fa")]
+    public async Task<IActionResult> SendTwoFactorToken(TwoFactorTokenDto dto)
+    {
+        var result = await authService.TwoFactorAuthenticateAsync(dto);
+        if (result.RefreshToken != null)
+        {
+            SetRefreshTokenCookie(result.RefreshToken);
+        }
+        
+        return Ok(result.AccessToken);
+    }
+
+    private void SetRefreshTokenCookie(string refreshToken)
+    {
+        HttpContext.Response.Cookies.Append("refresh-token", 
+            refreshToken, 
+            new CookieOptions
+            {
+                SameSite = SameSiteMode.None,
+                HttpOnly = true,
+                Secure = true,
+                MaxAge = TimeSpan.FromDays(30)
+            });
     }
 }

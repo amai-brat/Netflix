@@ -13,8 +13,6 @@ namespace DataAccess.Configurations
 			
 			builder.Property(u => u.Nickname).IsRequired();
 			builder.Property(u => u.Email).IsRequired();
-			builder.Property(u => u.Password).IsRequired();
-			builder.Property(u => u.Role).IsRequired().HasDefaultValue("user");
 
 			builder.HasMany(u => u.Reviews)
 				.WithOne(r => r.User)

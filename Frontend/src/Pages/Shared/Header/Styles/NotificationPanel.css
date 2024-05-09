@@ -11,3 +11,7 @@
     height: 40px;
     width: 40px;
 }
+#notification-panel-icon,
+#notification-panel-icon-alarmed:hover{
+    cursor: pointer;
+}

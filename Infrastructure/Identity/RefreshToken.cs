@@ -1,11 +1,13 @@
-namespace Domain.Entities;
+namespace Infrastructure.Identity;
 
 public class RefreshToken
 {
     public int Id { get; set; }
     
     public long UserId { get; set; }
-    public User User { get; set; } = null!;
+    
+    public long AppUserId { get; set; }
+    public AppUser User { get; set; } = null!;
 
     public string Token { get; set; } = null!;
     public DateTime Expires { get; set; }

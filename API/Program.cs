@@ -1,14 +1,10 @@
-using System.Text;
 using API;
+using API.Controllers;
 using API.Hubs;
+using API.MetadataProviders;
 using API.Middlewares.ExceptionHandler;
-using Application.Options;
 using DataAccess.Extensions;
 using Infrastructure;
-using Infrastructure.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Application;
 using Infrastructure.Profiles;
 using Infrastructure.Providers.Extensions;
@@ -16,25 +12,24 @@ using Infrastructure.Providers.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
+builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("FrontendConfig"));
 //builder.Configuration.AddJsonFile("authAppSettings.json");
-builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.Configure<GoogleAuthOptions>(builder.Configuration.GetSection("Auth:Google"));
 builder.Services.Configure<VkAuthOptions>(builder.Configuration.GetSection("Auth:Vk"));
 builder.Services.AddAuthProviderResolver();
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
-builder.Services.AddInfrastructure();
-builder.Services.AddControllers();
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
+builder.Services.AddControllers().AddMvcOptions(options => options.ModelMetadataDetailsProviders.Add(new CustomMetadataProvider ()));
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddValidators();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGenWithBearer();
-builder.Services.AddCorsWithFrontendPolicy();
+builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

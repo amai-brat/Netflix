@@ -45,9 +45,7 @@ namespace DataAccess.Extensions
 				Id = -1,
 				Nickname = "testUser",
 				Email = "testEmail@gmail.com",
-				Password = "testPassword228;",
 				BirthDay = DateOnly.FromDateTime(DateTime.Now.AddYears(-20)),
-				Role = "user",
 				ProfilePictureUrl = "https://i.pinimg.com/originals/2b/64/2f/2b642f9183fa80b8c47a9d8f8971eb4d.jpg"
 			};
 
@@ -56,9 +54,7 @@ namespace DataAccess.Extensions
 				Id = -2,
 				Nickname = "testUser2",
 				Email = "testEmail2@gmail.com",
-				Password = "testPassword1337;",
 				BirthDay = DateOnly.FromDateTime(DateTime.Now.AddYears(-25)),
-				Role = "user",
 				ProfilePictureUrl = "https://st.kp.yandex.net/images/actor_iphone/iphone360_25584.jpg",
 
 			};

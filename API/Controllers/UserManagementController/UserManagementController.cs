@@ -1,7 +1,6 @@
 ﻿using Application.Dto;
 using Application.Services.Abstractions;
-using Domain.Abstractions;
-using Domain.Dtos;
+using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +11,7 @@ namespace API.Controllers.UserManagementController
 	public class UserManagementController(
 		IReviewService reviewService,
 		ICommentService commentService,
+		IAuthService authService,
 		IUserService userService) : Controller
 	{
 		[Authorize(Roles = "admin, moderator")]
@@ -32,9 +32,9 @@ namespace API.Controllers.UserManagementController
 		[HttpPatch("changeRole")]
 		public async Task<IActionResult> GiveUserDifferentRole([FromBody] UserRoleDto userRoleDto)
 		{
-			await userService.ChangeRoleAsync(userRoleDto.UserId, userRoleDto.Role);
+			await authService.ChangeRoleAsync(userRoleDto.UserId, userRoleDto.Role);
 
-			return Ok(await userService.GetPersonalInfoAsync((int) userRoleDto.UserId));
+			return Ok(await userService.GetPersonalInfoAsync(userRoleDto.UserId));
 		}
 	}
 }

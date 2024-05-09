@@ -59,31 +59,6 @@ public class UserApiIntegrationTests(WebAppFactory factory) : IClassFixture<WebA
         // arrange
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
-
-    [Fact]
-    public async Task ChangeEmail_CorrectEmailGiven_EmailChanged()
-    {
-        // arrange
-        const long userId = -1L;
-        const string newEmail = "aboba@gmail.com";
-        var client = factory.CreateUserHttpClient(userId.ToString());
-        
-        // act
-        var response = await client.PatchAsync("/user/change-email",
-            new StringContent(
-                JsonSerializer.Serialize(newEmail), 
-                Encoding.UTF8, 
-                "application/json"));
-        
-        // assert
-        Assert.True(response.IsSuccessStatusCode);
-        await using (var sp = factory.Services.CreateAsyncScope())
-        {
-            var context = sp.ServiceProvider.GetService<AppDbContext>();
-            var user = await context!.Users.FindAsync(userId);
-            Assert.Equal(newEmail, user!.Email);
-        }
-    }
     
     [Fact]
     public async Task ChangeBirthday_CorrectBirthdayGiven_BirthdayChanged()

@@ -1,11 +1,13 @@
 using System.Net.Http.Headers;
 using DataAccess;
+using Infrastructure.Identity.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Tests;
 public class WebAppFactory : WebApplicationFactory<Program>
@@ -21,6 +23,22 @@ public class WebAppFactory : WebApplicationFactory<Program>
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseInMemoryDatabase("Test");
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
+                
+                // в inmemorydb невозможны транзакции
+                options.ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+            });
+            
+            var descriptorIdentity = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<IdentityDbContext>));
+            if (descriptorIdentity != null)
+                services.Remove(descriptorIdentity);
+            
+            services.AddDbContext<IdentityDbContext>(options =>
+            {
+                options.UseInMemoryDatabase("TestIdentity");
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
             });
             
             var sp = services.BuildServiceProvider();
@@ -29,12 +47,20 @@ public class WebAppFactory : WebApplicationFactory<Program>
                 var scopedServices = scope.ServiceProvider;
                 var db = scopedServices.GetRequiredService<AppDbContext>();
                 db.Database.EnsureCreated();
+                
+                var dbIdentity = scopedServices.GetRequiredService<IdentityDbContext>();
+                dbIdentity.Database.EnsureCreated();
             }
         });
 
         builder.ConfigureTestServices(services =>
         {
-            services.AddAuthentication(TestAuthHandler.AuthenticationScheme)
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
+                    options.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
+                    options.DefaultScheme = TestAuthHandler.AuthenticationScheme;
+                })
                 .AddScheme<AuthenticationSchemeOptions,
                     TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
         });

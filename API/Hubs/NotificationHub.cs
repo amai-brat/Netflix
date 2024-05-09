@@ -1,6 +1,5 @@
 using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -18,14 +17,14 @@ public class NotificationHub(
     {
         var userId = Context?.User?.FindFirst("id")?.Value;
         
-        Connections.TryAdd(long.Parse(userId), Context.ConnectionId);
+        Connections.TryAdd(long.Parse(userId!), Context!.ConnectionId);
         
         return Task.FromResult(base.OnConnectedAsync());
     }
     
     public async Task NotifyAboutCommentAsync(long commentId)
     {
-        var userId = long.Parse(Context?.User?.FindFirst("id")?.Value!);
+        var userId = long.Parse(Context.User?.FindFirst("id")?.Value!);
 
         var commentNotification = await _notificationService.GetCommentNotificationByCommentIdAsync(commentId);
 
