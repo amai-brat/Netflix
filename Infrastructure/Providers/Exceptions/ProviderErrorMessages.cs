@@ -1,4 +1,4 @@
-namespace Infrastructure.Services.Exceptions;
+namespace Infrastructure.Providers.Exceptions;
 
 public class ProviderErrorMessages
 {

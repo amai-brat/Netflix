@@ -1,6 +1,6 @@
 using Application.Dto;
 
-namespace Infrastructure.Providers;
+namespace Infrastructure.Providers.Abstractions;
 
 public interface IAuthProvider
 {
