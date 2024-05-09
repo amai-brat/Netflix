@@ -1,22 +1,21 @@
-using Application.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.Repositories;
+namespace Infrastructure.Identity.Data;
 
-public class TokenRepository(AppDbContext dbContext) : ITokenRepository
+public class TokenRepository(IdentityDbContext dbContext) : ITokenRepository
 {
-    public async Task<List<RefreshToken>> GetRefreshTokensAsync(User user)
+    public async Task<List<RefreshToken>> GetRefreshTokensAsync(AppUser user)
     {
         return await dbContext.RefreshTokens
-            .Where(token => token.UserId == user.Id)
+            .Where(token => token.AppUserId == user.Id)
             .ToListAsync();
     }
 
-    public async Task RemoveAllRefreshTokensAsync(User user, Func<RefreshToken, bool> predicate)
+    public async Task RemoveAllRefreshTokensAsync(AppUser user, Func<RefreshToken, bool> predicate)
     {
         var tokens = dbContext.RefreshTokens
-            .Where(x => x.UserId == user.Id)
+            .Where(x => x.AppUserId == user.Id)
             .AsAsyncEnumerable();
         await foreach (var token in tokens)
         {
@@ -31,7 +30,6 @@ public class TokenRepository(AppDbContext dbContext) : ITokenRepository
     {
         return await dbContext.RefreshTokens
             .Include(x => x.User)
-                .ThenInclude(x => x.UserSubscriptions)
             .SingleOrDefaultAsync(x => x.Token == token);
     }
 

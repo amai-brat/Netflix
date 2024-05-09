@@ -7,7 +7,4 @@ export class User{
 
     @Column()
     nickname: string;
-
-    @Column()
-    role: string;
 }

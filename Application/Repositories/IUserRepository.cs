@@ -6,7 +6,7 @@ namespace Application.Repositories
     public interface IUserRepository
     {
         Task<User?> GetUserByFilterAsync(Expression<Func<User, bool>> filter);
-        Task<User?> GetUserWithSubscriptionsAsync(long userId);
+        Task<User?> GetUserWithSubscriptionsAsync(Expression<Func<User, bool>> filter);
         Task<User?> AddAsync(User user);
         Task<bool> IsEmailUniqueAsync(string email);
         Task<User?> GetUserWithSubscriptionsAndRolesByFilterAsync(Expression<Func<User, bool>> filter);

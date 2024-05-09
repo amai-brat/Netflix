@@ -1,10 +1,8 @@
-﻿using System.Text.Unicode;
-using Application.Services.Abstractions;
+﻿using Application.Services.Abstractions;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
-using Minio.Exceptions;
 
 namespace Infrastructure.Services;
 
@@ -55,7 +53,7 @@ public class ContentVideoProvider: IContentVideoProvider
             {
                 stream.CopyTo(data);
             });
-        var stats = await _minioClient.GetObjectAsync(getObjectArgs);
+        _ = await _minioClient.GetObjectAsync(getObjectArgs);
         data.Position = 0;
         return data;
     }

@@ -3,8 +3,6 @@ import React, {useEffect, useState} from 'react';
 import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
 import {baseUrl} from "../../httpClient/baseUrl.js";
-import Hls from 'hls.js';
-import {get} from "mobx";
 import {fetchAuth} from "../../httpClient/fetchAuth.js";
 import { jwtDecode } from 'jwt-decode';
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
@@ -46,7 +44,8 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     // Обновляем URL каждый раз при изменении параметров
     useEffect(() => {
         (async() => {
-            if (jwtDecode(sessionStorage.getItem("accessToken")).exp + 10 < new Date()) {
+            const token = sessionStorage.getItem("accessToken");
+            if (token && jwtDecode(token).exp + 10 < new Date() / 1000) {
                 try {
                     const response = await fetch(`${baseUrl}auth/refresh-token`, {
                         method: "POST",

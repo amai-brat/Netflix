@@ -31,7 +31,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
-                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={"user, admin"}/>}>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user", "admin"]}/>}>
                     <Route path={"/PersonalAccount"} element={<GeneralPart/>}>
                         <Route index element={<PersonalInfoTab/>}/>
                         <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
@@ -40,7 +40,7 @@ function App() {
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
                     </Route>
                 </Route>
-                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={"admin"}/>}>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["admin"]}/>}>
                     <Route path={"admin/subscriptions"} element={<SubscriptionsManagement/>}></Route>
                     <Route path={"admin/content"} element={<AdminContent/>}></Route>
                 </Route>

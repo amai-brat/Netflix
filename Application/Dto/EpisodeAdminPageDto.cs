@@ -8,5 +8,4 @@ public class EpisodeAdminPageDto
     public string VideoUrl { get; set; } = null!;
     public int Resolution { get; set; }
     public IFormFile? VideoFile { get; set; }
-
 }

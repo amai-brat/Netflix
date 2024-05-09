@@ -1,6 +1,7 @@
 import {baseUrl} from "./baseUrl.js";
 import {jwtDecode} from "jwt-decode";
 
+let isRefreshing = false;
 
 const originalRequest = async (url, config, isJsonResponse, base)=> {
   url = `${base}${url}`
@@ -43,15 +44,23 @@ export const fetchAuth = async (url, isJsonResponse = false, config = {}, base =
 }
 
 const refreshToken = async () => {
+  if (isRefreshing) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return sessionStorage.getItem("accessToken");
+  }
+  
+  isRefreshing = true;
   let response = await fetch(`${baseUrl}auth/refresh-token`, {
     method: "POST",
     credentials: "include"
   });
   let data = await response.text();
+  isRefreshing = false;
   if (response.ok) {
     sessionStorage.setItem('accessToken', data);
     return data;
   }
+  
   return "";
 }
 

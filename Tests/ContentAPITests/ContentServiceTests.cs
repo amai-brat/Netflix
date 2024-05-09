@@ -61,7 +61,7 @@ namespace Tests.ContentAPITests
             };
             _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(() => null);
-            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<Expression<Func<User, bool>>>()))
                 .ReturnsAsync(user);
             
             // Act
@@ -77,7 +77,7 @@ namespace Tests.ContentAPITests
             ContentService service = GetService();
             _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(null,TimeSpan.FromMilliseconds(1));
-            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<Expression<Func<User, bool>>>()))
                 .ReturnsAsync(null, TimeSpan.FromMilliseconds(1));
              
             // Act
@@ -104,7 +104,7 @@ namespace Tests.ContentAPITests
             };
             _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(content);
-            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<long>()))
+            _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<Expression<Func<User, bool>>>()))
                 .ReturnsAsync(user);
             // Act
             Task<string> Act() => service.GetMovieContentM3U8UrlAsync(1,1,228);
@@ -326,8 +326,8 @@ namespace Tests.ContentAPITests
             //Act
             _mockContent.Setup(repository =>
                     repository.GetContentsByFilterAsync(It.IsAny<Expression<Func<ContentBase, bool>>>()))
-                .ReturnsAsync((Expression<Func<ContentBase, bool>> filter) =>
-                    availableContent.Where(filter.Compile()).ToList());
+                .ReturnsAsync((Expression<Func<ContentBase, bool>> f) =>
+                    availableContent.Where(f.Compile()).ToList());
 
             var service = GetService();
             var result = await service.GetContentsByFilterAsync(filter);

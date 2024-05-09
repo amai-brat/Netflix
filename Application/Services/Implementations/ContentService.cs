@@ -26,7 +26,7 @@ public class ContentService(
     private readonly HashSet<int> _resolutions = [360, 480, 720, 1080, 1440, 2160];
     public async Task<string> GetMovieContentM3U8UrlAsync(long userId, long movieId, int resolution)
     {
-        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(x => x.Id == userId))
             ?.UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
         if (!userCanViewContent)
@@ -39,7 +39,7 @@ public class ContentService(
 
     public async Task<string> GetSerialContentM3U8UrlAsync(long userId, long serialId, int seasonNumber, int episodeNumber, int resolution)
     {
-        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(x => x.Id == userId))?
             .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
         if (!userCanViewContent)
@@ -53,7 +53,7 @@ public class ContentService(
 
     public async Task<string> GetMovieContentStreamUrlAsync(long userId, long movieId, int resolution)
     {
-        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(x => x.Id == userId))?
             .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
         if (!userCanViewContent)
@@ -67,7 +67,7 @@ public class ContentService(
 
     public async Task<string> GetSerialContentStreamUrlAsync(long userId, long serialId, int seasonNumber, int episodeNumber, int resolution)
     {
-        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(userId))?
+        var userSubscriptions = (await userRepository.GetUserWithSubscriptionsAsync(x => x.Id == userId))?
             .UserSubscriptions?.Select(s => s.SubscriptionId).ToList();
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
         if (!userCanViewContent)
@@ -135,7 +135,7 @@ public class ContentService(
         {
             process.Start();
         }
-        catch(Exception e)
+        catch(Exception)
         {
             Directory.Delete(outputPath,true);
         }
@@ -168,7 +168,7 @@ public class ContentService(
         {
             process.Start();
         }
-        catch(Exception e)
+        catch(Exception)
         {
             Directory.Delete(outputPath,true);
         }

@@ -1,17 +1,12 @@
 ﻿
 using Application.Exceptions;
 using Domain.Services.ServiceExceptions;
+using Infrastructure.Identity;
+
 namespace API.Middlewares.ExceptionHandler
 {
-    public class ExceptionHandlerMiddleware() : IMiddleware
+    public class ExceptionHandlerMiddleware(ILogger<ExceptionHandlerMiddleware> logger) : IMiddleware
     {
-        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
-
-        public ExceptionHandlerMiddleware(ILogger<ExceptionHandlerMiddleware> logger) : this()
-        {
-            _logger = logger;
-        }
-
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
@@ -33,7 +28,17 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
-                _logger.LogError(ex.Message + ex.StackTrace);
+                logger.LogInformation(ex.Message + ex.StackTrace);
+            }
+            catch (IdentityException ex)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = $"{ex.Message}",
+                    Code = 400
+                });
+                logger.LogInformation(ex.Message + ex.StackTrace);
             }
             catch (ContentServiceNotPermittedException ex)
             {
@@ -43,10 +48,14 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 403
                 });
-                _logger.LogError(ex.Message + ex.StackTrace);
+                logger.LogInformation(ex.Message + ex.StackTrace);
 
             }
-            // TODO: бизнес ошибки отправляются, нужно 500
+            catch (BusinessException ex)
+            {
+                context.Response.StatusCode = 500;
+                logger.LogError("Business error happened: {error}", ex.Message);
+            }
             catch (Exception ex)
             {
                 context.Response.StatusCode = 400;
@@ -55,7 +64,7 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 400
                 });
-                _logger.LogError(ex.Message + ex.StackTrace);
+                logger.LogInformation(ex.Message + ex.StackTrace);
             }
         }
         private class ExceptionDetails
