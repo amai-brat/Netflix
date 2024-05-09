@@ -6,6 +6,7 @@ import {baseUrl} from "../../httpClient/baseUrl.js";
 import Hls from 'hls.js';
 import {get} from "mobx";
 import {fetchAuth} from "../../httpClient/fetchAuth.js";
+import { jwtDecode } from 'jwt-decode';
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(1080)
     const [occuredError, setOccuredError] = useState(null)
@@ -13,31 +14,29 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [currentSeason, setCurrentSeason] = useState(1)
     const [videoUrl, setVideoUrl] = useState('');
-    const maxRetries = 3;
-    let retries = 0;
-    // это нужно в случае если токен протухнет при просмотре видео. 3 раза пытаемся получить новый, если не получается
-    // то выводим ошибку 
     const updateTokenAndRetry = async () => {
-        if (retries > maxRetries){
-            setOccuredError("вам нужно авторизироваться")
-        }
         try{
-            const {response} = await fetchAuth(getUrl())
+            const {response} = await fetchAuth(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode),false,{},"")
             if (response.ok){
-                retries = 0
+                setOccuredError(null)
             }
-            else{
-                retries++;
+            else if(response.status === 401){
+                setOccuredError("у вас нет доступа к этому контенту, попробуйте авторизироваться")
+            } else if(response.status === 403) {
+                setOccuredError("у вас нет доступа к этому контенту")
+            }
+            else if(response.status === 404){
+                setOccuredError("такого контента нет")
+            } else{
+                setOccuredError("произошла ошибка, попробуйте позже или напишите нам")
             }
         } catch (error){
-            setOccuredError("произошла ошибка")
-            retries++;
-        } 
+            setOccuredError("произошла ошибка:" + error.message)
+        }
     } 
     const getUrl = (contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode) => {
         let path;
         if (contentType.contentTypeName === "Сериал") {
-            // serial/{id}/season/{season}/episode/{episode}/res/{resolution}/
             path = `${baseUrl}content/serial/${contentId}/season/${currentSeason}/episode/${currentEpisode}/res/${resolution}/output.m3u8`;
         } else {
             path = `${baseUrl}content/movie/${contentId}/res/${resolution}/output.m3u8`;
@@ -46,33 +45,22 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     };
     // Обновляем URL каждый раз при изменении параметров
     useEffect(() => {
-        setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution,currentSeason,currentEpisode));
-    }, [contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode]);
-    
-    // этот useEffect проверяет что пользователь МОЖЕТ смотреть видео(иначе у него будет окно что нельзя)
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                setDataFetching(true)
-                const resp = await fetch(videoUrl, {
-                    headers: {
-                        "Authorization": "Bearer " + sessionStorage.getItem("accessToken")
-                    }
-                });
-                if (!resp.ok) {
-                    setOccuredError("Ошибка загрузки видео")
-                    return;
-                }
-                setOccuredError(null)
-            } catch (e) {
-                setOccuredError(e.message)
-                setDataFetching(false)
-            } finally {
-                setDataFetching(false)
+        (async() => {
+            if (jwtDecode(sessionStorage.getItem("accessToken")).exp + 10 < new Date()) {
+                try {
+                    const response = await fetch(`${baseUrl}auth/refresh-token`, {
+                        method: "POST",
+                        credentials: "include"
+                    });
+                    if (response.ok) sessionStorage.setItem('accessToken', await response.text());
+                } catch {}
             }
-        }
-        fetchData();
-    }, [videoUrl]);
+
+            setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode));
+        })()
+    }, [resolution, currentSeason, currentEpisode, contentType]);
+    
+
     return (
         <>
             {dataFetching && <img src={gif} alt="грузится" className={styles.loading}></img>}
@@ -117,8 +105,7 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                 </div>
                 {occuredError}
             </div>}
-            {occuredError == null && !dataFetching &&
-                <>
+                <div style={{display: occuredError == null && !dataFetching ? "block" : "none"}}>
                     <div className={styles.playerWindow}>
                         <div className={styles.player}>
                             <div className={styles.resAndSeasons}>
@@ -160,7 +147,6 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                 </div>
                             </div>
                             <ReactPlayer
-                                key={videoUrl + retries}
                                 url={videoUrl}
                                 config={{
                                     file: {
@@ -177,12 +163,14 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                                 height={"720px"}
                                 id="videoPlayer"
                                 width={"1280px"}
-                            onError={updateTokenAndRetry}>
+                            onError={updateTokenAndRetry}
+                            onProgress={() => {setOccuredError(null)}}
+                                
+                            >
                             </ReactPlayer>
                         </div>
                     </div>
-                </>
-            }
+                </div>
         </>
     );
 }

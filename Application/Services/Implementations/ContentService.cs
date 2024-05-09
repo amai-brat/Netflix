@@ -44,7 +44,7 @@ public class ContentService(
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
         if (!userCanViewContent)
         {
-            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+            throw new ContentServiceNotPermittedException("Вам нужна подписка чтобы смотреть этот контент");
         }
 
         var serialUrl = await GetSerialEpisodeVideoUrlAsync(serialId, resolution, seasonNumber, episodeNumber) + ".m3u8";
@@ -58,7 +58,7 @@ public class ContentService(
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(movieId,userSubscriptions);
         if (!userCanViewContent)
         {
-            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+            throw new ContentServiceNotPermittedException("Вам нужна подписка чтобы смотреть этот контент");
         }
         var resource = await GetMovieVideoUrlAsync(movieId, resolution)  + ".ts";
 
@@ -72,7 +72,7 @@ public class ContentService(
         var userCanViewContent = await CheckIfContentAllowedWithSubscriptionIdAsync(serialId,userSubscriptions);
         if (!userCanViewContent)
         {
-            throw new Exception("Вам нужна подписка чтобы смотреть этот контент");
+            throw new ContentServiceNotPermittedException("Вам нужна подписка чтобы смотреть этот контент");
         }
 
         var serialUrl = await GetSerialEpisodeVideoUrlAsync(serialId, resolution, seasonNumber, episodeNumber) + ".ts";
