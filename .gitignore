@@ -10,7 +10,7 @@
 *.userosscache
 *.sln.docstates
 .idea
-./API/authAppSettings.json
+/API/authAppSettings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
