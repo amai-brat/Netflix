@@ -84,6 +84,8 @@ public static class DependencyInjection
                 };
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = true;
+                options.User.AllowedUserNameCharacters = 
+                    " 0123456789абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             })
             .AddRoles<AppRole>()
             .AddDefaultTokenProviders()
