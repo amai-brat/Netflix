@@ -6,6 +6,7 @@ import {baseUrl} from "../../httpClient/baseUrl.js";
 import Hls from 'hls.js';
 import {get} from "mobx";
 import {fetchAuth} from "../../httpClient/fetchAuth.js";
+import { jwtDecode } from 'jwt-decode';
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(1080)
     const [occuredError, setOccuredError] = useState(null)
@@ -44,7 +45,19 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     };
     // Обновляем URL каждый раз при изменении параметров
     useEffect(() => {
-        setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode));
+        (async() => {
+            if (jwtDecode(sessionStorage.getItem("accessToken")).exp + 10 < new Date()) {
+                try {
+                    const response = await fetch(`${baseUrl}auth/refresh-token`, {
+                        method: "POST",
+                        credentials: "include"
+                    });
+                    if (response.ok) sessionStorage.setItem('accessToken', await response.text());
+                } catch {}
+            }
+
+            setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode));
+        })()
     }, [resolution, currentSeason, currentEpisode, contentType]);
     
 
