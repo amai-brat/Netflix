@@ -36,6 +36,7 @@ public class AuthServiceTests
     private readonly Mock<IUserStore<AppUser>> _mockUserStore = new();
     private readonly Mock<IUserRepository> _mockUserRepo = new();
     private readonly IMapper _mapper;
+    private readonly Mock<IUnitOfWork> _mockAppUnitOfWork = new();
     private readonly Mock<IIdentityUnitOfWork> _mockUnitOfWork = new();
     private readonly Mock<ITokenGenerator> _mockTokenGenerator = new();
     private readonly Mock<ITokenRepository> _mockTokenRepo = new();
@@ -316,7 +317,7 @@ public class AuthServiceTests
         _userManager = new FakeUserManager(users, appUsers);
         _signInManager = new FakeSignInManager((_userManager as FakeUserManager)!);
         return new AuthService(
-            _userManager, _signInManager, _mockUserRepo.Object, _mapper,
+            _userManager, _signInManager, _mockUserRepo.Object, _mapper, _mockAppUnitOfWork.Object,
             _mockUnitOfWork.Object, _mockTokenGenerator.Object, _mockTokenRepo.Object, _mockEmailSeder.Object,
             _mockTwoFactorTokenSender.Object, _mockMonitor.Object);
 

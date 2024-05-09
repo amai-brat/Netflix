@@ -10,6 +10,8 @@ using Infrastructure.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.Configuration.AddJsonFile("authAppSettings.json");
+
 builder.Services.AddSignalR();
 builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("FrontendConfig"));
 builder.Services.AddExceptionHandlerMiddleware();

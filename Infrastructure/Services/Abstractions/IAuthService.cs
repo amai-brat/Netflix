@@ -6,6 +6,7 @@ public interface IAuthService
 {
     public Task<long?> RegisterAsync(SignUpDto dto); 
     public Task<TokensDto?> AuthenticateAsync(LoginDto dto);
+    public Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto);
     public Task<string> ConfirmEmailAsync(long userId, string token);
     public Task<TokensDto> RefreshTokenAsync(string token);
     public Task RevokeTokenAsync(string token);
@@ -16,5 +17,4 @@ public interface IAuthService
     public Task EnableTwoFactorAuthAsync(string userEmail);
     public Task<bool> IsEnabledTwoFactorAuthAsync(string userEmail);
     public Task<TokensDto> TwoFactorAuthenticateAsync(TwoFactorTokenDto dto);
-    public Task<TokensDto> AuthenticateFromExternalAsync(ExternalLoginDto dto);
 }

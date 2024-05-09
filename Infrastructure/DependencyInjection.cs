@@ -96,7 +96,6 @@ public static class DependencyInjection
         this IServiceCollection serviceCollection, 
         IConfiguration configuration)
     {
-        //configuration.AddJsonFile("authAppSettings.json");
         serviceCollection.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
         serviceCollection.Configure<MinioOptions>(configuration.GetSection("Minio"));
         serviceCollection.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));

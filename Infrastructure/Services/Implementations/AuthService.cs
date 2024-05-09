@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using Application.Dto;
@@ -21,6 +22,7 @@ public class AuthService(
     SignInManager<AppUser> signInManager,
     IUserRepository userRepository,
     IMapper mapper,
+    IUnitOfWork appUnitOfWork,
     IIdentityUnitOfWork unitOfWork,
     ITokenGenerator tokenGenerator,
     ITokenRepository tokenRepository,
@@ -66,6 +68,11 @@ public class AuthService(
         if (appUser is null)
         {
             throw new Exception(ErrorMessages.NotFoundUser);
+        }
+
+        if (string.IsNullOrEmpty(appUser.PasswordHash))
+        {
+            throw new AuthenticationException(ErrorMessages.CannotAccessToAccountByPassword);
         }
         
         var correctPassword = await userManager.CheckPasswordAsync(appUser, dto.Password);
@@ -282,10 +289,8 @@ public class AuthService(
         var user = 
             await userManager.FindByEmailAsync(dto.Email) ??
             await RegisterFromExternalAsync(dto);
-        
-        var tokens = await GetTokens(user, true);
-        
-        return tokens;
+
+        return await GetTokens(user, true);
     }
 
     private async Task<AppUser> RegisterFromExternalAsync(ExternalLoginDto dto)
@@ -305,12 +310,14 @@ public class AuthService(
         var appUser = mapper.Map<AppUser>(user);
         appUser.EmailConfirmed = true;
         var identityResult = await userManager.CreateAsync(appUser);
-        
-        if (identityResult.Succeeded)
-        {
-            await userManager.AddToRoleAsync(appUser, "user");
-        }
 
+        if (identityResult.Succeeded)
+            await userManager.AddToRoleAsync(appUser, "user");
+        else
+            throw new IdentityException(string.Join(" ", identityResult.Errors.Select(x => x.Description)));
+
+        await appUnitOfWork.SaveChangesAsync();
+        
         return appUser;
     }
 
@@ -379,6 +386,7 @@ public class AuthService(
         if (rememberMe)
         {
             refreshToken = tokenGenerator.GenerateRefreshToken(user.Id, appUser.Id);
+            refreshToken.User = appUser;
             await tokenRepository.AddAsync(refreshToken);
         }
         
