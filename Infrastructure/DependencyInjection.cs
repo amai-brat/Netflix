@@ -15,6 +15,7 @@ public static class DependencyInjection
         serviceCollection.AddScoped<IUserService, UserService>();
         serviceCollection.AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>();
         serviceCollection.AddScoped<IPasswordHasher, PasswordHasher>();
+        serviceCollection.AddScoped<IContentVideoProvider,ContentVideoProvider>();
 
         return serviceCollection;
     }

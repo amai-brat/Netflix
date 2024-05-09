@@ -1,15 +1,13 @@
 using System.Text;
 using API;
 using API.Hubs;
+using API.MetadataProviders;
 using API.Middlewares.ExceptionHandler;
-using Application.Options;
 using DataAccess.Extensions;
 using Infrastructure;
 using Infrastructure.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Application;
+using Application.Options;
 using Infrastructure.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,9 +18,10 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOpti
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastructure();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddMvcOptions(options => options.ModelMetadataDetailsProviders.Add(new CustomMetadataProvider ()));
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidators();

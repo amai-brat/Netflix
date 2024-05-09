@@ -9,5 +9,6 @@ namespace Application.Repositories
         Task<User?> GetUserWithSubscriptionsAsync(long userId);
         Task<User?> AddAsync(User user);
         Task<bool> IsEmailUniqueAsync(string email);
+        Task<User?> GetUserWithSubscriptionsAndRolesByFilterAsync(Expression<Func<User, bool>> filter);
     }
 }

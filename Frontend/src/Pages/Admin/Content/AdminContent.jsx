@@ -33,6 +33,7 @@ const AdminContent = () => {
                 position: "bottom-center"
             })
         }
+        console.log(json)
     }
     const editSerialClickedAction = async () => {
         const {response: resp, data: json} = await adminContentService.getEditSerialContent(editSerialId);
@@ -44,9 +45,10 @@ const AdminContent = () => {
                 position: "bottom-center"
             })
         }
+        console.log(json)
     }
     const deleteContent = async () => {
-        if (idToDelete <= 0) {
+        if (idToDelete < 0) {
             toast.error("Введите id")
             return
         }
@@ -65,7 +67,7 @@ const AdminContent = () => {
         <div className={styles.main}>
             <div className={styles.delete}>
                 <h2>Удалить контент по id</h2>
-                <input type="number" placeholder="id" onChange={e => setIdToDelete(Number.parseInt(e.target.value))}/>
+                <input type="number" placeholder="id" onChange={e => setIdToDelete(Number.parseInt(e.target.value))} defaultValue={0}/>
                 <button onClick={deleteContent}>Удалить</button>
             </div>
             <div className={styles.separator}></div>
