@@ -2,6 +2,8 @@
 using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
+using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using Application.Services.Extensions;

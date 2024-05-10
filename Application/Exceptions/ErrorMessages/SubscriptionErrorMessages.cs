@@ -1,4 +1,4 @@
-namespace Domain.Services.ServiceExceptions;
+namespace Application.Exceptions.ErrorMessages;
 
 public class SubscriptionErrorMessages
 {

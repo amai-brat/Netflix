@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using Application.Dto;
 using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
 using Application.Repositories;
 using AutoFixture;
 using AutoMapper;
@@ -314,7 +315,7 @@ public class AuthServiceTests
     private AuthService GetService(List<User> users, List<AppUser> appUsers)
     {
         SetupMocks(users, appUsers);
-        _userManager = new FakeUserManager(users, appUsers);
+        _userManager = new FakeUserManager(appUsers);
         _signInManager = new FakeSignInManager((_userManager as FakeUserManager)!);
         return new AuthService(
             _userManager, _signInManager, _mockUserRepo.Object, _mapper, _mockAppUnitOfWork.Object,

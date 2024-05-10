@@ -2,7 +2,8 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using Application.Dto;
-using Application.Exceptions;
+using Application.Exceptions.Base;
+using Application.Exceptions.ErrorMessages;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -36,7 +37,7 @@ public class AuthService(
     {
         if (!await userRepository.IsEmailUniqueAsync(dto.Email))
         {
-            throw new AuthServiceException(ErrorMessages.EmailNotUnique);
+            throw new AuthServiceException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
         }
         
         var user = new User
@@ -78,7 +79,7 @@ public class AuthService(
         var correctPassword = await userManager.CheckPasswordAsync(appUser, dto.Password);
         if (!correctPassword)
         {
-            throw new AuthServiceException(ErrorMessages.IncorrectPassword);
+            throw new AuthServiceException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
         }
 
         if (!appUser.EmailConfirmed)
@@ -108,7 +109,7 @@ public class AuthService(
         var user = await userManager.FindByIdAsync(userId.ToString());
         if (user is null)
         {
-            throw new AuthServiceException(ErrorMessages.NotFoundUser);
+            throw new AuthServiceException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         var result = await userManager.ConfirmEmailAsync(user, token);

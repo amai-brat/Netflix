@@ -1,4 +1,5 @@
 using Application.Exceptions;
+using Application.Exceptions.Base;
 using DataAccess;
 using Microsoft.Extensions.Logging;
 

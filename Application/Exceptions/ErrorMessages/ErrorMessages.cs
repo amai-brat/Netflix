@@ -1,4 +1,4 @@
-﻿namespace Application.Exceptions
+﻿namespace Application.Exceptions.ErrorMessages
 {
     public class ErrorMessages
     {

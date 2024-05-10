@@ -1,9 +1,11 @@
 using System.Text.RegularExpressions;
 using Application.Dto;
+using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
+using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
 
 namespace Application.Services.Implementations;
 
