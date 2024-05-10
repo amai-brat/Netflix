@@ -4,6 +4,7 @@ import {fetchAuth} from "../httpClient/fetchAuth.js";
 export const subscriptionService = {
   getAllSubscriptions,
   getPurchasedSubscriptions,
+  getCurrentSubscriptions,
   buySubscription,
   getSubscriptionById,
   unsubscribe
@@ -16,6 +17,11 @@ async function getAllSubscriptions() {
 
 async function getPurchasedSubscriptions() {
   return await fetchAuth("subscription/getUserSubscriptions", true, {}, baseSubscriptionUrl);
+}
+
+async function getCurrentSubscriptions() {
+  return await fetchAuth("subscription/getCurrentUserSubscriptions", true, {}, baseSubscriptionUrl);
+  
 }
 
 async function buySubscription(values) {

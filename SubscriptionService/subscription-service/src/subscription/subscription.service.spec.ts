@@ -158,7 +158,7 @@ describe('SubscriptionService', () => {
 
         const expectedUserSubscriptions = fakeUserSubscriptions.filter(us => us.userId == randomUser.id);
 
-        const result = await service.getBoughtSubscriptionsByNickname(randomUser.id);
+        const result = await service.getBoughtSubscriptionsByUserId(randomUser.id);
 
         expect(result).toEqual(expectedUserSubscriptions);
     });

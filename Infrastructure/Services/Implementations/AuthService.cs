@@ -329,7 +329,10 @@ public class AuthService(
         {
             new("id", user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
-            new("subscribeId", JsonSerializer.Serialize(user.UserSubscriptions!.Select(x => x.SubscriptionId).ToList()))
+            new("subscribeId", JsonSerializer.Serialize(
+                user.UserSubscriptions!
+                    .Where(x => x.ExpiresAt < DateTimeOffset.Now)
+                    .Select(x => x.SubscriptionId).ToList()))
         };
         
         var roles = await userManager.GetRolesAsync(appUser);
