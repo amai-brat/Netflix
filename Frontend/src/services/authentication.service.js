@@ -11,7 +11,9 @@ export const authenticationService = {
   getWhetherTwoFactorEnabled,
   sendTwoFactorToken,
   getUser,
-  refreshToken
+  refreshToken,
+  isCurrentUserModerator,
+  isCurrentUserAdmin
 };
 
 async function signin(values){
@@ -166,4 +168,14 @@ function getUser() {
     return null
   }
   return jwtDecode(token);
+}
+
+function isCurrentUserModerator() {
+  const roles = getUser()?.role;
+  if (!roles) return false;
+  return roles.includes("moderator") || roles.includes("admin");
+}
+
+function isCurrentUserAdmin() {
+  return getUser().role?.includes("admin") ?? false;
 }
