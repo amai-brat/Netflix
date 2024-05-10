@@ -26,7 +26,7 @@ function App() {
     return (
         <>
             <ToastContainer theme={"dark"} />
-            {location.pathname !== "/" && location.pathname !== "/signin" 
+            {location.pathname !== "/" && !location.pathname.includes("signin") 
                 && location.pathname !== "/signup" && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
@@ -46,7 +46,10 @@ function App() {
                 </Route>
                 <Route path="SelectionContent" element={<SelectionContent/>}/>
                 <Route path="signup" element={<SignUpSignIn formType="signup"/>}/>
-                <Route path="signin" element={<SignUpSignIn formType="signin"/>}/>
+                <Route path="signin" element={<SignUpSignIn formType="signin"/>}>
+                    <Route path="google"/>
+                    <Route path="vk"/>
+                </Route>
                 <Route path="Subscriptions" element={<Subscriptions/>}/>
                 <Route path="ViewContent/:id" element={<ViewContent/>}/>
                 <Route path="*" element={<Error404/>}/>

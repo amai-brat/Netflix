@@ -6,6 +6,7 @@ export const authenticationService = {
   signin,
   signup,
   logout,
+  externalSignIn,
   enableTwoFactorAuth,
   getWhetherTwoFactorEnabled,
   sendTwoFactorToken,
@@ -23,6 +24,31 @@ async function signin(values){
       body: JSON.stringify(values)
     });
     
+    if (resp.ok) {
+      const token = await resp.text();
+      sessionStorage.setItem("accessToken", token);
+      return {ok: true, data: token};
+    } else {
+      const error = await resp.json()
+      return {ok: false, data: error};
+    }
+  } catch (e) {
+    console.log(e);
+    return {ok: false, data: e.message}
+  }
+}
+
+async function externalSignIn(provider, code){
+  try {
+    const resp = await fetch(`${baseUrl}auth/external/${provider}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({Code: code})
+    });
+
     if (resp.ok) {
       const token = await resp.text();
       sessionStorage.setItem("accessToken", token);

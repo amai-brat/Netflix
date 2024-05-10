@@ -1,8 +1,10 @@
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 using Application.Dto;
 using FluentValidation;
 using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Providers.ProviderFactory;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -13,9 +15,39 @@ namespace API.Controllers.AuthController;
 public class AuthController(
     IAuthService authService,
     IOptionsMonitor<FrontendConfig> monitor,
+    AuthProviderResolver authProviderResolver,
     IValidator<SignUpDto> signUpDtoValidator) : ControllerBase
 {
     private readonly FrontendConfig _frontendConfig = monitor.CurrentValue;
+    
+    [HttpGet("external/{provider}")]
+    public IActionResult GetRedirectUri(string provider)
+    {
+        var authProvider = authProviderResolver.GetAuthProvider(provider);
+        if (authProvider is null)
+            return BadRequest("Incorrect provider");
+        
+        return Redirect(authProvider.GetAuthUri());
+    }
+    
+    [HttpPost("external/{provider}")]
+    public async Task<IActionResult> GetTokenAsync(string provider, [FromBody] AuthCode code)
+    {
+        var authProvider = authProviderResolver.GetAuthProvider(provider);
+        if (authProvider is null)
+            return BadRequest("Incorrect provider");
+
+        var externalLoginDto = await authProvider.ExchangeCodeAsync(code.Code);
+
+        if (!externalLoginDto.IsSuccess)
+            return Unauthorized(externalLoginDto.ErrorDescription);
+        
+        var tokens = await authService.AuthenticateFromExternalAsync(externalLoginDto);
+        
+        SetRefreshTokenCookie(tokens.RefreshToken!);
+
+        return Ok(tokens.AccessToken);
+    }
     
     [HttpPost("signup")]
     public async Task<IActionResult> SignUpAsync(SignUpDto dto)

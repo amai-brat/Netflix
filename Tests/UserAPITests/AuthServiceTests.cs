@@ -2,13 +2,13 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using Application.Dto;
 using Application.Exceptions;
-using Application.Options;
 using Application.Repositories;
 using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Data;
+using Infrastructure.Options;
 using Infrastructure.Profiles;
 using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Exceptions;
@@ -36,6 +36,7 @@ public class AuthServiceTests
     private readonly Mock<IUserStore<AppUser>> _mockUserStore = new();
     private readonly Mock<IUserRepository> _mockUserRepo = new();
     private readonly IMapper _mapper;
+    private readonly Mock<IUnitOfWork> _mockAppUnitOfWork = new();
     private readonly Mock<IIdentityUnitOfWork> _mockUnitOfWork = new();
     private readonly Mock<ITokenGenerator> _mockTokenGenerator = new();
     private readonly Mock<ITokenRepository> _mockTokenRepo = new();
@@ -316,7 +317,7 @@ public class AuthServiceTests
         _userManager = new FakeUserManager(users, appUsers);
         _signInManager = new FakeSignInManager((_userManager as FakeUserManager)!);
         return new AuthService(
-            _userManager, _signInManager, _mockUserRepo.Object, _mapper,
+            _userManager, _signInManager, _mockUserRepo.Object, _mapper, _mockAppUnitOfWork.Object,
             _mockUnitOfWork.Object, _mockTokenGenerator.Object, _mockTokenRepo.Object, _mockEmailSeder.Object,
             _mockTwoFactorTokenSender.Object, _mockMonitor.Object);
 

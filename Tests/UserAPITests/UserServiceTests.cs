@@ -8,6 +8,7 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Services.ServiceExceptions;
 using Infrastructure.Profiles;
+using Infrastructure.Providers.Abstractions;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 using Moq;

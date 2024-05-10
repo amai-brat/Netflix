@@ -1,10 +1,12 @@
 using Application.Dto;
-using Application.Options;
 using Application.Services.Abstractions;
 using FluentValidation;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Data;
 using Infrastructure.Options;
+using Infrastructure.Providers.Abstractions;
+using Infrastructure.Providers.Implementations;
+using Infrastructure.Providers.ProviderFactory;
 using Infrastructure.Services;
 using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Implementations;
@@ -26,6 +28,7 @@ public static class DependencyInjection
         IWebHostEnvironment environment)
     {
         serviceCollection.AddValidators();
+        serviceCollection.AddAuthProviderResolver();
         serviceCollection.AddAutoMapper(typeof(DependencyInjection).Assembly);
         serviceCollection.AddScoped<IUserService, UserService>();
         serviceCollection.AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>();
@@ -81,6 +84,8 @@ public static class DependencyInjection
                 };
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = true;
+                options.User.AllowedUserNameCharacters = 
+                    " 0123456789абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             })
             .AddRoles<AppRole>()
             .AddDefaultTokenProviders()
@@ -96,7 +101,18 @@ public static class DependencyInjection
         serviceCollection.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
         serviceCollection.Configure<MinioOptions>(configuration.GetSection("Minio"));
         serviceCollection.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
+        serviceCollection.Configure<GoogleAuthOptions>(configuration.GetSection("Auth:Google"));
+        serviceCollection.Configure<VkAuthOptions>(configuration.GetSection("Auth:Vk"));
 
+        return serviceCollection;
+    }
+    
+    private static IServiceCollection AddAuthProviderResolver(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<IAuthProvider, VkAuthProvider>();
+        serviceCollection.AddScoped<IAuthProvider, GoogleAuthProvider>();
+        serviceCollection.AddScoped<AuthProviderResolver>();
+        
         return serviceCollection;
     }
 }

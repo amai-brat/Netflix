@@ -1,11 +1,11 @@
 using Infrastructure.Options;
-using Infrastructure.Services.Abstractions;
-using Infrastructure.Services.Exceptions;
+using Infrastructure.Providers.Abstractions;
+using Infrastructure.Providers.Exceptions;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 
-namespace Infrastructure.Services.Implementations;
+namespace Infrastructure.Providers.Implementations;
 
 public class ProfilePicturesProvider : IProfilePicturesProvider
 {

@@ -865,7 +865,7 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_content_bases_content_types_content_type_id");
 
-                    b.OwnsOne("Domain.Entities.AgeRatings", "AgeRatings", b1 =>
+                    b.OwnsOne("Domain.Entities.ContentBase.AgeRatings#Domain.Entities.AgeRatings", "AgeRatings", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -881,7 +881,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases");
+                            b1.ToTable("content_bases", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -896,7 +896,7 @@ namespace DataAccess.Migrations
                                 });
                         });
 
-                    b.OwnsOne("Domain.Entities.Budget", "Budget", b1 =>
+                    b.OwnsOne("Domain.Entities.ContentBase.Budget#Domain.Entities.Budget", "Budget", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -913,7 +913,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases");
+                            b1.ToTable("content_bases", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -928,7 +928,7 @@ namespace DataAccess.Migrations
                                 });
                         });
 
-                    b.OwnsOne("Domain.Entities.Ratings", "Ratings", b1 =>
+                    b.OwnsOne("Domain.Entities.ContentBase.Ratings#Domain.Entities.Ratings", "Ratings", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -948,7 +948,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases");
+                            b1.ToTable("content_bases", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -964,7 +964,7 @@ namespace DataAccess.Migrations
                                 });
                         });
 
-                    b.OwnsOne("Domain.Entities.TrailerInfo", "TrailerInfo", b1 =>
+                    b.OwnsOne("Domain.Entities.ContentBase.TrailerInfo#Domain.Entities.TrailerInfo", "TrailerInfo", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -982,7 +982,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases");
+                            b1.ToTable("content_bases", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -1156,7 +1156,7 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_serial_contents_content_bases_id");
 
-                    b.OwnsOne("Domain.Entities.YearRange", "YearRange", b1 =>
+                    b.OwnsOne("Domain.Entities.SerialContent.YearRange#Domain.Entities.YearRange", "YearRange", b1 =>
                         {
                             b1.Property<long>("SerialContentId")
                                 .HasColumnType("bigint")
@@ -1172,7 +1172,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("SerialContentId");
 
-                            b1.ToTable("serial_contents");
+                            b1.ToTable("serial_contents", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("SerialContentId")

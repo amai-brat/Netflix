@@ -1,4 +1,4 @@
-namespace Application.Options;
+namespace Infrastructure.Options;
 
 public class JwtOptions
 {
