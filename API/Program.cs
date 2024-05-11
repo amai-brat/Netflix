@@ -39,10 +39,16 @@ await using (var scope = app.Services.CreateAsyncScope())
     await Task.Delay(1000);
     
     var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
-    await dbContext!.Database.MigrateAsync();
+    if (dbContext!.Database.IsRelational())
+    {
+        await dbContext.Database.MigrateAsync();
+    }
 
     var identityDbContext = scope.ServiceProvider.GetService<IdentityDbContext>();
-    await identityDbContext!.Database.MigrateAsync();
+    if (identityDbContext!.Database.IsRelational())
+    {
+        await identityDbContext.Database.MigrateAsync();
+    }
 }
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions {
