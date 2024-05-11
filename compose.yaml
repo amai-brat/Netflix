@@ -8,6 +8,7 @@ services:
       - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
       - EMAIL_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email
       - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email-change
     depends_on:
@@ -60,7 +61,7 @@ services:
     environment:
       - VITE_PORT=5173
       - VITE_HOST=0.0.0.0
-      - VITE_CLIENT_PORT=5173
+#      - VITE_CLIENT_PORT=5173
     depends_on:
       - api
       - subscription-service
@@ -68,9 +69,12 @@ services:
   proxy:
     image: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./Nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./Nginx/localhost.crt:/etc/nginx/localhost.crt
+      - ./Nginx/localhost.key:/etc/nginx/localhost.key
     ports:
-      - 80:80
+      - "80:80"
+      - "443:443"
     depends_on:
       - frontend
       - api

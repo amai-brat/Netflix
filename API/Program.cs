@@ -58,6 +58,8 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseHsts();
 app.UseExceptionHandlerMiddleware();
 
 app.UseRouting();

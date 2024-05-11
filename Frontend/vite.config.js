@@ -10,7 +10,7 @@ export default defineConfig({
     strictPort: true,
     host: process.env.VITE_HOST || null,
     port: process.env.VITE_PORT || null,
-    hmr: {
-      clientPort: process.env.VITE_CLIENT_PORT || null
-    },
+    // hmr: {
+    //   clientPort: process.env.VITE_CLIENT_PORT || null
+    // },
   }})
