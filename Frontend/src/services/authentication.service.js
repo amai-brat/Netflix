@@ -177,5 +177,5 @@ function isCurrentUserModerator() {
 }
 
 function isCurrentUserAdmin() {
-  return getUser().role?.includes("admin") ?? false;
+  return getUser()?.role?.includes("admin") ?? false;
 }

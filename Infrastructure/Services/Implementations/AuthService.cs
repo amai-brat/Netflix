@@ -1,4 +1,3 @@
-using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using Application.Dto;
@@ -68,12 +67,12 @@ public class AuthService(
         var appUser = await userManager.FindByEmailAsync(dto.Email);
         if (appUser is null)
         {
-            throw new Exception(ErrorMessages.NotFoundUser);
+            throw new AuthServiceException(ErrorMessages.NotFoundUser);
         }
 
         if (string.IsNullOrEmpty(appUser.PasswordHash))
         {
-            throw new AuthenticationException(ErrorMessages.CannotAccessToAccountByPassword);
+            throw new AuthServiceException(ErrorMessages.CannotAccessToAccountByPassword);
         }
         
         var correctPassword = await userManager.CheckPasswordAsync(appUser, dto.Password);
@@ -322,8 +321,7 @@ public class AuthService(
         return appUser;
     }
 
-    private async Task<List<Claim>> 
-        GetClaimsAsync(User user, AppUser appUser)
+    private async Task<List<Claim>> GetClaimsAsync(User user, AppUser appUser)
     {
         var claims = new List<Claim>
         {

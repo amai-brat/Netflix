@@ -1,3 +1,3 @@
-export const baseUrl = "https://localhost:7173/";
+export const baseUrl = "/api/";
 
-export const baseSubscriptionUrl = "http://localhost:3000/"
+export const baseSubscriptionUrl = "/subscription/";
