@@ -53,15 +53,14 @@ services:
       dockerfile: "./Dockerfile"
     ports:
       - "5173:5173"
-    volumes:
-      - type: bind
-        source: ./Frontend/
-        target: /app
-    tty: true
+    # volumes:
+    #   - type: bind
+    #     source: ./Frontend/
+    #     target: /app
     environment:
       - VITE_PORT=5173
       - VITE_HOST=0.0.0.0
-#      - VITE_CLIENT_PORT=5173
+    #  - VITE_CLIENT_PORT=5173
     depends_on:
       - api
       - subscription-service
