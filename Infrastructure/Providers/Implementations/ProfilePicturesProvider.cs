@@ -1,3 +1,5 @@
+using System.Net;
+using System.Web;
 using Infrastructure.Options;
 using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Exceptions;
@@ -15,9 +17,15 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
     public ProfilePicturesProvider(IOptionsMonitor<MinioOptions> optionsMonitor)
     {
         var minioOptions = optionsMonitor.CurrentValue;
+        // тут происходит костыль: 
+        // невозможно обратиться внутри контейнера на локалхост, потому что это локалхост контейнера, а не компьютера
+        // PresignedGetObjectAsync даёт ссылку, в которой нельзя менять хост
+        // 
+        // по идее, если minio в отдельном сервере, этого костыля быть не должно
         _minioClient = new MinioClient()
-            .WithEndpoint(minioOptions.Endpoint)
+            .WithEndpoint(minioOptions.ExternalEndpoint)
             .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey)
+            .WithProxy(new WebProxy(minioOptions.Endpoint, 9000)) 
             .Build();
     }
 
