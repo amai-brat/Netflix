@@ -11,6 +11,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - EMAIL_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email
       - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email-change
+      - HLS_BASE_URL=https://localhost/api
     depends_on:
       - database
       - minio

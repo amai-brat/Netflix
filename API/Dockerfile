@@ -1,4 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+RUN apt-get -y update
+RUN apt-get -y upgrade
+RUN apt-get install -y ffmpeg
+
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -20,6 +24,8 @@ RUN dotnet build "API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+ENV HLS_BASE_URL=https://localhost/api
 
 FROM base AS final
 WORKDIR /app
