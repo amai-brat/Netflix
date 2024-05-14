@@ -1,4 +1,3 @@
-using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using Moq;
 
 namespace Tests.UserAPITests.Fakes;
 
-public class FakeUserManager(List<User> users, List<AppUser> appUsers) : UserManager<AppUser>(
+public class FakeUserManager(List<AppUser> appUsers) : UserManager<AppUser>(
     Mock.Of<IUserStore<AppUser>>(),
     Mock.Of<IOptions<IdentityOptions>>(),
     Mock.Of<IPasswordHasher<AppUser>>(),

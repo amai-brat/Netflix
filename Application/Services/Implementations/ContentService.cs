@@ -2,6 +2,8 @@
 using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
+using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using Application.Services.Extensions;
@@ -116,12 +118,18 @@ public class ContentService(
         string outputPath = Path.Combine(Path.GetTempPath(), $"content/{id}/res/{resolution}/season/{seasonNumber}/episode/{episodeNumber}");
         Directory.CreateDirectory(outputPath);
 
+        var hlsBaseUrl = Environment.GetEnvironmentVariable("HLS_BASE_URL");
+        if (hlsBaseUrl is null)
+        {
+            throw new ContentServiceArgumentException("HLS_BASE_URL env variable not set", "");
+        }
+        
         var resolutionString = GetResolutionByIntValue(resolution);
         var startInfo = new ProcessStartInfo
         {
             FileName = "ffmpeg",
             Arguments = $"-i {inputPath} -c:v libx264 -profile:v high -level 4.0 -s {resolutionString} -start_number 0" +
-                        $" -hls_time 5 -hls_list_size 0 -hls_base_url \"https://localhost:7173/content/serial/{id}/season/{seasonNumber}" +
+                        $" -hls_time 5 -hls_list_size 0 -hls_base_url \"{hlsBaseUrl}/content/serial/{id}/season/{seasonNumber}" +
                         $"/episode/{episodeNumber}/res/{resolution}/stream/chunk/\"" +
                         $" -hls_segment_filename {outputPath + "/output.ts"} -hls_flags single_file -f hls {outputPath + "/output.m3u8"}",
             RedirectStandardOutput = false,
@@ -150,12 +158,18 @@ public class ContentService(
         string outputPath = Path.Combine(Path.GetTempPath(), $"content/{id}/res/{resolution}");
         Directory.CreateDirectory(outputPath);
 
+        var hlsBaseUrl = Environment.GetEnvironmentVariable("HLS_BASE_URL");
+        if (hlsBaseUrl is null)
+        {
+            throw new ContentServiceArgumentException("HLS_BASE_URL env variable not set", "");
+        }
+        
         var resolutionString = GetResolutionByIntValue(resolution);
         var startInfo = new ProcessStartInfo
         {
             FileName = "ffmpeg",
             Arguments = $"-i {inputPath} -c:v libx264 -profile:v high -level 4.0 -s {resolutionString} -start_number 0" +
-                        $" -hls_time 5 -hls_list_size 0 -hls_base_url \"https://localhost:7173/content/movie/{id}/res/{resolution}/stream/chunk/\"" +
+                        $" -hls_time 5 -hls_list_size 0 -hls_base_url \"{hlsBaseUrl}/content/movie/{id}/res/{resolution}/stream/chunk/\"" +
                         $" -hls_segment_filename {outputPath + "/output.ts"} -hls_flags single_file -f hls {outputPath + "/output.m3u8"}",
             RedirectStandardOutput = false,
             RedirectStandardError = false,

@@ -1,8 +1,8 @@
-using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text.Json;
 using Application.Dto;
-using Application.Exceptions;
+using Application.Exceptions.Base;
+using Application.Exceptions.ErrorMessages;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -36,7 +36,7 @@ public class AuthService(
     {
         if (!await userRepository.IsEmailUniqueAsync(dto.Email))
         {
-            throw new AuthServiceException(ErrorMessages.EmailNotUnique);
+            throw new AuthServiceException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
         }
         
         var user = new User
@@ -67,18 +67,18 @@ public class AuthService(
         var appUser = await userManager.FindByEmailAsync(dto.Email);
         if (appUser is null)
         {
-            throw new Exception(ErrorMessages.NotFoundUser);
+            throw new AuthServiceException(ErrorMessages.NotFoundUser);
         }
 
         if (string.IsNullOrEmpty(appUser.PasswordHash))
         {
-            throw new AuthenticationException(ErrorMessages.CannotAccessToAccountByPassword);
+            throw new AuthServiceException(ErrorMessages.CannotAccessToAccountByPassword);
         }
         
         var correctPassword = await userManager.CheckPasswordAsync(appUser, dto.Password);
         if (!correctPassword)
         {
-            throw new AuthServiceException(ErrorMessages.IncorrectPassword);
+            throw new AuthServiceException(ErrorMessages.IncorrectPassword, nameof(dto.Password));
         }
 
         if (!appUser.EmailConfirmed)
@@ -108,7 +108,7 @@ public class AuthService(
         var user = await userManager.FindByIdAsync(userId.ToString());
         if (user is null)
         {
-            throw new AuthServiceException(ErrorMessages.NotFoundUser);
+            throw new AuthServiceException(ErrorMessages.NotFoundUser, nameof(userId));
         }
 
         var result = await userManager.ConfirmEmailAsync(user, token);
@@ -321,14 +321,16 @@ public class AuthService(
         return appUser;
     }
 
-    private async Task<List<Claim>> 
-        GetClaimsAsync(User user, AppUser appUser)
+    private async Task<List<Claim>> GetClaimsAsync(User user, AppUser appUser)
     {
         var claims = new List<Claim>
         {
             new("id", user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
-            new("subscribeId", JsonSerializer.Serialize(user.UserSubscriptions!.Select(x => x.SubscriptionId).ToList()))
+            new("subscribeId", JsonSerializer.Serialize(
+                user.UserSubscriptions!
+                    .Where(x => x.ExpiresAt < DateTimeOffset.Now)
+                    .Select(x => x.SubscriptionId).ToList()))
         };
         
         var roles = await userManager.GetRolesAsync(appUser);

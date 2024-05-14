@@ -1,10 +1,11 @@
 using Application.Dto;
 using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
+using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
 using Infrastructure.Providers.Abstractions;
 
 namespace Infrastructure.Services;

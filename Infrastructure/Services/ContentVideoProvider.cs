@@ -1,4 +1,5 @@
-﻿using Application.Services.Abstractions;
+﻿using System.Net;
+using Application.Services.Abstractions;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -15,7 +16,7 @@ public class ContentVideoProvider: IContentVideoProvider
     {
         var minioOptions = optionsMonitor.CurrentValue;
         _minioClient = new MinioClient()
-            .WithEndpoint(minioOptions.Endpoint)
+            .WithEndpoint($"{minioOptions.Endpoint}:9000")
             .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey)
             .Build();
         

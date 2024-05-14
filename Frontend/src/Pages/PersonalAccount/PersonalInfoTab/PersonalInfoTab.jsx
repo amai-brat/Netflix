@@ -20,9 +20,6 @@ const PersonalInfoTab = () => {
                 if (response.ok){
                     setUser(data);
                 }
-                else{
-                    setUser(null);
-                }
                 
             } catch (error) {
                 console.log(error);

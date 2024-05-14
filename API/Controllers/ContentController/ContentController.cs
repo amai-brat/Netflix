@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dto;
 using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
 using Application.Services.Abstractions;
 using AutoMapper;
 using FluentValidation;

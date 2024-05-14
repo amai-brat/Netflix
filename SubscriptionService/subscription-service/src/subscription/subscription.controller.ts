@@ -41,7 +41,23 @@ export class SubscriptionController {
         const userId = req.user.id;
 
         try{  
-            return await this.subscriptionService.getBoughtSubscriptionsByNickname(userId);
+            return await this.subscriptionService.getBoughtSubscriptionsByUserId(userId);
+        }
+        catch{
+            throw new BadRequestException("Invalid operation!")
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/getCurrentUserSubscriptions')
+    @ApiBearerAuth()
+    @ApiOkResponse({type: [Subscription], description: "User's subscriptions have been successfully received"})
+    @ApiUnauthorizedResponse({description: "User is not authorized - JWT token was not correct/was not provided."})
+    async getCurrentUserSubscriptions(@Request() req): Promise<UserSubscription[]>{
+        const userId = req.user.id;
+
+        try{
+            return await this.subscriptionService.getCurrentSubscriptionsByUserId(userId);
         }
         catch{
             throw new BadRequestException("Invalid operation!")

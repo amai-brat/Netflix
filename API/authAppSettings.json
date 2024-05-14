@@ -1,17 +1,17 @@
 {
   "Auth": {
     "Vk": {
-      "AuthUri": "",
-      "TokenUri": "",
-      "RedirectUri": "",
+      "AuthUri": "https://oauth.vk.com/authorize",
+      "TokenUri": "https://oauth.vk.com/access_token",
+      "RedirectUri": "http://localhost/signin/vk",
       "ClientId": "",
       "ClientSecret": "",
-      "InfoReqUri": ""
+      "InfoReqUri": "https://api.vk.com/method/users.get"
     },
     "Google": {
-      "AuthUri": "",
-      "TokenUri": "",
-      "RedirectUri": "",
+      "AuthUri": "https://accounts.google.com/o/oauth2/v2/auth",
+      "TokenUri": "https://oauth2.googleapis.com/token",
+      "RedirectUri": "http://localhost/signin/google",
       "ClientId": "",
       "ClientSecret": ""
     }

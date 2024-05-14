@@ -10,7 +10,10 @@ export const authenticationService = {
   enableTwoFactorAuth,
   getWhetherTwoFactorEnabled,
   sendTwoFactorToken,
-  getUser
+  getUser,
+  refreshToken,
+  isCurrentUserModerator,
+  isCurrentUserAdmin
 };
 
 async function signin(values){
@@ -138,11 +141,41 @@ async function sendTwoFactorToken(token, rememberMe) {
   }
 }
 
+async function refreshToken() {
+  try {
+    let response = await fetch(`${baseUrl}auth/refresh-token`, {
+      method: "POST",
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      let data = await response.text();
+      sessionStorage.setItem('accessToken', data);
+      return data;
+    } else {
+      const error = await response.json()
+      return {ok: false, data: error};
+    }
+  } catch (e) {
+    console.log(e);
+    return {ok: false, data: e.message}
+  }
+}
+
 function getUser() {
   const token = sessionStorage.getItem("accessToken");
   if (!token) {
     return null
   }
-  const user = jwtDecode(token);
-  return user;
+  return jwtDecode(token);
+}
+
+function isCurrentUserModerator() {
+  const roles = getUser()?.role;
+  if (!roles) return false;
+  return roles.includes("moderator") || roles.includes("admin");
+}
+
+function isCurrentUserAdmin() {
+  return getUser()?.role?.includes("admin") ?? false;
 }

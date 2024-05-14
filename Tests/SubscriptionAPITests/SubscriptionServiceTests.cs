@@ -1,9 +1,11 @@
 using Application.Dto;
+using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
+using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Implementations;
 using AutoFixture;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
 using Moq;
 
 namespace Tests.SubscriptionAPITests;

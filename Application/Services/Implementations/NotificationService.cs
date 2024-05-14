@@ -1,8 +1,9 @@
 using Application.Exceptions;
+using Application.Exceptions.ErrorMessages;
+using Application.Exceptions.Particular;
 using Application.Repositories;
 using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Services.ServiceExceptions;
 
 namespace Application.Services.Implementations;
 

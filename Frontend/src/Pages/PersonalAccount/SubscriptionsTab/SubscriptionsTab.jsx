@@ -14,7 +14,7 @@ const SubscriptionsTab = () => {
         const fetchSubscriptions = async () => {
             try {
                 setDataFetching(true)
-                const {response, data} = await subscriptionService.getPurchasedSubscriptions();
+                const {response, data} = await subscriptionService.getCurrentSubscriptions();
                 setDataFetching(false)
                 if (!response.ok) {
                     setResponse(`Ошибка: ${response.statusText}`)

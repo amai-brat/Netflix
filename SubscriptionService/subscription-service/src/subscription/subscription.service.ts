@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "../entities/user.entity";
-import { Subscription } from "../entities/subscription.entity";
-import { UserSubscription } from "../entities/user_subscription.entity";
+import {Injectable} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {User} from "../entities/user.entity";
+import {Subscription} from "../entities/subscription.entity";
+import {UserSubscription} from "../entities/user_subscription.entity";
 
 @Injectable()
 export class SubscriptionService {
@@ -26,12 +26,19 @@ export class SubscriptionService {
         return await this.subscriptionRepository.findOneByOrFail({ id: id });
     }
 
-    async getBoughtSubscriptionsByNickname(userId: number){
+    async getBoughtSubscriptionsByUserId(userId: number){
         const user = await this.userRepository.findOneByOrFail({ id: userId })
 
         const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id });
 
         return Array.isArray(subscriptions) ? subscriptions: [subscriptions];
+    }
+
+    async getCurrentSubscriptionsByUserId(userId: number){
+        const user = await this.userRepository.findOneByOrFail({ id: userId })
+
+        const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id });
+        return subscriptions.filter(sub => sub.expiresAt > new Date());
     }
 
     async processSubscriptionPurchase(userId: number, subscriptionId: number){

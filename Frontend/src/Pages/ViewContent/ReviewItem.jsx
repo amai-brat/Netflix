@@ -10,6 +10,11 @@ import {useDataStore} from "../../store/dataStoreProvider.jsx";
 import {commentService} from "../../services/comment.service.js";
 import {ReviewsContext} from "./ReviewsContext.js";
 import {contentService} from "../../services/content.service.js";
+import {authenticationService} from "../../services/authentication.service.js";
+import moderatorImg from "../../assets/moderator.svg";
+import crossImg from "../../assets/Cross.svg";
+import {moderatorService} from "../../services/moderator.service.js";
+import {adminUserService} from "../../services/admin.user.service.js";
 
 const modalStyles = {
     content: {
@@ -95,34 +100,87 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
             })
         }
     }
+    
+    async function handleReviewDeleteClick() {
+        try {
+            const {response, data} = await moderatorService.deleteReview(review.id);
+            if (response.ok) {
+                setReviewsChanged(true);
+                toast.success("Рецензия удалена", {
+                    position: "bottom-center"
+                })
+            }
+            else {
+                toast.error(data, {
+                    position: "bottom-center"
+                })
+            }
+        } catch (e) {
+            toast.error("Ошибка")
+        }
+    }
+
+    async function handleMakeModeratorClick() {
+        try {
+            const {response, data} = await adminUserService.makeModerator(review.user.id);
+            if (response.ok) {
+                toast.success("Пользователь стал модератором", {
+                    position: "bottom-center"
+                })
+            }
+            else {
+                toast.error(data, {
+                    position: "bottom-center"
+                })
+            }
+        } catch (e) {
+            toast.error("Ошибка")
+        }
+    }
     return(
       <>
           <div className={styles.reviewItem} style={stylesCombined}>
               <div className={styles.reviewHeader}>
                   <div className={styles.userInfo}>
-                  {review.user.avatar && <img src={review.user.avatar} alt="" className={styles.avatar}/>}
-                  <span className={styles.username}>{review.user.name}</span>
-                    </div>
+                      {review.user.avatar && <img src={review.user.avatar} alt="" className={styles.avatar}/>}
+                      <span className={styles.username}>{review.user.name}</span>
+                      <div className={styles.authorizedButtons}>
+                          {authenticationService.isCurrentUserAdmin() &&
+                            <img src={moderatorImg} alt={"Moderator Icon"}
+                                 className={styles.makeModeratorButton}
+                                 width={25} height={25}
+                                 title={"Сделать модератором"}
+                                 onClick={handleMakeModeratorClick}/>}
+                          {authenticationService.isCurrentUserModerator() && 
+                            <img src={crossImg} alt={"Delete"}
+                                 className={styles.deleteButton}
+                                 width={25} height={25}
+                                 title={"Удалить рецензию"}
+                                 onClick={handleReviewDeleteClick}/>}
+                      </div>
+                  </div>
                   <div className={styles.dateLikesComments}>
                       <span>{review.writtenAt.toLocaleString().slice(0, 10)}</span>
                       <span className={styles.commentsLikes}>
-                          {review.comments.length} <img src={comment} alt={"Комментариев:"} className={styles.comment} onClick={notOpenModal? null: openReviewModal}/>
-                          {review.likesScore} <img src={heart} alt={"Лайков:"} className={styles.heart} onClick={likeReview}/>
+                          {review.comments.length} <img src={comment} alt={"Комментариев:"} className={styles.comment}
+                                                        onClick={notOpenModal ? null : openReviewModal}/>
+                          {review.likesScore} <img src={heart} alt={"Лайков:"} className={styles.heart}
+                                                   onClick={likeReview}/>
                       </span>
                   </div>
               </div>
-              <div className={styles.reviewText} onClick={notOpenModal? null: openReviewModal}>
+              <div className={styles.reviewText} onClick={notOpenModal ? null : openReviewModal}>
                   <span className={styles.text}>
                       {review.text}
                   </span>
                   <span className={styles.score}>{review.score}/10</span>
               </div>
               <Modal
-                  isOpen={modalOpen}
-                  onRequestClose={closeModal}
-                  style={modalStyles}
-                  contentLabel="Example Modal"
-                  appElement={document.getElementById('root')}>
+                isOpen={modalOpen}
+                onRequestClose={closeModal}
+                style={modalStyles}
+                contentLabel="Example Modal"
+                appElement={document.getElementById('root')}>
                   <div className={styles.modalReview}>
                       <div className={styles.modalHeader}>
                           <span style={{width: "2rem", flexShrink: "10"}}></span>

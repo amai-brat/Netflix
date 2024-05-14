@@ -21,7 +21,7 @@ const Subscriptions = () => {
             }
 
             try {
-                const {response, data} = await subscriptionService.getPurchasedSubscriptions();
+                const {response, data} = await subscriptionService.getCurrentSubscriptions();
                 if (response.ok) {
                     setPurchasedSubscriptions(data);
                 }

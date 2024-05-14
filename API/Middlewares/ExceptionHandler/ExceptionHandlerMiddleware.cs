@@ -1,7 +1,4 @@
-﻿
-using Application.Exceptions;
-using Domain.Services.ServiceExceptions;
-using Infrastructure.Identity;
+﻿using Application.Exceptions.Base;
 
 namespace API.Middlewares.ExceptionHandler
 {
@@ -13,14 +10,7 @@ namespace API.Middlewares.ExceptionHandler
             {
                 await next.Invoke(context);
             }
-            catch (ArgumentException ex) when (
-                ex is ReviewServiceArgumentException ||
-                ex is FavouriteServiceArgumentException ||
-                ex is ContentServiceArgumentException ||
-                ex is CommentServiceArgumentException ||
-                ex is NotificationServiceArgumentException ||
-                ex is SubscriptionServiceArgumentException ||
-                ex is UserServiceArgumentException)
+            catch (ArgumentValidationException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
@@ -28,19 +18,10 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
-                logger.LogInformation(ex.Message + ex.StackTrace);
+                
+                logger.LogDebug(ex.Message + ex.StackTrace);
             }
-            catch (IdentityException ex)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsJsonAsync(new ExceptionDetails
-                {
-                    Message = $"{ex.Message}",
-                    Code = 400
-                });
-                logger.LogInformation(ex.Message + ex.StackTrace);
-            }
-            catch (ContentServiceNotPermittedException ex)
+            catch (NotPermittedException ex)
             {
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
@@ -48,23 +29,30 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 403
                 });
-                logger.LogInformation(ex.Message + ex.StackTrace);
-
+                
+                logger.LogDebug(ex.Message + ex.StackTrace);
             }
             catch (BusinessException ex)
             {
                 context.Response.StatusCode = 500;
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = "Internal server error",
+                    Code = 500
+                });
+                
                 logger.LogError("Business error happened: {error}", ex.Message);
             }
             catch (Exception ex)
             {
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = ex.Message,
-                    Code = 400
+                    Message = "Internal server error",
+                    Code = 500
                 });
-                logger.LogInformation(ex.Message + ex.StackTrace);
+                
+                logger.LogError("Unhandled exception: {error}", ex.Message + ex.StackTrace);
             }
         }
         private class ExceptionDetails

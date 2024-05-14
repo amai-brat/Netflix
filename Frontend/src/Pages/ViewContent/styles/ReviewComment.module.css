@@ -26,7 +26,23 @@
             }
             .username{
                 margin-left: 10px;
+                align-self: center;
             }
+
+            .authorizedButtons {
+                display: flex;
+                gap: 0.5rem;
+                margin: 0 0.5rem;
+                align-self: center;
+                
+                .makeModeratorButton {
+                    cursor: pointer;
+                }
+                .deleteButton {
+                    cursor: pointer;
+                }
+            }
+
         }
         .dateLikesComments{
             font-size: 60%;

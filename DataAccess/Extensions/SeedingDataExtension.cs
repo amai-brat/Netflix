@@ -78,7 +78,7 @@ namespace DataAccess.Extensions
 				Country = "США",
 				ReleaseDate = DateOnly.Parse("1999-09-10"),
 				PosterUrl = "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig",
-				VideoUrl = "https://localhost:7173/videostream/", // Пока не знаю какой тут путь
+				VideoUrl = "/movie/{id}/res/{res}/output"
 			};
 
 			var favouriteContent = new FavouriteContent()
