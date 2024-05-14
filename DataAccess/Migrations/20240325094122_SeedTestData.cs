@@ -85,7 +85,7 @@ namespace DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "movie_contents",
                 columns: new[] { "id", "movie_length", "release_date", "video_url" },
-                values: new object[] { -1L, 139L, new DateOnly(1999, 9, 10), "https://localhost:7173/videostream/" });
+                values: new object[] { -1L, 139L, new DateOnly(1999, 9, 10), "/movie/{id}/res/{res}/output" });
 
             migrationBuilder.InsertData(
                 table: "person_in_contents",

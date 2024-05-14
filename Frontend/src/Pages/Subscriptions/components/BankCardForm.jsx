@@ -55,7 +55,6 @@ export const BankCardForm = ({ subscriptionId }) => {
             else {
                 document.getElementById("serverMessage").innerText = "Ошибка";
             }
-            console.log(JSON.stringify(values, null, 2));
         },
     });
     return (

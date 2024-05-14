@@ -106,6 +106,8 @@ public class AuthController(
 
         await authService.RevokeTokenAsync(refreshToken);
 
+        HttpContext.Response.Cookies.Delete("refresh-token");
+        
         return NoContent();
     }
 
