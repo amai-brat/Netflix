@@ -21,9 +21,9 @@ public class CommentController(
     [Authorize]
     public async Task<IActionResult> GetAllUserCommentNotifications()
     {
-        var userId = User?.FindFirst("id")?.Value;
+        var userId = User.FindFirst("id")?.Value;
 
-        var commentNotifications = await _notificationService.GetAllUserCommentNotificationsAsync(long.Parse(userId));
+        var commentNotifications = await _notificationService.GetAllUserCommentNotificationsAsync(long.Parse(userId!));
         
         return Ok(SetCommentNotifications(commentNotifications));
     }
@@ -32,9 +32,9 @@ public class CommentController(
     [Authorize]
     public async Task<IActionResult> AssignCommentAsync([FromQuery] long reviewId, [FromBody] CommentAssignDto text)
     {
-        var userId = User?.FindFirst("id")?.Value;
+        var userId = User.FindFirst("id")?.Value;
             
-        var id = await _commentService.AssignCommentAsync(text.Text, long.Parse(userId), reviewId);
+        var id = await _commentService.AssignCommentAsync(text.Text, long.Parse(userId!), reviewId);
             
         return Ok(id);
     }

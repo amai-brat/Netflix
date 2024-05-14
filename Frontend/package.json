@@ -19,6 +19,7 @@
     "classnames": "^2.5.1",
     "express": "^4.19.2",
     "formik": "^2.4.5",
+    "hls.js": "^1.5.8",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mobx": "^6.12.3",

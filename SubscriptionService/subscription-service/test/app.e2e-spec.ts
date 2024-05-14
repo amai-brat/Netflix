@@ -9,13 +9,14 @@ import { UserSubscription } from '../src/entities/user_subscription.entity';
 import { SubscriptionService } from '../src/subscription/subscription.service';
 import { Repository } from 'typeorm';
 import { sign } from "jsonwebtoken"
+import {ConfigService} from "@nestjs/config";
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
     let subscriptionService: SubscriptionService;
     let userRepository: Repository<User>;
     let subscriptionRepository: Repository<Subscription>;
-    const jwt = sign({ id: 1}, "somekey"); //Брать ключ из переменной среды тот же, что в ASP
+    let jwt: string;
 
     beforeAll(async () => {
         const moduleFixture = await Test.createTestingModule({
@@ -35,6 +36,8 @@ describe('AppController (e2e)', () => {
         app = moduleFixture.createNestApplication();
         await app.init();
 
+        const configService = moduleFixture.get<ConfigService>(ConfigService);
+        jwt = sign({ id: 1 },  configService.get<string>("JWT_KEY"));
         subscriptionService = moduleFixture.get<SubscriptionService>(SubscriptionService);
         userRepository = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
         subscriptionRepository = moduleFixture.get<Repository<Subscription>>(getRepositoryToken(Subscription));
@@ -42,20 +45,20 @@ describe('AppController (e2e)', () => {
 
     it('should initialize testing data', async()=>{
         expect(await userRepository.save(
-            userRepository.create({ id: 1, nickname: "testUser1", role: "user" }) 
+            userRepository.create({ id: 1, nickname: "testUser1" }) 
         )).toBeDefined();
         expect(await userRepository.save(
-            userRepository.create({ id: 2, nickname: "testUser2", role: "user" }) 
+            userRepository.create({ id: 2, nickname: "testUser2" }) 
         )).toBeDefined();
 
         expect(await subscriptionRepository.save(
-            subscriptionRepository.create({ id: 1, name: "Фильмы", description: "Подписка на фильмы", max_resolution: 720 })
+            subscriptionRepository.create({ id: 1, name: "Фильмы", description: "Подписка на фильмы", max_resolution: 720, price: 228 })
         )).toBeDefined();
         expect(await subscriptionRepository.save(
-            subscriptionRepository.create({ id: 2, name: "Мультфильмы", description: "Подписка на мультфильмы", max_resolution: 1080 })
+            subscriptionRepository.create({ id: 2, name: "Мультфильмы", description: "Подписка на мультфильмы", max_resolution: 1080, price: 322 })
         )).toBeDefined();
         expect(await subscriptionRepository.save(
-            subscriptionRepository.create({ id: 3, name: "Сериалы", description: "Подписка на сериалы", max_resolution: 1080 })
+            subscriptionRepository.create({ id: 3, name: "Сериалы", description: "Подписка на сериалы", max_resolution: 1080, price: 666 })
         )).toBeDefined();
 
         await subscriptionService.processSubscriptionPurchase(1, 1);
@@ -78,7 +81,7 @@ describe('AppController (e2e)', () => {
         .query({ subscriptionId: 1 })
         .expect(200)
         .expect(response => {
-            expect(response.body).toEqual({ id: 1, name: "Фильмы", description: "Подписка на фильмы", max_resolution: 720 });
+            expect(response.body).toEqual({ id: 1, name: "Фильмы", description: "Подписка на фильмы", max_resolution: 720, price: 228 });
         })
     })
 

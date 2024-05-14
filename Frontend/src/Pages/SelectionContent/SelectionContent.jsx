@@ -58,6 +58,13 @@ const SelectionContent = () => {
     useEffect(() => {
         getAllContentByFilterAsync()
     }, []);
+
+    useEffect(() => {
+        setFilter(prevFilter => ({
+            ...prevFilter,
+            types: location.state?.filter.type ? [location.state?.filter?.type] : [],
+        }))
+    }, [location])
     
     return (
         <div id="selection-content-wrapper">

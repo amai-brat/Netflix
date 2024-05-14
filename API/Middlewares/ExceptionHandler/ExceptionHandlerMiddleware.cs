@@ -1,9 +1,8 @@
-﻿
-using Application.Exceptions;
-using Domain.Services.ServiceExceptions;
+﻿using Application.Exceptions.Base;
+
 namespace API.Middlewares.ExceptionHandler
 {
-    public class ExceptionHandlerMiddleware : IMiddleware
+    public class ExceptionHandlerMiddleware(ILogger<ExceptionHandlerMiddleware> logger) : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -11,14 +10,7 @@ namespace API.Middlewares.ExceptionHandler
             {
                 await next.Invoke(context);
             }
-            catch(ArgumentException ex) when (
-                ex is ReviewServiceArgumentException ||
-                ex is FavouriteServiceArgumentException ||
-                ex is ContentServiceArgumentException ||
-                ex is CommentServiceArgumentException || 
-                ex is NotificationServiceArgumentException ||
-                ex is SubscriptionServiceArgumentException || 
-                ex is UserServiceArgumentException)
+            catch (ArgumentValidationException ex)
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
@@ -26,8 +18,10 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
+                
+                logger.LogDebug(ex.Message + ex.StackTrace);
             }
-            catch (ContentServiceNotPermittedException ex)
+            catch (NotPermittedException ex)
             {
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
@@ -35,16 +29,30 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 403
                 });
+                
+                logger.LogDebug(ex.Message + ex.StackTrace);
             }
-            // TODO: бизнес ошибки отправляются, нужно 500
-            catch (Exception ex)
+            catch (BusinessException ex)
             {
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = ex.Message,
-                    Code = 400
+                    Message = "Internal server error",
+                    Code = 500
                 });
+                
+                logger.LogError("Business error happened: {error}", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = "Internal server error",
+                    Code = 500
+                });
+                
+                logger.LogError("Unhandled exception: {error}", ex.Message + ex.StackTrace);
             }
         }
         private class ExceptionDetails

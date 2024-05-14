@@ -2,6 +2,7 @@ import formStyles from '../styles/cardForm.module.scss';
 import { useFormik } from "formik";
 import {useNavigate} from "react-router-dom";
 import {subscriptionService} from "../../../services/subscription.service.js";
+import {authenticationService} from "../../../services/authentication.service.js";
 
 export const BankCardForm = ({ subscriptionId }) => {
     const validate = values => {
@@ -46,6 +47,7 @@ export const BankCardForm = ({ subscriptionId }) => {
             
             if (response.ok)
             {
+                await authenticationService.refreshToken();
                 document.getElementById("serverMessage").innerText = 
                     "Успешная покупка. Перенаправление на главную страницу";
                 setTimeout(() => navigate("/mainContent"), 2000);
@@ -53,7 +55,6 @@ export const BankCardForm = ({ subscriptionId }) => {
             else {
                 document.getElementById("serverMessage").innerText = "Ошибка";
             }
-            console.log(JSON.stringify(values, null, 2));
         },
     });
     return (

@@ -1,37 +1,60 @@
-using System.Text;
 using API;
+using API.Controllers;
 using API.Hubs;
+using API.MetadataProviders;
 using API.Middlewares.ExceptionHandler;
-using Application.Options;
 using DataAccess.Extensions;
 using Infrastructure;
-using Infrastructure.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Application;
+using DataAccess;
+using Infrastructure.Identity.Data;
 using Infrastructure.Profiles;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("authAppSettings.json");
+
 builder.Services.AddSignalR();
-builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("FrontendConfig"));
 builder.Services.AddExceptionHandlerMiddleware();
 builder.Services.AddDbContext(builder.Configuration);
-builder.Services.AddInfrastructure();
-builder.Services.AddControllers();
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
+builder.Services.AddControllers().AddMvcOptions(options => options.ModelMetadataDetailsProviders.Add(new CustomMetadataProvider ()));
 builder.Services.AddContentApiServices();
 builder.Services.AddAutoMapper(typeof(ContentProfile));
+builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddValidators();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGenWithBearer();
-builder.Services.AddCorsWithFrontendPolicy();
+builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    await Task.Delay(1000);
+    
+    var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+    if (dbContext!.Database.IsRelational())
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+
+    var identityDbContext = scope.ServiceProvider.GetService<IdentityDbContext>();
+    if (identityDbContext!.Database.IsRelational())
+    {
+        await identityDbContext.Database.MigrateAsync();
+    }
+}
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions {
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -41,6 +64,8 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseHsts();
 app.UseExceptionHandlerMiddleware();
 
 app.UseRouting();

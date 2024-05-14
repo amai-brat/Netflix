@@ -1,6 +1,7 @@
 import {baseUrl} from "./baseUrl.js";
 import {jwtDecode} from "jwt-decode";
 
+let isRefreshing = false;
 
 const originalRequest = async (url, config, isJsonResponse, base)=> {
   url = `${base}${url}`
@@ -10,7 +11,6 @@ const originalRequest = async (url, config, isJsonResponse, base)=> {
     try {
       data = await response.json();
     } catch (e) {
-      console.log(e);
     }
   } else {
     data = await response.text();
@@ -24,10 +24,8 @@ export const fetchAuth = async (url, isJsonResponse = false, config = {}, base =
   if (!config.headers) {
     config = {...config, headers: {}};
   }
-  
   if (isTokenValid(accessToken)) {
     config['headers'].Authorization = `Bearer ${accessToken}`;
-
     let {response, data} = await originalRequest(url, config, isJsonResponse, base);
     if (response.status === 401) {
       accessToken = await refreshToken();
@@ -40,18 +38,24 @@ export const fetchAuth = async (url, isJsonResponse = false, config = {}, base =
     
     return {response, data}
   }
-  
   accessToken = await refreshToken();
   config['headers'].Authorization = `Bearer ${accessToken}`;
   return await originalRequest(url, config, isJsonResponse, base);
 }
 
 const refreshToken = async () => {
+  if (isRefreshing) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return sessionStorage.getItem("accessToken");
+  }
+  
+  isRefreshing = true;
   let response = await fetch(`${baseUrl}auth/refresh-token`, {
     method: "POST",
     credentials: "include"
   });
   let data = await response.text();
+  isRefreshing = false;
   if (response.ok) {
     sessionStorage.setItem('accessToken', data);
     return data;

@@ -45,9 +45,7 @@ namespace DataAccess.Extensions
 				Id = -1,
 				Nickname = "testUser",
 				Email = "testEmail@gmail.com",
-				Password = "testPassword228;",
 				BirthDay = DateOnly.FromDateTime(DateTime.Now.AddYears(-20)),
-				Role = "user",
 				ProfilePictureUrl = "https://i.pinimg.com/originals/2b/64/2f/2b642f9183fa80b8c47a9d8f8971eb4d.jpg"
 			};
 
@@ -56,9 +54,7 @@ namespace DataAccess.Extensions
 				Id = -2,
 				Nickname = "testUser2",
 				Email = "testEmail2@gmail.com",
-				Password = "testPassword1337;",
 				BirthDay = DateOnly.FromDateTime(DateTime.Now.AddYears(-25)),
-				Role = "user",
 				ProfilePictureUrl = "https://st.kp.yandex.net/images/actor_iphone/iphone360_25584.jpg",
 
 			};
@@ -82,7 +78,7 @@ namespace DataAccess.Extensions
 				Country = "США",
 				ReleaseDate = DateOnly.Parse("1999-09-10"),
 				PosterUrl = "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig",
-				VideoUrl = "https://localhost:7173/videostream/", // Пока не знаю какой тут путь
+				VideoUrl = "/movie/{id}/res/{res}/output"
 			};
 
 			var favouriteContent = new FavouriteContent()

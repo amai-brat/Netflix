@@ -3,13 +3,15 @@ import DefaultUserIcon from "../../../assets/DefaultUserIcon.svg";
 import "./styles/personalInfo.css";
 import {UserAvatar} from './components/UserAvatar';
 import {DataField} from './components/DataField';
-import {Divider} from '@mui/material';
+import {Divider, Typography, Button } from '@mui/material';
 import {PasswordField} from './components/PasswordField';
 import {userService} from "../../../services/user.service.js";
+import { authenticationService } from '../../../services/authentication.service.js';
 
 const PersonalInfoTab = () => {
     const inputFile = useRef(null)
     const[user, setUser] = useState({});
+    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -17,9 +19,6 @@ const PersonalInfoTab = () => {
                 const {response, data} = await userService.getPersonalInfo();
                 if (response.ok){
                     setUser(data);
-                }
-                else{
-                    setUser(null);
                 }
                 
             } catch (error) {
@@ -30,6 +29,15 @@ const PersonalInfoTab = () => {
         fetchUserData();
     }, 
     []);
+
+    useEffect(() => {
+        (async() => {
+            const {response, data} = await authenticationService.getWhetherTwoFactorEnabled();
+            if (response.ok) {
+                setTwoFactorEnabled(data);
+            }
+        })()
+    }, []);
 
     const handleAvatarClick = () => {
         inputFile.current.click();
@@ -78,6 +86,13 @@ const PersonalInfoTab = () => {
         }
     }
 
+    const handleTwoFactorActivateClick = async () => {
+        const {response, data} = await authenticationService.enableTwoFactorAuth();
+        if (response.ok) {
+            setTwoFactorEnabled(true);
+        }
+    }
+
     return (
         <>
             <div className = {"profileDataBlock"}>
@@ -96,6 +111,24 @@ const PersonalInfoTab = () => {
                     <Divider sx={{ borderBottomWidth: "4px", background: "black"}}></Divider>
 
                     <DataField data={user.birthDay} label={"Дата рождения"} handleDataChange={handleDataChange}></DataField>
+                    <Divider sx={{ borderBottomWidth: "4px", background: "black"}}></Divider>
+
+                    <div className = "dataField">
+                        <div style={{ flex: 1 }}>
+                            <Typography variant="h6" gutterBottom sx={{
+                                color: "white",
+                                fontWeight: "800"
+                            }}>2FA</Typography>
+
+                            <Typography sx ={{
+                                color: "#B3B3B3"
+                            }}>{twoFactorEnabled ? "Активирована" : "Не активирована"}</Typography>
+                        </div>
+                        
+                        {!twoFactorEnabled && 
+                            <Button variant="outlined" onClick={handleTwoFactorActivateClick}>Активировать</Button>
+                        }
+                    </div>
                     <Divider sx={{ borderBottomWidth: "4px", background: "black"}}></Divider>
 
                     <PasswordField></PasswordField>

@@ -3,16 +3,18 @@ import {useEffect, useState} from 'react'
 import styles from './styles/styles.module.css'
 import Entry from "./Entry.jsx";
 import {subscriptionService} from "../../../services/subscription.service.js";
+import {useNavigate} from "react-router-dom";
 const SubscriptionsTab = () => {
     const [subscriptions, setSubscriptions] = useState([])
     const [response, setResponse] = useState(null)
     const [isDataFetching, setDataFetching] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
                 setDataFetching(true)
-                const {response, data} = await subscriptionService.getPurchasedSubscriptions();
+                const {response, data} = await subscriptionService.getCurrentSubscriptions();
                 setDataFetching(false)
                 if (!response.ok) {
                     setResponse(`Ошибка: ${response.statusText}`)
@@ -42,6 +44,9 @@ const SubscriptionsTab = () => {
                         ></Entry>
                     </div>
                 )}
+            </div>
+            <div className={styles.buySubscription}>
+                <span onClick={() => navigate("/Subscriptions")}>Купить подписку</span>
             </div>
         </>
     )

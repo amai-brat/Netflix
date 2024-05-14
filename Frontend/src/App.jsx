@@ -25,13 +25,13 @@ function App() {
 
     return (
         <>
-            <ToastContainer theme={"dark"} />
-            {location.pathname !== "/" && location.pathname !== "/signin" 
+            <ToastContainer theme={"dark"} position={"bottom-center"}/>
+            {location.pathname !== "/" && !location.pathname.includes("signin") 
                 && location.pathname !== "/signup" && <Header/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
-                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={"user, admin"}/>}>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user", "admin"]}/>}>
                     <Route path={"/PersonalAccount"} element={<GeneralPart/>}>
                         <Route index element={<PersonalInfoTab/>}/>
                         <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
@@ -40,13 +40,16 @@ function App() {
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
                     </Route>
                 </Route>
-                <Route path={"/admin"} element={<ProtectedRoute roles={"admin"}/>}>
-                    <Route path={"/admin/subscriptions"} element={<SubscriptionsManagement/>}></Route>
-                    <Route path={"/admin/content"} element={<AdminContent/>}></Route>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["admin"]}/>}>
+                    <Route path={"admin/subscriptions"} element={<SubscriptionsManagement/>}></Route>
+                    <Route path={"admin/content"} element={<AdminContent/>}></Route>
                 </Route>
                 <Route path="SelectionContent" element={<SelectionContent/>}/>
                 <Route path="signup" element={<SignUpSignIn formType="signup"/>}/>
-                <Route path="signin" element={<SignUpSignIn formType="signin"/>}/>
+                <Route path="signin" element={<SignUpSignIn formType="signin"/>}>
+                    <Route path="google"/>
+                    <Route path="vk"/>
+                </Route>
                 <Route path="Subscriptions" element={<Subscriptions/>}/>
                 <Route path="ViewContent/:id" element={<ViewContent/>}/>
                 <Route path="*" element={<Error404/>}/>
