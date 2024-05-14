@@ -1,6 +1,5 @@
 using System.Net;
 using System.Web;
-using Application.Services.Abstractions;
 using Infrastructure.Options;
 using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Exceptions;
