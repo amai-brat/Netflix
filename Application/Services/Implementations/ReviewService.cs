@@ -13,8 +13,7 @@ namespace Application.Services.Implementations
         IReviewRepository reviewRepository,
         IContentRepository contentRepository,
         IUserRepository userRepository,
-        IMapper mapper,
-        IProfilePicturesProvider profilePicturesProvider
+        IMapper mapper
         ) : IReviewService
     {
 	    public async Task<int> GetReviewsCountByContentIdAsync(long contentId)
@@ -64,18 +63,9 @@ namespace Application.Services.Implementations
 			review.Score = null;
 			await AssignReviewWithRatingAsync(review, userId);
 		}
-
-		public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId)
-		{
-			var reviews = await reviewRepository.GetReviewsByFilterAsync(r => r.ContentId == contentId);
-			foreach (var review in reviews)
-			{
-				review.User.ProfilePictureUrl =
-					await profilePicturesProvider.GetUrlAsync(review.User.ProfilePictureUrl);
-			}
-
-			return reviews;
-		}
+		
+        public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId) =>
+            await reviewRepository.GetReviewsByFilterAsync(r => r.ContentId == contentId);
 
 		public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId, string sort) => 
 			((sort.ToLower(), await GetReviewsByContentIdAsync(contentId)) switch
