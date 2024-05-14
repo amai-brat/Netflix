@@ -766,7 +766,7 @@ namespace DataAccess.Migrations
                             Slogan = "Интриги. Хаос. Мыло",
                             MovieLength = 139L,
                             ReleaseDate = new DateOnly(1999, 9, 10),
-                            VideoUrl = "https://localhost:7173/videostream/"
+                            VideoUrl = "/movie/{id}/res/{res}/output"
                         });
                 });
 
