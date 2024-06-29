@@ -9,9 +9,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - EMAIL_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email
-      - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email-change
-      - HLS_BASE_URL=https://localhost/api
+      - EMAIL_CONFIRMATION_ENDPOINT=http://voltorka/api/auth/confirm-email
+      - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=http://voltorka/api/auth/confirm-email-change
+      - HLS_BASE_URL=https://voltorka/api
     depends_on:
       - database
       - minio
@@ -73,8 +73,8 @@ services:
     image: nginx
     volumes:
       - ./Nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./Nginx/localhost.crt:/etc/nginx/localhost.crt
-      - ./Nginx/localhost.key:/etc/nginx/localhost.key
+      - ./Nginx/voltorka-key.txt:/root/app/Nginx/voltorka-key.txt
+      - ./Nginx/voltorka-bundle.txt:/root/app/Nginx/voltorka-bundle.txt
     ports:
       - "80:80"
       - "443:443"
