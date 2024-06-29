@@ -118,7 +118,7 @@ public class ContentService(
         string outputPath = Path.Combine(Path.GetTempPath(), $"content/{id}/res/{resolution}/season/{seasonNumber}/episode/{episodeNumber}");
         Directory.CreateDirectory(outputPath);
 
-        var hlsBaseUrl = Environment.GetEnvironmentVariable("HLS_BASE_URL");
+        var hlsBaseUrl = Environment.GetEnvironmentVariable("HLS_BASE_URL") ?? "http://localhost:8080";
         if (hlsBaseUrl is null)
         {
             throw new ContentServiceArgumentException("HLS_BASE_URL env variable not set", "");
