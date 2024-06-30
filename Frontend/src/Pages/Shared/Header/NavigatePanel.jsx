@@ -1,5 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import "/src/Pages/Shared/Header/Styles/NavigatePanel.css";
+import netflixLogo from "../../../assets/NetflixLogo.svg";
 const NavigatePanel = () => {
     const navigate = useNavigate()
     const navigateToMainContent = () => {
@@ -11,7 +12,7 @@ const NavigatePanel = () => {
     
     return(
         <div id="navigate-panel">
-            <img id="navigate-panel-logo" className="navigate-panel-element" src="/src/assets/NetflixLogo.svg" alt="Netflix" onClick={navigateToMainContent}/>
+            <img id="navigate-panel-logo" className="navigate-panel-element" src={netflixLogo} alt="Netflix" onClick={navigateToMainContent}/>
             <label className="navigate-panel-element" onClick={() => {
                 navigateToSelectionContent({type: -1}) //TODO изменить на тип, который из базы данных
             }}>Фильмы</label>

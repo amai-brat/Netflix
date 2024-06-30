@@ -41,7 +41,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 500
                 });
                 
-                logger.LogError("Business error happened: {error}", ex.Message);
+                logger.LogError("Business error happened: {error}", ex.Message + ex.StackTrace);
             }
             catch (Exception ex)
             {
