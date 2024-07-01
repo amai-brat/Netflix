@@ -15,7 +15,7 @@ jobs:
                 ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
             - name: Connect to remote server and deploy
               run: |
-                ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.SSH_SERVER }} << EOF
+                ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_SERVER }} << EOF
                   cd app
                   docker-compose down
                   git pull
