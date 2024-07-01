@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import logo from '../../assets/NetflixLogo.svg';
+import logo from '../../assets/logo.png';
 import plus from '../../assets/plus.svg';
 import {Link, useNavigate} from "react-router-dom";
 import button from './styles/button.module.scss';
