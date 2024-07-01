@@ -7,6 +7,7 @@
 - Задеплоить - сделано [сайт](https://voltorka.ru) (если не работает значит я работаю с ним как-то)
 - CI/CD - сделано [.github/workflows/main.yml](https://github.com/usersuseruuseruser/Netflix/blob/main/.github/workflows/main.yml)
 
+- Заполнить еще фильмами, сериалами, добавить сами сериалы и фильмы
 - Настроить OAuth, починить минио
 - Починить SignalR
 - Убрать гребанное подтверждение по почте при входе КАЖДЫЙ РАЗ 
