@@ -12,7 +12,7 @@ const NavigatePanel = () => {
     
     return(
         <div id="navigate-panel">
-            <img id="navigate-panel-logo" className="navigate-panel-element" src={logo} alt="Netflix" onClick={navigateToMainContent}/>
+            <img id="navigate-panel-logo" className="navigate-panel-element" src={logo} alt="Voltorka" onClick={navigateToMainContent}/>
             <label className="navigate-panel-element" onClick={() => {
                 navigateToSelectionContent({type: -1}) //TODO изменить на тип, который из базы данных
             }}>Фильмы</label>

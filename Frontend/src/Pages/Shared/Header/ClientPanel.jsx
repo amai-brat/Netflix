@@ -1,10 +1,11 @@
 import {useState} from "react";
 import "/src/Pages/Shared/Header/Styles/ClientPanel.css";
+import defaultIcon from "../../../assets/default.png"
 const ClientPanel = ({user}) => {
-    const [userIcon, setUserIcon] = useState(user && user.icon ? user.icon : "/src/assets/DefaultUserIcon.svg")
+    const [userIcon, setUserIcon] = useState(user && user.icon ? user.icon : defaultIcon)
 
     const setDefaultUserImg = () => {
-        setUserIcon("/src/assets/DefaultUserIcon.svg")
+        setUserIcon(defaultIcon)
     }
 
     return (

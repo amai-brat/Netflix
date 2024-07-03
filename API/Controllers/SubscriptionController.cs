@@ -3,7 +3,7 @@ using Application.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.SuscriptionController;
+namespace API.Controllers;
 
 [ApiController]
 [Authorize(Roles = "admin")]
@@ -13,6 +13,7 @@ public class SubscriptionController(
     : ControllerBase
 {
     [HttpGet("all")]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
     [ProducesResponseType<List<AdminSubscriptionsDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllSubscriptionsAsync()
     {
@@ -22,6 +23,7 @@ public class SubscriptionController(
     }
 
     [HttpGet("contents")]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> GetAvailableContentsForSubscriptionAsync()
     {
         var result = await subscriptionService.GetContentsAsync();

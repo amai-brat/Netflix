@@ -1,8 +1,10 @@
 using System.Net;
 using System.Web;
+using Infrastructure.Enums;
 using Infrastructure.Options;
 using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -14,19 +16,9 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
     private const string BucketName = "avatars";
     private readonly IMinioClient _minioClient;
 
-    public ProfilePicturesProvider(IOptionsMonitor<MinioOptions> optionsMonitor)
+    public ProfilePicturesProvider([FromKeyedServices(KeyedServices.Avatar)] IMinioClient minioClient)
     {
-        var minioOptions = optionsMonitor.CurrentValue;
-        // тут происходит костыль: 
-        // невозможно обратиться внутри контейнера на локалхост, потому что это локалхост контейнера, а не компьютера
-        // PresignedGetObjectAsync даёт ссылку, в которой нельзя менять хост
-        // 
-        // по идее, если minio в отдельном сервере, этого костыля быть не должно
-        _minioClient = new MinioClient()
-            .WithEndpoint(minioOptions.ExternalEndpoint)
-            .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey)
-            .WithProxy(new WebProxy(minioOptions.Endpoint, 9000)) 
-            .Build();
+        _minioClient = minioClient;
     }
 
     public async Task PutAsync(string name, Stream pictureStream, string contentType)

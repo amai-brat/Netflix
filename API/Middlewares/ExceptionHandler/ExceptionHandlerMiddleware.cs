@@ -19,7 +19,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 400
                 });
                 
-                logger.LogDebug(ex.Message + ex.StackTrace);
+                logger.LogWarning(ex.Message + ex.StackTrace);
             }
             catch (NotPermittedException ex)
             {
@@ -30,7 +30,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 403
                 });
                 
-                logger.LogDebug(ex.Message + ex.StackTrace);
+                logger.LogWarning(ex.Message + ex.StackTrace);
             }
             catch (BusinessException ex)
             {
@@ -41,7 +41,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 500
                 });
                 
-                logger.LogError("Business error happened: {error}", ex.Message + ex.StackTrace);
+                logger.LogWarning("Business error happened: {error}", ex.Message + ex.StackTrace);
             }
             catch (Exception ex)
             {
@@ -52,7 +52,7 @@ namespace API.Middlewares.ExceptionHandler
                     Code = 500
                 });
                 
-                logger.LogError("Unhandled exception: {error}", ex.Message + ex.StackTrace);
+                logger.LogWarning("Unhandled exception: {error}", ex.Message + ex.StackTrace);
             }
         }
         private class ExceptionDetails

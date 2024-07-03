@@ -6,21 +6,25 @@ import { JwtStrategy } from '../auth/jwt.strategy';
 import { User } from './entities/user.entity';
 import { Subscription } from './entities/subscription.entity';
 import { UserSubscription } from './entities/user_subscription.entity';
-import {ConfigModule} from "@nestjs/config";
+import {ConfigModule, ConfigService} from "@nestjs/config";
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot({
-            type: 'postgres',
-            host: 'database',
-            port: 5432,
-            username: "postgres",
-            password: "admin",
-            database: "Netflix",
-            entities: [User, Subscription, UserSubscription]
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => (
+                {
+                type: 'postgres',
+                url: configService.get<string>('DATABASE_CONNECTION_STRING_GENERAL'),
+                entities: [User, Subscription, UserSubscription],
+                synchronize: false,
+            }),
         }),
         TypeOrmModule.forFeature([User, UserSubscription, Subscription]),
-        ConfigModule.forRoot()
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
     ],
     controllers: [SubscriptionController],
     providers: [SubscriptionService, JwtStrategy],

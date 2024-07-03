@@ -4,7 +4,7 @@ using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.UserManagementController
+namespace API.Controllers
 {
 	[ApiController]
 	[Route("admin/usermanagement")]
