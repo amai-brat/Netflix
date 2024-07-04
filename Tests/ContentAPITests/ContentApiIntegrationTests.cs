@@ -36,7 +36,7 @@ public class ContentApiIntegrationTests(WebAppFactory factory, ITestOutputHelper
         
         // Act
         var response = await client.SendAsync(postRequest);
-        
+        output.WriteLine(await response.Content.ReadAsStringAsync());
         // Assert
         response.EnsureSuccessStatusCode();
         // check if data is added to the database

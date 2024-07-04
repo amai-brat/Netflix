@@ -37,7 +37,7 @@ namespace API.Middlewares.ExceptionHandler
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = "Internal server error",
+                    Message = "Internal server error123" + ex.Message + "\n" + ex.StackTrace,
                     Code = 500
                 });
                 
@@ -48,7 +48,7 @@ namespace API.Middlewares.ExceptionHandler
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = "Internal server error",
+                    Message = "Internal server error123" + ex.Message + "\n" + ex.StackTrace,
                     Code = 500
                 });
                 
