@@ -74,8 +74,8 @@ namespace Application.Services.Implementations
 				("scoredesc", var reviews) => reviews.OrderByDescending(r => r.Score),
 				("oldest", var reviews) => reviews.OrderBy(r => r.WrittenAt),
 				("newest", var reviews) => reviews.OrderByDescending(r => r.WrittenAt),
-				("positive", var reviews) => reviews.OrderBy(r => r.IsPositive),
-				("negative", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
+				("positive", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
+				("negative", var reviews) => reviews.OrderBy(r => r.IsPositive),
 				("likes", var reviews) => reviews.OrderBy(r => r.RatedByUsers?.Count(usersReviews => usersReviews.IsLiked) ?? 0),
 				("likesdesc", var reviews) => reviews.OrderByDescending(r => r.RatedByUsers?.Count(usersReviews => usersReviews.IsLiked) ?? 0),
 				var (_, _) => throw new ReviewServiceArgumentException(ErrorMessages.IncorrectSortType, sort)

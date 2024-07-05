@@ -1,6 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTabSearchPanel.css";
+import vector from "../../../assets/Vector.svg";
 const FavouriteTabSearchPanel = ({favourites, setFavourites}) => {
     const [searchContentName, setSearchContentName] = useState("")
     const handleChangeSearchBar = (e) => {
@@ -12,7 +13,7 @@ const FavouriteTabSearchPanel = ({favourites, setFavourites}) => {
     return (
         <div id="favourite-search-panel">
             <input id="favourite-search-panel-search-bar" type="text" placeholder="Поиск по названию" onChange={handleChangeSearchBar}/>
-            <img id="favourite-search-panel-search-icon" src="/src/assets/Vector.svg" alt="Search" onClick={() => {
+            <img id="favourite-search-panel-search-icon" src={vector} alt="Search" onClick={() => {
                 setFavourites(filterFavouritesByName())
             }}/>
         </div>

@@ -21,6 +21,7 @@ public class AuthService(
     UserManager<AppUser> userManager,
     SignInManager<AppUser> signInManager,
     IUserRepository userRepository,
+    ISubscriptionRepository subscriptionRepository,
     IMapper mapper,
     IUnitOfWork appUnitOfWork,
     IIdentityUnitOfWork unitOfWork,
@@ -38,11 +39,25 @@ public class AuthService(
         {
             throw new AuthServiceException(ErrorMessages.EmailNotUnique, nameof(dto.Email));
         }
+
+        var subscriptions = await subscriptionRepository.GetAllSubscriptionsAsync();
+        
+        // изначально юзеру добавляются все подписки
+        // это сделано для удобства, чтобы для просмотра всего функционала сайта не нужно было
+        // покупать подписку на каждый вид контента. их всё еще можно купить если сначала удалить какую-нибудь
+        var userSubscriptions = new List<UserSubscription>();
+        userSubscriptions.AddRange(subscriptions.Select(subscription => new UserSubscription
+        {
+            Subscription = subscription,
+            ExpiresAt = DateTimeOffset.UtcNow.AddMonths(6),
+            BoughtAt = DateTimeOffset.UtcNow
+        }));
         
         var user = new User
         {
             Email = dto.Email,
-            Nickname = dto.Login
+            Nickname = dto.Login,
+            UserSubscriptions = userSubscriptions
         };
         
         user = await userRepository.AddAsync(user);
@@ -298,11 +313,21 @@ public class AuthService(
         if (!await userRepository.IsEmailUniqueAsync(dto.Email))
             throw new AuthServiceException(ErrorMessages.EmailNotUnique);
         
+        var subscriptions = await subscriptionRepository.GetAllSubscriptionsAsync();
+        var userSubscriptions = new List<UserSubscription>();
+        userSubscriptions.AddRange(subscriptions.Select(subscription => new UserSubscription
+        {
+            Subscription = subscription,
+            ExpiresAt = DateTimeOffset.UtcNow.AddMonths(6),
+            BoughtAt = DateTimeOffset.UtcNow
+        }));
+        
         var user = new User
         {
             Email = dto.Email,
             Nickname = dto.Login,
-            ProfilePictureUrl = dto.PictureUrl
+            ProfilePictureUrl = dto.PictureUrl,
+            UserSubscriptions = userSubscriptions
         };
 
         await userRepository.AddAsync(user);

@@ -32,7 +32,6 @@ export const PromoSlider = () => {
                     slides-per-view={"1.3"}
                     slides-per-group={"1"} loop={"true"}
                     centered-slides={"true"}
-                    space-between={"40"}
                     watch-slides-progress={"true"}>
                     {promoImages.map((promo, index) => (
                             <swiper-slide key={index}>

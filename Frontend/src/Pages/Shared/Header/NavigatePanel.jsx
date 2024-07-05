@@ -12,16 +12,17 @@ const NavigatePanel = () => {
     
     return(
         <div id="navigate-panel">
-            <img id="navigate-panel-logo" className="navigate-panel-element" src={logo} alt="Voltorka" onClick={navigateToMainContent}/>
+            <img id="navigate-panel-logo" className="navigate-panel-element" src={logo} alt="Voltorka"
+                 onClick={navigateToMainContent}/>
             <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: -1}) //TODO изменить на тип, который из базы данных
+                navigateToSelectionContent({type: -1})
             }}>Фильмы</label>
             <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: -3}) //TODO изменить на тип, который из базы данных
-            }}>Мультфильмы</label>
-            <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: -2}) //TODO изменить на тип, который из базы данных
+                navigateToSelectionContent({type: -2})
             }}>Сериалы</label>
+            <label className="navigate-panel-element" onClick={() => {
+                navigateToSelectionContent({type: -3})
+            }}>Мультфильмы</label>
         </div>
     )
 }
