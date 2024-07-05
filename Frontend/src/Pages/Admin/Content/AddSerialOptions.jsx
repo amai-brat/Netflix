@@ -10,6 +10,7 @@ const AddSerialOptions = () => {
     const [description, setDescription] = useState("")
     const [slogan, setSlogan] = useState("")
     const [posterUrl, setPosterUrl] = useState("")
+    const [bigPosterUrl, setBigPosterUrl] = useState("")
     const [country, setCountry] = useState("")
     const [contentType, setContentType] = useState("")
     const [ageRating, setAgeRating] = useState(null)
@@ -134,6 +135,7 @@ const AddSerialOptions = () => {
             description: description,
             slogan: slogan,
             posterUrl: posterUrl,
+            bigPosterUrl: bigPosterUrl,
             country: country,
             contentType: contentType,
             ageRating: ageRating,
@@ -250,6 +252,7 @@ const AddSerialOptions = () => {
                 <input type="text" placeholder="Слоган" value={slogan} onChange={e => setSlogan(e.target.value)}/>
                 <h2>Постер</h2>
                 <input type="text" placeholder="URL постера" value={posterUrl} onChange={e => setPosterUrl(e.target.value)}/>
+                <input type="text" placeholder="URL большого постера" value={bigPosterUrl} onChange={e => setBigPosterUrl(e.target.value)}/>
                 <h2>Страна</h2>
                 <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
                 <h2>Тип контента</h2>

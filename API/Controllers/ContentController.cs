@@ -116,9 +116,6 @@ namespace API.Controllers
             Response.Headers.Append("Accept-Ranges", "bytes");
             Response.Headers.Append("Content-Length", (end - start + 1).ToString());
             Response.StatusCode = (int)HttpStatusCode.PartialContent;
-            // TODO: я не понимаю почему я не могу передать videoStream в File и сделать enableRangeProcessing:true
-            // в таком случае он загружает файл полностью. приходится настраивать клиент чтобы он сам делал запросы на чанки
-            // если кто-то поймет, скажите пж
             return File(videoStream, "video/mp2t", fileDownloadName: "output.ts");
         }
         
