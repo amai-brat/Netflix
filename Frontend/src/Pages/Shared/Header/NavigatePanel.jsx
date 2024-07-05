@@ -18,11 +18,11 @@ const NavigatePanel = () => {
                 navigateToSelectionContent({type: -1})
             }}>Фильмы</label>
             <label className="navigate-panel-element" onClick={() => {
-                navigateToSelectionContent({type: -2})
-            }}>Сериалы</label>
-            <label className="navigate-panel-element" onClick={() => {
                 navigateToSelectionContent({type: -3})
             }}>Мультфильмы</label>
+            <label className="navigate-panel-element" onClick={() => {
+                navigateToSelectionContent({type: -2})
+            }}>Сериалы</label>
         </div>
     )
 }
