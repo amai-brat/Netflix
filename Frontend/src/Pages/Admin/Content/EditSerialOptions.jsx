@@ -10,6 +10,7 @@ const EditSerialOptions = (serialOptions) => {
         description: initialDescription = "",
         slogan: initialSlogan = "",
         posterUrl: initialPosterUrl = "",
+        bigPosterUrl: initialBigPosterUrl = "",
         country: initialCountry = "",
         contentType: initialContentType = "",
         releaseYears: {start: initialReleaseDate = "2004-03-15", end: initialEndDate = "2004-03-16"} = {},
@@ -28,6 +29,7 @@ const EditSerialOptions = (serialOptions) => {
     const [description, setDescription] = useState(initialDescription);
     const [slogan, setSlogan] = useState(initialSlogan);
     const [posterUrl, setPosterUrl] = useState(initialPosterUrl);
+    const [bigPosterUrl, setBigPosterUrl] = useState(initialBigPosterUrl);
     const [country, setCountry] = useState(initialCountry);
     const [contentType, setContentType] = useState(initialContentType);
     const [releaseYearStart, setReleaseYearsStart] = useState(initialReleaseDate);
@@ -149,6 +151,7 @@ const EditSerialOptions = (serialOptions) => {
                 description: description,
                 slogan: slogan,
                 posterUrl: posterUrl,
+                bigPosterUrl: bigPosterUrl,
                 country: country,
                 contentType: contentType,
                 ageRating: ageRating,
@@ -265,6 +268,7 @@ const EditSerialOptions = (serialOptions) => {
                 <input type="text" placeholder="Слоган" value={slogan} onChange={e => setSlogan(e.target.value)}/>
                 <h2>Постер</h2>
                 <input type="text" placeholder="URL постера" value={posterUrl} onChange={e => setPosterUrl(e.target.value)}/>
+                <input type="text" placeholder="URL большого постера" value={bigPosterUrl} onChange={e => setBigPosterUrl(e.target.value)}/>
                 <h2>Страна</h2>
                 <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
                 <h2>Тип контента</h2>

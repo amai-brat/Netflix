@@ -10,6 +10,7 @@ const EditMovieOptions = (movieOptions) => {
         description: initialDescription = "",
         slogan: initialSlogan = "",
         posterUrl: initialPosterUrl = "",
+        bigPosterUrl: initialBigPosterUrl = "",
         country: initialCountry = "",
         contentType: initialContentType = "",
         ReleaseDate: initialReleaseDate = "2004-03-15",
@@ -29,6 +30,7 @@ const EditMovieOptions = (movieOptions) => {
     const [description, setDescription] = useState(initialDescription);
     const [slogan, setSlogan] = useState(initialSlogan);
     const [posterUrl, setPosterUrl] = useState(initialPosterUrl);
+    const [bigPosterUrl, setBigPosterUrl] = useState(initialBigPosterUrl);
     const [country, setCountry] = useState(initialCountry);
     const [contentType, setContentType] = useState(initialContentType);
     const [releaseDate, setReleaseDate] = useState(initialReleaseDate);
@@ -100,6 +102,7 @@ const EditMovieOptions = (movieOptions) => {
                 description: description,
                 slogan: slogan,
                 posterUrl: posterUrl,
+                bigPosterUrl: bigPosterUrl,
                 country: country,
                 contentType: contentType,
                 ageRatings: ageRatings,
@@ -211,8 +214,8 @@ const EditMovieOptions = (movieOptions) => {
             <h2>Слоган</h2>
             <input type="text" placeholder="Слоган" value={slogan} onChange={e => setSlogan(e.target.value)}/>
             <h2>Постер</h2>
-            <input type="text" placeholder="URL постера" value={posterUrl}
-                   onChange={e => setPosterUrl(e.target.value)}/>
+            <input type="text" placeholder="URL постера" value={posterUrl} onChange={e => setPosterUrl(e.target.value)}/>
+            <input type="text" placeholder="URL большого постера" value={bigPosterUrl} onChange={e => setBigPosterUrl(e.target.value)}/>
             <h2>Страна</h2>
             <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
             <h2>Длительность фильма</h2>

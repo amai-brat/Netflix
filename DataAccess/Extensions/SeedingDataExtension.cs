@@ -78,6 +78,7 @@ namespace DataAccess.Extensions
 				Country = "США",
 				ReleaseDate = DateOnly.Parse("1999-09-10"),
 				PosterUrl = "https://image.openmoviedb.com/kinopoisk-images/1898899/8ef070c9-2570-4540-9b83-d7ce759c0781/orig",
+				BigPosterUrl = "https://img.smotreshka.tv/image/aHR0cHM6Ly9jbXMuc21vdHJlc2hrYS50di9hcmNoaXZlLWltZy9zdGF0aWMvbWVkaWEvN2UvMDQvN2UwNDljNTYxMTM0NTNhODEyODljNmNkZDViMTQ3MGUuanBn",
 				VideoUrl = "/movie/{id}/res/{res}/output"
 			};
 

@@ -6,6 +6,7 @@ import { register } from 'swiper/element/bundle';
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {contentService} from "../../../services/content.service.js";
+import {Autoplay} from "swiper/modules";
 register();
 
 export const PromoSlider = () => {
@@ -27,12 +28,16 @@ export const PromoSlider = () => {
                     <img src={leftArrow} width={30} height={60} alt={"<"}/>
                 </div>
                 <swiper-container
+                    touchRatio={1}
+                    modules={[Autoplay]}
                     navigation-next-el={".next-button-promo-slider"}
                     navigation-prev-el={".prev-button-promo-slider"}
+                    autoplay={{
+                        delay: 1500,
+                        disableOnInteraction: false
+                    }}
                     slides-per-view={"1.3"}
                     slides-per-group={"1"} loop={"true"}
-                    centered-slides={"true"}
-                    space-between={"40"}
                     watch-slides-progress={"true"}>
                     {promoImages.map((promo, index) => (
                             <swiper-slide key={index}>

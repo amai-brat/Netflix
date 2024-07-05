@@ -1,5 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
+import vector from "../../assets/Vector.svg";
 import "/src/Pages/SelectionContent/Styles/SelectionContentSearchPanel.css";
 
 const SelectionContentSearchPanel = ({filter, setFilter, onFilterApply}) => {
@@ -10,7 +11,7 @@ const SelectionContentSearchPanel = ({filter, setFilter, onFilterApply}) => {
     return (
         <div id="selection-content-search-panel">
             <input id="selection-content-search-panel-search-bar" type="text" placeholder="Поиск по названию" onChange={handleChangeSearchBar}/>
-            <img id="selection-content-search-panel-search-icon" src="/src/assets/Vector.svg" alt="Search" onClick={() => {
+            <img id="selection-content-search-panel-search-icon" src={vector} alt="Search" onClick={() => {
                 setFilter(filter)
                 onFilterApply()
             }}/>

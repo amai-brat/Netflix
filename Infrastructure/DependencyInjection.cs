@@ -1,6 +1,8 @@
+using System.Net;
 using Application.Dto;
 using Application.Services.Abstractions;
 using FluentValidation;
+using Infrastructure.Enums;
 using Infrastructure.Identity;
 using Infrastructure.Identity.Data;
 using Infrastructure.Options;
@@ -17,6 +19,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Minio;
 
 namespace Infrastructure;
 
@@ -27,13 +31,32 @@ public static class DependencyInjection
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
+        serviceCollection.AddOptions(configuration);
         serviceCollection.AddValidators();
         serviceCollection.AddAuthProviderResolver();
         serviceCollection.AddAutoMapper(typeof(DependencyInjection).Assembly);
         serviceCollection.AddScoped<IUserService, UserService>();
+        serviceCollection.AddKeyedSingleton<IMinioClient>(KeyedServices.Avatar,(provider,_) =>
+        {
+            var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
+            
+            return new MinioClient()
+                    .WithEndpoint(options.Endpoint, options.Port)
+                .WithCredentials(options.AccessKey, options.SecretKey)
+                .WithProxy(new WebProxy(options.ExternalEndpoint,options.Port))
+                .Build();
+        });
+        serviceCollection.AddKeyedSingleton<IMinioClient>(KeyedServices.Video,(provider,_) =>
+        {
+            var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
+            
+            return new MinioClient()
+                .WithEndpoint(options.ExternalEndpoint, options.Port)
+                .WithCredentials(options.AccessKey, options.SecretKey)
+                .Build();
+        });
         serviceCollection.AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>();
         serviceCollection.AddIdentity(configuration);
-        serviceCollection.AddOptions(configuration);
 
         if (environment.IsDevelopment())
         {
@@ -115,4 +138,6 @@ public static class DependencyInjection
         
         return serviceCollection;
     }
+    
+    
 }

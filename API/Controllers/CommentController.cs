@@ -5,7 +5,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.CommentController;
+namespace API.Controllers;
 
 [Route("comment")]
 [ApiController]

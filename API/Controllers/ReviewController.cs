@@ -3,7 +3,7 @@ using Application.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.ReviewController
+namespace API.Controllers
 {
     [Route("reviews")]
     [ApiController]

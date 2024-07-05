@@ -6,6 +6,7 @@ import FavouritesFilterPopUp from "./FavouritesFilterPopUp.jsx";
 import FavouriteContentCard from "./FavouriteContentCard.jsx";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTab.css";
 import {userService} from "../../../services/user.service.js";
+import resetFilter from "../../../assets/ResetFilter.svg";
 
 const FavouritesTab = () => {
     const cardPerPage = 5;
@@ -71,7 +72,7 @@ const FavouritesTab = () => {
                         />}
                     id = {"pop-up-favourite-filter"}
                 />
-                <img id="favourite-reset-filter" src="/src/assets/ResetFilter.svg" alt="Reset" onClick={resetFavouriteContent}/>
+                <img id="favourite-reset-filter" src={resetFilter} alt="Reset" onClick={resetFavouriteContent}/>
             </div>
             <div id="favourites-content">
                 <FavouritesContent/>

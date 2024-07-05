@@ -8,13 +8,14 @@ using Infrastructure;
 using Application;
 using DataAccess;
 using Infrastructure.Identity.Data;
+using Infrastructure.Options;
 using Infrastructure.Profiles;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("authAppSettings.json");
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddSignalR();
 builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("FrontendConfig"));

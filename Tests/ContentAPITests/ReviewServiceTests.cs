@@ -63,7 +63,7 @@ namespace Tests.ContentAPITests
             //Assert
             Assert.Equal(userId, userReviews[0].UserId);
             Assert.Equal(review.ContentId, userReviews[0].ContentId);
-            Assert.Equal(-1, userReviews[0].Score);
+            Assert.Equal(review.Score, userReviews[0].Score);
             Assert.Equal(review.IsPositive, userReviews[0].IsPositive);
             Assert.Equal(review.Text, userReviews[0].Text);
         }

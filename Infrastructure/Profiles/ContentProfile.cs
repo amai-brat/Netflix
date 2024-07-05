@@ -139,7 +139,10 @@ public class ContentProfile : Profile
                 }).ToList()));
 
         CreateMap<ContentBase, SectionContentDto>();
-        CreateMap<ContentBase, PromoDto>();
+        CreateMap<ContentBase, PromoDto>()
+            .ForMember(dest => dest.PosterUrl,
+                opt => opt.MapFrom(src => src.BigPosterUrl)
+            );
         CreateMap<ContentType, ContentTypeDto>()
             .ForMember(x => x.ContentType,
                 x => x.MapFrom(ct => ct.ContentTypeName));
