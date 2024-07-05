@@ -56,11 +56,27 @@ namespace Application.Services.Implementations
                 Score = review.Score ?? -1,
                 WrittenAt = DateTimeOffset.UtcNow
             });
+            
+            var content = await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId);
+            var reviewCount = await reviewRepository.GetReviewsCountAsync(review.ContentId);
+            if (content!.Ratings == null)
+            {
+	            content.Ratings = new Ratings();
+            }
+            content
+		            .Ratings
+		            .LocalRating =
+	            ((content.Ratings.LocalRating ?? 0) * reviewCount + review.Score!.Value)
+	            / (reviewCount + 1);
+            
+            // format float local rating to 2 decimal places
+            content.Ratings.LocalRating = (float) Math.Round(content.Ratings.LocalRating.Value, 2);
+
+            await contentRepository.SaveChangesAsync();
         }
 
 		public async Task AssignReviewAsync(ReviewAssignDto review, long userId)
 		{
-			review.Score = null;
 			await AssignReviewWithRatingAsync(review, userId);
 		}
 		

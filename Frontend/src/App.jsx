@@ -40,7 +40,7 @@ function App() {
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
                     </Route>
                 </Route>
-                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["admin"]}/>}>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user","admin"]}/>}>
                     <Route path={"admin/subscriptions"} element={<SubscriptionsManagement/>}></Route>
                     <Route path={"admin/content"} element={<AdminContent/>}></Route>
                 </Route>

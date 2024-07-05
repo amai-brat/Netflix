@@ -98,17 +98,17 @@
         margin-bottom: 15px;
         .ratingImdb{
             background: linear-gradient(90deg, rgba(221,185,1,1) 0%, rgba(218,113,7,1) 100%);
-            padding: 1rem 3rem;
+            padding: 1rem 1rem;
             border-radius: 10px;
         }
         .ratingKinopoisk{
             background: linear-gradient(90deg, rgba(218,131,7,1) 3%, rgba(221,97,1,1) 100%);
-            padding: 1rem 3rem;
+            padding: 1rem 1rem;
             border-radius: 10px;
         }
         .ratingLocal{
             background: linear-gradient(90deg, rgba(221,97,1,1) 0%, rgba(218,42,7,1) 100%);
-            padding: 1rem 3rem;
+            padding: 1rem 1rem;
             border-radius: 10px;
         }
     }
