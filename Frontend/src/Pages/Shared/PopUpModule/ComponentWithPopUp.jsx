@@ -24,7 +24,7 @@ const ComponentWithPopUp = ({Component, PopUp, id}) => {
             </div>
             <div className="pop-up-parent">
                 <div id={id} className="pop-up" style={{display: popUpDisplayed ? "block" : "none"}}>
-                    <PopUp/>
+                    <PopUp setPopUpDisplayed={setPopUpDisplayed}/>
                 </div>
             </div> 
         </div>

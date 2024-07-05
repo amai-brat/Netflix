@@ -110,7 +110,7 @@ const Header = () => {
                     </div>
                     <ComponentWithPopUp
                         Component = {() => <ClientPanel user={user}/>}
-                        PopUp = {() => <ClientPopUpPanel user={user}/>}
+                        PopUp = {({setPopUpDisplayed}) => <ClientPopUpPanel user={user} setPopUpDisplayed={setPopUpDisplayed}/>}
                         id = {"pop-up-client"}
                     />
                 </div>

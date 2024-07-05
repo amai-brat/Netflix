@@ -18,6 +18,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{87B7CA57-E625-4EA5-9213-DE40C59CC4DF}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
+		.env = .env
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Global

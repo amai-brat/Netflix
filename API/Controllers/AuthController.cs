@@ -1,14 +1,14 @@
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 using Application.Dto;
 using FluentValidation;
+using Infrastructure.Options;
+using Infrastructure.Providers.ProviderFactory;
 using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
-using Infrastructure.Providers.ProviderFactory;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace API.Controllers.AuthController;
+namespace API.Controllers;
 
 [ApiController]
 [Route("auth")]

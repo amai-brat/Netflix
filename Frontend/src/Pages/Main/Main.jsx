@@ -53,8 +53,8 @@ const Main = () => {
                 </div>
             </div>
             <footer className={sections.mainPageFooter}>
-                <p><a href={"https://discord.gg/d9wRhhYNzG"}>Контакты</a></p>
-                <p>© Copyright. Молокососы. 2024</p>
+                <p><a href={"https://t.me/eleum_loyce"}>Контакты</a></p>
+                <p>Молокососы. 2024</p>
             </footer>
         </>
     )

@@ -56,11 +56,27 @@ namespace Application.Services.Implementations
                 Score = review.Score ?? -1,
                 WrittenAt = DateTimeOffset.UtcNow
             });
+            
+            var content = await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId);
+            var reviewCount = await reviewRepository.GetReviewsCountAsync(review.ContentId);
+            if (content!.Ratings == null)
+            {
+	            content.Ratings = new Ratings();
+            }
+            content
+		            .Ratings
+		            .LocalRating =
+	            ((content.Ratings.LocalRating ?? 0) * reviewCount + review.Score!.Value)
+	            / (reviewCount);
+            
+            // format float local rating to 2 decimal places
+            content.Ratings.LocalRating = (float) Math.Round(content.Ratings.LocalRating.Value, 2);
+
+            await contentRepository.SaveChangesAsync();
         }
 
 		public async Task AssignReviewAsync(ReviewAssignDto review, long userId)
 		{
-			review.Score = null;
 			await AssignReviewWithRatingAsync(review, userId);
 		}
 		
@@ -74,8 +90,8 @@ namespace Application.Services.Implementations
 				("scoredesc", var reviews) => reviews.OrderByDescending(r => r.Score),
 				("oldest", var reviews) => reviews.OrderBy(r => r.WrittenAt),
 				("newest", var reviews) => reviews.OrderByDescending(r => r.WrittenAt),
-				("positive", var reviews) => reviews.OrderBy(r => r.IsPositive),
-				("negative", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
+				("positive", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
+				("negative", var reviews) => reviews.OrderBy(r => r.IsPositive),
 				("likes", var reviews) => reviews.OrderBy(r => r.RatedByUsers?.Count(usersReviews => usersReviews.IsLiked) ?? 0),
 				("likesdesc", var reviews) => reviews.OrderByDescending(r => r.RatedByUsers?.Count(usersReviews => usersReviews.IsLiked) ?? 0),
 				var (_, _) => throw new ReviewServiceArgumentException(ErrorMessages.IncorrectSortType, sort)

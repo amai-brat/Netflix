@@ -44,6 +44,7 @@ public class AuthServiceTests
     private readonly Mock<IEmailSender> _mockEmailSeder = new();
     private readonly Mock<ITwoFactorTokenSender> _mockTwoFactorTokenSender = new();
     private readonly Mock<IOptionsMonitor<JwtOptions>> _mockMonitor = new();
+    private readonly Mock<ISubscriptionRepository> _mockSubscriptions = new();
     private readonly Fixture _fixture = new();
     
     [Fact]
@@ -318,7 +319,7 @@ public class AuthServiceTests
         _userManager = new FakeUserManager(appUsers);
         _signInManager = new FakeSignInManager((_userManager as FakeUserManager)!);
         return new AuthService(
-            _userManager, _signInManager, _mockUserRepo.Object, _mapper, _mockAppUnitOfWork.Object,
+            _userManager, _signInManager, _mockUserRepo.Object, _mockSubscriptions.Object, _mapper, _mockAppUnitOfWork.Object,
             _mockUnitOfWork.Object, _mockTokenGenerator.Object, _mockTokenRepo.Object, _mockEmailSeder.Object,
             _mockTwoFactorTokenSender.Object, _mockMonitor.Object);
 
@@ -368,7 +369,8 @@ public class AuthServiceTests
     
                 return u;
             });
-        
+        _mockSubscriptions.Setup(x => x.GetAllSubscriptionsAsync())
+            .ReturnsAsync(() => new List<Subscription>());
         _mockMonitor.Setup(x => x.CurrentValue)
             .Returns(new JwtOptions
             {

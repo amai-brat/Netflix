@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import DefaultUserIcon from "../../../assets/DefaultUserIcon.svg";
+import DefaultUserIcon from "../../../assets/default.png";
 import "./styles/personalInfo.css";
 import {UserAvatar} from './components/UserAvatar';
 import {DataField} from './components/DataField';
