@@ -67,7 +67,7 @@ namespace Application.Services.Implementations
 		            .Ratings
 		            .LocalRating =
 	            ((content.Ratings.LocalRating ?? 0) * reviewCount + review.Score!.Value)
-	            / (reviewCount + 1);
+	            / (reviewCount);
             
             // format float local rating to 2 decimal places
             content.Ratings.LocalRating = (float) Math.Round(content.Ratings.LocalRating.Value, 2);
