@@ -369,7 +369,8 @@ public class AuthServiceTests
     
                 return u;
             });
-        
+        _mockSubscriptions.Setup(x => x.GetAllSubscriptionsAsync())
+            .ReturnsAsync(() => new List<Subscription>());
         _mockMonitor.Setup(x => x.CurrentValue)
             .Returns(new JwtOptions
             {
