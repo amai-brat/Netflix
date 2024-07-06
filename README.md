@@ -6,11 +6,10 @@
 
 - Задеплоить - сделано [сайт](https://voltorka.ru) (если не работает значит я работаю с ним как-то)
 - CI/CD - сделано [.github/workflows/main.yml](https://github.com/usersuseruuseruser/Netflix/blob/main/.github/workflows/main.yml)
-
-- Заполнить еще фильмами, сериалами, добавить сами сериалы и фильмы
-- Настроить OAuth, починить минио
+- Настроить OAuth, починить минио - сделано [pull request](https://github.com/usersuseruuseruser/Netflix/pull/6)
+- Заполнить еще фильмами, сериалами, добавить сами сериалы и фильмы - сделано [выбор контента](https://voltorka.ru/MainContent)
+-------------------
 - Починить SignalR
-- Убрать гребанное подтверждение по почте при входе КАЖДЫЙ РАЗ 
 - Redis
 - Kafka/RabbitMQ
 - PostgreSQL/MsSql переписать часть запросов на запросы вручную и сравнить производительность
