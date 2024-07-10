@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Domain.Abstractions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +12,17 @@ public class NotificationHub(
     ): Hub
 {
     private readonly INotificationService _notificationService = notificationService;
-    private static readonly Dictionary<long, string> Connections = [];
-    
+    private static readonly ConcurrentDictionary<long, string> Connections = [];
+
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        var userId = Context?.User?.FindFirst("id")?.Value;
+        
+        Connections.TryRemove(long.Parse(userId!), out _);
+        
+        return Task.FromResult(base.OnDisconnectedAsync(exception));
+    }
+
     public override Task OnConnectedAsync()
     {
         var userId = Context?.User?.FindFirst("id")?.Value;
