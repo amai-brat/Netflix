@@ -41,9 +41,8 @@ public static class DependencyInjection
             var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
             
             return new MinioClient()
-                    .WithEndpoint(options.Endpoint, options.Port)
+                .WithEndpoint(options.Endpoint)
                 .WithCredentials(options.AccessKey, options.SecretKey)
-                .WithProxy(new WebProxy(options.ExternalEndpoint,options.Port))
                 .Build();
         });
         serviceCollection.AddKeyedSingleton<IMinioClient>(KeyedServices.Video,(provider,_) =>
