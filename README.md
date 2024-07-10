@@ -8,8 +8,8 @@
 - CI/CD - сделано [.github/workflows/main.yml](https://github.com/usersuseruuseruser/Netflix/blob/main/.github/workflows/main.yml)
 - Настроить OAuth, починить минио - сделано [pull request](https://github.com/usersuseruuseruser/Netflix/pull/6)
 - Заполнить еще фильмами, сериалами, добавить сами сериалы и фильмы - сделано [выбор контента](https://voltorka.ru/MainContent)
--------------------
-- Починить SignalR
+- Починить SignalR [pull request](https://github.com/usersuseruuseruser/Netflix/pull/10)
+-------------------------------------------
 - Redis
 - Kafka/RabbitMQ
 - PostgreSQL/MsSql переписать часть запросов на запросы вручную и сравнить производительность
