@@ -43,6 +43,7 @@ public static class DependencyInjection
             return new MinioClient()
                 .WithEndpoint(options.Endpoint)
                 .WithCredentials(options.AccessKey, options.SecretKey)
+                .WithSSL()
                 .Build();
         });
         serviceCollection.AddKeyedSingleton<IMinioClient>(KeyedServices.Video,(provider,_) =>
