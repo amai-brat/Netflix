@@ -119,6 +119,11 @@ namespace Application.Services.Implementations
 				var picture = await minioCache.GetStringAsync(review.User.ProfilePictureUrl);
 				if (picture == null)
 				{
+					// это случай если картинка из oauth. тогда ее не кешируем и не преобразуем в url
+					if (review.User.ProfilePictureUrl.StartsWith("http"))
+					{
+						continue;
+					}
 					review.User.ProfilePictureUrl = await userService.ConvertProfilePictureGuidToUrlAsync(review.User.ProfilePictureUrl);
 					await minioCache.SetStringAsync(review.User.ProfilePictureUrl, review.User.ProfilePictureUrl);
 				}
