@@ -12,6 +12,7 @@ using Application.Services.Abstractions;
 using Application.Services.Implementations;
 using AutoMapper;
 using Infrastructure.Profiles;
+using Tests.Customizations;
 
 namespace Tests.ContentAPITests
 {
@@ -34,6 +35,8 @@ namespace Tests.ContentAPITests
                 mc.AddProfile(new ContentProfile());
             });
             _mapper = mappingConfig.CreateMapper();
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            _fixture.Customizations.Add(new DateOnlySpecimenBuilder());
         }
 
         [Fact]
@@ -345,7 +348,6 @@ namespace Tests.ContentAPITests
 
         private List<Review> BuildDefaultReviewList() =>
             _fixture.Build<Review>()
-            .Without(u => u.User)
             .Without(u => u.Content)
             .Without(u => u.Comments)
             .Without(u => u.RatedByUsers)
