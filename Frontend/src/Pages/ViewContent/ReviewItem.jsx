@@ -15,6 +15,7 @@ import moderatorImg from "../../assets/moderator.svg";
 import crossImg from "../../assets/Cross.svg";
 import {moderatorService} from "../../services/moderator.service.js";
 import {adminUserService} from "../../services/admin.user.service.js";
+import defaultUserIcon from "../../assets/default.png"
 
 const modalStyles = {
     content: {
@@ -41,8 +42,11 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const {setReviewsChanged} = useContext(ReviewsContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [commentText, setCommentText] = useState('')
+    const [userIcon, setUserIcon] = useState(!review.user.avatar ? defaultUserIcon : review.user.avatar)
     const store = useDataStore()
-    
+    const setDefaultUserImg = () => {
+        setUserIcon(defaultUserIcon)
+    }
     const handleTextChange = (event) => {
         setCommentText(event.target.value)
     }
@@ -154,7 +158,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
           <div className={styles.reviewItem} style={stylesCombined}>
               <div className={styles.reviewHeader}>
                   <div className={styles.userInfo}>
-                      {review.user.avatar && <img src={review.user.avatar} alt="" className={styles.avatar}/>}
+                      <img src={userIcon} alt="" className={styles.avatar} onError={setDefaultUserImg}/>
                       <span className={styles.username}>{review.user.name}</span>
                       <div className={styles.authorizedButtons}>
                           {authenticationService.isCurrentUserAdmin() &&
