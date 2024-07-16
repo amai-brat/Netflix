@@ -2,11 +2,13 @@
 using Domain.Entities;
 using Moq;
 using System.Linq.Expressions;
+using Application.Cache;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
+using Application.Services.Abstractions;
 using Application.Services.Implementations;
 using AutoMapper;
 using Infrastructure.Profiles;
@@ -19,6 +21,8 @@ namespace Tests.ContentAPITests
         private readonly Mock<IContentRepository> _mockContent = new();
         private readonly Mock<IUserRepository> _mockUser = new();
         private readonly Mock<IReviewRepository> _mockReview = new();
+        private readonly Mock<IMinioCache> _mockMinioCache = new();
+        private readonly Mock<IUserService> _mockUserService = new();
         private readonly IMapper _mapper;
         
         public ReviewServiceTests()
@@ -354,6 +358,8 @@ namespace Tests.ContentAPITests
                 _mockReview.Object, 
                 _mockContent.Object, 
                 _mockUser.Object, 
+                _mockMinioCache.Object,
+                _mockUserService.Object,
                 _mapper);
         
         private class ReviewDtoEqualityComparer : IEqualityComparer<ReviewDto>

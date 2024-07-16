@@ -51,6 +51,11 @@ services:
       - Minio:Port=${MINIO_PORT}
       - Minio:Endpoint=${MINIO_ENDPOINT}
         
+#      Redis
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
+        
 #      Jwt options
       - JwtOptions:Key=${JWT_SECRET}
       - JwtOptions:AccessTokenLifetimeInMinutes=${JWT_ACCESS_LIFETIME_MINUTES}
@@ -117,8 +122,13 @@ services:
   
   redis:
     image: redis
+    restart: always
     ports:
       - "6379:6379"
     volumes:
-      - ~/redis/data:/data
-    command: redis-server
+      - redis-data:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+volumes:
+    redis-data:
+      

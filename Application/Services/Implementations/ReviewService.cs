@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.Cache;
+using Application.Dto;
 using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
@@ -13,6 +14,8 @@ namespace Application.Services.Implementations
         IReviewRepository reviewRepository,
         IContentRepository contentRepository,
         IUserRepository userRepository,
+        IMinioCache minioCache,
+        IUserService userService,
         IMapper mapper
         ) : IReviewService
     {
@@ -103,6 +106,29 @@ namespace Application.Services.Implementations
 				throw new ReviewServiceArgumentException(ErrorMessages.ArgumentsMustBePositive, $"offset = {offset}; limit = {limit}");
 
 			var reviews = await GetReviewsByContentIdAsync(contentId, sort);
+			// current user profile pic url are just guid strings. they must be converted into presigned urls
+			// but it would be kind of expensive so we'll cache it guid-url to redis for 1 hour
+
+			foreach (var review in reviews)
+			{
+				if (review.User.ProfilePictureUrl == null)
+				{
+					continue;
+				}
+
+				var picture = await minioCache.GetStringAsync(review.User.ProfilePictureUrl);
+				if (picture == null)
+				{
+					review.User.ProfilePictureUrl = await userService.ConvertProfilePictureGuidToUrlAsync(review.User.ProfilePictureUrl);
+					await minioCache.SetStringAsync(review.User.ProfilePictureUrl, review.User.ProfilePictureUrl);
+				}
+
+				if (picture != null)
+				{
+					review.User.ProfilePictureUrl = picture;
+				}
+			}
+			
 			var reviewDtos = mapper.Map<List<ReviewDto>>(reviews);
 			return reviewDtos[Math.Min(reviews.Count, offset)..Math.Min(reviews.Count, offset + limit)];
 		}

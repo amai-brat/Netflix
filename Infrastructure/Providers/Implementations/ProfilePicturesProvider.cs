@@ -23,11 +23,27 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
 
     public async Task PutAsync(string name, Stream pictureStream, string contentType)
     {
+        // if bucket does not exist - create
+        
         var found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName));
         if (!found)
         {
             await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
         }
+        
+        // if obj exists - delete
+        
+        var stat = await _minioClient.StatObjectAsync(new StatObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(name));
+
+        if (stat is not null && !stat.DeleteMarker)
+        {
+            await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name));
+        }
+
 
         await _minioClient.PutObjectAsync(new PutObjectArgs()
             .WithBucket(BucketName)

@@ -1,6 +1,8 @@
 using System.Net;
+using Application.Cache;
 using Application.Dto;
 using Application.Services.Abstractions;
+using DataAccess.Cache;
 using FluentValidation;
 using Infrastructure.Enums;
 using Infrastructure.Identity;
@@ -21,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Minio;
+using StackExchange.Redis;
 
 namespace Infrastructure;
 
@@ -31,32 +34,33 @@ public static class DependencyInjection
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
-        serviceCollection.AddOptions(configuration);
-        serviceCollection.AddValidators();
-        serviceCollection.AddAuthProviderResolver();
-        serviceCollection.AddAutoMapper(typeof(DependencyInjection).Assembly);
-        serviceCollection.AddScoped<IUserService, UserService>();
-        serviceCollection.AddKeyedSingleton<IMinioClient>(KeyedServices.Avatar,(provider,_) =>
-        {
-            var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
-            
-            return new MinioClient()
+        serviceCollection.AddOptions(configuration)
+            .AddValidators()
+            .AddAuthProviderResolver()
+            .AddRedisCache()
+            .AddAutoMapper(typeof(DependencyInjection).Assembly)
+            .AddScoped<IUserService, UserService>()
+            .AddKeyedSingleton<IMinioClient>(KeyedServices.Avatar, (provider, _) =>
+            {
+                var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
+
+                return new MinioClient()
                     .WithEndpoint(options.Endpoint, options.Port)
-                .WithCredentials(options.AccessKey, options.SecretKey)
-                .WithProxy(new WebProxy(options.ExternalEndpoint,options.Port))
-                .Build();
-        });
-        serviceCollection.AddKeyedSingleton<IMinioClient>(KeyedServices.Video,(provider,_) =>
-        {
-            var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
-            
-            return new MinioClient()
-                .WithEndpoint(options.ExternalEndpoint, options.Port)
-                .WithCredentials(options.AccessKey, options.SecretKey)
-                .Build();
-        });
-        serviceCollection.AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>();
-        serviceCollection.AddIdentity(configuration);
+                    .WithCredentials(options.AccessKey, options.SecretKey)
+                    .WithProxy(new WebProxy(options.ExternalEndpoint, options.Port))
+                    .Build();
+            })
+            .AddKeyedSingleton<IMinioClient>(KeyedServices.Video, (provider, _) =>
+            {
+                var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
+
+                return new MinioClient()
+                    .WithEndpoint(options.ExternalEndpoint, options.Port)
+                    .WithCredentials(options.AccessKey, options.SecretKey)
+                    .Build();
+            })
+            .AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>()
+            .AddIdentity(configuration);
 
         if (environment.IsDevelopment())
         {
@@ -126,7 +130,8 @@ public static class DependencyInjection
         serviceCollection.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
         serviceCollection.Configure<GoogleAuthOptions>(configuration.GetSection("Auth:Google"));
         serviceCollection.Configure<VkAuthOptions>(configuration.GetSection("Auth:Vk"));
-
+        serviceCollection.Configure<RedisOptions>(configuration.GetSection("Redis"));
+        
         return serviceCollection;
     }
     
@@ -138,6 +143,31 @@ public static class DependencyInjection
         
         return serviceCollection;
     }
-    
-    
+
+    private static IServiceCollection AddRedisCache(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<RedisOptions>>().Value;
+            ConfigurationOptions configurationOptions = new ConfigurationOptions()
+            {
+                EndPoints = { { options.Host, options.Port } },
+                Password = options.Password,
+                AbortOnConnectFail = false
+            };
+            
+            return ConnectionMultiplexer.Connect(configurationOptions);
+        });
+
+        serviceCollection.AddScoped<IDatabase>(sp =>
+        {
+            var multiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
+            
+            return multiplexer.GetDatabase();
+        });
+
+        serviceCollection.AddScoped<IMinioCache, MinioRedisCache>();
+            
+        return serviceCollection;
+    }
 }
