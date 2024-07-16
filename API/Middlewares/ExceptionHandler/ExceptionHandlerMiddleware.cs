@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions.Base;
+using Infrastructure.Services.Exceptions;
 
 namespace API.Middlewares.ExceptionHandler
 {
@@ -18,7 +19,7 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
-                
+
                 logger.LogWarning(ex.Message + ex.StackTrace);
             }
             catch (NotPermittedException ex)
@@ -29,15 +30,25 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 403
                 });
-                
+
                 logger.LogWarning(ex.Message + ex.StackTrace);
+            }
+            catch (ValueChangedException ex)
+            {
+                context.Response.StatusCode = 409;
+                
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = ex.Message,
+                    Code = 409
+                });
             }
             catch (BusinessException ex)
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = "Internal server error123" + ex.Message + "\n" + ex.StackTrace,
+                    Message = "Internal server error" + ex.Message,
                     Code = 500
                 });
                 
@@ -48,7 +59,7 @@ namespace API.Middlewares.ExceptionHandler
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = "Internal server error123" + ex.Message + "\n" + ex.StackTrace,
+                    Message = "Internal server error" + ex.Message,
                     Code = 500
                 });
                 
