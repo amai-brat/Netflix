@@ -113,6 +113,8 @@ services:
       - ./Nginx/nginx.conf:/etc/nginx/nginx.conf
       - ${SSL_KEY_PATH}:/root/ssl-keys/voltorka-key.txt
       - ${SSL_BUNDLE_PATH}:/root/ssl-keys/voltorka-bundle.txt
+      - ${SSL_S3_KEY_PATH}:/root/ssl-keys/voltorka-s3-key.txt
+      - ${SSL_S3_BUNDLE_PATH}:/root/ssl-keys/voltorka-s3-bundle.txt
     ports:
       - "80:80"
       - "443:443"
