@@ -43,17 +43,17 @@ public static class DependencyInjection
             .AddKeyedSingleton<IMinioClient>(KeyedServices.Avatar, (provider, _) =>
             {
                 var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
-
+            
                 return new MinioClient()
-                    .WithEndpoint(options.Endpoint, options.Port)
+                    .WithEndpoint(options.Endpoint)
                     .WithCredentials(options.AccessKey, options.SecretKey)
-                    .WithProxy(new WebProxy(options.ExternalEndpoint, options.Port))
+                    .WithSSL()
                     .Build();
             })
             .AddKeyedSingleton<IMinioClient>(KeyedServices.Video, (provider, _) =>
             {
                 var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;
-
+            
                 return new MinioClient()
                     .WithEndpoint(options.ExternalEndpoint, options.Port)
                     .WithCredentials(options.AccessKey, options.SecretKey)
