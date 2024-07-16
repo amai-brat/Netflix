@@ -27,18 +27,20 @@ public class MinioRedisCache: IMinioCache
     public async Task SetStringAsync(string key, string value)
     {
         var current = await Database.StringGetAsync(key);
-        
-        // может быть случай когда url в кеше поменялся после того как мы его получили
-        // если это действительно так, то отправим юзеру сообщение что он уже поменялся
-        var transaction = Database.CreateTransaction();
-        transaction.AddCondition(Condition.StringEqual(key, current));
-        _ = await transaction.StringSetAsync(key, value,TimeSpan.FromHours(1));
-        
-        var res = await transaction.ExecuteAsync();
-        
-        if (!res)
+        if (current.HasValue)
         {
-            throw new ValueChangedException(UserCacheErrorMessages.AvatarChangedDuringRequest);
+            var transaction = Database.CreateTransaction();
+            transaction.AddCondition(Condition.StringEqual(key, current));
+            await transaction.StringSetAsync(key, value);
+            var res = await transaction.ExecuteAsync();
+            if (!res)
+            {
+                throw new ValueChangedException(UserCacheErrorMessages.AvatarChangedDuringRequest);
+            }
+        }
+        else
+        {
+            Database.StringSet(key, value);
         }
     }
 
