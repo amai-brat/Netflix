@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace Infrastructure.Providers.Implementations;
 
@@ -23,19 +24,39 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
 
     public async Task PutAsync(string name, Stream pictureStream, string contentType)
     {
+        // if bucket does not exist - create
+
         var found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName));
         if (!found)
         {
             await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
         }
 
-        await _minioClient.PutObjectAsync(new PutObjectArgs()
-            .WithBucket(BucketName)
-            .WithObject(name)
-            .WithStreamData(pictureStream)
-            .WithObjectSize(pictureStream.Length)
-            .WithContentType(contentType)
-        );
+        // if obj exists - delete
+        try
+        {
+            _ = await _minioClient.StatObjectAsync(new StatObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name));
+
+            await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name));
+        }
+        catch (ObjectNotFoundException)
+        {
+
+        }
+        finally
+        {
+            await _minioClient.PutObjectAsync(new PutObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name)
+                .WithStreamData(pictureStream)
+                .WithObjectSize(pictureStream.Length)
+                .WithContentType(contentType)
+            );
+        }
     }
 
     public async Task<Stream> GetAsync(string name)

@@ -2,14 +2,17 @@
 using Domain.Entities;
 using Moq;
 using System.Linq.Expressions;
+using Application.Cache;
 using Application.Dto;
 using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
+using Application.Services.Abstractions;
 using Application.Services.Implementations;
 using AutoMapper;
 using Infrastructure.Profiles;
+using Tests.Customizations;
 
 namespace Tests.ContentAPITests
 {
@@ -19,6 +22,8 @@ namespace Tests.ContentAPITests
         private readonly Mock<IContentRepository> _mockContent = new();
         private readonly Mock<IUserRepository> _mockUser = new();
         private readonly Mock<IReviewRepository> _mockReview = new();
+        private readonly Mock<IMinioCache> _mockMinioCache = new();
+        private readonly Mock<IUserService> _mockUserService = new();
         private readonly IMapper _mapper;
         
         public ReviewServiceTests()
@@ -30,6 +35,8 @@ namespace Tests.ContentAPITests
                 mc.AddProfile(new ContentProfile());
             });
             _mapper = mappingConfig.CreateMapper();
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            _fixture.Customizations.Add(new DateOnlySpecimenBuilder());
         }
 
         [Fact]
@@ -341,7 +348,6 @@ namespace Tests.ContentAPITests
 
         private List<Review> BuildDefaultReviewList() =>
             _fixture.Build<Review>()
-            .Without(u => u.User)
             .Without(u => u.Content)
             .Without(u => u.Comments)
             .Without(u => u.RatedByUsers)
@@ -354,6 +360,8 @@ namespace Tests.ContentAPITests
                 _mockReview.Object, 
                 _mockContent.Object, 
                 _mockUser.Object, 
+                _mockMinioCache.Object,
+                _mockUserService.Object,
                 _mapper);
         
         private class ReviewDtoEqualityComparer : IEqualityComparer<ReviewDto>
