@@ -9,8 +9,8 @@
 - Настроить OAuth, починить минио - сделано [pull request](https://github.com/usersuseruuseruser/Netflix/pull/6)
 - Заполнить еще фильмами, сериалами, добавить сами сериалы и фильмы - сделано [выбор контента](https://voltorka.ru/MainContent)
 - Починить SignalR [pull request](https://github.com/usersuseruuseruser/Netflix/pull/10)
--------------------------------------------
-- Redis
+- Redis [pull request](https://github.com/usersuseruuseruser/Netflix/pull/14)
+----------------------------
 - Kafka/RabbitMQ
 - PostgreSQL/MsSql переписать часть запросов на запросы вручную и сравнить производительность
 - NoSql 
