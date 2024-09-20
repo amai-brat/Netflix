@@ -4,22 +4,3 @@ on:
     push:
         branches:
             - "main"
-jobs:
-    build:
-        name: Deploy new code
-        runs-on: ubuntu-latest 
-        steps:   
-            - name: Set up SSH connection
-              uses: webfactory/ssh-agent@v0.5.3
-              with:
-                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-            - name: Connect to remote server and deploy
-              run: |
-                ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_SERVER }} << EOF
-                  cd app
-                  git checkout main
-                  docker compose down
-                  git pull
-                  docker compose up --build -d 
-                EOF
-              
