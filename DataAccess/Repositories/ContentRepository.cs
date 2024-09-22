@@ -53,6 +53,7 @@ namespace DataAccess.Repositories
             dbMovieContent.Description = newMovieContent.Description;
             dbMovieContent.Slogan = newMovieContent.Slogan;
             dbMovieContent.PosterUrl = newMovieContent.PosterUrl;
+            dbMovieContent.BigPosterUrl = newMovieContent.BigPosterUrl;
             dbMovieContent.Country = newMovieContent.Country;
             dbMovieContent.ContentType.ContentTypeName = newMovieContent.ContentType.ContentTypeName;
             dbMovieContent.AgeRatings = newMovieContent.AgeRatings;
@@ -89,6 +90,7 @@ namespace DataAccess.Repositories
             serialContentDbVersion.Description = serialContent.Description;
             serialContentDbVersion.Slogan = serialContent.Slogan;
             serialContentDbVersion.PosterUrl = serialContent.PosterUrl;
+            serialContentDbVersion.BigPosterUrl = serialContent.BigPosterUrl;
             serialContentDbVersion.Country = serialContent.Country;
             serialContentDbVersion.ContentType.ContentTypeName = serialContent.ContentType.ContentTypeName;
             serialContentDbVersion.AgeRatings = serialContent.AgeRatings;

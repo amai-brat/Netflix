@@ -41,6 +41,9 @@
     margin-top: 14px;
     margin-bottom: 10px;
 }
+#client-pop-up-panel-sign-out-btn:hover{
+    cursor: pointer;
+}
 
 #client-pop-up-panel{
     width: 232px;

@@ -9,6 +9,7 @@ public class SerialContentAdminPageDto
     public string Description { get; set; } = null!;
     public string? Slogan { get; set; }
     public string PosterUrl { get; set; } = null!;
+    public string BigPosterUrl { get; set; } = null!;
     public string? Country { get; set; }
     public string ContentType { get; set; } = null!;
 

@@ -7,14 +7,67 @@ services:
       - "8080:8080"
       - "8081:8081"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:8080
-      - EMAIL_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email
-      - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=http://localhost/api/auth/confirm-email-change
-      - HLS_BASE_URL=https://localhost/api
+  
+  
+      - EMAIL_CONFIRMATION_ENDPOINT=https://${HOST}/api/auth/confirm-email
+      - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=https://${HOST}/api/auth/confirm-email-change
+      
+      
+#      Used during ffmpeg video processing
+      - HLS_BASE_URL=https://${HOST}/api
+      
+      
+#      OAuth
+      - Auth:Google:ClientId=${AUTH_GOOGLE_CLIENTID}
+      - Auth:Google:ClientSecret=${AUTH_GOOGLE_CLIENTSECRET}
+      - Auth:Google:AuthUri=${AUTH_GOOGLE_AUTH_URI}
+      - Auth:Google:TokenUri=${AUTH_GOOGLE_TOKEN_URI}
+      - Auth:Google:RedirectUri=${AUTH_GOOGLE_REDIRECT_URI}
+      
+      - Auth:Vk:ClientId=${AUTH_VK_CLIENTID}
+      - Auth:Vk:ClientSecret=${AUTH_VK_CLIENTSECRET}
+      - Auth:Vk:AuthUri=${AUTH_VK_AUTH_URI}
+      - Auth:Vk:TokenUri=${AUTH_VK_TOKEN_URI}
+      - Auth:Vk:RedirectUri=${AUTH_VK_REDIRECT_URI}
+      - Auth:Vk:InfoReqUri=${AUTH_VK_INFO_REQUEST_URI}
+        
+#      Mail options
+      - EmailOptions:From=${EMAIL_FROM}
+      - EmailOptions:SmtpServer=${EMAIL_SMTP_SERVER}
+      - EmailOptions:Port=${EMAIL_SMTP_PORT}
+      - EmailOptions:Username=${EMAIL_SMTP_USER}
+      - EmailOptions:Password=${EMAIL_SMTP_PASSWORD}
+      
+#      Database connection
+      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_GENERAL}
+      - Database:Identity=${DATABASE_CONNECTION_STRING_IDENTITY}
+        
+#      Minio
+      - Minio:ExternalEndpoint=${MINIO_EXTERNAL_ENDPOINT}
+      - Minio:AccessKey=${MINIO_ACCESS_KEY}
+      - Minio:SecretKey=${MINIO_SECRET_KEY}
+      - Minio:Port=${MINIO_PORT}
+      - Minio:Endpoint=${MINIO_ENDPOINT}
+        
+#      Redis
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
+        
+#      Jwt options
+      - JwtOptions:Key=${JWT_SECRET}
+      - JwtOptions:AccessTokenLifetimeInMinutes=${JWT_ACCESS_LIFETIME_MINUTES}
+      - JwtOptions:RefreshTokenLifetimeInDays=${JWT_REFRESH_LIFETIME_DAYS}
+        
+#      Other
+      - FrontendConfig:Url=${FRONTEND_URL}
+      - AllowedHosts=${ALLOWED_HOSTS}
     depends_on:
       - database
       - minio
+      - redis
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
@@ -28,14 +81,15 @@ services:
     depends_on:
       - database
     environment:
-      - JWT_KEY=000011112222333344445555666677778888
+      - JWT_KEY=${JWT_SECRET}
+      - DATABASE_CONNECTION_STRING_GENERAL=${DATABASE_CONNECTION_STRING_GENERAL_NODEJS}
         
   database:
     image: postgres
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ~/postgres/Netflix:/var/lib/postgresql/data
   
@@ -48,37 +102,35 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=root
-      - MINIO_ROOT_PASSWORD=aboba228
-
-  frontend:
-    build:
-      context: "./Frontend"
-      dockerfile: "./Dockerfile"
-    ports:
-      - "5173:5173"
-    # volumes:
-    #   - type: bind
-    #     source: ./Frontend/
-    #     target: /app
-    environment:
-      - VITE_PORT=5173
-      - VITE_HOST=0.0.0.0
-    #  - VITE_CLIENT_PORT=5173
-    depends_on:
-      - api
-      - subscription-service
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     
   proxy:
-    image: nginx
+    build:
+        context: "./Frontend"
+        dockerfile: "./Dockerfile"
     volumes:
       - ./Nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./Nginx/localhost.crt:/etc/nginx/localhost.crt
-      - ./Nginx/localhost.key:/etc/nginx/localhost.key
+      - ${SSL_KEY_PATH}:/root/ssl-keys/voltorka-key.txt
+      - ${SSL_BUNDLE_PATH}:/root/ssl-keys/voltorka-bundle.txt
+      - ${SSL_S3_KEY_PATH}:/root/ssl-keys/voltorka-s3-key.txt
+      - ${SSL_S3_BUNDLE_PATH}:/root/ssl-keys/voltorka-s3-bundle.txt
     ports:
       - "80:80"
       - "443:443"
     depends_on:
-      - frontend
       - api
       - subscription-service
+  
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+volumes:
+    redis-data:
+      

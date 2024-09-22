@@ -1,11 +1,14 @@
 using System.Net;
 using System.Web;
+using Infrastructure.Enums;
 using Infrastructure.Options;
 using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace Infrastructure.Providers.Implementations;
 
@@ -14,36 +17,46 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
     private const string BucketName = "avatars";
     private readonly IMinioClient _minioClient;
 
-    public ProfilePicturesProvider(IOptionsMonitor<MinioOptions> optionsMonitor)
+    public ProfilePicturesProvider([FromKeyedServices(KeyedServices.Avatar)] IMinioClient minioClient)
     {
-        var minioOptions = optionsMonitor.CurrentValue;
-        // тут происходит костыль: 
-        // невозможно обратиться внутри контейнера на локалхост, потому что это локалхост контейнера, а не компьютера
-        // PresignedGetObjectAsync даёт ссылку, в которой нельзя менять хост
-        // 
-        // по идее, если minio в отдельном сервере, этого костыля быть не должно
-        _minioClient = new MinioClient()
-            .WithEndpoint(minioOptions.ExternalEndpoint)
-            .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey)
-            .WithProxy(new WebProxy(minioOptions.Endpoint, 9000)) 
-            .Build();
+        _minioClient = minioClient;
     }
 
     public async Task PutAsync(string name, Stream pictureStream, string contentType)
     {
+        // if bucket does not exist - create
+
         var found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName));
         if (!found)
         {
             await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
         }
 
-        await _minioClient.PutObjectAsync(new PutObjectArgs()
-            .WithBucket(BucketName)
-            .WithObject(name)
-            .WithStreamData(pictureStream)
-            .WithObjectSize(pictureStream.Length)
-            .WithContentType(contentType)
-        );
+        // if obj exists - delete
+        try
+        {
+            _ = await _minioClient.StatObjectAsync(new StatObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name));
+
+            await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name));
+        }
+        catch (ObjectNotFoundException)
+        {
+
+        }
+        finally
+        {
+            await _minioClient.PutObjectAsync(new PutObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(name)
+                .WithStreamData(pictureStream)
+                .WithObjectSize(pictureStream.Length)
+                .WithContentType(contentType)
+            );
+        }
     }
 
     public async Task<Stream> GetAsync(string name)

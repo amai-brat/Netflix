@@ -10,6 +10,7 @@ const AddMovieOptions = () => {
     const [description, setDescription] = useState("")
     const [slogan, setSlogan] = useState("")
     const [posterUrl, setPosterUrl] = useState("")
+    const [bigPosterUrl, setBigPosterUrl] = useState("")
     const [country, setCountry] = useState("")
     const [contentType, setContentType] = useState("")
 
@@ -86,6 +87,7 @@ const AddMovieOptions = () => {
             description: description,
             slogan: slogan,
             posterUrl: posterUrl,
+            bigPosterUrl: bigPosterUrl,
             country: country,
             contentType: contentType,
             ageRatings: ageRatings,
@@ -199,6 +201,8 @@ const AddMovieOptions = () => {
             <h2>Постер</h2>
             <input type="text" placeholder="URL постера" value={posterUrl}
                    onChange={e => setPosterUrl(e.target.value)}/>
+            <input type="text" placeholder="URL большого постера" value={bigPosterUrl}
+                   onChange={e => setBigPosterUrl(e.target.value)}/>
             <h2>Страна</h2>
             <input type="text" placeholder="Страна" value={country} onChange={e => setCountry(e.target.value)}/>
             <h2>Длительность фильма</h2>
@@ -239,11 +243,11 @@ const AddMovieOptions = () => {
                        onChange={e => setTrailerInfoUrl(e.target.value)}/>
             </div>}
             <h2>Добавить жанры(enter - сохранение)</h2>
-            <div style={{width:"auto"}}>
+            <div style={{width: "auto"}}>
                 {genres.map((genre, index) =>
                     genre !== null ? (
                         <div style={{display: "block"}} key={index}>
-                            <span style={{display:"inline"}}>{genre}</span>
+                            <span style={{display: "inline"}}>{genre}</span>
                             <span className={styles.trash} onClick={() => handleRemoveGenre(index)}></span>
                         </div>
                     ) : null
@@ -267,11 +271,11 @@ const AddMovieOptions = () => {
                     </div>)}
             </div>
             <h2>Добавить новые персоны</h2>
-            <div style={{width:"auto"}}>
+            <div style={{width: "auto"}}>
                 {personsInContent.map((person, index) =>
                     person !== null ? (
-                        <div style={{ display: "block" }} key={index}>
-                            <span style={{display:"inline"}}>{person.name} - {person.profession}</span>
+                        <div style={{display: "block"}} key={index}>
+                            <span style={{display: "inline"}}>{person.name} - {person.profession}</span>
                             <span className={styles.trash} onClick={() => handleRemovePerson(index)}></span>
                         </div>
                     ) : null
@@ -290,9 +294,9 @@ const AddMovieOptions = () => {
                 <option value="720">720</option>
                 <option value="1080">1080</option>
             </select>
-            <h2  style={{width:"fit-content"}}>Видео файл</h2>
-            <input type={"file"} onChange={e => setVideoFile(e.target.files[0])} style={{display:"inline-block"}}/>
-            <span style={{display:"inline-block"}}>{videoFile?.name}</span>
+            <h2 style={{width: "fit-content"}}>Видео файл</h2>
+            <input type={"file"} onChange={e => setVideoFile(e.target.files[0])} style={{display: "inline-block"}}/>
+            <span style={{display: "inline-block"}}>{videoFile?.name}</span>
             <button type={"submit"} style={{backgroundColor: "red", color: "white"}} onClick={Submit}>Добавить</button>
         </div>
     )

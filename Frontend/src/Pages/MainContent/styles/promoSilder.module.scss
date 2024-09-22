@@ -5,12 +5,17 @@
     margin-right: auto;
     width: 85vw;
     display: flex;
-    flex-direction: row;
+    flex-direction: row; 
     align-items: center;
-
+    .prev-button-promo-slider:hover, .next-button-promo-slider:hover {
+      cursor: pointer;
+    }
     swiper-container {
       width: 100%;
       max-width: 80vw;
+      #swiper-wrapper-856204923365ad41{
+        justify-content: center;
+      }
     }
 
     swiper-slide {
@@ -25,7 +30,6 @@
       img {
         max-width: 80vw;
         height: 50vh;
-        border-radius: 2em;
       }
     }
   }

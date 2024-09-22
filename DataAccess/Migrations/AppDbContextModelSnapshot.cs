@@ -152,7 +152,7 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 5, 1, 15, 21, 31, 5, DateTimeKind.Unspecified).AddTicks(8544), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 7, 4, 14, 6, 18, 436, DateTimeKind.Unspecified).AddTicks(8666), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -187,6 +187,11 @@ namespace DataAccess.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("BigPosterUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("big_poster_url");
 
                     b.Property<int>("ContentTypeId")
                         .HasColumnType("integer")
@@ -356,7 +361,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 5, 1, 14, 41, 31, 5, DateTimeKind.Unspecified).AddTicks(8534), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2024, 7, 4, 13, 26, 18, 436, DateTimeKind.Unspecified).AddTicks(8650), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -528,7 +533,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 5, 1, 15, 11, 31, 5, DateTimeKind.Unspecified).AddTicks(8540), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2024, 7, 4, 13, 56, 18, 436, DateTimeKind.Unspecified).AddTicks(8658), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -653,7 +658,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
-                            BirthDay = new DateOnly(2004, 5, 1),
+                            BirthDay = new DateOnly(2004, 7, 4),
                             Email = "testEmail@gmail.com",
                             Nickname = "testUser",
                             ProfilePictureUrl = "https://i.pinimg.com/originals/2b/64/2f/2b642f9183fa80b8c47a9d8f8971eb4d.jpg"
@@ -661,7 +666,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -2L,
-                            BirthDay = new DateOnly(1999, 5, 1),
+                            BirthDay = new DateOnly(1999, 7, 4),
                             Email = "testEmail2@gmail.com",
                             Nickname = "testUser2",
                             ProfilePictureUrl = "https://st.kp.yandex.net/images/actor_iphone/iphone360_25584.jpg"
@@ -699,8 +704,8 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 4, 29, 15, 11, 31, 5, DateTimeKind.Unspecified).AddTicks(8349), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 5, 31, 15, 11, 31, 5, DateTimeKind.Unspecified).AddTicks(8373), new TimeSpan(0, 3, 0, 0, 0))
+                            BoughtAt = new DateTimeOffset(new DateTime(2024, 7, 2, 13, 56, 18, 436, DateTimeKind.Unspecified).AddTicks(8423), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 8, 3, 13, 56, 18, 436, DateTimeKind.Unspecified).AddTicks(8463), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -758,6 +763,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
+                            BigPosterUrl = "https://img.smotreshka.tv/image/aHR0cHM6Ly9jbXMuc21vdHJlc2hrYS50di9hcmNoaXZlLWltZy9zdGF0aWMvbWVkaWEvN2UvMDQvN2UwNDljNTYxMTM0NTNhODEyODljNmNkZDViMTQ3MGUuanBn",
                             ContentTypeId = -1,
                             Country = "США",
                             Description = "Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.\n\nПроходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.",
@@ -865,7 +871,7 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_content_bases_content_types_content_type_id");
 
-                    b.OwnsOne("Domain.Entities.ContentBase.AgeRatings#Domain.Entities.AgeRatings", "AgeRatings", b1 =>
+                    b.OwnsOne("Domain.Entities.AgeRatings", "AgeRatings", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -881,7 +887,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases", (string)null);
+                            b1.ToTable("content_bases");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -896,7 +902,7 @@ namespace DataAccess.Migrations
                                 });
                         });
 
-                    b.OwnsOne("Domain.Entities.ContentBase.Budget#Domain.Entities.Budget", "Budget", b1 =>
+                    b.OwnsOne("Domain.Entities.Budget", "Budget", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -913,7 +919,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases", (string)null);
+                            b1.ToTable("content_bases");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -928,7 +934,7 @@ namespace DataAccess.Migrations
                                 });
                         });
 
-                    b.OwnsOne("Domain.Entities.ContentBase.Ratings#Domain.Entities.Ratings", "Ratings", b1 =>
+                    b.OwnsOne("Domain.Entities.Ratings", "Ratings", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -948,7 +954,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases", (string)null);
+                            b1.ToTable("content_bases");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -964,7 +970,7 @@ namespace DataAccess.Migrations
                                 });
                         });
 
-                    b.OwnsOne("Domain.Entities.ContentBase.TrailerInfo#Domain.Entities.TrailerInfo", "TrailerInfo", b1 =>
+                    b.OwnsOne("Domain.Entities.TrailerInfo", "TrailerInfo", b1 =>
                         {
                             b1.Property<long>("ContentBaseId")
                                 .HasColumnType("bigint")
@@ -982,7 +988,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("ContentBaseId");
 
-                            b1.ToTable("content_bases", (string)null);
+                            b1.ToTable("content_bases");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContentBaseId")
@@ -1156,7 +1162,7 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_serial_contents_content_bases_id");
 
-                    b.OwnsOne("Domain.Entities.SerialContent.YearRange#Domain.Entities.YearRange", "YearRange", b1 =>
+                    b.OwnsOne("Domain.Entities.YearRange", "YearRange", b1 =>
                         {
                             b1.Property<long>("SerialContentId")
                                 .HasColumnType("bigint")
@@ -1172,7 +1178,7 @@ namespace DataAccess.Migrations
 
                             b1.HasKey("SerialContentId");
 
-                            b1.ToTable("serial_contents", (string)null);
+                            b1.ToTable("serial_contents");
 
                             b1.WithOwner()
                                 .HasForeignKey("SerialContentId")

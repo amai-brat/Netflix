@@ -28,6 +28,7 @@ public class ContentApiIntegrationTests(WebAppFactory factory, ITestOutputHelper
             {"ContentType", "Сериал"},
             {"MovieLength", "120"},
             {"PosterUrl", "123"},
+            {"BigPosterUrl", "123"},
             {"VideoUrl", "123"},
             {"PersonsInContent[0].Name", "123"},
             {"PersonsInContent[0].Profession", "123"}
@@ -36,7 +37,7 @@ public class ContentApiIntegrationTests(WebAppFactory factory, ITestOutputHelper
         
         // Act
         var response = await client.SendAsync(postRequest);
-        
+        output.WriteLine(await response.Content.ReadAsStringAsync());
         // Assert
         response.EnsureSuccessStatusCode();
         // check if data is added to the database
@@ -60,6 +61,7 @@ public class ContentApiIntegrationTests(WebAppFactory factory, ITestOutputHelper
             {"AllowedSubscriptions[0].Name", "Сериалы"},
             {"ContentType", "Сериал"},
             {"PosterUrl", "123"},
+            {"BigPosterUrl", "123"},
             {"ReleaseYears.Start",DateOnly.FromDateTime(DateTime.Now).ToString()},
             {"ReleaseYears.End", DateOnly.FromDateTime(DateTime.Now.AddDays(1)).ToString()},
             {"SeasonInfos[0].SeasonNumber", "1"},

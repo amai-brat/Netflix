@@ -25,7 +25,6 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-ENV HLS_BASE_URL=https://localhost/api
 
 FROM base AS final
 WORKDIR /app

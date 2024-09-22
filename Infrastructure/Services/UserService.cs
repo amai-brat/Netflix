@@ -112,4 +112,9 @@ public class UserService(
 
         return favouriteDtos;
     }
+
+    public Task<string> ConvertProfilePictureGuidToUrlAsync(string guid)
+    {
+        return profilePicturesProvider.GetUrlAsync(guid);
+    }
 }

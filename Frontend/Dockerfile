@@ -1,5 +1,4 @@
-FROM node
-EXPOSE 5173
+FROM node as build
 
 WORKDIR /app
 
@@ -9,10 +8,12 @@ RUN npm i
 
 COPY . . 
 
-ARG VITE_PORT=5173
-ARG VITE_HOST=0.0.0.0
+RUN npm run build
 
-ENV VITE_PORT=${VITE_PORT}
-ENV VITE_HOST=${VITE_HOST}
+FROM nginx as runtime
 
-CMD ["npm", "run", "dev"]
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;" ]
