@@ -1,11 +1,7 @@
-using System.Net;
-using System.Web;
 using Infrastructure.Enums;
-using Infrastructure.Options;
 using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
@@ -93,9 +89,16 @@ public class ProfilePicturesProvider : IProfilePicturesProvider
             throw new ProfilePictureProviderArgumentException(ProviderErrorMessages.FileDeleted, nameof(name));
         }
 
-        return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
+        var url = await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
             .WithBucket(BucketName)
             .WithObject(name)
             .WithExpiry(3600));
+
+        // https://github.com/minio/minio/issues/11870
+        if (_minioClient.Config.Endpoint.Contains("minio:9000")) {
+            return url.Replace("minio", "localhost");
+        }
+
+        return url;
     }
 }
