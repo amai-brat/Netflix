@@ -1,0 +1,138 @@
+services:
+  api:
+    build:
+      context: "."
+      dockerfile: "./API/Dockerfile"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=http://+:8080
+  
+  
+      - EMAIL_CONFIRMATION_ENDPOINT=https://${HOST}/api/auth/confirm-email
+      - EMAIL_CHANGE_CONFIRMATION_ENDPOINT=https://${HOST}/api/auth/confirm-email-change
+      
+      
+#      Used during ffmpeg video processing
+      - HLS_BASE_URL=https://${HOST}/api
+      
+      
+#      OAuth
+      - Auth:Google:ClientId=${AUTH_GOOGLE_CLIENTID}
+      - Auth:Google:ClientSecret=${AUTH_GOOGLE_CLIENTSECRET}
+      - Auth:Google:AuthUri=${AUTH_GOOGLE_AUTH_URI}
+      - Auth:Google:TokenUri=${AUTH_GOOGLE_TOKEN_URI}
+      - Auth:Google:RedirectUri=${AUTH_GOOGLE_REDIRECT_URI}
+      
+      - Auth:Vk:ClientId=${AUTH_VK_CLIENTID}
+      - Auth:Vk:ClientSecret=${AUTH_VK_CLIENTSECRET}
+      - Auth:Vk:AuthUri=${AUTH_VK_AUTH_URI}
+      - Auth:Vk:TokenUri=${AUTH_VK_TOKEN_URI}
+      - Auth:Vk:RedirectUri=${AUTH_VK_REDIRECT_URI}
+      - Auth:Vk:InfoReqUri=${AUTH_VK_INFO_REQUEST_URI}
+        
+#      Mail options
+      - EmailOptions:From=${EMAIL_FROM}
+      - EmailOptions:SmtpServer=${EMAIL_SMTP_SERVER}
+      - EmailOptions:Port=${EMAIL_SMTP_PORT}
+      - EmailOptions:Username=${EMAIL_SMTP_USER}
+      - EmailOptions:Password=${EMAIL_SMTP_PASSWORD}
+      
+#      Database connection
+      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_GENERAL}
+      - Database:Identity=${DATABASE_CONNECTION_STRING_IDENTITY}
+        
+#      Minio
+      - Minio:ExternalEndpoint=${MINIO_EXTERNAL_ENDPOINT}
+      - Minio:AccessKey=${MINIO_ACCESS_KEY}
+      - Minio:SecretKey=${MINIO_SECRET_KEY}
+      - Minio:Port=${MINIO_PORT}
+      - Minio:Endpoint=${MINIO_ENDPOINT}
+        
+#      Redis
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
+        
+#      Jwt options
+      - JwtOptions:Key=${JWT_SECRET}
+      - JwtOptions:AccessTokenLifetimeInMinutes=${JWT_ACCESS_LIFETIME_MINUTES}
+      - JwtOptions:RefreshTokenLifetimeInDays=${JWT_REFRESH_LIFETIME_DAYS}
+        
+#      Other
+      - FrontendConfig:Url=${FRONTEND_URL}
+      - AllowedHosts=${ALLOWED_HOSTS}
+    depends_on:
+      - database
+      - minio
+      - redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
+  
+  subscription-service:
+    build:
+      context: "./SubscriptionService/subscription-service"
+      dockerfile: "./Dockerfile"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+    environment:
+      - JWT_KEY=${JWT_SECRET}
+      - DATABASE_CONNECTION_STRING_GENERAL=${DATABASE_CONNECTION_STRING_GENERAL_NODEJS}
+        
+  database:
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ~/postgres/Netflix:/var/lib/postgresql/data
+  
+  minio:
+    image: quay.io/minio/minio
+    command: server --console-address ":9001" /data
+    volumes:
+      - '~/minio/data:/data'
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    
+  proxy:
+    build:
+        context: "./Frontend"
+        dockerfile: "./Dockerfile"
+        target: "dev"
+    volumes:
+      - ./Nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+      - ${SSL_KEY_PATH}:/root/ssl-keys/voltorka-key.txt
+      - ${SSL_BUNDLE_PATH}:/root/ssl-keys/voltorka-bundle.txt
+      - ${SSL_S3_KEY_PATH}:/root/ssl-keys/voltorka-s3-key.txt
+      - ${SSL_S3_BUNDLE_PATH}:/root/ssl-keys/voltorka-s3-bundle.txt
+      - ./Frontend/:/app
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+      - subscription-service
+  
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+volumes:
+    redis-data:
+      
