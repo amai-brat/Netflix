@@ -1,5 +1,5 @@
 ﻿import { render, screen } from '@testing-library/react';
-import AdminContent from './AdminContent';
+import AdminContent from '../../../src/Pages/Admin/Content/AdminContent.jsx';
 import { test, expect } from 'vitest';
 
 test('renders MyComponent', () => {
