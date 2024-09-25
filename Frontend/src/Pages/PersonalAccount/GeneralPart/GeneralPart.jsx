@@ -17,9 +17,6 @@ const GeneralPart = ({component: Component}) => {
     ];
 
     const user = authenticationService.getUser();
-    if (user.role == "user") {
-        tabs = tabs.slice(0, -2)
-    }
 
     const location = useLocation();
     const setInitialTab = () => {

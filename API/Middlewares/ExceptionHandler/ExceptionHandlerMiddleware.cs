@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions.Base;
+using Infrastructure.Services.Exceptions;
 
 namespace API.Middlewares.ExceptionHandler
 {
@@ -18,8 +19,8 @@ namespace API.Middlewares.ExceptionHandler
                     Message = $"{ex.Message}",
                     Code = 400
                 });
-                
-                logger.LogDebug(ex.Message + ex.StackTrace);
+
+                logger.LogWarning(ex.Message + ex.StackTrace);
             }
             catch (NotPermittedException ex)
             {
@@ -29,30 +30,40 @@ namespace API.Middlewares.ExceptionHandler
                     Message = ex.Message,
                     Code = 403
                 });
+
+                logger.LogWarning(ex.Message + ex.StackTrace);
+            }
+            catch (ValueChangedException ex)
+            {
+                context.Response.StatusCode = 409;
                 
-                logger.LogDebug(ex.Message + ex.StackTrace);
+                await context.Response.WriteAsJsonAsync(new ExceptionDetails
+                {
+                    Message = ex.Message,
+                    Code = 409
+                });
             }
             catch (BusinessException ex)
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = "Internal server error",
+                    Message = "Internal server error" + ex.Message,
                     Code = 500
                 });
                 
-                logger.LogError("Business error happened: {error}", ex.Message);
+                logger.LogWarning("Business error happened: {error}", ex.Message + ex.StackTrace);
             }
             catch (Exception ex)
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ExceptionDetails
                 {
-                    Message = "Internal server error",
+                    Message = "Internal server error" + ex.Message,
                     Code = 500
                 });
                 
-                logger.LogError("Unhandled exception: {error}", ex.Message + ex.StackTrace);
+                logger.LogWarning("Unhandled exception: {error}", ex.Message + ex.StackTrace);
             }
         }
         private class ExceptionDetails

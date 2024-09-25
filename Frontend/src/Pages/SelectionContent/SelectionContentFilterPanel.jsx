@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import SelectionContentContentTypeFilter from "./SelectionContentContentTypeFilter.jsx";
 import SelectionContentGenresFilter from "./SelectionContentGenresFilter.jsx";
 import "/src/Pages/SelectionContent/Styles/SelectionContentFilterPanel.css";
+import forward from "../../assets/Forward.svg";
 import {contentService} from "../../services/content.service.js";
 
 const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
@@ -52,7 +53,7 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                         setGenresDisplayed(false)
                     }}>
                         <img className="selection-content-filter-panel-genres-only-forward"
-                             src="/src/assets/Forward.svg"
+                             src={forward}
                              alt="Forward"/>
                         Жанры
                     </label>
@@ -81,7 +82,7 @@ const SelectionContentFilterPanel = ({filter, setFilter, onFilterApply}) => {
                                     .join(", ")
                             }{selectedGenres.length >= 3 && <>...</>}</>
                         }
-                        <img className="selection-content-filter-panel-genres-forward" src="/src/assets/Forward.svg" alt="Forward"/>
+                        <img className="selection-content-filter-panel-genres-forward" src={forward} alt="Forward"/>
                     </label>
                 </div>
                 <div id="selection-content-filter-panel-type">

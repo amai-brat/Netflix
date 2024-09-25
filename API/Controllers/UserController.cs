@@ -5,7 +5,7 @@ using Infrastructure.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.UserController;
+namespace API.Controllers;
 
 [Authorize]
 [ApiController]

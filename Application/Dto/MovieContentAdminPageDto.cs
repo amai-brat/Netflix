@@ -10,6 +10,7 @@ public class MovieContentAdminPageDto
     public string Description { get; set; } = null!;
     public string? Slogan { get; set; }
     public string PosterUrl { get; set; } = null!;
+    public string BigPosterUrl { get; set; } = null!;
     public string? Country { get; set; }
     public string ContentType { get; set; } = null!;
     public long MovieLength { get; set; }

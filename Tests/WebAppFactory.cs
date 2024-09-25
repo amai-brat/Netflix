@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Reflection;
 using DataAccess;
 using Infrastructure.Identity.Data;
 using Microsoft.AspNetCore.Authentication;
@@ -8,12 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
 
 namespace Tests;
 public class WebAppFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((_, config) =>
+        {
+            config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        });
+        
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));

@@ -2,18 +2,15 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Application.Dto;
-using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Services.Abstractions;
 using AutoMapper;
-using FluentValidation;
-using Infrastructure.Validators;
+using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.ContentController
+namespace API.Controllers
 {
     [Route("content")]
     [ApiController]
@@ -23,6 +20,7 @@ namespace API.Controllers.ContentController
         IMapper mapper,
         IHttpClientFactory clientFactory) : ControllerBase
     {
+        [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetContentByIdAsync(long id)
         {
@@ -46,7 +44,7 @@ namespace API.Controllers.ContentController
             else 
                 return Ok(SetConstraintOnPersonCount(content));
         }
-
+        [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any)]
         [HttpGet("filter")]
         public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
         {
@@ -118,9 +116,6 @@ namespace API.Controllers.ContentController
             Response.Headers.Append("Accept-Ranges", "bytes");
             Response.Headers.Append("Content-Length", (end - start + 1).ToString());
             Response.StatusCode = (int)HttpStatusCode.PartialContent;
-            // TODO: я не понимаю почему я не могу передать videoStream в File и сделать enableRangeProcessing:true
-            // в таком случае он загружает файл полностью. приходится настраивать клиент чтобы он сам делал запросы на чанки
-            // если кто-то поймет, скажите пж
             return File(videoStream, "video/mp2t", fileDownloadName: "output.ts");
         }
         
@@ -278,6 +273,7 @@ namespace API.Controllers.ContentController
         }
 
         [HttpGet("sections")]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetSections()
         {
             var result = await contentService.GetSectionsAsync();
@@ -285,6 +281,7 @@ namespace API.Controllers.ContentController
         }
 
         [HttpGet("promos")]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetPromos()
         {
             var result = await contentService.GetPromosAsync();
@@ -292,6 +289,7 @@ namespace API.Controllers.ContentController
         }
 
         [HttpGet("types")]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetContentTypes()
         {
             var result = await contentService.GetContentTypesAsync();
@@ -299,6 +297,7 @@ namespace API.Controllers.ContentController
         }
 
         [HttpGet("genres")]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetContentGenres()
         {
             var result = await contentService.GetGenresAsync();

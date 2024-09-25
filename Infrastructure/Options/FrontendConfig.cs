@@ -1,4 +1,4 @@
-namespace API.Controllers;
+namespace Infrastructure.Options;
 
 public class FrontendConfig
 {

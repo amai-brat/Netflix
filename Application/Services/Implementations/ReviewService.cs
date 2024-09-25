@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.Cache;
+using Application.Dto;
 using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
@@ -13,6 +14,8 @@ namespace Application.Services.Implementations
         IReviewRepository reviewRepository,
         IContentRepository contentRepository,
         IUserRepository userRepository,
+        IMinioCache minioCache,
+        IUserService userService,
         IMapper mapper
         ) : IReviewService
     {
@@ -56,11 +59,27 @@ namespace Application.Services.Implementations
                 Score = review.Score ?? -1,
                 WrittenAt = DateTimeOffset.UtcNow
             });
+            
+            var content = await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId);
+            var reviewCount = await reviewRepository.GetReviewsCountAsync(review.ContentId);
+            if (content!.Ratings == null)
+            {
+	            content.Ratings = new Ratings();
+            }
+            content
+		            .Ratings
+		            .LocalRating =
+	            ((content.Ratings.LocalRating ?? 0) * reviewCount + review.Score!.Value)
+	            / (reviewCount);
+            
+            // format float local rating to 2 decimal places
+            content.Ratings.LocalRating = (float) Math.Round(content.Ratings.LocalRating.Value, 2);
+
+            await contentRepository.SaveChangesAsync();
         }
 
 		public async Task AssignReviewAsync(ReviewAssignDto review, long userId)
 		{
-			review.Score = null;
 			await AssignReviewWithRatingAsync(review, userId);
 		}
 		
@@ -74,8 +93,8 @@ namespace Application.Services.Implementations
 				("scoredesc", var reviews) => reviews.OrderByDescending(r => r.Score),
 				("oldest", var reviews) => reviews.OrderBy(r => r.WrittenAt),
 				("newest", var reviews) => reviews.OrderByDescending(r => r.WrittenAt),
-				("positive", var reviews) => reviews.OrderBy(r => r.IsPositive),
-				("negative", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
+				("positive", var reviews) => reviews.OrderByDescending(r => r.IsPositive),
+				("negative", var reviews) => reviews.OrderBy(r => r.IsPositive),
 				("likes", var reviews) => reviews.OrderBy(r => r.RatedByUsers?.Count(usersReviews => usersReviews.IsLiked) ?? 0),
 				("likesdesc", var reviews) => reviews.OrderByDescending(r => r.RatedByUsers?.Count(usersReviews => usersReviews.IsLiked) ?? 0),
 				var (_, _) => throw new ReviewServiceArgumentException(ErrorMessages.IncorrectSortType, sort)
@@ -87,6 +106,34 @@ namespace Application.Services.Implementations
 				throw new ReviewServiceArgumentException(ErrorMessages.ArgumentsMustBePositive, $"offset = {offset}; limit = {limit}");
 
 			var reviews = await GetReviewsByContentIdAsync(contentId, sort);
+			// current user profile pic url are just guid strings. they must be converted into presigned urls
+			// but it would be kind of expensive so we'll cache it guid-url to redis for 1 hour
+
+			foreach (var review in reviews)
+			{
+				if (review.User.ProfilePictureUrl == null)
+				{
+					continue;
+				}
+
+				var picture = await minioCache.GetStringAsync(review.User.ProfilePictureUrl);
+				if (picture == null)
+				{
+					// это случай если картинка из oauth. тогда ее не кешируем и не преобразуем в url
+					if (review.User.ProfilePictureUrl.StartsWith("http"))
+					{
+						continue;
+					}
+					review.User.ProfilePictureUrl = await userService.ConvertProfilePictureGuidToUrlAsync(review.User.ProfilePictureUrl);
+					await minioCache.SetStringAsync(review.User.ProfilePictureUrl, review.User.ProfilePictureUrl);
+				}
+
+				if (picture != null)
+				{
+					review.User.ProfilePictureUrl = picture;
+				}
+			}
+			
 			var reviewDtos = mapper.Map<List<ReviewDto>>(reviews);
 			return reviewDtos[Math.Min(reviews.Count, offset)..Math.Min(reviews.Count, offset + limit)];
 		}

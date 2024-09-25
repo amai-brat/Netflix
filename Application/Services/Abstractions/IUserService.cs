@@ -11,4 +11,5 @@ public interface IUserService
     public Task<List<UserReviewDto>> GetReviewsAsync(ReviewSearchDto dto);
     public Task<int> GetReviewsPagesCountAsync(ReviewSearchDto dto);
     public Task<List<FavouriteDto>> GetFavouritesAsync(long userId);
+    public Task<string> ConvertProfilePictureGuidToUrlAsync(string guid);
 }

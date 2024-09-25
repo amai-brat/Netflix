@@ -2,6 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteContentCard.css";
 import {contentService} from "../../../services/content.service.js";
+import cross from "../../../assets/Cross.svg";
 
 
 const FavouriteContentCard = ({content, score, addedAt}) => {
@@ -42,7 +43,7 @@ const FavouriteContentCard = ({content, score, addedAt}) => {
                 </div>
             </div>
             <div className="favourite-content-card-remove-block">
-                <img className="favourite-content-card-remove" src="/src/assets/Cross.svg" alt="Remove" onClick={handleRemove}/>
+                <img className="favourite-content-card-remove" src={cross} alt="Remove" onClick={handleRemove}/>
             </div>
         </div>
     )

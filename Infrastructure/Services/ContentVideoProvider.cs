@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using Application.Services.Abstractions;
+using Infrastructure.Enums;
 using Infrastructure.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -12,14 +14,9 @@ public class ContentVideoProvider: IContentVideoProvider
     private const string BucketName = "content";
     private readonly IMinioClient _minioClient;
 
-    public ContentVideoProvider(IOptionsMonitor<MinioOptions> optionsMonitor)
+    public ContentVideoProvider([FromKeyedServices(KeyedServices.Video)] IMinioClient minioClient)
     {
-        var minioOptions = optionsMonitor.CurrentValue;
-        _minioClient = new MinioClient()
-            .WithEndpoint($"{minioOptions.Endpoint}:9000")
-            .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey)
-            .Build();
-        
+        _minioClient = minioClient;
     }
     public async Task PutAsync(string name, Stream videoStream, string contentType)
     {
@@ -60,15 +57,11 @@ public class ContentVideoProvider: IContentVideoProvider
     }
     public async Task<string> GetUrlAsync(string name)
     {
-        Console.WriteLine("----------------");
-        Console.WriteLine(name);
         var args = new PresignedGetObjectArgs()
             .WithBucket(BucketName)
             .WithObject(name)
             .WithExpiry(60 * 60 * 24);
         var url = await _minioClient.PresignedGetObjectAsync(args);
-        Console.WriteLine(url);
-        Console.WriteLine("----------------");
         return url;
     }
 }

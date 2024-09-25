@@ -1,5 +1,5 @@
 ﻿import styles from './styles/ReviewItem.module.css'
-import heart from './Images/red-heart-icon.svg'
+import heart from './Images/heart_jon_phillips_01.png'
 import comment from './Images/comment-svgrepo-com.svg'
 import closeCross from './Images/icons8-close-96.svg'
 import {toast} from "react-toastify";
@@ -15,6 +15,7 @@ import moderatorImg from "../../assets/moderator.svg";
 import crossImg from "../../assets/Cross.svg";
 import {moderatorService} from "../../services/moderator.service.js";
 import {adminUserService} from "../../services/admin.user.service.js";
+import defaultUserIcon from "../../assets/default.png"
 
 const modalStyles = {
     content: {
@@ -41,8 +42,11 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
     const {setReviewsChanged} = useContext(ReviewsContext);
     const [modalOpen, setModalOpen] = useState(false)
     const [commentText, setCommentText] = useState('')
+    const [userIcon, setUserIcon] = useState(!review.user.avatar ? defaultUserIcon : review.user.avatar)
     const store = useDataStore()
-    
+    const setDefaultUserImg = () => {
+        setUserIcon(defaultUserIcon)
+    }
     const handleTextChange = (event) => {
         setCommentText(event.target.value)
     }
@@ -137,12 +141,24 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
             toast.error("Ошибка")
         }
     }
+    const formatDateTime = (dateTimeStr) => {
+        const date = new Date(dateTimeStr);
+
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        const formattedDate = `${hours}:${minutes}, ${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        return formattedDate;
+    }
     return(
       <>
           <div className={styles.reviewItem} style={stylesCombined}>
               <div className={styles.reviewHeader}>
                   <div className={styles.userInfo}>
-                      {review.user.avatar && <img src={review.user.avatar} alt="" className={styles.avatar}/>}
+                      <img src={userIcon} alt="" className={styles.avatar} onError={setDefaultUserImg}/>
                       <span className={styles.username}>{review.user.name}</span>
                       <div className={styles.authorizedButtons}>
                           {authenticationService.isCurrentUserAdmin() &&
@@ -160,7 +176,7 @@ const ReviewItem = ({review, customStyles, notOpenModal}) => {
                       </div>
                   </div>
                   <div className={styles.dateLikesComments}>
-                      <span>{review.writtenAt.toLocaleString().slice(0, 10)}</span>
+                      <span>{formatDateTime(review.writtenAt)}</span>
                       <span className={styles.commentsLikes}>
                           {review.comments.length} <img src={comment} alt={"Комментариев:"} className={styles.comment}
                                                         onClick={notOpenModal ? null : openReviewModal}/>
