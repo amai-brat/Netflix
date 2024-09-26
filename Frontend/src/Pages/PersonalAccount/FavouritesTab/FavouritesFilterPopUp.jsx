@@ -1,4 +1,3 @@
-import {useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouritesFilterPopUp.css";
 
 const FavouritesFilterPopUp = ({favourites, setFavourites}) => {

@@ -20,7 +20,6 @@ const PaginatedReviews = ({contentId,itemsPerPage,sort}) => {
     const [itemOffset, setItemOffset] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [error, setError] = useState(null);
-    const endOffset = itemOffset + itemsPerPage;
     
     useEffect(() => {
         fetchData();

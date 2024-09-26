@@ -1,5 +1,5 @@
 ﻿import styles from './styles/contentPlayer.module.css';
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
 import {baseUrl} from "../../httpClient/baseUrl.js";
@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(1080)
     const [occuredError, setOccuredError] = useState(null)
+    // noinspection JSUnusedLocalSymbols
     const [dataFetching, setDataFetching] = useState(false)
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [currentSeason, setCurrentSeason] = useState(1)

@@ -5,6 +5,7 @@ import content from './styles/content.module.css'
 import tabContent from './styles/tabContent.module.css'
 import { authenticationService } from '../../../services/authentication.service';
 
+// noinspection JSUnusedLocalSymbols
 const GeneralPart = ({component: Component}) => {
     const [currentTab, setCurrentTab] = useState(0);
     let tabs = [
@@ -16,6 +17,7 @@ const GeneralPart = ({component: Component}) => {
         {name: "Подписки управление", link:"admin/subscriptions"}
     ];
 
+    // noinspection JSUnusedLocalSymbols
     const user = authenticationService.getUser();
 
     const location = useLocation();

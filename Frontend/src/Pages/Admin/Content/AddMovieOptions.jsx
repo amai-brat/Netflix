@@ -1,4 +1,6 @@
-﻿import styles from './css/AddMovieOptions.module.css'
+﻿// noinspection JSUnusedLocalSymbols
+
+import styles from './css/AddMovieOptions.module.css'
 import {useEffect, useState} from "react";
 import {toast } from 'react-toastify';
 import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";

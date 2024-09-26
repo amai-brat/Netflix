@@ -1,6 +1,8 @@
-﻿import styles from './css/EditMovieOptions.module.css'
+﻿// noinspection JSUnusedLocalSymbols
+
+import styles from './css/EditMovieOptions.module.css'
 import {useEffect, useState} from "react";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
 import {adminContentService} from "../../../services/admin.content.service.js";
 const EditMovieOptions = (movieOptions) => {
