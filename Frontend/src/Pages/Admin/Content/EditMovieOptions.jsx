@@ -1,6 +1,4 @@
-﻿// noinspection JSUnusedLocalSymbols
-
-import styles from './css/EditMovieOptions.module.css'
+﻿import styles from './css/EditMovieOptions.module.css'
 import {useEffect, useState} from "react";
 import { toast } from 'react-toastify';
 import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
@@ -27,7 +25,7 @@ const EditMovieOptions = (movieOptions) => {
         allowedSubscriptions: initialAllowedSubscriptions = [],
         allSubscriptions: initialAllSubscriptions = []
     } = movieOptions.movieOptions || {};
-    const [id, setId] = useState(initialId);
+    const [id] = useState(initialId);
     const [name, setName] = useState(initialName);
     const [description, setDescription] = useState(initialDescription);
     const [slogan, setSlogan] = useState(initialSlogan);
@@ -36,7 +34,7 @@ const EditMovieOptions = (movieOptions) => {
     const [country, setCountry] = useState(initialCountry);
     const [contentType, setContentType] = useState(initialContentType);
     const [releaseDate, setReleaseDate] = useState(initialReleaseDate);
-    const [videoUrl, setVideoUrl] = useState(initialVideoUrl);
+    const [videoUrl] = useState(initialVideoUrl);
     const [movieLength, setMovieLength] = useState(initialMovieLength);
 
     const [ageRatings, setAgeRatings] = useState(initialAgeRating);

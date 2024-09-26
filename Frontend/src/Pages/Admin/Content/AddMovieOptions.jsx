@@ -1,13 +1,11 @@
-﻿// noinspection JSUnusedLocalSymbols
-
-import styles from './css/AddMovieOptions.module.css'
+﻿import styles from './css/AddMovieOptions.module.css'
 import {useEffect, useState} from "react";
 import {toast } from 'react-toastify';
 import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";
 import {adminContentService} from "../../../services/admin.content.service.js";
 
 const AddMovieOptions = () => {
-    const [id, setId] = useState(0)
+    const [id] = useState(0)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [slogan, setSlogan] = useState("")

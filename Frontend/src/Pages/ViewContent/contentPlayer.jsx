@@ -1,4 +1,6 @@
-﻿import styles from './styles/contentPlayer.module.css';
+﻿/* eslint-disable react-hooks/rules-of-hooks */
+
+import styles from './styles/contentPlayer.module.css';
 import {useEffect, useState} from 'react';
 import ReactPlayer from 'react-player';
 import gif from './Images/loading-loading-forever.gif'
@@ -8,8 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 const contentPlayer = ({contentId, contentType, seasonInfos}) => {
     const [resolution, setResolution] = useState(1080)
     const [occuredError, setOccuredError] = useState(null)
-    // noinspection JSUnusedLocalSymbols
-    const [dataFetching, setDataFetching] = useState(false)
+    const [dataFetching] = useState(false)
     const [currentEpisode, setCurrentEpisode] = useState(1)
     const [currentSeason, setCurrentSeason] = useState(1)
     const [videoUrl, setVideoUrl] = useState('');
@@ -53,7 +54,9 @@ const contentPlayer = ({contentId, contentType, seasonInfos}) => {
                         credentials: "include"
                     });
                     if (response.ok) sessionStorage.setItem('accessToken', await response.text());
-                } catch {}
+                }
+                // eslint-disable-next-line no-empty
+                catch {}
             }
 
             setVideoUrl(getUrl(contentId, contentType, seasonInfos, resolution, currentSeason, currentEpisode));

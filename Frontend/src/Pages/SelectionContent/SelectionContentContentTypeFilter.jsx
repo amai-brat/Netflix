@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 import "/src/Pages/SelectionContent/Styles/SelectionContentContentTypeFilter.css";
 import {useState} from "react";
 

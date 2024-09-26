@@ -87,8 +87,7 @@ const PersonalInfoTab = () => {
     }
 
     const handleTwoFactorActivateClick = async () => {
-        // noinspection JSUnusedLocalSymbols
-        const {response, data} = await authenticationService.enableTwoFactorAuth();
+        const {response} = await authenticationService.enableTwoFactorAuth();
         if (response.ok) {
             setTwoFactorEnabled(true);
         }

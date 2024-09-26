@@ -12,8 +12,7 @@ const SignUpSignIn = ({ formType }) => {
     useEffect(() => {
         const getCurrentUserDataToCheckAuthenticationAsync = async () => {
             try{
-                // noinspection JSUnusedLocalSymbols
-                const {response, data} = await userService.getPersonalInfo();
+                const {response} = await userService.getPersonalInfo();
                 if(response.ok){
                     navigate("/MainContent")
                 }

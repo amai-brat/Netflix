@@ -10,8 +10,9 @@ const originalRequest = async (url, config, isJsonResponse, base)=> {
   if (isJsonResponse) {
     try {
       data = await response.json();
-    } catch (e) {
     }
+    // eslint-disable-next-line no-empty
+    catch (e) {}
   } else {
     data = await response.text();
   }

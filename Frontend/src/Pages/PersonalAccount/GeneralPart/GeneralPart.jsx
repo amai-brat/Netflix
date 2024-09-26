@@ -5,6 +5,7 @@ import content from './styles/content.module.css'
 import tabContent from './styles/tabContent.module.css'
 import { authenticationService } from '../../../services/authentication.service';
 
+/* eslint-disable no-unused-vars */
 // noinspection JSUnusedLocalSymbols
 const GeneralPart = ({component: Component}) => {
     const [currentTab, setCurrentTab] = useState(0);

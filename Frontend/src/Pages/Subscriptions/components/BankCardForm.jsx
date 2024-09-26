@@ -43,8 +43,7 @@ export const BankCardForm = ({ subscriptionId }) => {
         },
         validate,
         onSubmit: async (values) => {
-            // noinspection JSUnusedLocalSymbols
-            let {response, data} = await subscriptionService.buySubscription(values);
+            let {response} = await subscriptionService.buySubscription(values);
             
             if (response.ok)
             {
