@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Domain.Abstractions;
+using Application.Services.Abstractions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;

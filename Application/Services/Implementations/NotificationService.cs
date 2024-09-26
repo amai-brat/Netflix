@@ -2,7 +2,7 @@ using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
-using Domain.Abstractions;
+using Application.Services.Abstractions;
 using Domain.Entities;
 
 namespace Application.Services.Implementations;
