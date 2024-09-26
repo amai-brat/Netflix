@@ -1,3 +1,4 @@
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 namespace Application.Dto;
 
 public class TwoFactorTokenDto

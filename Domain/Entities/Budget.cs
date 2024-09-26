@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace Domain.Entities;
 

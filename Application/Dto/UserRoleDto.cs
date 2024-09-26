@@ -1,4 +1,5 @@
-﻿namespace Application.Dto
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+namespace Application.Dto
 {
 	public class UserRoleDto
 	{

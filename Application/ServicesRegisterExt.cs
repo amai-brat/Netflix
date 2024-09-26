@@ -1,6 +1,5 @@
 using Application.Services.Abstractions;
 using Application.Services.Implementations;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application

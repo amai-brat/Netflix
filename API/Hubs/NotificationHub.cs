@@ -16,7 +16,7 @@ public class NotificationHub(
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        var userId = Context?.User?.FindFirst("id")?.Value;
+        var userId = Context.User?.FindFirst("id")?.Value;
         
         Connections.TryRemove(long.Parse(userId!), out _);
         
@@ -25,7 +25,7 @@ public class NotificationHub(
 
     public override Task OnConnectedAsync()
     {
-        var userId = Context?.User?.FindFirst("id")?.Value;
+        var userId = Context.User?.FindFirst("id")?.Value;
         
         Connections.TryAdd(long.Parse(userId!), Context!.ConnectionId);
         

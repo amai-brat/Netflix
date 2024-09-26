@@ -1,7 +1,4 @@
-﻿using DataAccess;
-using Microsoft.EntityFrameworkCore;
-
-namespace API.Middlewares.ExceptionHandler
+﻿namespace API.Middlewares.ExceptionHandler
 {
     public static class ExceptionHandlerMiddlewareExt
     {

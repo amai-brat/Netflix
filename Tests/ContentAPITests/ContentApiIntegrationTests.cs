@@ -1,10 +1,6 @@
-﻿using System.Text;
-using System.Text.Json;
-using Application.Dto;
-using DataAccess;
+﻿using DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Tests.ContentAPITests;
 

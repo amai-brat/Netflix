@@ -4,7 +4,6 @@ using Moq;
 using System.Linq.Expressions;
 using Application.Cache;
 using Application.Dto;
-using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
@@ -13,6 +12,8 @@ using Application.Services.Implementations;
 using AutoMapper;
 using Infrastructure.Profiles;
 using Tests.Customizations;
+// ReSharper disable CollectionNeverQueried.Local
+// ReSharper disable InconsistentNaming
 
 namespace Tests.ContentAPITests
 {
@@ -192,7 +193,6 @@ namespace Tests.ContentAPITests
         {
             //Arrange
             var reviews = BuildDefaultReviewList();
-            var reviewDtos = _mapper.Map<List<ReviewDto>>(reviews);
             var contentId = reviews[Random.Shared.Next(0, reviews.Count)].ContentId;
             var sortType = "score";
             var offset = 0;
@@ -278,12 +278,12 @@ namespace Tests.ContentAPITests
             var reviewId = review.Id;
 
             _mockReview.Setup(repository => repository.GetReviewByIdAsync(It.IsAny<long>()))
-                .ReturnsAsync((long id) => reviews.SingleOrDefault(review => review.Id == id));
+                .ReturnsAsync((long id) => reviews.SingleOrDefault(r => r.Id == id));
             _mockReview.Setup(repository => repository.DeleteReview(It.IsAny<Review>()))
-                .Returns((Review review) =>
+                .Returns((Review r) =>
                 {
-                    reviews.Remove(review);
-                    return review;
+                    reviews.Remove(r);
+                    return r;
                 });
 
             var service = GetService();
