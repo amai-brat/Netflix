@@ -316,6 +316,7 @@ namespace API.Controllers
         private void SetUpContent(ContentBase content)
         {
             content.Genres.ForEach(g => g.Contents = null!);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if(content.ContentType != null)
                 content.ContentType.ContentsWithType = null;
             content.PersonsInContent.ForEach(p => p.Content = null!);

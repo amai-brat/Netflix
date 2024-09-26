@@ -27,7 +27,7 @@ public class NotificationHub(
     {
         var userId = Context.User?.FindFirst("id")?.Value;
         
-        Connections.TryAdd(long.Parse(userId!), Context!.ConnectionId);
+        Connections.TryAdd(long.Parse(userId!), Context.ConnectionId);
         
         return Task.FromResult(base.OnConnectedAsync());
     }

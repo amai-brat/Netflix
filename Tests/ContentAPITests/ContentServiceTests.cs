@@ -55,10 +55,7 @@ namespace Tests.ContentAPITests
                     new UserSubscription() { SubscriptionId = 1 }
                 ]
             };
-            var content = new MovieContent
-            {
-                AllowedSubscriptions = [new Subscription() { Id = 1 }]
-            };
+
             _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(() => null);
             _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<Expression<Func<User, bool>>>()))
