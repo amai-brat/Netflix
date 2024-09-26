@@ -1,6 +1,0 @@
-name: netflix_app
-
-on: 
-    push:
-        branches:
-            - "main"
