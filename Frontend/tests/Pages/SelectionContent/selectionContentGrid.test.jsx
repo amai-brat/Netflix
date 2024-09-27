@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
 import SelectionContentGrid from "../../../src/Pages/SelectionContent/SelectionContentGrid.jsx";
 
 vi.mock("../../../src/Pages/SelectionContent/SelectionContentCard.jsx", () => {
