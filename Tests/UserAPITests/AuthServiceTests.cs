@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
 using Application.Dto;
-using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Repositories;
 using AutoFixture;
@@ -18,6 +17,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
 using Tests.UserAPITests.Fakes;
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
 
 namespace Tests.UserAPITests;
 

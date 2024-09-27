@@ -1,5 +1,3 @@
-using Domain.Entities;
-
 namespace Infrastructure.Identity.Data;
 
 public interface ITokenRepository

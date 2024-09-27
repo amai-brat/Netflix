@@ -1,5 +1,4 @@
-import {Component, useState} from 'react'
-import {BrowserRouter, Route, Routes, useLocation} from "react-router-dom";
+import {Route, Routes, useLocation} from "react-router-dom";
 import Main from "./Pages/Main/Main.jsx";
 import MainContent from "./Pages/MainContent/MainContent.jsx";
 import PersonalInfoTab from "./Pages/PersonalAccount/PersonalInfoTab/PersonalInfoTab.jsx";

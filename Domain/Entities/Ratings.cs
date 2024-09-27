@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Domain.Entities;
 

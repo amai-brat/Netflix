@@ -1,17 +1,14 @@
 using System.Linq.Expressions;
 using Application.Dto;
-using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
-using Application.Services.Abstractions;
 using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Profiles;
 using Infrastructure.Providers.Abstractions;
 using Infrastructure.Services;
-using Infrastructure.Services.Abstractions;
 using Moq;
 
 namespace Tests.UserAPITests;

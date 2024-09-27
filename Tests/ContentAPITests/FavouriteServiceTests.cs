@@ -1,17 +1,13 @@
 ﻿using AutoFixture;
 using Domain.Entities;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Implementations;
+// ReSharper disable CollectionNeverUpdated.Local
+// ReSharper disable InconsistentNaming
 
 namespace Tests.ContentAPITests
 {

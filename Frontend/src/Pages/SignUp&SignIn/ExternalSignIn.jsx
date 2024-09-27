@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import googleLogo from "../../assets/GoogleLogo.svg";
 import vkLogo from "../../assets/VkLogo.svg";
 import {baseUrl} from "../../httpClient/baseUrl.js";

@@ -30,7 +30,7 @@ namespace DataAccess.Configurations
 					je =>
 					{
 						je.HasKey("ScoredByUsersId", "ScoredCommentsId");
-					}); ;
+					});
 		}
 	}
 }
