@@ -1,0 +1,31 @@
+name: FrontAnalyze
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  inspection:
+
+    runs-on: ubuntu-latest
+    
+    name: Inspection
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache-dependency-path: Frontend/package-lock.json
+          node-version: "latest"
+          cache: "npm"
+      - run: npm ci
+        working-directory: Frontend
+      - run: npm run lint
+        working-directory: Frontend
+      - run: npm run build
+        working-directory: Frontend

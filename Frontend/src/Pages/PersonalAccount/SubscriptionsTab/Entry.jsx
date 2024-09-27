@@ -28,7 +28,7 @@ const Entry = ({data, setSubscriptions}) => {
     async function cancelSubscription(subscriptionId) {
         setDataFetching(true);
         try {
-            const {response: unsubResp, data: unsubData} = await subscriptionService.unsubscribe(subscriptionId);
+            const {response: unsubResp} = await subscriptionService.unsubscribe(subscriptionId);
             if (unsubResp.ok) {
                 setResponse(`Успех`);
                 setSubscriptions(subs => subs.filter(x => x.subscriptionId !== subscriptionId));

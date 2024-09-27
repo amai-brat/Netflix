@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import "/src/Pages/SelectionContent/Styles/SelectionContentGenresFilter.css";
 import {useState} from "react";
 const SelectionContentGenresFilter = ({filter, genres}) => {

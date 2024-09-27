@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { CustomForm } from './CustomForm';
 import { Link, useNavigate } from 'react-router-dom';
 import netflixLogo from '../../assets/NetflixLogo.svg';
@@ -12,7 +12,7 @@ const SignUpSignIn = ({ formType }) => {
     useEffect(() => {
         const getCurrentUserDataToCheckAuthenticationAsync = async () => {
             try{
-                const {response, data} = await userService.getPersonalInfo();
+                const {response} = await userService.getPersonalInfo();
                 if(response.ok){
                     navigate("/MainContent")
                 }

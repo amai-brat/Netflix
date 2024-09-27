@@ -1,4 +1,3 @@
-import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import "/src/Pages/PersonalAccount/FavouritesTab/Styles/FavouriteTabSearchPanel.css";
 import vector from "../../../assets/Vector.svg";

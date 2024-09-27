@@ -1,5 +1,4 @@
 using Application.Repositories;
-using Application.Services.Abstractions;
 
 namespace DataAccess.Repositories;
 

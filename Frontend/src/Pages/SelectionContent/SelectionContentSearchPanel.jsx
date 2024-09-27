@@ -1,5 +1,3 @@
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
 import vector from "../../assets/Vector.svg";
 import "/src/Pages/SelectionContent/Styles/SelectionContentSearchPanel.css";
 

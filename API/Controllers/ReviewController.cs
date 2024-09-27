@@ -12,6 +12,7 @@ namespace API.Controllers
         IContentService contentService
         ) : ControllerBase
     {
+        // ReSharper disable once UnusedMember.Local
         private readonly IContentService _contentService = contentService;
 
         [HttpGet("{contentId}")]

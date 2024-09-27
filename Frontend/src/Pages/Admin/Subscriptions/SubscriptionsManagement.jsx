@@ -1,6 +1,6 @@
 import { SubscriptionsSidebar } from './components/SubscriptionsSidebar';
 import styles from './styles/page.module.scss';
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {SubscriptionForm} from "./components/SubscriptionForm.jsx";
 import {SubscriptionsContext} from "./components/SubscriptionsContext.js";
 import {adminSubscriptionService} from "../../../services/admin.subscription.service.js";

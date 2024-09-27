@@ -3,21 +3,19 @@ using Domain.Entities;
 using Moq;
 using System.Linq.Expressions;
 using Application.Dto;
-using Application.Exceptions;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using Application.Services.Implementations;
 using AutoMapper;
-using DataAccess;
-using DataAccess.Repositories;
 using FluentValidation;
 using Infrastructure.Profiles;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 using Tests.Customizations;
 using Xunit.Abstractions;
+// ReSharper disable CollectionNeverUpdated.Local
+// ReSharper disable InconsistentNaming
+// ReSharper disable NotAccessedField.Local
 
 namespace Tests.ContentAPITests
 {
@@ -57,10 +55,7 @@ namespace Tests.ContentAPITests
                     new UserSubscription() { SubscriptionId = 1 }
                 ]
             };
-            var content = new MovieContent
-            {
-                AllowedSubscriptions = [new Subscription() { Id = 1 }]
-            };
+
             _mockContent.Setup(cr => cr.GetContentWithAllowedSubscriptionsByIdAsync(It.IsAny<long>()))
                 .ReturnsAsync(() => null);
             _mockUser.Setup(repo => repo.GetUserWithSubscriptionsAsync(It.IsAny<Expression<Func<User, bool>>>()))
@@ -322,7 +317,8 @@ namespace Tests.ContentAPITests
                 .Concat(BuildFilteredSerialContentBaseList(filter));
             var unfilteredContent = BuildUnFilteredMovieContentBaseList(filter)
                 .Concat(BuildUnFilteredSerialContentBaseList(filter));
-            var availableContent = filteredContent.Concat(unfilteredContent).ToArray();
+            var contentBases = filteredContent.ToList();
+            var availableContent = contentBases.Concat(unfilteredContent).ToArray();
             Random.Shared.Shuffle(availableContent);
 
             //Act
@@ -335,7 +331,7 @@ namespace Tests.ContentAPITests
             var result = await service.GetContentsByFilterAsync(filter);
 
             //Assert
-            Assert.True(result.All(filteredContent.Contains));
+            Assert.True(result.All(contentBases.Contains));
         }
 
         [Fact]

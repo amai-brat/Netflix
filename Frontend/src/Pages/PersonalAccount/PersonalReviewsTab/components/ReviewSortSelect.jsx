@@ -1,4 +1,4 @@
-import {createTheme, css, MenuItem, Select, styled, ThemeProvider} from "@mui/material";
+import {createTheme, MenuItem, Select, ThemeProvider} from "@mui/material";
 
 export const ReviewSortSelect = ({setSortType}) => {
   const theme = createTheme({
