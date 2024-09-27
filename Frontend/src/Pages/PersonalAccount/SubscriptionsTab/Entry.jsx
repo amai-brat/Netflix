@@ -1,8 +1,6 @@
 ﻿import React, {useEffect, useState} from "react";
 import styles from "./styles/styles.module.css";
-import Modal from 'react-modal';
 import ConfirmationModal from "./ConfirmationModal.jsx";
-import subscriptions from "../../Subscriptions/Subscriptions.jsx";
 import {subscriptionService} from "../../../services/subscription.service.js";
 import {authenticationService} from "../../../services/authentication.service.js";
 const Entry = ({data, setSubscriptions}) => {
