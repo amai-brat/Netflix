@@ -1,6 +1,5 @@
-import React from 'react';
 import { vi, describe, expect, test, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import PersonalReviewsTab from '../../../../src/Pages/PersonalAccount/PersonalReviewsTab/PersonalReviewsTab';
 import { userService } from '../../../../src/services/user.service.js';
 import { userEvent } from '@testing-library/user-event';

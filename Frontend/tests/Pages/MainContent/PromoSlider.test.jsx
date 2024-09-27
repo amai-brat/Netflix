@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import {contentService} from '../../../src/services/content.service';
 import { render, screen, waitFor } from "@testing-library/react";
 import { PromoSlider } from "../../../src/Pages/MainContent/components/PromoSlider";

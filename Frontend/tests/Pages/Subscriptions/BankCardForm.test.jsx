@@ -1,8 +1,7 @@
-import React from 'react';
-import { render, fireEvent, waitFor, screen, act } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { subscriptionService } from '../../../src/services/subscription.service';
-import { expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { BankCardForm } from '../../../src/Pages/Subscriptions/components/BankCardForm';
 import { authenticationService } from '../../../src/services/authentication.service';

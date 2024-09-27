@@ -1,10 +1,9 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Subscriptions from '../../../src/Pages/Subscriptions/Subscriptions';
 import { subscriptionService } from '../../../src/services/subscription.service';
 import Modal from 'react-modal';
 import { MemoryRouter } from 'react-router-dom';
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('../../../src/services/subscription.service');
 
