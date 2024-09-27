@@ -1,4 +1,4 @@
-import {act, render, screen} from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import ClientPanel from "../../../../src/Pages/Shared/Header/ClientPanel.jsx";
 
 const defaultIcon = '/src/assets/default.png';
@@ -30,10 +30,8 @@ describe('ClientPanel', () => {
         setup(mockUser)
         const imgElement = screen.getByAltText(/UserIcon/i);
         expect(imgElement).toHaveAttribute('src', mockUser.icon);
-
-        act(() => {
-            imgElement.dispatchEvent(new Event('error'));
-        });
+        
+        fireEvent.error(imgElement)
         
         expect(imgElement).toHaveAttribute('src', defaultIcon);
     });
