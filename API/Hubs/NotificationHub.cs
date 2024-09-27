@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Domain.Abstractions;
+using Application.Services.Abstractions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -16,7 +16,7 @@ public class NotificationHub(
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        var userId = Context?.User?.FindFirst("id")?.Value;
+        var userId = Context.User?.FindFirst("id")?.Value;
         
         Connections.TryRemove(long.Parse(userId!), out _);
         
@@ -25,9 +25,9 @@ public class NotificationHub(
 
     public override Task OnConnectedAsync()
     {
-        var userId = Context?.User?.FindFirst("id")?.Value;
+        var userId = Context.User?.FindFirst("id")?.Value;
         
-        Connections.TryAdd(long.Parse(userId!), Context!.ConnectionId);
+        Connections.TryAdd(long.Parse(userId!), Context.ConnectionId);
         
         return Task.FromResult(base.OnConnectedAsync());
     }

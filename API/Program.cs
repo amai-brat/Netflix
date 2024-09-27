@@ -1,5 +1,4 @@
 using API;
-using API.Controllers;
 using API.Hubs;
 using API.MetadataProviders;
 using API.Middlewares.ExceptionHandler;

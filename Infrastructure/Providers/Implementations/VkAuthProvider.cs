@@ -35,12 +35,12 @@ public class VkAuthProvider(IOptionsMonitor<VkAuthOptions> monitor): IAuthProvid
             if (!result!.IsSuccess)
                 return new ExternalLoginDto { Error = result.Error, ErrorDescription = result.ErrorDescription };
             
-            var personInfoResponse = await client.PostAsync(GetInfoUri(result!.AccessToken), new StringContent(""));
+            var personInfoResponse = await client.PostAsync(GetInfoUri(result.AccessToken), new StringContent(""));
             var personInfoResult = (await personInfoResponse.Content.ReadFromJsonAsync<AuthVkResponse>())!.AuthVkPersonInfos.First();
             
             return new ExternalLoginDto
             {
-                Login = personInfoResult!.FullName,
+                Login = personInfoResult.FullName,
                 Email = result.Email,
                 PictureUrl = personInfoResult.Photo
             };

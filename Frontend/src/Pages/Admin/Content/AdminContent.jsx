@@ -1,7 +1,7 @@
 ﻿import styles from './css/AdminContent.module.css'
 import {useState} from "react";
 import AddSerialOptions from "./AddSerialOptions.jsx";
-import { ToastContainer, toast } from 'react-toastify';
+import {toast } from 'react-toastify';
 import AddMovieOptions from "./AddMovieOptions.jsx";
 import EditMovieOptions from "./EditMovieOptions.jsx";
 import EditSerialOptions from "./EditSerialOptions.jsx";

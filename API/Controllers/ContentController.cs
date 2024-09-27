@@ -31,13 +31,13 @@ namespace API.Controllers
             if (content is SerialContent)
             {
                 var serialContent = SetConstraintOnPersonCount((await contentService.GetSerialContentByIdAsync(id))!);
-                var serealizedSerialContent = JsonSerializer.Serialize(serialContent,
+                var serializedSerialContent = JsonSerializer.Serialize(serialContent,
                     new JsonSerializerOptions()
                     {
                         ReferenceHandler = ReferenceHandler.IgnoreCycles,
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                     });
-                return Ok(serealizedSerialContent);
+                return Ok(serializedSerialContent);
             }
             else if(content is MovieContent)
                 return Ok(SetConstraintOnPersonCount((await contentService.GetMovieContentByIdAsync(id))!));
@@ -315,11 +315,12 @@ namespace API.Controllers
 
         private void SetUpContent(ContentBase content)
         {
-            content.Genres?.ForEach(g => g.Contents = null!);
+            content.Genres.ForEach(g => g.Contents = null!);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if(content.ContentType != null)
                 content.ContentType.ContentsWithType = null;
-            content.PersonsInContent?.ForEach(p => p.Content = null!);
-            content.AllowedSubscriptions?.ForEach(a => a.AccessibleContent = null!);
+            content.PersonsInContent.ForEach(p => p.Content = null!);
+            content.AllowedSubscriptions.ForEach(a => a.AccessibleContent = null!);
         }
     }
 }

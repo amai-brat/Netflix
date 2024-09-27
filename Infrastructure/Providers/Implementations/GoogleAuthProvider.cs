@@ -37,7 +37,7 @@ public class GoogleAuthProvider(IOptionsMonitor<GoogleAuthOptions> monitor): IAu
                 return new ExternalLoginDto { Error = result.Error, ErrorDescription = result.ErrorDescription };
             
             var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(result!.IdToken);
+            var jwt = handler.ReadJwtToken(result.IdToken);
             
             return new ExternalLoginDto
             {

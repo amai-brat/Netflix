@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+// ReSharper disable UnusedMember.Local
 
 namespace Infrastructure.Identity;
 
