@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { describe, test, vi, expect, beforeEach } from "vitest";
 import FavouritesFilterPopUp from "../../../../src/Pages/PersonalAccount/FavouritesTab/FavouritesFilterPopUp.jsx";
-import {contentService} from "../../../../src/services/content.service.js";
 
 const mockSetFavourites = vi.fn(); // Создаем мок-функцию для setFavourites
 

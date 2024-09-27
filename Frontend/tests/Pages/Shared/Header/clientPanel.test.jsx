@@ -1,4 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react';
+import { describe, test, expect } from "vitest";
 import ClientPanel from "../../../../src/Pages/Shared/Header/ClientPanel.jsx";
 
 const defaultIcon = '/src/assets/default.png';

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { describe, test, vi, expect, beforeEach } from "vitest";
 import FavouriteTabSearchPanel from "../../../../src/Pages/PersonalAccount/FavouritesTab/FavouriteTabSearchPanel.jsx";
 
 const mockSetFavourites = vi.fn();

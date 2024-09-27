@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect, beforeEach } from "vitest";
 import ComponentWithPopUp from "../../../../src/Pages/Shared/PopUpModule/ComponentWithPopUp.jsx";
 
 const id = 'test-popup';

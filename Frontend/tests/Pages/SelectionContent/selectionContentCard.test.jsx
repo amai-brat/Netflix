@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { describe, test, expect, beforeEach } from "vitest";
 import SelectionContentCard from "../../../src/Pages/SelectionContent/SelectionContentCard.jsx";
 
 const mockContent = {

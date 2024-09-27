@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { describe, test, vi, expect } from "vitest";
 import SelectionContentSearchPanel from "../../../src/Pages/SelectionContent/SelectionContentSearchPanel.jsx";
 
 const mockSetFilter = vi.fn();

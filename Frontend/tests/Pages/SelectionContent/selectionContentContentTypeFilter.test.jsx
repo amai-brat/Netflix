@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { describe, test, expect } from "vitest";
 import SelectionContentContentTypeFilter from "../../../src/Pages/SelectionContent/SelectionContentContentTypeFilter.jsx";
 
 const mockFilter = { types: [] };

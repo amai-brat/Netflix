@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect, beforeEach } from "vitest";
 import {BrowserRouter} from 'react-router-dom';
 import NavigatePanel from "../../../../src/Pages/Shared/Header/NavigatePanel.jsx";
 

@@ -1,5 +1,5 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
-import { vi } from 'vitest';
+import { describe, test, vi, expect } from "vitest";
 import FavouritesTab from "../../../../src/Pages/PersonalAccount/FavouritesTab/FavouritesTab.jsx";
 import {userService} from "../../../../src/services/user.service.js";
 import {BrowserRouter} from "react-router-dom";

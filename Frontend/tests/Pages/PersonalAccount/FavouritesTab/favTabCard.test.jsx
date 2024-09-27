@@ -2,7 +2,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import {BrowserRouter} from 'react-router-dom';
 import FavouriteContentCard from '../../../../src/Pages/PersonalAccount/FavouritesTab/FavouriteContentCard.jsx';
 import {contentService} from "../../../../src/services/content.service.js";
-import { vi } from 'vitest';
+import { describe, test, vi, expect, beforeEach} from "vitest";
 
 vi.mock('../../../../src/services/content.service.js');
 

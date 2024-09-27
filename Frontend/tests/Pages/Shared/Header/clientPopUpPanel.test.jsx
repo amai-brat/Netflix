@@ -1,5 +1,5 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
-import { vi } from 'vitest';
+import { describe, test, vi, expect } from "vitest";
 import { BrowserRouter } from 'react-router-dom';
 import ClientPopUpPanel from "../../../../src/Pages/Shared/Header/ClientPopUpPanel.jsx";
 import {authenticationService} from "../../../../src/services/authentication.service.js";
