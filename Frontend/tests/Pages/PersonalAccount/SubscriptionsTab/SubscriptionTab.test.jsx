@@ -77,7 +77,7 @@ describe('Entry Component', () => {
 
         expect(screen.getByText(mockSubscriptionData.name)).toBeInTheDocument();
 
-        expect(screen.getByText(`Куплено: ${mockData.boughtAt.toLocaleString().slice(0, 10)}`)).toBeInTheDocument();
+        expect(screen.getByText(`Куплено: ${mockData.boughtAt.toLocaleString('en-US').slice(0, 10)}`)).toBeInTheDocument();
     });
 
     it('должен открывать модальное окно при клике на кнопку "Отказаться"', async () => {
