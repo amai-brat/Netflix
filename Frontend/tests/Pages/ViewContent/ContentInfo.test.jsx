@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+﻿import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ContentInfo from '../../../src/Pages/ViewContent/ContentInfo.jsx';
 import { contentService } from '../../../src/services/content.service.js';

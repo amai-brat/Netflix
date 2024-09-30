@@ -1,5 +1,4 @@
 ﻿// Entry.test.jsx
-import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import Entry from '../../../../src/Pages/PersonalAccount/SubscriptionsTab/Entry.jsx';

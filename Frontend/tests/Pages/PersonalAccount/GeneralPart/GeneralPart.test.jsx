@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+﻿import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import GeneralPart from '../../../../src/Pages/PersonalAccount/GeneralPart/GeneralPart.jsx';
@@ -63,8 +62,6 @@ describe('GeneralPart Component', () => {
 
         const reviewsTab = screen.getByText('Рецензии');
         await user.click(reviewsTab);
-
-        const activeTab = reviewsTab.closest('div');
 
         expect(screen.getByText('Personal Reviews Content')).toBeInTheDocument();
     });
