@@ -19,6 +19,7 @@
     "@mui/x-data-grid": "^7.1.1",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
     "classnames": "^2.5.1",
     "express": "^4.19.2",
     "formik": "^2.4.5",
