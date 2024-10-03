@@ -21,7 +21,7 @@ export const PromoSlider = () => {
             }
         })()
     }, []);
-    return (
+    return promoImages.length > 0 && (
         <div className={styles.promoSlider}>
             <div className={styles.promoSliderContainer}>
                 <div className={"prev-button-promo-slider"}>

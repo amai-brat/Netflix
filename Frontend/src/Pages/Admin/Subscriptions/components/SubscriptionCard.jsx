@@ -15,8 +15,6 @@ export const SubscriptionCard = ({ subscription, setSubscriptionId, setContentTy
         setContentType('edit');
     }
     
-    Modal.setAppElement('#root');
-
     function handleDeleteButtonClick(event) {
         event.stopPropagation();
         setDeleteModalOpen(true);
