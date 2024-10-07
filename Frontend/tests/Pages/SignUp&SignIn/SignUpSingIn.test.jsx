@@ -21,7 +21,7 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-describe('SignUpSignIn correct logic', () => {
+describe('SignUpSignIn logic', () => {
     beforeEach(()=>{
         mockNavigate.mockClear();
     })
@@ -68,7 +68,7 @@ describe('SignUpSignIn correct logic', () => {
         );
 
         await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalled();
+            expect(mockNavigate).toHaveBeenCalledWith('/MainContent');
         })
     });
 
