@@ -1,0 +1,27 @@
+name: netflix_app
+
+on: 
+    push:
+        branches:
+            - "main"
+
+jobs:
+    deploy:
+        name: Deploy new code
+        runs-on: ubuntu-latest 
+        steps:   
+            - name: Set up SSH connection
+              uses: webfactory/ssh-agent@v0.5.3
+              with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+            - name: Connect to remote server and deploy
+              run: |
+                ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_SERVER }} << EOF
+                  cd app
+                  docker compose -f compose.prod.yaml down
+                  git checkout main
+                  git pull
+                  echo "${{ secrets.PROD_ENV_FILE }}" > .env
+                  docker compose -f compose.prod.yaml build
+                  docker compose -f compose.prod.yaml up -d
+                EOF
