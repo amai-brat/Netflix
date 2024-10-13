@@ -1,4 +1,4 @@
-namespace Domain.Dtos;
+namespace Application.Dto;
 
 public class CommentAssignDto
 {

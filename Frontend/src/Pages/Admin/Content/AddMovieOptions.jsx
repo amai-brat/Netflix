@@ -5,7 +5,7 @@ import {adminSubscriptionService} from "../../../services/admin.subscription.ser
 import {adminContentService} from "../../../services/admin.content.service.js";
 
 const AddMovieOptions = () => {
-    const [id, setId] = useState(0)
+    const [id] = useState(0)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [slogan, setSlogan] = useState("")

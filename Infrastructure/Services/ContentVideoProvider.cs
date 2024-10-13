@@ -1,9 +1,6 @@
-﻿using System.Net;
-using Application.Services.Abstractions;
+﻿using Application.Services.Abstractions;
 using Infrastructure.Enums;
-using Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 

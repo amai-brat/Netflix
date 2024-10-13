@@ -1,4 +1,3 @@
-using System.Net;
 using Application.Cache;
 using Application.Dto;
 using Application.Services.Abstractions;
@@ -24,6 +23,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Minio;
 using StackExchange.Redis;
+// ReSharper disable UnusedMethodReturnValue.Local
 
 namespace Infrastructure;
 
@@ -47,7 +47,7 @@ public static class DependencyInjection
                 return new MinioClient()
                     .WithEndpoint(options.Endpoint)
                     .WithCredentials(options.AccessKey, options.SecretKey)
-                    .WithSSL()
+                    .WithSSL(options.Secure)
                     .Build();
             })
             .AddKeyedSingleton<IMinioClient>(KeyedServices.Video, (provider, _) =>

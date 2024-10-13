@@ -9,7 +9,7 @@ export const BankCardForm = ({ subscriptionId }) => {
         const errors = {};
         if (!values.cardNumber) {
             errors.cardNumber = 'Обязательное поле';
-        } else if (!values.cardNumber.length === 16) {
+        } else if (values.cardNumber.length !== 16) {
             errors.cardNumber = 'Номер карты состоит из 16 цифр';
         }
         
@@ -43,17 +43,17 @@ export const BankCardForm = ({ subscriptionId }) => {
         },
         validate,
         onSubmit: async (values) => {
-            let {response, data} = await subscriptionService.buySubscription(values);
+            let {response} = await subscriptionService.buySubscription(values);
             
             if (response.ok)
             {
                 await authenticationService.refreshToken();
-                document.getElementById("serverMessage").innerText = 
+                document.getElementById("serverMessage").textContent = 
                     "Успешная покупка. Перенаправление на главную страницу";
                 setTimeout(() => navigate("/mainContent"), 2000);
             }
             else {
-                document.getElementById("serverMessage").innerText = "Ошибка";
+                document.getElementById("serverMessage").textContent = "Ошибка";
             }
         },
     });
@@ -61,14 +61,16 @@ export const BankCardForm = ({ subscriptionId }) => {
         <form className={formStyles.bankCardForm} onSubmit={formik.handleSubmit}>
             <div className={formStyles.inputWrapper}>
                 <label htmlFor={"cardNumber"}>Номер карты</label>
-                <input name={"cardNumber"}
+                <input id={"cardNumber"}
+                       name={"cardNumber"}
                        onChange={formik.handleChange}
                        value={formik.values.cardNumber}/>
                 {formik.errors.cardNumber ? <span>{formik.errors.cardNumber}</span> : null}
             </div>
             <div className={formStyles.inputWrapper}>
                 <label htmlFor={"cardOwner"}>ФИО обладателя карты</label>
-                <input name={"cardOwner"}
+                <input id={"cardOwner"}
+                       name={"cardOwner"}
                        onChange={formik.handleChange}
                        value={formik.values.cardOwner}/>
                 {formik.errors.cardOwner ? <span>{formik.errors.cardOwner}</span> : null}
@@ -76,14 +78,16 @@ export const BankCardForm = ({ subscriptionId }) => {
             <div className={formStyles.expiresAndCvcWrapper}>
                 <div className={formStyles.inputWrapper}>
                     <label htmlFor={"validThru"}>Срок</label>
-                    <input name={"validThru"}
+                    <input id={"validThru"}
+                           name={"validThru"}
                            onChange={formik.handleChange}
                            value={formik.values.validThru}/>
                     {formik.errors.validThru ? <span>{formik.errors.validThru}</span> : null}
                 </div>
                 <div className={formStyles.inputWrapper}>
                     <label htmlFor={"cvc"}>CVC/CVV</label>
-                    <input name={"cvc"}
+                    <input id={"cvc"}
+                           name={"cvc"}
                            onChange={formik.handleChange}
                            value={formik.values.cvc}/>
                     {formik.errors.cvc ? <span>{formik.errors.cvc}</span> : null}

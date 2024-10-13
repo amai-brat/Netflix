@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using System.Reflection;
 using DataAccess;
 using Infrastructure.Identity.Data;
 using Microsoft.AspNetCore.Authentication;

@@ -135,7 +135,8 @@ export const SubscriptionForm = ({ subscription }) => {
         <form className={formStyles.form} onSubmit={formik.handleSubmit}>
             <div className={formStyles.inputWrapper}>
                 <label htmlFor={"name"}>Название</label>
-                <input name={"name"}
+                <input id={"name"}
+                       name={"name"}
                        className={formStyles.allInputs + ' ' + formStyles.input}
                        onChange={formik.handleChange}
                        value={formik.values.name}/>
@@ -143,7 +144,8 @@ export const SubscriptionForm = ({ subscription }) => {
             </div>
             <div className={formStyles.inputWrapper}>
                 <label htmlFor={"description"}>Описание</label>
-                <textarea name={"description"}
+                <textarea id={"description"}
+                          name={"description"}
                           rows={5} cols={10}
                           className={formStyles.allInputs}
                           onChange={formik.handleChange}
@@ -152,7 +154,8 @@ export const SubscriptionForm = ({ subscription }) => {
             </div>
             <div className={formStyles.inputWrapper}>
                 <label htmlFor={"maxResolution"}>Максимальное разрешение</label>
-                <input name={"maxResolution"}
+                <input id={"maxResolution"}
+                       name={"maxResolution"}
                        type={"number"}
                        className={formStyles.allInputs}
                        onChange={formik.handleChange}
@@ -162,7 +165,8 @@ export const SubscriptionForm = ({ subscription }) => {
             </div>
             <div className={formStyles.inputWrapper}>
                 <label htmlFor={"price"}>Цена</label>
-                <input name={"price"}
+                <input id={"price"}
+                       name={"price"}
                        type={"number"}
                        className={formStyles.allInputs}
                        onChange={formik.handleChange}

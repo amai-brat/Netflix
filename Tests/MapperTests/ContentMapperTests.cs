@@ -5,6 +5,7 @@ using Domain.Entities;
 using Infrastructure.Profiles;
 using Tests.Customizations;
 using Xunit.Abstractions;
+// ReSharper disable NotAccessedField.Local
 
 namespace Tests.MapperTests;
 

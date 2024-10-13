@@ -87,7 +87,7 @@ const PersonalInfoTab = () => {
     }
 
     const handleTwoFactorActivateClick = async () => {
-        const {response, data} = await authenticationService.enableTwoFactorAuth();
+        const {response} = await authenticationService.enableTwoFactorAuth();
         if (response.ok) {
             setTwoFactorEnabled(true);
         }
@@ -98,7 +98,7 @@ const PersonalInfoTab = () => {
             <div className = {"profileDataBlock"}>
                 <form id={"avatar-change-form"} encType={"multipart/form-data"}>
                     <input type='file' id='file' name={"image"} ref={inputFile} accept="image/png, image/webp, image/jpeg"
-                           onChange={handleAvatarChange} style={{display: 'none'}}/>
+                           onChange={handleAvatarChange} style={{display: 'none'}} data-testid='file-input'/>
                 </form>
 
                 <UserAvatar pictureUrl={user.profilePictureUrl ?? DefaultUserIcon} onAvatarClick = {handleAvatarClick}/>

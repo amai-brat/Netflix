@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { createContext, useContext } from 'react';
 import { observer, useLocalObservable } from 'mobx-react';
 import { createDataStore} from './dataStore.jsx';

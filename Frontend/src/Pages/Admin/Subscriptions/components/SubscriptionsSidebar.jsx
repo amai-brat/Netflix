@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { SubscriptionCard } from "./SubscriptionCard";
 import styles from '../styles/sidebar.module.scss';
 import plus from '../../../../assets/plus.svg';

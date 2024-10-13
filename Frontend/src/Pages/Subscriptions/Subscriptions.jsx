@@ -59,7 +59,6 @@ const Subscriptions = () => {
         }}
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [subscriptionId, setSubscriptionId] = useState(0);
-    Modal.setAppElement('#root');
 
     return (
         <div className={pageStyles.subscriptionsPageWrapper}>

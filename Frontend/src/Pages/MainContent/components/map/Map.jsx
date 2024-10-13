@@ -1,4 +1,6 @@
-import React, {useEffect, useMemo, useState} from "react"
+/* eslint-disable no-undef */
+
+import React, {useEffect, useState} from "react"
 import ReactDOM from "react-dom"
 
 const Map = () => {

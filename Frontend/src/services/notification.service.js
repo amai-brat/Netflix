@@ -10,6 +10,7 @@ async function getNotificationHistory() {
 }
 
 // не используется из-за signalr
+// eslint-disable-next-line no-unused-vars
 async function setNotificationRead(notificationId){
   const {response, data} = await fetchAuth(`comment/set/readed?notificationId=${notificationId}`, false, {
     method: "POST"

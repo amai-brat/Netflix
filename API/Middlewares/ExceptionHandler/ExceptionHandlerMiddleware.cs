@@ -1,5 +1,5 @@
 ﻿using Application.Exceptions.Base;
-using Infrastructure.Services.Exceptions;
+// ReSharper disable UnusedAutoPropertyAccessor.Local
 
 namespace API.Middlewares.ExceptionHandler
 {

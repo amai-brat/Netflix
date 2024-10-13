@@ -1,6 +1,6 @@
 import { Avatar } from '@mui/material';
 import FlipCameraIosRoundedIcon from '@mui/icons-material/FlipCameraIosRounded';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
 export const UserAvatar = ({pictureUrl, onAvatarClick}) => {
     const [isHovered, setIsHovered] = useState(false);

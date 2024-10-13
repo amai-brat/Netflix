@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Alert } from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
@@ -34,7 +34,7 @@ export const CustomForm = ({formType}) => {
         } else if (values.login.length > 25){
             errors.login = 'Максимальная длина логина - 25 символов'
         } else if (!/^[a-zA-Z0-9_]+$/.test(values.login)){
-            errors.login = "Запрещенные символы";
+            errors.login = 'Запрещенные символы';
         }
 
         if (!values.email) {
