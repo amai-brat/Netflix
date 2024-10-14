@@ -21,7 +21,7 @@ jobs:
                   docker compose -f compose.prod.yaml down
                   git checkout main
                   git pull
-                  echo "${{ secrets.PROD_ENV_FILE }}" > .env
+                  echo "${{ secrets.PROD_ENV_FILE }}" | base64 --decode > .env
                   docker compose -f compose.prod.yaml build
                   docker compose -f compose.prod.yaml up -d
                 EOF
