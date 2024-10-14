@@ -8,7 +8,6 @@ on:
 jobs:
     deploy:
         name: Deploy new code
-        needs: [build-front, build-back, inspection-front, inspection-back]
         runs-on: ubuntu-latest 
         steps:   
             - name: Set up SSH connection
