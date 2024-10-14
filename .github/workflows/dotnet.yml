@@ -14,7 +14,7 @@ on:
       - dev
 
 jobs:
-  build:
+  build-back:
 
     runs-on: ubuntu-latest
 
