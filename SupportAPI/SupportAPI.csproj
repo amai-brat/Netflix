@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+    <PackageReference Include="MassTransit" Version="8.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.10" />
@@ -21,12 +22,6 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Consumers\" />
-    <Folder Include="Data\Repositories\" />
-    <Folder Include="Publishers\" />
   </ItemGroup>
 
 </Project>

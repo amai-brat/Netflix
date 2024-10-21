@@ -1,32 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SupportAPI.Services;
 
 namespace SupportAPI.Controllers
 {
     [Route("supportChat/[controller]")]
     [ApiController]
     [Authorize]
-    public class HistoryController : ControllerBase
+    public class HistoryController (IHistoryService historyService) : ControllerBase
     {
         /// <summary>
-        /// This method returns Support chat history only for users, because they only have one Chat Session.
+        /// Этот метод предназначен для получения пользователем истории своего чата поддержки
         /// </summary>
         [Authorize(Roles = "user")]
         [HttpGet]
-        public IEnumerable<string> GetHistory()
+        public async Task<IActionResult> GetHistory()
         {
-            var userId = User.FindFirst("id")!.Value;
+            var userId = long.Parse(User.FindFirst("id")!.Value);
 
+            var chatHistory = await historyService.GetMessagesByChatSessionIdAsync(userId);
 
-
-            return new string[] { "value1", "value2" };
+            return Ok(chatHistory);
         }
 
         [Authorize(Roles = "support, admin, moderator")]
         [HttpGet("{chatSessionId}")]
-        public IEnumerable<string> GetHistoryByChatSessionId(long chatSessionId)
+        public async Task<IActionResult> GetHistoryByChatSessionId(long chatSessionId)
         {
-            return new string[] { "value1" };
+            return Ok(await historyService.GetMessagesByChatSessionIdAsync(chatSessionId));
         }
     }
 }

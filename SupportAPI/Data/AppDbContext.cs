@@ -7,5 +7,15 @@ namespace SupportAPI.Data
     {
         public DbSet<SupportChatMessage> SupportChatMessages => Set<SupportChatMessage>();
         public DbSet<SupportChatSession> SupportChatSessions => Set<SupportChatSession>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SupportChatSession>()
+                .HasMany<SupportChatMessage>()
+                .WithOne(scm => scm.ChatSession)
+                .HasForeignKey(scm => scm.ChatSessionId);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

@@ -2,9 +2,11 @@
 {
     public class SupportChatSession
     {
+        /// <summary>
+        /// Id - это UserId пользователя который владеет чатом
+        /// </summary>
         public long Id { get; set; }
-        public long UserId { get; set; }
 
-        public List<SupportChatMessage>? Messages { get; set; }
+        public List<SupportChatMessage>? ChatMessages { get; set; }
     }
 }

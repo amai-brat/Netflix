@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SupportAPI.Consumers;
 using System.Text;
 
 namespace SupportAPI
@@ -100,6 +102,21 @@ namespace SupportAPI
             return serviceCollection;
         }
 
+        public static IServiceCollection AddMassTransitInMemory(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddMassTransit(cfg =>
+            {
+                cfg.AddConsumer<ChatMessageConsumer>();
+                cfg.SetKebabCaseEndpointNameFormatter();
+
+                cfg.UsingInMemory((context, configure) =>
+                {
+                    configure.ConfigureEndpoints(context);
+                });
+            });
+
+            return serviceCollection;
+        }
 
     }
 }
