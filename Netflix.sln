@@ -19,10 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFi
 	ProjectSection(SolutionItems) = preProject
 		.env = .env
 		.gitignore = .gitignore
-		compose.yaml = compose.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportAPI", "SupportAPI\SupportAPI.csproj", "{DDB7ED35-825C-4AC6-B6B5-E1ACC5FD0725}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SupportAPI", "SupportAPI\SupportAPI.csproj", "{DDB7ED35-825C-4AC6-B6B5-E1ACC5FD0725}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
