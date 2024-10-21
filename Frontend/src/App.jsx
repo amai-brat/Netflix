@@ -17,6 +17,7 @@ import { SubscriptionsManagement } from './Pages/Admin/Subscriptions/Subscriptio
 import {ToastContainer} from "react-toastify";
 import AdminContent from "./Pages/Admin/Content/AdminContent.jsx";
 import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
+import SupportChat from "./Pages/Shared/SupportChat/SupportChat.jsx";
 
 function App() {
     
@@ -27,6 +28,8 @@ function App() {
             <ToastContainer theme={"dark"} position={"bottom-center"}/>
             {location.pathname !== "/" && !location.pathname.includes("signin") 
                 && location.pathname !== "/signup" && <Header/>}
+            {location.pathname !== "/" && !location.pathname.includes("signin")
+                && location.pathname !== "/signup" && <SupportChat/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>

@@ -1,0 +1,25 @@
+.message {
+    margin: 5px 0;
+    max-width: 70%; 
+    width: fit-content;
+    padding: 8px; 
+    border-radius: 5px;
+    word-wrap: break-word;
+    background-color: var(--third-color);
+}
+
+.message.user {
+    text-align: right;
+    margin-left: auto; 
+}
+
+.message.support {
+    text-align: left;
+    margin-right: auto;
+}
+
+.message p {
+    display: inline-block;
+    padding: 8px;
+    border-radius: 5px;
+}
