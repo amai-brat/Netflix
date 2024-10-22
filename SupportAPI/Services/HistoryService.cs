@@ -16,7 +16,7 @@ namespace SupportAPI.Services
             return chatHistory;
         }
 
-        public async Task<SupportChatMessage> SaveMessageAsync(ChatMessageDto chatMessageDto)
+        public async Task<ChatMessageDto> SaveMessageAsync(ChatMessageDto chatMessageDto)
         {
             var chatSession = await chatSessionRepository.GetChatSessionByIdAsync(chatMessageDto.ChatSessionId);
             if (chatSession == null)
@@ -28,18 +28,18 @@ namespace SupportAPI.Services
                 chatSession = await chatSessionRepository.CreateAsync(newSupportChatSession);
             }
 
-            var addedChatMessage = await chatMessageRepository
-                .AddChatMessageAsync(new SupportChatMessage()
-                {
-                    ChatSessionId = chatSession.Id,
-                    DateTimeSent = chatMessageDto.DateTimeSent,
-                    SenderId = chatMessageDto.SenderId,
-                    Text = chatMessageDto.Text,
-                });
+            var newChatMessage = new SupportChatMessage()
+            {
+                ChatSessionId = chatSession.Id,
+                DateTimeSent = chatMessageDto.DateTimeSent,
+                SenderId = chatMessageDto.SenderId,
+                Text = chatMessageDto.Text,
+            };
 
+            chatSession!.ChatMessages!.Add(newChatMessage);
             await unitOfWork.SaveChangesAsync();
 
-            return addedChatMessage;
+            return chatMessageDto;
         }
     }
 }
