@@ -97,6 +97,7 @@ services:
     environment:
       - JwtOptions:Key=${JWT_SECRET}
       - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
+      - FrontendConfig:Url=${FRONTEND_URL}
         
   database:
     image: postgres
