@@ -36,7 +36,7 @@ namespace SupportAPI.Services
                 Text = chatMessageDto.Text,
             };
 
-            chatSession!.ChatMessages!.Add(newChatMessage);
+            chatSession.ChatMessages!.Add(newChatMessage);
             await unitOfWork.SaveChangesAsync();
 
             return chatMessageDto;
