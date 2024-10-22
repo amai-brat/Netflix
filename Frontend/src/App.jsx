@@ -18,11 +18,30 @@ import {ToastContainer} from "react-toastify";
 import AdminContent from "./Pages/Admin/Content/AdminContent.jsx";
 import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
 import SupportChat from "./Pages/Shared/SupportChat/SupportChat.jsx";
+import {useEffect} from "react";
+import * as signalR from "@microsoft/signalr";
+import {baseSupportUrl} from "./httpClient/baseUrl.js";
+import {useDataStore} from "./store/dataStoreProvider.jsx";
 
 function App() {
     
     const location = useLocation();
+    const store = useDataStore()
 
+    useEffect(() => {
+        //TODO: заменить url если отличаeтся
+        const supportConnection = new signalR.HubConnectionBuilder()
+            .withUrl(baseSupportUrl + "hub/messages", {accessTokenFactory: () => {
+                    return sessionStorage.getItem("accessToken");
+                }})
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        supportConnection.start().then(() => {
+            store.setSupportConnection(supportConnection)
+        }).catch(err => console.error(err))
+    }, []);
+    
     return (
         <>
             <ToastContainer theme={"dark"} position={"bottom-center"}/>

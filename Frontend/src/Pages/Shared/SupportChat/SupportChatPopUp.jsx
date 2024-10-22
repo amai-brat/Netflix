@@ -3,10 +3,11 @@ import sendIcon from "/src/assets/SendIcon.svg"
 import cross from "/src/assets/Cross.svg"
 import {useEffect, useRef, useState} from "react";
 import SupportChatMessage from "./SupportChatMessage.jsx";
-const SupportChatPopUp = ({setPopUpDisplayed}) => {
+import {useDataStore} from "../../../store/dataStoreProvider.jsx";
+const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
     const endOfMessagesRef = useRef(null);
-    const [messages, setMessages] = useState([])
     const [messageInput, setMessageInput] = useState("")
+    const store = useDataStore()
     const closePopUp = () => {
         setPopUpDisplayed(false)
     }
@@ -15,9 +16,14 @@ const SupportChatPopUp = ({setPopUpDisplayed}) => {
         setMessageInput(e.target.value)
     }
     
-    const onSendMessageInput = () => {
+    const onSendMessageInputAsync = async () => {
         if(messageInput !== null && messageInput.trim() !== ""){
-            setMessages([...messages, {text: messageInput, role: "user"}])
+            try {
+                await store.data.supportConnection.invoke("SendMessageToSupportAsync", messageInput)
+                setMessages([...messages, {text: messageInput, role: "user"}])
+            } catch (e) {
+                setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
+            }
             setMessageInput("")
         }
     }
@@ -51,9 +57,8 @@ const SupportChatPopUp = ({setPopUpDisplayed}) => {
                                onSendMessageInput()
                            }
                        }}
-                       
                 />
-                <button id="support-chat-send-button" onClick={onSendMessageInput}>
+                <button id="support-chat-send-button" onClick={onSendMessageInputAsync}>
                     <img id="support-chat-send-button-icon" src={sendIcon} alt="Send"/>
                 </button>
             </div>
