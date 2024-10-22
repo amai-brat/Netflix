@@ -12,7 +12,7 @@ using SupportAPI.Data;
 namespace SupportAPI.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241021222220_InitialCreate")]
+    [Migration("20241022085634_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -46,10 +46,6 @@ namespace SupportAPI.Data.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("sender_id");
 
-                    b.Property<long?>("SupportChatSessionId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("support_chat_session_id");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text")
@@ -60,9 +56,6 @@ namespace SupportAPI.Data.Migrations
 
                     b.HasIndex("ChatSessionId")
                         .HasDatabaseName("ix_support_chat_messages_chat_session_id");
-
-                    b.HasIndex("SupportChatSessionId")
-                        .HasDatabaseName("ix_support_chat_messages_support_chat_session_id");
 
                     b.ToTable("support_chat_messages", (string)null);
                 });
@@ -85,16 +78,11 @@ namespace SupportAPI.Data.Migrations
             modelBuilder.Entity("SupportAPI.Data.Entities.SupportChatMessage", b =>
                 {
                     b.HasOne("SupportAPI.Data.Entities.SupportChatSession", "ChatSession")
-                        .WithMany()
+                        .WithMany("ChatMessages")
                         .HasForeignKey("ChatSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_support_chat_messages_support_chat_sessions_chat_session_id");
-
-                    b.HasOne("SupportAPI.Data.Entities.SupportChatSession", null)
-                        .WithMany("ChatMessages")
-                        .HasForeignKey("SupportChatSessionId")
-                        .HasConstraintName("fk_support_chat_messages_support_chat_sessions_support_chat_se");
 
                     b.Navigation("ChatSession");
                 });

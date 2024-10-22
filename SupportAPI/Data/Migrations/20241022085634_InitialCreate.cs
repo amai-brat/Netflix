@@ -33,8 +33,7 @@ namespace SupportAPI.Data.Migrations
                     sender_id = table.Column<long>(type: "bigint", nullable: false),
                     date_time_sent = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     text = table.Column<string>(type: "text", nullable: false),
-                    chat_session_id = table.Column<long>(type: "bigint", nullable: false),
-                    support_chat_session_id = table.Column<long>(type: "bigint", nullable: true)
+                    chat_session_id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,22 +44,12 @@ namespace SupportAPI.Data.Migrations
                         principalTable: "support_chat_sessions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_support_chat_messages_support_chat_sessions_support_chat_se",
-                        column: x => x.support_chat_session_id,
-                        principalTable: "support_chat_sessions",
-                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "ix_support_chat_messages_chat_session_id",
                 table: "support_chat_messages",
                 column: "chat_session_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_support_chat_messages_support_chat_session_id",
-                table: "support_chat_messages",
-                column: "support_chat_session_id");
         }
 
         /// <inheritdoc />

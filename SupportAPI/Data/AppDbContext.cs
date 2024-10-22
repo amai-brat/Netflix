@@ -11,7 +11,7 @@ namespace SupportAPI.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SupportChatSession>()
-                .HasMany<SupportChatMessage>()
+                .HasMany(scs => scs.ChatMessages)
                 .WithOne(scm => scm.ChatSession)
                 .HasForeignKey(scm => scm.ChatSessionId);
 
