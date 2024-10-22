@@ -9,39 +9,39 @@ namespace SupportAPI.Hubs
     [Authorize]
     public class SupportHub(IBus bus): Hub
     {
-        private static readonly ConcurrentDictionary<string, string> _userIdConnection = [];
-        private static readonly ConcurrentDictionary<string, List<string>> _connectionGroups = [];
+        private static readonly ConcurrentDictionary<string, string> UserIdConnection = [];
+        private static readonly ConcurrentDictionary<string, List<string>> ConnectionGroups = [];
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var userId = Context.User!.FindFirst("id")!.Value!;
-            var connectionId = _userIdConnection[userId];
+            var userId = Context.User!.FindFirst("id")!.Value;
+            var connectionId = UserIdConnection[userId];
 
-            if (Context!.User!.IsInRole("user"))
+            if (Context.User!.IsInRole("user"))
             {
                 await Groups.RemoveFromGroupAsync(connectionId, userId);
 
             }
             else
             {
-                var groups = _connectionGroups[connectionId];
+                var groups = ConnectionGroups[connectionId];
 
                 foreach (var group in groups)
                 {
                     await Groups.RemoveFromGroupAsync(connectionId, group);
                 }
 
-                _connectionGroups.TryRemove(connectionId, out _);
+                ConnectionGroups.TryRemove(connectionId, out _);
             }
 
-            _userIdConnection.TryRemove(userId, out _);
+            UserIdConnection.TryRemove(userId, out _);
         }
 
         public override async Task OnConnectedAsync()
         {
             var userId = Context.User!.FindFirst("id")!.Value;
 
-            _userIdConnection.TryAdd(userId, Context.ConnectionId);
+            UserIdConnection.TryAdd(userId, Context.ConnectionId);
 
             if (Context.User.IsInRole("user"))
             {
@@ -49,7 +49,7 @@ namespace SupportAPI.Hubs
             }
             else
             {
-                _connectionGroups.TryAdd(Context.ConnectionId, []);
+                ConnectionGroups.TryAdd(Context.ConnectionId, []);
             }
         }
 
@@ -57,7 +57,7 @@ namespace SupportAPI.Hubs
         {
             var userId = long.Parse(Context.User?.FindFirst("id")!.Value!);
             
-            if (Context!.User!.IsInRole("user") && userId != chatSessionId)
+            if (Context.User!.IsInRole("user") && userId != chatSessionId)
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace SupportAPI.Hubs
         {
             var groupName = chatId.ToString();
 
-            _connectionGroups[Context.ConnectionId].Add(groupName);
+            ConnectionGroups[Context.ConnectionId].Add(groupName);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
