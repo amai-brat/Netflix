@@ -22,9 +22,18 @@
     cursor: pointer;
 }
 
+.support-unanswered{
+    background-color: orange;
+}
+
+.support-unanswered:hover{
+    background-color: orange;
+}
+
 .support-selected{
     background-color: var(--logo-color);
 }
+
 
 .support-selected:hover{
     background-color: var(--logo-color);

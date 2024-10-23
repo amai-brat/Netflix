@@ -4,22 +4,24 @@ import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import sendIcon from "../../../assets/SendIcon.svg";
 import {supportService} from "../../../services/support.service.js";
 
-const SupportChatPanel = ({usersMessages, selectedUserId, setUsersMessages}) => {
+const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
+    const selectedUserId = wrapObj.selectedUserId
     const user = selectedUserId !== null ? usersMessages.find((userMessages) => userMessages.id === selectedUserId) : {}
     const endOfMessagesRef = useRef(null);
-    const [messageInput, setMessageInput] = useState("")
+    const messageInput = wrapObj.messageInput
+    const setMessageInput = wrapObj.setMessageInput
     const store = useDataStore()
 
     const onMessageInputChange = (e) => {
         setMessageInput(e.target.value)
     }
     
-    const setUsersMessagesHelp = (text, withNew = false ) => {
+    const setUsersMessagesHelp = (text, isAnswered, withNew = false ) => {
         if(withNew){
             setUsersMessages(usersMessages =>
                 usersMessages.map(userMessages =>
                     userMessages.id === selectedUserId
-                        ? { ...userMessages, messages: [{text:text, role:"support"}] }
+                        ? { ...userMessages, isAnswered: isAnswered, messages: [{text:text, role:"support"}] }
                         : userMessages
                 )
             );
@@ -29,7 +31,7 @@ const SupportChatPanel = ({usersMessages, selectedUserId, setUsersMessages}) => 
         setUsersMessages(usersMessages =>
             usersMessages.map(userMessages =>
                 userMessages.id === selectedUserId
-                    ? { ...userMessages, messages: [...userMessages.messages, {text: text, role: "support"}] }
+                    ? { ...userMessages, isAnswered: isAnswered, messages: [...userMessages.messages, {text: text, role: "support"}] }
                     : userMessages
             )
         );
@@ -39,9 +41,9 @@ const SupportChatPanel = ({usersMessages, selectedUserId, setUsersMessages}) => 
         if(messageInput !== null && messageInput.trim() !== ""){
             try {
                 await store.data.supportConnection.invoke("SendMessageToUserAsync", messageInput)
-                setUsersMessagesHelp(messageInput)
+                setUsersMessagesHelp(messageInput, true)
             } catch (e) {
-                setUsersMessagesHelp("Не удалось отправить сообщение")
+                setUsersMessagesHelp("Не удалось отправить сообщение", false)
             }
             setMessageInput("")
         }
@@ -61,10 +63,10 @@ const SupportChatPanel = ({usersMessages, selectedUserId, setUsersMessages}) => 
                             )
                         );
                     }else{
-                        setUsersMessagesHelp("Не удалось загрузить историю сообщений", true)
+                        setUsersMessagesHelp("Не удалось загрузить историю сообщений", false, true)
                     }
                 }catch (e) {
-                    setUsersMessagesHelp("Не удалось загрузить историю сообщений", true)
+                    setUsersMessagesHelp("Не удалось загрузить историю сообщений", false, true)
                 }
             }
         }
@@ -82,7 +84,7 @@ const SupportChatPanel = ({usersMessages, selectedUserId, setUsersMessages}) => 
                 {(selectedUserId ? <label>Чат с пользователем {user.name}</label>
                     : <label>Выберите пользователя для начала чата.</label>)}
             </div>
-            {selectedUserId && <div id="support-tab-chat-panel-aside">
+            {selectedUserId && user.messages && <div id="support-tab-chat-panel-aside">
                 {user.messages.map((msg, index) => (
                     <div key={index} className={"support-chat-panel-message " + msg.role}>
                         <label style={{

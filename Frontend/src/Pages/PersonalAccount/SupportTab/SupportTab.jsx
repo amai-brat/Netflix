@@ -7,10 +7,9 @@ import "/src/Pages/PersonalAccount/SupportTab/Styles/SupportTab.css";
 import UsersPanel from "./UsersPanel.jsx";
 import SupportChatPanel from "./SupportChatPanel.jsx";
 
-const SupportTab = observer(() => {
+const SupportTab = observer(({wrapObj}) => {
     const store = useDataStore()
     const [usersMessages, setUsersMessages] = useState(undefined)
-    const [selectedUserId, setSelectedUserId] = useState(null);
 
     useEffect(() => {
         if(!authenticationService.isCurrentUserSupport()){
@@ -38,12 +37,12 @@ const SupportTab = observer(() => {
             if(isChatOk){
                 store.data.supportConnection.on("ReceiveUserMessage", (userMessage) => {
                     if(usersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
-                        setUsersMessages(usersMessages => [...usersMessages, {id: userMessage.id, name: userMessage.name, messages:[] }])
+                        setUsersMessages(usersMessages => [...usersMessages, {id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }])
                     }else{
                         setUsersMessages(usersMessages =>
                             usersMessages.map(userMessages =>
                                 userMessages.id === userMessage.id
-                                    ? { ...userMessages, messages: [...userMessages.messages, userMessage.message] }
+                                    ? { ...userMessages, isAnswered:false, messages: [...userMessages.messages, userMessage.message] }
                                     : userMessages
                             )
                         );
@@ -57,8 +56,8 @@ const SupportTab = observer(() => {
         <div id="support-tab">
             {usersMessages && authenticationService.isCurrentUserSupport() &&
                 <>
-                    <UsersPanel usersMessages={usersMessages} selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId}/>
-                    <SupportChatPanel usersMessages={usersMessages} selectedUserId={selectedUserId} setUsersMessages={setUsersMessages}/>
+                    <UsersPanel usersMessages={usersMessages} wrapObj={wrapObj}/>
+                    <SupportChatPanel usersMessages={usersMessages} wrapObj={wrapObj} setUsersMessages={setUsersMessages}/>
                 </>
             }
             {!usersMessages && <label>Что-то не так</label>}

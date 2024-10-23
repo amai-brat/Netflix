@@ -22,7 +22,7 @@ import {useEffect} from "react";
 import * as signalR from "@microsoft/signalr";
 import {baseSupportUrl} from "./httpClient/baseUrl.js";
 import {useDataStore} from "./store/dataStoreProvider.jsx";
-import SupportTab from "./Pages/PersonalAccount/SupportTab/SupportTab.jsx";
+import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
 
 function App() {
     
@@ -61,7 +61,7 @@ function App() {
                         <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
                         <Route path={"/PersonalAccount/SupportTab"} element={<ProtectedRoute roles={["support"]}/>}>
-                            <Route path={"/PersonalAccount/SupportTab"} element={<SupportTab/>}/>
+                            <Route path={"/PersonalAccount/SupportTab"} element={<SupportTabWrapper/>}/>
                         </Route>
                     </Route>
                 </Route>

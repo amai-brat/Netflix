@@ -1,11 +1,13 @@
 import "/src/Pages/PersonalAccount/SupportTab/Styles/SupportChatPanel.css"
-import {useState} from "react"
 import forward from "/src/assets/Forward.svg"
 import UsersPanelUserCard from "./UsersPanelUserCard.jsx";
 
-const UsersPanel = ({usersMessages, selectedUserId, setSelectedUserId}) => {
+const UsersPanel = ({usersMessages, wrapObj}) => {
     const usersPerPage = 10;
-    const [currentPage, setCurrentPage] = useState(0);
+    const currentPage = wrapObj.currentPage
+    const setCurrentPage = wrapObj.setCurrentPage
+    const selectedUserId = wrapObj.selectedUserId
+    const setSelectedUserId = wrapObj.setSelectedUserId
 
     const handleUserClick = (userId) => {
         setSelectedUserId(userId);
