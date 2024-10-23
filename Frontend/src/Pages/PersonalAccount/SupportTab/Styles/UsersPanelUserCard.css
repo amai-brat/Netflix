@@ -1,0 +1,31 @@
+.support-tab-users-panel-user-card{
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    background-color: transparent;
+    padding: 8px;
+    margin-bottom: 2px;
+    border-radius: 5px;
+}
+
+.support-tab-users-panel-user-card:hover{
+    background-color: rgb(255,255,255,10%);
+}
+
+.support-tab-users-panel-user-card-name{
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.support-tab-users-panel-user-card-id{
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.support-selected{
+    background-color: var(--logo-color);
+}
+
+.support-selected:hover{
+    background-color: var(--logo-color);
+}

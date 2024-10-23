@@ -15,7 +15,8 @@ const GeneralPart = ({component: Component}) => {
         {name: "Рецензии", link: "PersonalReviewsTab"},
         {name: "Подписки", link: "SubscriptionsTab"},
         {name: "Контент", link: "admin/content"},
-        {name: "Подписки управление", link:"admin/subscriptions"}
+        {name: "Подписки управление", link:"admin/subscriptions"},
+        {name: "Чаты с пользователями", link: "SupportTab"}
     ];
 
     // noinspection JSUnusedLocalSymbols

@@ -22,6 +22,7 @@ import {useEffect} from "react";
 import * as signalR from "@microsoft/signalr";
 import {baseSupportUrl} from "./httpClient/baseUrl.js";
 import {useDataStore} from "./store/dataStoreProvider.jsx";
+import SupportTab from "./Pages/PersonalAccount/SupportTab/SupportTab.jsx";
 
 function App() {
     
@@ -52,13 +53,16 @@ function App() {
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
-                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user", "admin"]}/>}>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user", "support", "admin"]}/>}>
                     <Route path={"/PersonalAccount"} element={<GeneralPart/>}>
                         <Route index element={<PersonalInfoTab/>}/>
                         <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
                         <Route path="FavouritesTab" element={<FavouritesTab/>}/>
                         <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                        <Route path={"/PersonalAccount/SupportTab"} element={<ProtectedRoute roles={["support"]}/>}>
+                            <Route path={"/PersonalAccount/SupportTab"} element={<SupportTab/>}/>
+                        </Route>
                     </Route>
                 </Route>
                 <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user","admin"]}/>}>

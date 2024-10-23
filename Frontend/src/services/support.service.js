@@ -4,11 +4,23 @@ import {baseSupportUrl} from "../httpClient/baseUrl.js";
 //TODO: заменить url если отличаются
 
 export const supportService = {
-    getUserSupportMessagesHistory
+    getUserSupportMessagesHistory,
+    getSupportUsersUnansweredMessagesHistory,
+    getSupportUserMessagesHistory
 };
 
 
 async function getUserSupportMessagesHistory() {
-    const {response, data} = await fetchAuth('get/messages', true, {}, baseSupportUrl)
+    const {response, data} = await fetchAuth('get/user/messages', true, {}, baseSupportUrl)
+    return {response, data}
+}
+
+async function getSupportUserMessagesHistory(id) {
+    const {response, data} = await fetchAuth(`get/support/messages/${id}`, true, {}, baseSupportUrl)
+    return {response, data}
+}
+
+async function getSupportUsersUnansweredMessagesHistory() {
+    const {response, data} = await fetchAuth('get/support/messages', true, {}, baseSupportUrl)
     return {response, data}
 }
