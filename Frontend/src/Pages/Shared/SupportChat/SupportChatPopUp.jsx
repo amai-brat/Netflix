@@ -22,7 +22,11 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
                 await store.data.supportConnection.invoke("SendMessageToSupportAsync", messageInput)
                 setMessages([...messages, {text: messageInput, role: "user"}])
             } catch (e) {
-                setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
+                if(messages === null || messages === undefined){
+                    setMessages([{text: "Не удалось отправить сообщение", role: "user"}])
+                }else{
+                    setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
+                }
             }
             setMessageInput("")
         }
@@ -44,7 +48,11 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
             </div>
             <div id="support-chat-messages">
                 {messages === null && <label>Что-то не так</label>}
-                {messages !== undefined && messages !== null && messages.map((message) => <SupportChatMessage message={message}/>)}
+                {messages !== undefined && messages !== null && messages.map((message, index) => 
+                    <div key={index}>
+                        <SupportChatMessage message={message}/>
+                    </div>
+                )}
                 <div ref={endOfMessagesRef}/>
             </div>
             <div id="support-chat-input">
@@ -54,7 +62,7 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
                        onChange={onMessageInputChange} 
                        onKeyUp={(e) => {
                            if(e.key === "Enter") {
-                               onSendMessageInput()
+                               onSendMessageInputAsync()
                            }
                        }}
                 />

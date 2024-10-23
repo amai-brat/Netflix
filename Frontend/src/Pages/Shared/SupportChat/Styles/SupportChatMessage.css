@@ -1,5 +1,6 @@
 .support-chat-message {
     margin: 5px 0;
+    text-align: left;
     max-width: 70%; 
     width: fit-content;
     padding: 8px; 
@@ -9,11 +10,9 @@
 }
 
 .support-chat-message.user {
-    text-align: right;
     margin-left: auto; 
 }
 
 .support-chat-message.support {
-    text-align: left;
     margin-right: auto;
 }
