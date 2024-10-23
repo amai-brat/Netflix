@@ -1,4 +1,6 @@
 .support-chat-message {
+    display: flex;
+    flex-direction: column;
     margin: 5px 0;
     text-align: left;
     max-width: 70%; 
