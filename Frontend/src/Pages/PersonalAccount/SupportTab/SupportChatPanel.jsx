@@ -1,5 +1,5 @@
 import "/src/Pages/PersonalAccount/SupportTab/Styles/UsersPanel.css"
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import sendIcon from "../../../assets/SendIcon.svg";
 import {supportService} from "../../../services/support.service.js";
