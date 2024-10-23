@@ -1,4 +1,4 @@
-.message {
+.support-chat-message {
     margin: 5px 0;
     max-width: 70%; 
     width: fit-content;
@@ -8,18 +8,12 @@
     background-color: var(--third-color);
 }
 
-.message.user {
+.support-chat-message.user {
     text-align: right;
     margin-left: auto; 
 }
 
-.message.support {
+.support-chat-message.support {
     text-align: left;
     margin-right: auto;
-}
-
-.message p {
-    display: inline-block;
-    padding: 8px;
-    border-radius: 5px;
 }
