@@ -36,7 +36,7 @@ const SupportTab = observer(({wrapObj}) => {
             if(isChatOk){
                 store.data.supportConnection.on("ReceiveMessage", (userMessage) => {
                     if(usersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
-                        setUsersMessages(usersMessages => [...usersMessages, {id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }])
+                        setUsersMessages(usersMessages => [{id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }, ...usersMessages])
                     }else{
                         setUsersMessages(usersMessages =>
                             usersMessages.map(userMessages =>
@@ -59,7 +59,7 @@ const SupportTab = observer(({wrapObj}) => {
                     <SupportChatPanel usersMessages={usersMessages} wrapObj={wrapObj} setUsersMessages={setUsersMessages}/>
                 </>
             }
-            {!usersMessages && <label>Что-то не так</label>}
+            {usersMessages === null && <label>Что-то не так</label>}
         </div>
     )
 })
