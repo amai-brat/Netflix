@@ -15,7 +15,7 @@ namespace SupportAPI.Data.Repositories.Implementations
         public async Task<SupportChatSession?> GetChatSessionByIdAsync(long id)
         {
             return await dbContext.SupportChatSessions
-                .FirstOrDefaultAsync(scs => scs.Id == id);
+                .FindAsync(id);
         }
 
         public async Task<List<SupportChatSession>> GetUserUnansweredChatSessionsAsync()
