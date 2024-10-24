@@ -4,7 +4,7 @@ using SupportAPI.Services;
 
 namespace SupportAPI.Controllers
 {
-    [Route("supportChat/[controller]")]
+    [Route("support/chats")]
     [ApiController]
     [Authorize]
     public class HistoryController (IHistoryService historyService) : ControllerBase
@@ -13,7 +13,7 @@ namespace SupportAPI.Controllers
         /// Этот метод предназначен для получения пользователем истории своего чата поддержки
         /// </summary>
         [Authorize(Roles = "user")]
-        [HttpGet]
+        [HttpGet("user/messages")]
         public async Task<IActionResult> GetHistory()
         {
             var userId = long.Parse(User.FindFirst("id")!.Value);
@@ -24,10 +24,24 @@ namespace SupportAPI.Controllers
         }
 
         [Authorize(Roles = "support, admin, moderator")]
-        [HttpGet("{chatSessionId}")]
+        [HttpGet("{chatSessionId:long}/messages")]
         public async Task<IActionResult> GetHistoryByChatSessionId(long chatSessionId)
         {
-            return Ok(await historyService.GetMessagesByChatSessionIdAsync(chatSessionId));
+            try
+            {
+                return Ok(await historyService.GetMessagesByChatSessionIdAsync(chatSessionId));
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "support, admin, moderator")]
+        [HttpGet("unanswered")]
+        public async Task<IActionResult> GetUnansweredChats()
+        {
+            return Ok(await historyService.GetUnansweredChatsAsync());
         }
     }
 }

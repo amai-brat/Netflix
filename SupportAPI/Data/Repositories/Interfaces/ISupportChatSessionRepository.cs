@@ -6,5 +6,6 @@ namespace SupportAPI.Data.Repositories.Interfaces
     {
         Task<SupportChatSession> CreateAsync(SupportChatSession supportChatSession);
         Task<SupportChatSession?> GetChatSessionByIdAsync(long id);
+        Task<List<SupportChatSession>> GetUserUnansweredChatSessionsAsync();
     }
 }

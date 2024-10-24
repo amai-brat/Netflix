@@ -8,38 +8,67 @@ namespace SupportAPI.Services
         ISupportChatSessionRepository chatSessionRepository,
         IUnitOfWork unitOfWork) : IHistoryService
     {
-        public async Task<List<SupportChatMessage>> GetMessagesByChatSessionIdAsync(long sessionId)
+        public async Task<List<ChatMessageDto>> GetMessagesByChatSessionIdAsync(long sessionId)
         {
+            var chatSession = await chatSessionRepository.GetChatSessionByIdAsync(sessionId);
+
+            if (chatSession == null)
+            {
+                throw new Exception("Нет ChatSession с таким ID");
+            }
+
             var chatHistory = await chatMessageRepository
                 .GetChatMessagesByChatSessionIdAsync(sessionId);
 
-            return chatHistory;
+            var chatMessagesDtos = chatHistory
+                .Select(scm =>
+                    new ChatMessageDto()
+                    {
+                        Role = scm.Role,
+                        Text = scm.Text
+                    }).ToList();
+
+            return chatMessagesDtos;
         }
 
-        public async Task<ChatMessageDto> SaveMessageAsync(ChatMessageDto chatMessageDto)
+        public async Task<List<SupportChatSession>> GetUnansweredChatsAsync()
         {
-            var chatSession = await chatSessionRepository.GetChatSessionByIdAsync(chatMessageDto.ChatSessionId);
+            return await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
+        }
+
+        public async Task<ChatMessageEvent> SaveMessageAsync(ChatMessageEvent chatMessageEvent)
+        {
+            var chatSession = await chatSessionRepository.GetChatSessionByIdAsync(chatMessageEvent.ChatSessionId);
             if (chatSession == null)
             {
                 var newSupportChatSession = new SupportChatSession()
                 {
-                    Id = chatMessageDto.ChatSessionId
+                    Id = chatMessageEvent.ChatSessionId
                 };
                 chatSession = await chatSessionRepository.CreateAsync(newSupportChatSession);
             }
 
             var newChatMessage = new SupportChatMessage()
             {
-                ChatSessionId = chatSession.Id,
-                DateTimeSent = chatMessageDto.DateTimeSent,
-                SenderId = chatMessageDto.SenderId,
-                Text = chatMessageDto.Text,
+                DateTimeSent = chatMessageEvent.DateTimeSent,
+                SenderId = chatMessageEvent.SenderId,
+                SenderName = chatMessageEvent.SenderName,
+                Role = chatMessageEvent.Role,
+                Text = chatMessageEvent.Text,
             };
 
             chatSession.ChatMessages!.Add(newChatMessage);
+
+            if (chatMessageEvent.Role == "user")
+            {
+                chatSession.IsAnswered = false;
+
+                chatSession.UserName ??= chatMessageEvent.SenderName;
+            }
+
             await unitOfWork.SaveChangesAsync();
 
-            return chatMessageDto;
+            return chatMessageEvent;
         }
     }
 }

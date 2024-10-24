@@ -5,7 +5,8 @@ namespace SupportAPI.Services
 {
     public interface IHistoryService
     {
-        Task<ChatMessageDto> SaveMessageAsync(ChatMessageDto chatMessageDto);
-        Task<List<SupportChatMessage>> GetMessagesByChatSessionIdAsync(long sessionId);
+        Task<ChatMessageEvent> SaveMessageAsync(ChatMessageEvent chatMessageDto);
+        Task<List<ChatMessageDto>> GetMessagesByChatSessionIdAsync(long sessionId);
+        Task<List<SupportChatSession>> GetUnansweredChatsAsync();
     }
 }

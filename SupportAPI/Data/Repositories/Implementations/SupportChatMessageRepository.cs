@@ -15,7 +15,9 @@ namespace SupportAPI.Data.Repositories.Implementations
         public async Task<List<SupportChatMessage>> GetChatMessagesByChatSessionIdAsync(long chatSessionId)
         {
             return await dbContext.SupportChatMessages
-                .Where(scm => scm.ChatSessionId == chatSessionId).ToListAsync();
+                .Where(scm => scm.ChatSessionId == chatSessionId)
+                .OrderBy(scm => scm.DateTimeSent)
+                .ToListAsync();
         }
     }
 }
