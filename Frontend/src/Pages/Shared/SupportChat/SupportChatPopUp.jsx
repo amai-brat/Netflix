@@ -4,6 +4,7 @@ import cross from "/src/assets/Cross.svg"
 import {useEffect, useRef, useState} from "react";
 import SupportChatMessage from "./SupportChatMessage.jsx";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
+import {authenticationService} from "../../../services/authentication.service.js";
 const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
     const endOfMessagesRef = useRef(null);
     const [messageInput, setMessageInput] = useState("")
@@ -19,7 +20,7 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
     const onSendMessageInputAsync = async () => {
         if(messageInput !== null && messageInput.trim() !== ""){
             try {
-                await store.data.supportConnection.invoke("SendMessageToSupportAsync", messageInput)
+                await store.data.supportConnection.invoke("SendMessage", authenticationService.getUser()?.id, messageInput)
                 setMessages([...messages, {text: messageInput, role: "user"}])
             } catch (e) {
                 if(messages === null || messages === undefined){

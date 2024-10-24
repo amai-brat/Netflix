@@ -40,7 +40,7 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
     const onSendMessageInputAsync = async () => {
         if(messageInput !== null && messageInput.trim() !== ""){
             try {
-                await store.data.supportConnection.invoke("SendMessageToUserAsync", messageInput)
+                await store.data.supportConnection.invoke("SendMessageToUserAsync", selectedUserId, messageInput)
                 setUsersMessagesHelp(messageInput, true)
             } catch (e) {
                 setUsersMessagesHelp("Не удалось отправить сообщение", false)
@@ -51,31 +51,32 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
 
     useEffect(() => {
         const loadHistory = async () => {
-            if(selectedUserId !== null && user.messages === null){
-                try{
-                    const {response, data} = await supportService.getSupportUserMessagesHistory(selectedUserId)
-                    if(response.ok){
-                        setUsersMessages(usersMessages =>
-                            usersMessages.map(userMessages =>
-                                userMessages.id === selectedUserId
-                                    ? { ...userMessages, messages: data }
-                                    : userMessages
-                            )
-                        );
-                    }else{
-                        setUsersMessagesHelp("Не удалось загрузить историю сообщений", false, true)
-                    }
-                }catch (e) {
+            try{
+                const {response, data} = await supportService.getSupportUserMessagesHistory(selectedUserId)
+                if(response.ok){
+                    setUsersMessages(usersMessages =>
+                        usersMessages.map(userMessages =>
+                            userMessages.id === selectedUserId
+                                ? { ...userMessages, messages: data }
+                                : userMessages
+                        )
+                    );
+                }else{
                     setUsersMessagesHelp("Не удалось загрузить историю сообщений", false, true)
                 }
+            }catch (e) {
+                setUsersMessagesHelp("Не удалось загрузить историю сообщений", false, true)
             }
         }
-        
-        loadHistory().then(() => {
-            if (endOfMessagesRef.current) {
-                endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
-            }  
-        })
+        if(selectedUserId !== null && user.messages === null) {
+            store.data.supportConnection.invoke("JoinUserSupportChat", selectedUserId).then(() => {
+                loadHistory().then(() => {
+                    if (endOfMessagesRef.current) {
+                        endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+                    }
+                })       
+            })
+        }
     }, [user.messages]);
     
     return (

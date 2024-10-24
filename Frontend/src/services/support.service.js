@@ -1,8 +1,6 @@
 import {fetchAuth} from "../httpClient/fetchAuth.js";
 import {baseSupportUrl} from "../httpClient/baseUrl.js";
 
-//TODO: заменить url если отличаются
-
 export const supportService = {
     getUserSupportMessagesHistory,
     getSupportUsersUnansweredMessagesHistory,

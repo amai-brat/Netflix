@@ -30,9 +30,8 @@ function App() {
     const store = useDataStore()
 
     useEffect(() => {
-        //TODO: заменить url если отличаeтся
         const supportConnection = new signalR.HubConnectionBuilder()
-            .withUrl(baseSupportUrl + "hub/messages", {accessTokenFactory: () => {
+            .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory: () => {
                     return sessionStorage.getItem("accessToken");
                 }})
             .configureLogging(signalR.LogLevel.Information)

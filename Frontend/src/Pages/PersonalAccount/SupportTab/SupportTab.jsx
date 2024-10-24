@@ -33,9 +33,8 @@ const SupportTab = observer(({wrapObj}) => {
         }
 
         getSupportUsersUnansweredMessagesHistoryAsync().then(() => {
-            //TODO: заменить methodName если отличаeтся
             if(isChatOk){
-                store.data.supportConnection.on("ReceiveUserMessage", (userMessage) => {
+                store.data.supportConnection.on("ReceiveMessage", (userMessage) => {
                     if(usersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
                         setUsersMessages(usersMessages => [...usersMessages, {id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }])
                     }else{
