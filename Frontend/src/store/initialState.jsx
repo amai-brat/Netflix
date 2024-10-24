@@ -1,5 +1,6 @@
 const initialState = {
-    connection: null
+    connection: null,
+    supportConnection: null
 };
 
 export default initialState;

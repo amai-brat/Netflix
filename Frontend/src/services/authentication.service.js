@@ -13,7 +13,8 @@ export const authenticationService = {
   getUser,
   refreshToken,
   isCurrentUserModerator,
-  isCurrentUserAdmin
+  isCurrentUserAdmin,
+  isCurrentUserSupport
 };
 
 async function signin(values){
@@ -178,4 +179,8 @@ function isCurrentUserModerator() {
 
 function isCurrentUserAdmin() {
   return getUser()?.role?.includes("admin") ?? false;
+}
+
+function isCurrentUserSupport() {
+  return getUser()?.role?.includes("support") ?? false;
 }

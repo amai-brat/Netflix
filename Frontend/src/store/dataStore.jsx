@@ -10,6 +10,10 @@ class DataStore {
     setConnection = (connection) => {
         this.data.connection = connection
     }
+    
+    setSupportConnection = (connection) => {
+        this.data.supportConnection = connection
+    }
 }
 
 const dataStore = new DataStore();
