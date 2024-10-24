@@ -1,27 +1,108 @@
 name: netflix_app
 
-on: 
-    push:
-        branches:
-            - "main"
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
 
 jobs:
-    deploy:
-        name: Deploy new code
-        runs-on: ubuntu-latest 
-        steps:   
-            - name: Set up SSH connection
-              uses: webfactory/ssh-agent@v0.5.3
-              with:
-                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-            - name: Connect to remote server and deploy
-              run: |
-                ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_SERVER }} << EOF
-                  cd app
-                  docker compose -f compose.prod.yaml down
-                  git checkout main
-                  git pull
-                  echo "${{ secrets.PROD_ENV_FILE }}" > .env
-                  docker compose -f compose.prod.yaml build
-                  docker compose -f compose.prod.yaml up -d
-                EOF
+  build-front:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache-dependency-path: Frontend/package-lock.json
+          node-version: "latest"
+          cache: "npm"
+      - run: npm ci
+        working-directory: Frontend
+      - run: npm run build
+        working-directory: Frontend
+      - run: npx vitest
+        working-directory: Frontend
+  build-back:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+  
+  inspection-front:
+
+    runs-on: ubuntu-latest
+
+    name: Inspection
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache-dependency-path: Frontend/package-lock.json
+          node-version: "latest"
+          cache: "npm"
+      - run: npm ci
+        working-directory: Frontend
+      - run: npm run lint
+        working-directory: Frontend
+      - run: npm run build
+        working-directory: Frontend
+  inspection-back:
+
+    runs-on: ubuntu-latest
+
+    name: Inspection
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        id: setup-dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore Netflix.sln
+      - name: Inspect code
+        uses: muno92/resharper_inspectcode@v1
+        with:
+          solutionPath: Netflix.sln
+          dotnetVersion: ${{ steps.setup-dotnet.outputs.dotnet-version }}
+          minimumSeverity: WARNING
+          minimumReportSeverity: WARNING
+  deploy:
+    name: Deploy new code
+    needs: [build-front, build-back, inspection-front, inspection-back]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest 
+    steps:   
+      - name: Set up SSH connection
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Connect to remote server and deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_SERVER }} << EOF
+            cd app
+            docker compose -f compose.prod.yaml down
+            git checkout main
+            git pull
+            echo "${{ secrets.PROD_ENV_FILE }}" | base64 --decode > .env
+            docker compose -f compose.prod.yaml build
+            docker compose -f compose.prod.yaml up -d
+          EOF
