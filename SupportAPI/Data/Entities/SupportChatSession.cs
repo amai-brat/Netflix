@@ -7,6 +7,10 @@
         /// </summary>
         public long Id { get; set; }
 
+        public string? UserName { get; set; }
+
+        public bool IsAnswered { get; set; }
+
         public List<SupportChatMessage>? ChatMessages { get; set; }
     }
 }
