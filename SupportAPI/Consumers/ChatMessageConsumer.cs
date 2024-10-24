@@ -4,9 +4,9 @@ using SupportAPI.Services;
 
 namespace SupportAPI.Consumers
 {
-    public class ChatMessageConsumer(IHistoryService historyService): IConsumer<ChatMessageDto>
+    public class ChatMessageConsumer(IHistoryService historyService): IConsumer<ChatMessageEvent>
     {
-        public async Task Consume(ConsumeContext<ChatMessageDto> context)
+        public async Task Consume(ConsumeContext<ChatMessageEvent> context)
         {
             await historyService.SaveMessageAsync(context.Message);
         }

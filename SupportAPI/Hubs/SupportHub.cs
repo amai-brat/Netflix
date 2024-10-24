@@ -56,22 +56,37 @@ namespace SupportAPI.Hubs
         public async Task SendMessage(long chatSessionId, string message)
         {
             var userId = long.Parse(Context.User?.FindFirst("id")!.Value!);
-            
+            var senderName = Context.User!.Identity!.Name!;
+            var role = Context.User!.IsInRole("user") ? "user" : "support";
+
             if (Context.User!.IsInRole("user") && userId != chatSessionId)
             {
                 return;
             }
 
-            var chatMessage = new ChatMessageDto()
+            var chatMessageEvent = new ChatMessageEvent()
             {
                 ChatSessionId = chatSessionId,
+                SenderName = senderName,
+                Role = role,
                 DateTimeSent = DateTimeOffset.Now,
                 SenderId = userId,
                 Text = message
             };
 
-            await bus.Publish(chatMessage);
-            await Clients.Group(userId.ToString()).SendAsync("ReceiveMessage", chatMessage);
+            var receiveMessageDto = new ReceiveMessageDto()
+            {
+                Id = userId,
+                Name = senderName,
+                Message = new ChatMessageDto()
+                {
+                    Role = role,
+                    Text = message
+                }
+            };
+
+            await bus.Publish(chatMessageEvent);
+            await Clients.Group(userId.ToString()).SendAsync("ReceiveMessage", receiveMessageDto);
         }
 
         [Authorize(Roles = "admin, moderator, support")]
