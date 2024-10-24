@@ -57,7 +57,7 @@ namespace SupportAPI.Services
                 Text = chatMessageEvent.Text,
             };
 
-            chatSession.ChatMessages!.Add(newChatMessage);
+            chatSession.ChatMessages.Add(newChatMessage);
 
             if (chatMessageEvent.Role == "user")
             {
