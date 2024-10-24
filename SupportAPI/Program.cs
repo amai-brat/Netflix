@@ -45,8 +45,8 @@ app.UseHsts();
 app.UseRouting();
 app.UseCors("Frontend");
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHub<SupportHub>("/hub/support");
 app.MapControllers();
