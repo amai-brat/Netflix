@@ -40,8 +40,6 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
-app.UseHsts();
-
 app.UseRouting();
 app.UseCors("Frontend");
 
