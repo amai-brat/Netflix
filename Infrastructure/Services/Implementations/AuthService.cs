@@ -352,6 +352,7 @@ public class AuthService(
         {
             new("id", user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Name, user.Nickname),
             new("subscribeId", JsonSerializer.Serialize(
                 user.UserSubscriptions!
                     .Where(x => x.ExpiresAt < DateTimeOffset.Now)
