@@ -41,8 +41,8 @@ const SupportChat = observer(() => {
         
         getUserSupportMessagesHistoryAsync().then(() => {
             if(isChatOk){
-                store.data.supportConnection.on("ReceiveMessage", (message) => {
-                    setMessages(messages => [...messages, message])
+                store.data.supportConnection.on("ReceiveMessage", (supportMessage) => {
+                    setMessages(messages => [...messages, supportMessage.message])
                 });
             }
         })
