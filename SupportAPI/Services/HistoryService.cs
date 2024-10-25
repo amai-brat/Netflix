@@ -35,7 +35,7 @@ namespace SupportAPI.Services
         {
             var res = await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
             res.ForEach(el => el.ChatMessages = null);
-            return await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
+            return res;
         }
 
         public async Task<ChatMessageEvent> SaveMessageAsync(ChatMessageEvent chatMessageEvent)
