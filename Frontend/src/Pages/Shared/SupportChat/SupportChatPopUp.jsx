@@ -20,7 +20,7 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
     const onSendMessageInputAsync = async () => {
         if(messageInput !== null && messageInput.trim() !== ""){
             try {
-                await store.data.supportConnection.invoke("SendMessage", authenticationService.getUser()?.id, messageInput)
+                await store.data.supportConnection.invoke("SendMessage", +authenticationService.getUser()?.id, messageInput)
                 setMessages([...messages, {text: messageInput, role: "user"}])
             } catch (e) {
                 if(messages === null || messages === undefined){
