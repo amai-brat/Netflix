@@ -11,6 +11,6 @@
 
         public bool IsAnswered { get; set; }
 
-        public List<SupportChatMessage> ChatMessages { get; set; } = [];
+        public List<SupportChatMessage>? ChatMessages { get; set; } = [];
     }
 }

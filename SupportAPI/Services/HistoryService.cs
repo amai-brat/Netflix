@@ -33,6 +33,8 @@ namespace SupportAPI.Services
 
         public async Task<List<SupportChatSession>> GetUnansweredChatsAsync()
         {
+            var res = await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
+            res.ForEach(el => el.ChatMessages = null);
             return await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
         }
 
