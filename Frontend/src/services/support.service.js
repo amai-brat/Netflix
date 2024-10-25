@@ -9,16 +9,16 @@ export const supportService = {
 
 
 async function getUserSupportMessagesHistory() {
-    const {response, data} = await fetchAuth('get/user/messages', true, {}, baseSupportUrl)
+    const {response, data} = await fetchAuth('support/chats/user/messages', true, {}, baseSupportUrl)
     return {response, data}
 }
 
 async function getSupportUserMessagesHistory(id) {
-    const {response, data} = await fetchAuth(`get/support/messages/${id}`, true, {}, baseSupportUrl)
+    const {response, data} = await fetchAuth(`support/chats/${id}/messages`, true, {}, baseSupportUrl)
     return {response, data}
 }
 
 async function getSupportUsersUnansweredMessagesHistory() {
-    const {response, data} = await fetchAuth('get/support/messages', true, {}, baseSupportUrl)
+    const {response, data} = await fetchAuth('support/chats/unanswered', true, {}, baseSupportUrl)
     return {response, data}
 }
