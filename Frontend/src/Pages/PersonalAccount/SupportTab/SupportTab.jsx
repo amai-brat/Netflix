@@ -34,6 +34,7 @@ const SupportTab = observer(({wrapObj}) => {
 
         getSupportUsersUnansweredMessagesHistoryAsync().then(() => {
             if(isChatOk){
+                while (!store.data.supportConnection) setTimeout(100);
                 store.data.supportConnection.on("ReceiveMessage", 
                     (userMessage) => { 
                         setUsersMessages((prevUsersMessages) => {
