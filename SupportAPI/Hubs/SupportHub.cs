@@ -86,7 +86,7 @@ namespace SupportAPI.Hubs
             };
 
             await bus.Publish(chatMessageEvent);
-            await Clients.OthersInGroup(userId.ToString()).SendAsync("ReceiveMessage", receiveMessageDto);
+            await Clients.OthersInGroup(chatSessionId.ToString()).SendAsync("ReceiveMessage", receiveMessageDto);
         }
 
         [Authorize(Roles = "admin, moderator, support")]

@@ -21,6 +21,7 @@ namespace SupportAPI.Data.Repositories.Implementations
         public async Task<List<SupportChatSession>> GetUserUnansweredChatSessionsAsync()
         {
             return await dbContext.SupportChatSessions
+                .Include(x => x.ChatMessages)
                 .Where(scs => scs.IsAnswered == false)
                 .ToListAsync();
         }

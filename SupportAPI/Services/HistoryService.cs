@@ -31,11 +31,24 @@ namespace SupportAPI.Services
             return chatMessagesDtos;
         }
 
-        public async Task<List<SupportChatSession>> GetUnansweredChatsAsync()
+        public async Task<List<SupportChatSessionDto>> GetUnansweredChatsAsync()
         {
-            var res = await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
-            res.ForEach(el => el.ChatMessages = null);
-            return res;
+            var sessions = await chatSessionRepository.GetUserUnansweredChatSessionsAsync();
+            var res = sessions
+                .Select(session => new SupportChatSessionDto()
+                {
+                    UserName = session.UserName,
+                    Id = session.Id,
+                    IsAnswered = session.IsAnswered,
+                    Messages = (session.ChatMessages ?? [])
+                        .Select(message => new ChatMessageDto()
+                        {
+                            Role = message.Role,
+                            Text = message.Text
+                        })
+                        .ToList()
+                });
+            return res.ToList();
         }
 
         public async Task<ChatMessageEvent> SaveMessageAsync(ChatMessageEvent chatMessageEvent)
