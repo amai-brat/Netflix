@@ -34,18 +34,19 @@ const SupportTab = observer(({wrapObj}) => {
 
         getSupportUsersUnansweredMessagesHistoryAsync().then(() => {
             if(isChatOk){
-                store.data.supportConnection.on("ReceiveMessage", (userMessage) => {
-                    if(usersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
-                        setUsersMessages(usersMessages => [{id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }, ...usersMessages])
-                    }else{
-                        setUsersMessages(usersMessages =>
-                            usersMessages.map(userMessages =>
-                                userMessages.id === userMessage.id
-                                    ? { ...userMessages, isAnswered:false, messages: [...userMessages.messages, userMessage.message] }
-                                    : userMessages
-                            )
-                        );
-                    }
+                store.data.supportConnection.on("ReceiveMessage", 
+                    (userMessage) => { 
+                        setUsersMessages((prevUsersMessages) => {
+                            if(prevUsersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
+                                return [{id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }, ...prevUsersMessages];
+                            }else{
+                                return prevUsersMessages.map(userMessages =>
+                                        userMessages.id === userMessage.id
+                                            ? { ...userMessages, isAnswered:false, messages: [...userMessages.messages, userMessage.message] }
+                                            : userMessages
+                                    );
+                            }
+                    });
                 });
             }
         })

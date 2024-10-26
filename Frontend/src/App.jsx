@@ -23,24 +23,12 @@ import * as signalR from "@microsoft/signalr";
 import {baseSupportUrl} from "./httpClient/baseUrl.js";
 import {useDataStore} from "./store/dataStoreProvider.jsx";
 import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
+import useSupportConnection from "./hooks/useSupportConnection.js";
 
 function App() {
     
     const location = useLocation();
-    const store = useDataStore()
-
-    useEffect(() => {
-        const supportConnection = new signalR.HubConnectionBuilder()
-            .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory: () => {
-                    return sessionStorage.getItem("accessToken");
-                }})
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
-
-        supportConnection.start().then(() => {
-            store.setSupportConnection(supportConnection)
-        }).catch(err => console.error(err))
-    }, []);
+    useSupportConnection(baseSupportUrl);
     
     return (
         <>

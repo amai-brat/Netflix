@@ -1,5 +1,5 @@
 import "/src/Pages/PersonalAccount/SupportTab/Styles/UsersPanel.css"
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import sendIcon from "../../../assets/SendIcon.svg";
 import {supportService} from "../../../services/support.service.js";
@@ -10,7 +10,8 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
     const endOfMessagesRef = useRef(null);
     const messageInput = wrapObj.messageInput
     const setMessageInput = wrapObj.setMessageInput
-    const store = useDataStore()
+    const store = useDataStore();
+    const [joins, setJoins] = useState([]);
 
     const onMessageInputChange = (e) => {
         setMessageInput(e.target.value)
@@ -40,7 +41,7 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
     const onSendMessageInputAsync = async () => {
         if(messageInput !== null && messageInput.trim() !== ""){
             try {
-                await store.data.supportConnection.invoke("SendMessageToUserAsync", selectedUserId, messageInput)
+                await store.data.supportConnection.invoke("SendMessage", selectedUserId, messageInput)
                 setUsersMessagesHelp(messageInput, true)
             } catch (e) {
                 setUsersMessagesHelp("Не удалось отправить сообщение", false)
@@ -68,8 +69,9 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
                 setUsersMessagesHelp("Не удалось загрузить историю сообщений", false, true)
             }
         }
-        if(selectedUserId !== null && user.messages === null) {
+        if(selectedUserId !== null && !joins.includes(selectedUserId)) {
             store.data.supportConnection.invoke("JoinUserSupportChat", selectedUserId).then(() => {
+                setJoins(prev => [...prev, selectedUserId]);
                 loadHistory().then(() => {
                     if (endOfMessagesRef.current) {
                         endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });

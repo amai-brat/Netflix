@@ -12,6 +12,7 @@ export const authenticationService = {
   sendTwoFactorToken,
   getUser,
   refreshToken,
+  refreshTokenIfNotExpired,
   isCurrentUserModerator,
   isCurrentUserAdmin,
   isCurrentUserSupport
@@ -161,6 +162,26 @@ async function refreshToken() {
     console.log(e);
     return {ok: false, data: e.message}
   }
+}
+
+async function refreshTokenIfNotExpired() {
+  let token = sessionStorage.getItem("accessToken");
+  if (!token || jwtDecode(token).exp + 10 < new Date() / 1000) {
+      try {
+          const response = await fetch(`${baseUrl}auth/refresh-token`, {
+              method: "POST",
+              credentials: "include"
+          });
+          if (response.ok) {
+            token = await response.text();
+            sessionStorage.setItem('accessToken', token);
+          }
+      }
+      // eslint-disable-next-line no-empty
+      catch {}
+  }
+
+  return token;
 }
 
 function getUser() {
