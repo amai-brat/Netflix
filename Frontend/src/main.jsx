@@ -10,9 +10,7 @@ Modal.setAppElement('#root');
 ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
         <DataStoreProvider>
-          <React.StrictMode>
             <App />
-          </React.StrictMode>
         </DataStoreProvider>
     </BrowserRouter>,
 )
