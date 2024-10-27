@@ -17,10 +17,9 @@ namespace SupportAPI.Hubs
             var userId = Context.User!.FindFirst("id")!.Value;
             var connectionId = UserIdConnection[userId];
 
-            if (Context.User!.IsInRole("user"))
+            if (!IsInRolesOr("admin", "moderator", "support"))
             {
                 await Groups.RemoveFromGroupAsync(connectionId, userId);
-
             }
             else
             {
@@ -43,7 +42,7 @@ namespace SupportAPI.Hubs
 
             UserIdConnection.TryAdd(userId, Context.ConnectionId);
 
-            if (Context.User.IsInRole("user"))
+            if (!IsInRolesOr("admin", "moderator", "support"))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, userId);
             }
@@ -57,9 +56,9 @@ namespace SupportAPI.Hubs
         {
             var userId = long.Parse(Context.User?.FindFirst("id")!.Value!);
             var senderName = Context.User!.Identity!.Name!;
-            var role = Context.User!.IsInRole("user") ? "user" : "support";
+            var role = Context.User!.IsInRole("support") ? "support" : "user";
 
-            if (Context.User!.IsInRole("user") && userId != chatSessionId)
+            if (!IsInRolesOr("admin", "moderator", "support") && userId != chatSessionId)
             {
                 return;
             }
@@ -86,7 +85,7 @@ namespace SupportAPI.Hubs
             };
 
             await bus.Publish(chatMessageEvent);
-            await Clients.OthersInGroup(userId.ToString()).SendAsync("ReceiveMessage", receiveMessageDto);
+            await Clients.OthersInGroup(chatSessionId.ToString()).SendAsync("ReceiveMessage", receiveMessageDto);
         }
 
         [Authorize(Roles = "admin, moderator, support")]
@@ -97,6 +96,18 @@ namespace SupportAPI.Hubs
             ConnectionGroups[Context.ConnectionId].Add(groupName);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
+
+        private bool IsInRolesOr(params string[] roles)
+        {
+            foreach (var role in roles)
+            {
+                if (Context.User!.IsInRole(role))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

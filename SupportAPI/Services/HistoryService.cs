@@ -14,7 +14,7 @@ namespace SupportAPI.Services
 
             if (chatSession == null)
             {
-                throw new Exception("Нет ChatSession с таким ID");
+                return [];
             }
 
             var chatHistory = await chatMessageRepository
