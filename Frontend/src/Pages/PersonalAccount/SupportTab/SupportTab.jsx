@@ -21,7 +21,7 @@ const SupportTab = observer(({wrapObj}) => {
             try{
                 const {response, data} = await supportService.getSupportUsersUnansweredMessagesHistory();
                 if(response.ok){
-                    setUsersMessages(data)
+                    setUsersMessages(data.map((elem) => ({...elem, messages: elem.chatMessages})))
                     isChatOk = true
                 }else{
                     setUsersMessages(null)
@@ -49,7 +49,7 @@ const SupportTab = observer(({wrapObj}) => {
                 });
             }
         })
-    }, []);
+    }, [store.data.supportConnection]);
     
     return(
         <div id="support-tab">

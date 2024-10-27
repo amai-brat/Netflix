@@ -35,7 +35,7 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
 
     useEffect(() => {
         if (endOfMessagesRef.current) {
-            endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'instant' });
         }
     }, [messages]);
     

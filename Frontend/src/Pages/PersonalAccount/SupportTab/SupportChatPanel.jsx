@@ -40,7 +40,7 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
     const onSendMessageInputAsync = async () => {
         if(messageInput !== null && messageInput.trim() !== ""){
             try {
-                await store.data.supportConnection.invoke("SendMessageToUserAsync", selectedUserId, messageInput)
+                await store.data.supportConnection.invoke("SendMessage", selectedUserId, messageInput)
                 setUsersMessagesHelp(messageInput, true)
             } catch (e) {
                 setUsersMessagesHelp("Не удалось отправить сообщение", false)
@@ -70,14 +70,13 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
         }
         if(selectedUserId !== null && user.messages === null) {
             store.data.supportConnection.invoke("JoinUserSupportChat", selectedUserId).then(() => {
-                loadHistory().then(() => {
-                    if (endOfMessagesRef.current) {
-                        endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
-                    }
-                })       
+                loadHistory()       
             })
         }
-    }, [user.messages]);
+        if (endOfMessagesRef.current) {
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'instant' });
+        }
+    }, [selectedUserId, user.messages]);
     
     return (
         <div id="support-tab-chat-panel">
