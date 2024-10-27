@@ -20,7 +20,8 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Id
         builder.Entity<AppRole>().HasData(
             new AppRole("user"){Id = 1}, 
             new AppRole("moderator"){Id = 2}, 
-            new AppRole("admin"){Id = 3}
+            new AppRole("admin"){Id = 3},
+            new AppRole("support") { Id = 4}
             );
     }
 }
