@@ -67,6 +67,10 @@ namespace SupportAPI.Services
 
                 chatSession.UserName ??= chatMessageEvent.SenderName;
             }
+            else
+            {
+                chatSession.IsAnswered = true;
+            }
 
             await unitOfWork.SaveChangesAsync();
 
