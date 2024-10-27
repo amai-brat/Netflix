@@ -46,7 +46,7 @@ const SupportChat = observer(() => {
                 });
             }
         })
-    }, []);
+    }, [store.data.supportConnection]);
     
     return(
         <div id="support-chat-block">
