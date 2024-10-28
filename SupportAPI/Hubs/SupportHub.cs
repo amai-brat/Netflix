@@ -1,8 +1,11 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SupportAPI.Models;
 using System.Collections.Concurrent;
+using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SupportAPI.Hubs
 {
@@ -86,6 +89,17 @@ namespace SupportAPI.Hubs
 
             await bus.Publish(chatMessageEvent);
             await Clients.OthersInGroup(chatSessionId.ToString()).SendAsync("ReceiveMessage", receiveMessageDto);
+
+            if (!IsInRolesOr("admin", "moderator", "support"))
+            {
+                ConnectionGroups.Where(kvp => !kvp.Value.Contains(userId.ToString()))
+                                .Select(kvp => kvp.Key)
+                                .ToList()
+                                .ForEach(async (connectionId) =>
+                                {
+                                    await Clients.Client(connectionId).SendAsync("ReceiveMessage", receiveMessageDto);
+                                });
+            }
         }
 
         [Authorize(Roles = "admin, moderator, support")]
