@@ -3,6 +3,7 @@ import { describe, test, vi, expect } from "vitest";
 import { BrowserRouter } from 'react-router-dom';
 import ClientPopUpPanel from "../../../../src/Pages/Shared/Header/ClientPopUpPanel.jsx";
 import {authenticationService} from "../../../../src/services/authentication.service.js";
+import {DataStoreProvider} from "../../../../src/store/dataStoreProvider.jsx";
 
 vi.mock("../../../../src/services/authentication.service.js");
 
@@ -14,9 +15,11 @@ const mockUser = {
 
 const setup = (user) => {
     render(
-        <BrowserRouter>
-            <ClientPopUpPanel user={user} setPopUpDisplayed={setPopUpDisplayed} />
-        </BrowserRouter>
+        <DataStoreProvider>
+            <BrowserRouter>
+                <ClientPopUpPanel user={user} setPopUpDisplayed={setPopUpDisplayed} />
+            </BrowserRouter>
+        </DataStoreProvider>
     );
 };
 
