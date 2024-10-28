@@ -31,24 +31,29 @@ const SupportTab = observer(({wrapObj}) => {
                 setUsersMessages(null)
             }
         }
+        if(store.data.supportConnection !== null){
+            store.data.supportConnection.invoke("LeaveAllUserSupportChat").then(() => {
+                getSupportUsersUnansweredMessagesHistoryAsync().then(() => {
+                    if (isChatOk) {
+                        store.data.supportConnection.on("ReceiveMessage", (userMessage) => {
+                            setUsersMessages(prevUsersMessages => {
+                                const existingMessage = prevUsersMessages.find(userMessages => userMessages.id === userMessage.id);
 
-        getSupportUsersUnansweredMessagesHistoryAsync().then(() => {
-            if (isChatOk && store.data.supportConnection !== null) {
-                store.data.supportConnection.on("ReceiveMessage", (userMessage) => {
-                    if(usersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
-                        setUsersMessages(usersMessages => [{id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }, ...usersMessages])
-                    }else{
-                        setUsersMessages(usersMessages =>
-                            usersMessages.map(userMessages =>
-                                userMessages.id === userMessage.id
-                                    ? { ...userMessages, isAnswered:false, messages: [...userMessages.messages, userMessage.message] }
-                                    : userMessages
-                            )
-                        );
+                                if (!existingMessage) {
+                                    return [{ id: userMessage.id, name: userMessage.name, isAnswered: false, messages: null }, ...prevUsersMessages];
+                                } else {
+                                    return prevUsersMessages.map(userMessages =>
+                                        userMessages.id === userMessage.id
+                                            ? { ...userMessages, isAnswered: false, messages: [...userMessages.messages, userMessage.message] }
+                                            : userMessages
+                                    );
+                                }
+                            });
+                        });
                     }
-                });
-            }
-        })
+                })
+            })
+        }
     }, [store.data.supportConnection]);
     
     return(
