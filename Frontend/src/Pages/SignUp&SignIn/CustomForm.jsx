@@ -3,12 +3,14 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Alert } from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
 import {authenticationService} from "../../services/authentication.service.js";
+import {useDataStore} from "../../store/dataStoreProvider.jsx";
 
 export const CustomForm = ({formType}) => {
     const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
     const [rememberMe, setRememberme] = useState(true);
     const [response, setResponse] = useState(null);
     const navigate = useNavigate();
+    const store = useDataStore()
 
     const validateSignin = (values) => {
         const errors = {};
@@ -96,6 +98,7 @@ export const CustomForm = ({formType}) => {
                 let message = formType === "signin" ? "Успешный вход" : "Успешная регистрация";
                 setResponse({Success: true, Message: message});
                 await new Promise((resolve => setTimeout(resolve, 1000)));
+                store.setIsSignIn(true)
                 navigate(formType === "signin" ? "/MainContent" : "/signin");
             }
             else {
@@ -117,6 +120,7 @@ export const CustomForm = ({formType}) => {
         let message = "Успешный вход";
         setResponse({Success: true, Message: message});
         await new Promise((resolve => setTimeout(resolve, 1000)));
+        store.setIsSignIn(true)
         navigate("/MainContent");
     }
 

@@ -1,8 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import "/src/Pages/Shared/Header/Styles/ClientPopUpPanel.css";
 import {authenticationService} from "../../../services/authentication.service.js";
+import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 const ClientPopUpPanel = ({user, setPopUpDisplayed}) => {
     const navigate = useNavigate()
+    const store = useDataStore()
+    
     const navigateToPersonalAccount = (tabName) => {
         navigate("/PersonalAccount/" + tabName)
         setPopUpDisplayed(false)
@@ -10,6 +13,7 @@ const ClientPopUpPanel = ({user, setPopUpDisplayed}) => {
 
   async function handleLogoutButtonClick() {
       await authenticationService.logout();
+      store.setIsSignIn(false)
       navigate("/");
   }
 

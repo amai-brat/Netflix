@@ -24,24 +24,27 @@ import {baseSupportUrl} from "./httpClient/baseUrl.js";
 import {useDataStore} from "./store/dataStoreProvider.jsx";
 import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
 import {authenticationService} from "./services/authentication.service.js";
+import {observer} from "mobx-react";
 
-function App() {
+const App = observer(() => {
     
     const location = useLocation();
     const store = useDataStore()
 
     useEffect(() => {
-        const supportConnection = new signalR.HubConnectionBuilder()
-            .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory: 
-                    async () => await authenticationService.refreshTokenIfNotExpired(),
-            })
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
+        if(store.data.isSignIn || authenticationService.getUser() !== null){
+            const supportConnection = new signalR.HubConnectionBuilder()
+                .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory:
+                        async () => await authenticationService.refreshTokenIfNotExpired(),
+                })
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
 
-        supportConnection.start().then(() => {
-            store.setSupportConnection(supportConnection)
-        }).catch(err => console.error(err))
-    }, []);
+            supportConnection.start().then(() => {
+                store.setSupportConnection(supportConnection)
+            }).catch(err => console.error(err))
+        }
+    }, [store.data.isSignIn]);
     
     return (
         <>
@@ -81,6 +84,6 @@ function App() {
             </Routes>
         </>
     )
-}
+})
 
 export default App
