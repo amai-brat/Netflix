@@ -1,11 +1,8 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SupportAPI.Models;
 using System.Collections.Concurrent;
-using System.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SupportAPI.Hubs
 {
@@ -95,6 +92,7 @@ namespace SupportAPI.Hubs
                 ConnectionGroups.Where(kvp => !kvp.Value.Contains(userId.ToString()))
                                 .Select(kvp => kvp.Key)
                                 .ToList()
+                                // ReSharper disable once AsyncVoidLambda
                                 .ForEach(async (connectionId) =>
                                 {
                                     await Clients.Client(connectionId).SendAsync("ReceiveMessage", receiveMessageDto);
@@ -110,6 +108,17 @@ namespace SupportAPI.Hubs
             ConnectionGroups[Context.ConnectionId].Add(groupName);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
+        
+        [Authorize(Roles = "admin, moderator, support")]
+        public async Task LeaveAllUserSupportChat()
+        {
+            foreach (var group in ConnectionGroups[Context.ConnectionId])
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, group);
+            }
+            
+            ConnectionGroups[Context.ConnectionId] = [];
         }
 
         private bool IsInRolesOr(params string[] roles)
