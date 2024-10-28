@@ -21,7 +21,7 @@ const SupportTab = observer(({wrapObj}) => {
             try{
                 const {response, data} = await supportService.getSupportUsersUnansweredMessagesHistory();
                 if(response.ok){
-                    setUsersMessages(data.map((elem) => ({...elem, messages: elem.chatMessages})))
+                    setUsersMessages(data.map((elem) => ({...elem, name:elem.userName, messages: elem.chatMessages})))
                     isChatOk = true
                 }else{
                     setUsersMessages(null)
@@ -33,7 +33,7 @@ const SupportTab = observer(({wrapObj}) => {
         }
 
         getSupportUsersUnansweredMessagesHistoryAsync().then(() => {
-            if(isChatOk){
+            if (isChatOk && store.data.supportConnection !== null) {
                 store.data.supportConnection.on("ReceiveMessage", (userMessage) => {
                     if(usersMessages.filter((userMessages) => userMessages.id === userMessage.id).length === 0){
                         setUsersMessages(usersMessages => [{id: userMessage.id, name: userMessage.name, isAnswered:false, messages:null }, ...usersMessages])

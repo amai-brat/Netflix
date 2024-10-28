@@ -23,6 +23,7 @@ import * as signalR from "@microsoft/signalr";
 import {baseSupportUrl} from "./httpClient/baseUrl.js";
 import {useDataStore} from "./store/dataStoreProvider.jsx";
 import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
+import {authenticationService} from "./services/authentication.service.js";
 
 function App() {
     
@@ -31,9 +32,9 @@ function App() {
 
     useEffect(() => {
         const supportConnection = new signalR.HubConnectionBuilder()
-            .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory: () => {
-                    return sessionStorage.getItem("accessToken");
-                }})
+            .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory: 
+                    async () => await authenticationService.refreshTokenIfNotExpired(),
+            })
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
