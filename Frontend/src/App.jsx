@@ -25,6 +25,7 @@ import {useDataStore} from "./store/dataStoreProvider.jsx";
 import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
 import {authenticationService} from "./services/authentication.service.js";
 import {observer} from "mobx-react";
+import {setOnFetchAuth} from "./httpClient/fetchAuth.js";
 
 const App = observer(() => {
     
@@ -32,7 +33,8 @@ const App = observer(() => {
     const store = useDataStore()
 
     useEffect(() => {
-        if(store.data.isSignIn || authenticationService.getUser() !== null){
+        setOnFetchAuth(() => {store.setIsSignIn(true)})
+        if(store.data.isSignIn && store.data.supportConnection === null){
             const supportConnection = new signalR.HubConnectionBuilder()
                 .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory:
                         async () => await authenticationService.refreshTokenIfNotExpired(),
@@ -52,7 +54,7 @@ const App = observer(() => {
             {location.pathname !== "/" && !location.pathname.includes("signin") 
                 && location.pathname !== "/signup" && <Header/>}
             {location.pathname !== "/" && !location.pathname.includes("signin")
-                && location.pathname !== "/signup" && <SupportChat/>}
+                && location.pathname !== "/signup" && authenticationService.getUser() !== null && <SupportChat/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>

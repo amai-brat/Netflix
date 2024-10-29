@@ -2,6 +2,11 @@ import {baseUrl} from "./baseUrl.js";
 import {jwtDecode} from "jwt-decode";
 
 let isRefreshing = false;
+let onFetchAuth = function () {} 
+
+export function setOnFetchAuth(delegate){
+  onFetchAuth = delegate
+}
 
 const originalRequest = async (url, config, isJsonResponse, base)=> {
   url = `${base}${url}`
@@ -36,7 +41,9 @@ export const fetchAuth = async (url, isJsonResponse = false, config = {}, base =
       response = newResponse.response
       data = newResponse.data
     }
-    
+    if(response.ok){
+      onFetchAuth()
+    }
     return {response, data}
   }
   accessToken = await refreshToken();
@@ -59,6 +66,7 @@ const refreshToken = async () => {
   isRefreshing = false;
   if (response.ok) {
     sessionStorage.setItem('accessToken', data);
+    onFetchAuth()
     return data;
   }
   
