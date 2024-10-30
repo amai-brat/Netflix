@@ -83,6 +83,21 @@ services:
     environment:
       - JWT_KEY=${JWT_SECRET}
       - DATABASE_CONNECTION_STRING_GENERAL=${DATABASE_CONNECTION_STRING_GENERAL_NODEJS}
+
+
+  support-service:
+    build:
+      context: "."
+      dockerfile: "./SupportAPI/Dockerfile"
+    ports:
+      - "8090:8090"
+    depends_on:
+      - database
+    environment:
+      - JwtOptions:Key=${JWT_SECRET}
+      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
+      - FrontendConfig:Url=${FRONTEND_URL}
+      - ASPNETCORE_HTTP_PORTS=8090
         
   database:
     image: postgres
