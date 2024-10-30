@@ -5,6 +5,7 @@ import {baseUrl} from "../../httpClient/baseUrl.js";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {authenticationService} from "../../services/authentication.service.js";
 import {Alert} from "@mui/material";
+import {useDataStore} from "../../store/dataStoreProvider.jsx";
 
 const ExternalSignIn = () => {
     const [response, setResponse] = useState(null);
@@ -13,6 +14,7 @@ const ExternalSignIn = () => {
     const provider = location.pathname.split('/').at(-1)
     const code = query.get("code")
     const navigate = useNavigate()
+    const store = useDataStore()
     
     
     const authAsync = async () => {
@@ -20,6 +22,7 @@ const ExternalSignIn = () => {
         if(resp.ok){
             setResponse({Success: true, Message: "Успешный вход"});
             await new Promise((resolve => setTimeout(resolve, 1000)));
+            store.setIsSignIn(true)
             navigate("/MainContent");
         }else{
             if(response === null){

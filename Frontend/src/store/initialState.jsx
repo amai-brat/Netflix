@@ -1,5 +1,7 @@
 const initialState = {
-    connection: null
+    connection: null,
+    supportConnection: null,
+    isSignIn: false
 };
 
 export default initialState;

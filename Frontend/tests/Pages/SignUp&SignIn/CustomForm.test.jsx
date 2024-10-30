@@ -3,6 +3,7 @@ import { vi, test, describe, expect } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { CustomForm } from '../../../src/Pages/SignUp&SignIn/CustomForm'
 import { authenticationService } from '../../../src/services/authentication.service';
+import {DataStoreProvider} from "../../../src/store/dataStoreProvider.jsx";
 
 vi.mock('../../../src/services/authentication.service', () => ({
     authenticationService: {
@@ -13,7 +14,7 @@ vi.mock('../../../src/services/authentication.service', () => ({
 
 describe('CustomForm Signup', () => {
     test('Показывает обязательные для заполнения поля', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signup" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signup" /></MemoryRouter></DataStoreProvider>);
     
         fireEvent.submit(container.querySelector('form'));
 
@@ -23,7 +24,7 @@ describe('CustomForm Signup', () => {
     });
 
     test('Выводит ошибку неправильного формата почты', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signup" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signup" /></MemoryRouter></DataStoreProvider>);
 
         fireEvent.input(screen.getByPlaceholderText(/почта/i), {
             target: { value: 'invalid-email' },
@@ -37,7 +38,7 @@ describe('CustomForm Signup', () => {
     });
 
     test('Выводит ошибку неправильного формата логина', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signup" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signup" /></MemoryRouter></DataStoreProvider>);
 
         const invalidLogins = ['abc', 'thisstringismorethan26symbols', 'кириллица;}{']
         const errors = ['Минимальная длина логина - 4 символов', 'Максимальная длина логина - 25 символов', 'Запрещенные символы']
@@ -56,7 +57,7 @@ describe('CustomForm Signup', () => {
     });
 
     test('Выводит ошибку неправильного формата пароля', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signup" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signup" /></MemoryRouter></DataStoreProvider>);
 
         const invalidPasswords = ['abcd', 'thisstringismorethan30symbols;!', 'pswNoSpecSymbol']
         const errors = ['Минимальная длина пароля - 8 символов', 'Максимальная длина пароля - 30 символов',
@@ -76,7 +77,7 @@ describe('CustomForm Signup', () => {
     });
 
     test('Успешное отправление формы при правильных данных', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signup" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signup" /></MemoryRouter></DataStoreProvider>);
 
         fireEvent.input(screen.getByPlaceholderText(/логин/i), {
             target: { value: 'CorrectLogin' },
@@ -106,7 +107,7 @@ describe('CustomForm Signup', () => {
 
 describe('CustomForm SignIn', () => {
     test('Показывает обязательные для заполнения поля', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signin" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signin" /></MemoryRouter></DataStoreProvider>);
     
         fireEvent.submit(container.querySelector('form'));
 
@@ -116,7 +117,7 @@ describe('CustomForm SignIn', () => {
     });
 
     test('Успешное отправление формы при правильных данных', async () => {
-        const {container} = render(<MemoryRouter><CustomForm formType="signin" /></MemoryRouter>);
+        const {container} = render(<DataStoreProvider><MemoryRouter><CustomForm formType="signin" /></MemoryRouter></DataStoreProvider>);
 
         fireEvent.input(screen.getByPlaceholderText(/почта/i), {
             target: { value: 'correctLogin@mail.ru' },

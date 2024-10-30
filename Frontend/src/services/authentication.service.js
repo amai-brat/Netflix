@@ -12,8 +12,10 @@ export const authenticationService = {
   sendTwoFactorToken,
   getUser,
   refreshToken,
+  refreshTokenIfNotExpired,
   isCurrentUserModerator,
-  isCurrentUserAdmin
+  isCurrentUserAdmin,
+  isCurrentUserSupport
 };
 
 async function signin(values){
@@ -162,6 +164,26 @@ async function refreshToken() {
   }
 }
 
+async function refreshTokenIfNotExpired() {
+  let token = sessionStorage.getItem("accessToken");
+  if (!token || jwtDecode(token).exp + 10 < new Date() / 1000) {
+      try {
+          const response = await fetch(`${baseUrl}auth/refresh-token`, {
+              method: "POST",
+              credentials: "include"
+          });
+          if (response.ok) {
+            token = await response.text();
+            sessionStorage.setItem('accessToken', token);
+          }
+      }
+      // eslint-disable-next-line no-empty
+      catch {}
+  }
+
+  return token;
+}
+
 function getUser() {
   const token = sessionStorage.getItem("accessToken");
   if (!token) {
@@ -178,4 +200,8 @@ function isCurrentUserModerator() {
 
 function isCurrentUserAdmin() {
   return getUser()?.role?.includes("admin") ?? false;
+}
+
+function isCurrentUserSupport() {
+  return getUser()?.role?.includes("support") ?? false;
 }
