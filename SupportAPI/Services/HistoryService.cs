@@ -14,7 +14,7 @@ namespace SupportAPI.Services
 
             if (chatSession == null)
             {
-                throw new Exception("Нет ChatSession с таким ID");
+                return [];
             }
 
             var chatHistory = await chatMessageRepository
@@ -66,6 +66,10 @@ namespace SupportAPI.Services
                 chatSession.IsAnswered = false;
 
                 chatSession.UserName ??= chatMessageEvent.SenderName;
+            }
+            else
+            {
+                chatSession.IsAnswered = true;
             }
 
             await unitOfWork.SaveChangesAsync();
