@@ -14,17 +14,13 @@ const GeneralPart = ({component: Component}) => {
         {name: "Избранное", link: "FavouritesTab"},
         {name: "Рецензии", link: "PersonalReviewsTab"},
         {name: "Подписки", link: "SubscriptionsTab"},
+        {name: "Контент", link: "admin/content"},
+        {name: "Подписки управление", link:"admin/subscriptions"},
+        {name: "Чаты с пользователями", link: "SupportTab"}
     ];
 
     // noinspection JSUnusedLocalSymbols
     const user = authenticationService.getUser();
-    if (user.role.includes("support")) {
-        tabs.push({name: "Чаты с пользователями", link: "SupportTab"});
-    }
-    if (user.role.includes("admin")) {
-        tabs.push({name: "Контент", link: "admin/content"});
-        tabs.push({name: "Подписки управление", link:"admin/subscriptions"})
-    }
 
     const location = useLocation();
     const setInitialTab = () => {
