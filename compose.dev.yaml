@@ -7,7 +7,7 @@ services:
       - "8080:8080"
       - "8081:8081"
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
   
   
@@ -98,6 +98,7 @@ services:
       - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
       - FrontendConfig:Url=${FRONTEND_URL}
       - ASPNETCORE_HTTP_PORTS=8090
+      - ASPNETCORE_ENVIRONMENT=Development
         
   database:
     image: postgres
@@ -132,6 +133,7 @@ services:
       - ${SSL_S3_KEY_PATH}:/root/ssl-keys/voltorka-s3-key.txt
       - ${SSL_S3_BUNDLE_PATH}:/root/ssl-keys/voltorka-s3-bundle.txt
       - ./Frontend/:/app
+      - node_modules:/app/node_modules
     ports:
       - "80:80"
       - "443:443"
@@ -151,4 +153,5 @@ services:
       --requirepass ${REDIS_PASSWORD}
 volumes:
     redis-data:
+    node_modules:
       

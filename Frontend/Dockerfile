@@ -1,10 +1,10 @@
-FROM node AS base
+FROM  --platform=linux/amd64 node:18 AS base
 
 WORKDIR /app
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm i
+RUN npm i --loglevel=verbose
 COPY . . 
 
 FROM base AS dev
