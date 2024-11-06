@@ -2,6 +2,7 @@
 
 import React, {useEffect, useState} from "react"
 import ReactDOM from "react-dom"
+import markerImg from "../../../../assets/Marker.svg"
 
 const Map = () => {
     const [data, setData] = useState({ymaps3: null, reactify: null})
@@ -60,7 +61,7 @@ const Map = () => {
                     coordinates={cinema.geometry.coordinates}
                     draggable={false}
                 >
-                    <img src="src/assets/Marker.svg" alt="Marker" style={{width:"36px", height:"36px"}}/>
+                    <img src={markerImg} alt="Marker" style={{width:"36px", height:"36px"}}/>
                 </YMapMarker>
             )}
         </YMap>
