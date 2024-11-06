@@ -1,0 +1,20 @@
+.support-chat-message {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0;
+    text-align: left;
+    max-width: 70%; 
+    width: fit-content;
+    padding: 8px; 
+    border-radius: 5px;
+    word-wrap: break-word;
+    background-color: var(--third-color);
+}
+
+.support-chat-message.user {
+    margin-left: auto; 
+}
+
+.support-chat-message.support {
+    margin-right: auto;
+}

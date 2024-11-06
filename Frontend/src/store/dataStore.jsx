@@ -10,6 +10,14 @@ class DataStore {
     setConnection = (connection) => {
         this.data.connection = connection
     }
+    
+    setSupportConnection = (connection) => {
+        this.data.supportConnection = connection
+    }
+
+    setIsSignIn = (isSignIn) => {
+        this.data.isSignIn = isSignIn
+    }
 }
 
 const dataStore = new DataStore();

@@ -17,26 +17,57 @@ import { SubscriptionsManagement } from './Pages/Admin/Subscriptions/Subscriptio
 import {ToastContainer} from "react-toastify";
 import AdminContent from "./Pages/Admin/Content/AdminContent.jsx";
 import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
+import SupportChat from "./Pages/Shared/SupportChat/SupportChat.jsx";
+import {useEffect} from "react";
+import * as signalR from "@microsoft/signalr";
+import {baseSupportUrl} from "./httpClient/baseUrl.js";
+import {useDataStore} from "./store/dataStoreProvider.jsx";
+import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
+import {authenticationService} from "./services/authentication.service.js";
+import {observer} from "mobx-react";
+import {setOnFetchAuth} from "./httpClient/fetchAuth.js";
 
-function App() {
+const App = observer(() => {
     
     const location = useLocation();
+    const store = useDataStore()
 
+    useEffect(() => {
+        setOnFetchAuth(() => {store.setIsSignIn(true)})
+        if(store.data.isSignIn && store.data.supportConnection === null){
+            const supportConnection = new signalR.HubConnectionBuilder()
+                .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory:
+                        async () => await authenticationService.refreshTokenIfNotExpired(),
+                })
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            supportConnection.start().then(() => {
+                store.setSupportConnection(supportConnection)
+            }).catch(err => console.error(err))
+        }
+    }, [store.data.isSignIn]);
+    
     return (
         <>
             <ToastContainer theme={"dark"} position={"bottom-center"}/>
             {location.pathname !== "/" && !location.pathname.includes("signin") 
                 && location.pathname !== "/signup" && <Header/>}
+            {location.pathname !== "/" && !location.pathname.includes("signin")
+                && location.pathname !== "/signup" && authenticationService.getUser() !== null && <SupportChat/>}
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 <Route path="MainContent" element={<MainContent/>}/>
-                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user", "admin"]}/>}>
+                <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user", "support", "admin"]}/>}>
                     <Route path={"/PersonalAccount"} element={<GeneralPart/>}>
                         <Route index element={<PersonalInfoTab/>}/>
                         <Route path="PersonalInfoTab" element={<PersonalInfoTab/>}/>
                         <Route path="FavouritesTab" element={<FavouritesTab/>}/>
                         <Route path="PersonalReviewsTab" element={<PersonalReviewsTab/>}/>
                         <Route path="SubscriptionsTab" element={<SubscriptionsTab/>}/>
+                        <Route path={"/PersonalAccount/SupportTab"} element={<ProtectedRoute roles={["support"]}/>}>
+                            <Route path={"/PersonalAccount/SupportTab"} element={<SupportTabWrapper/>}/>
+                        </Route>
                     </Route>
                 </Route>
                 <Route path={"/PersonalAccount"} element={<ProtectedRoute roles={["user","admin"]}/>}>
@@ -55,6 +86,6 @@ function App() {
             </Routes>
         </>
     )
-}
+})
 
 export default App

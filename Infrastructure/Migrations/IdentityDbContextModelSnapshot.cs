@@ -68,6 +68,12 @@ namespace Infrastructure.Migrations
                             Id = 3L,
                             Name = "admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Name = "support",
+                            NormalizedName = "SUPPORT"
                         });
                 });
 

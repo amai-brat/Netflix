@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import SignUpSignIn from '../../../src/Pages/SignUp&SignIn/SignUpSignIn';
 import { userService } from "../../../src/services/user.service.js";
 import { vi, test, describe, expect, beforeEach } from 'vitest';
+import {DataStoreProvider} from "../../../src/store/dataStoreProvider.jsx";
 
 const mockNavigate = vi.fn()
 
@@ -28,9 +29,11 @@ describe('SignUpSignIn logic', () => {
 
     test('Должен вызвать userService.getPersonalInfo при рендеринге', async () => {
         render(
-          <MemoryRouter>
-            <SignUpSignIn formType="signup" />
-          </MemoryRouter>
+            <DataStoreProvider>
+              <MemoryRouter>
+                <SignUpSignIn formType="signup" />
+              </MemoryRouter>
+            </DataStoreProvider>
         );
     
         expect(userService.getPersonalInfo).toHaveBeenCalled(); 
@@ -38,9 +41,11 @@ describe('SignUpSignIn logic', () => {
 
     test('Должен отображать заголовок и кнопку "Зарегистрироваться" при formType = signup', () => {
         render(
-            <MemoryRouter>
-                <SignUpSignIn formType="signup"/>
-            </MemoryRouter>
+            <DataStoreProvider>
+                <MemoryRouter>
+                    <SignUpSignIn formType="signup"/>
+                </MemoryRouter>
+            </DataStoreProvider>
         );
 
         expect(screen.getByText(/Зарегистрироваться/i, { selector: 'div' })).toBeInTheDocument();
@@ -49,9 +54,11 @@ describe('SignUpSignIn logic', () => {
 
     test('Должен отображать заголовок и кнопку "Войти" при formType = signin', () => {
         render(
-            <MemoryRouter>
-                <SignUpSignIn formType="signin" />
-            </MemoryRouter>
+            <DataStoreProvider>
+                <MemoryRouter>
+                    <SignUpSignIn formType="signin" />
+                </MemoryRouter>
+            </DataStoreProvider>
         );
 
         expect(screen.getByText(/Войти/i, { selector: 'div' })).toBeInTheDocument();
@@ -62,9 +69,11 @@ describe('SignUpSignIn logic', () => {
         userService.getPersonalInfo.mockResolvedValueOnce({ response: { ok: true } });
 
         render(
-            <MemoryRouter>
-                <SignUpSignIn formType="signup" />
-            </MemoryRouter>
+            <DataStoreProvider>
+                <MemoryRouter>
+                    <SignUpSignIn formType="signup" />
+                </MemoryRouter>
+            </DataStoreProvider>
         );
 
         await waitFor(() => {
@@ -74,9 +83,11 @@ describe('SignUpSignIn logic', () => {
 
     test('Не должен вызывать navigate на MainContent при неуспешном получении данных пользователя', async () => {
         render(
-            <MemoryRouter>
-                <SignUpSignIn formType="signup"/>
-            </MemoryRouter>
+            <DataStoreProvider>
+                <MemoryRouter>
+                    <SignUpSignIn formType="signup"/>
+                </MemoryRouter>
+            </DataStoreProvider>
         );
 
         await waitFor(() => {
