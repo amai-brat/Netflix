@@ -11,45 +11,9 @@ on:
       - dev
 
 jobs:
-  build-front:
-
+  inspect-front:
+    name: Inspect front
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache-dependency-path: Frontend/package-lock.json
-          node-version: "latest"
-          cache: "npm"
-      - run: npm ci
-        working-directory: Frontend
-      - run: npm run build
-        working-directory: Frontend
-      - run: npx vitest
-        working-directory: Frontend
-  build-back:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-  
-  inspection-front:
-
-    runs-on: ubuntu-latest
-
-    name: Inspection
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -61,13 +25,10 @@ jobs:
         working-directory: Frontend
       - run: npm run lint
         working-directory: Frontend
-      - run: npm run build
-        working-directory: Frontend
-  inspection-back:
 
+  inspect-back:
+    name: Inspect back
     runs-on: ubuntu-latest
-
-    name: Inspection
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -85,9 +46,45 @@ jobs:
           dotnetVersion: ${{ steps.setup-dotnet.outputs.dotnet-version }}
           minimumSeverity: WARNING
           minimumReportSeverity: WARNING
+
+  build-front:
+    name: Build and test front
+    needs: [inspect-front]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache-dependency-path: Frontend/package-lock.json
+          node-version: "latest"
+          cache: "npm"
+      - run: npm ci
+        working-directory: Frontend
+      - run: npm run build
+        working-directory: Frontend
+      - run: npx vitest
+        working-directory: Frontend
+
+  build-back:
+    name: Build and test back
+    needs: [inspect-back]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+
   deploy:
     name: Deploy new code
-    needs: [build-front, build-back, inspection-front, inspection-back]
+    needs: [build-front, build-back]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest 
     steps:   
