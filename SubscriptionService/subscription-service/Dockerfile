@@ -1,10 +1,10 @@
-FROM --platform=linux/amd64 node:18
+FROM node:18
 
 WORKDIR /app
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm i --loglevel silly
+RUN npm i --loglevel verbose
 
 COPY . .
 
