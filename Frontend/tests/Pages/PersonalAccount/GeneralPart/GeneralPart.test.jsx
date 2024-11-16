@@ -26,6 +26,7 @@ describe('GeneralPart Component', () => {
         authenticationService.getUser.mockReturnValue({
             id: 1,
             name: 'Test User',
+            role: "support, admin"
         });
     });
 

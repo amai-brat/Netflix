@@ -11,7 +11,7 @@ public static class EmailMessageHelper
     {
         var encodedToken = HttpUtility.UrlEncode(confirmationToken);
         return $"""
-                Чтобы подтвердить почту, нажмите на <a href="{EmailConfirmationEndpoint + $"?token={encodedToken}&userId={userId}"}">ссылку</a>"
+                Чтобы подтвердить почту, нажмите на <a href="{EmailConfirmationEndpoint + $"?token={encodedToken}&userId={userId}"}">ссылку</a>
                 """;
     }
 
@@ -19,7 +19,7 @@ public static class EmailMessageHelper
     {
         var encodedToken = HttpUtility.UrlEncode(confirmationToken);
         return $"""
-                Чтобы изменить почту, нажмите на <a href="{EmailChangeConfirmationEndpoint + $"?token={encodedToken}&userId={userId}"}&newEmail={newEmail}">ссылку</a>"
+                Чтобы изменить почту, нажмите на <a href="{EmailChangeConfirmationEndpoint + $"?token={encodedToken}&userId={userId}"}&newEmail={newEmail}">ссылку</a>
                 """; 
     }
 

@@ -9,18 +9,29 @@ import { authenticationService } from '../../../services/authentication.service'
 // noinspection JSUnusedLocalSymbols
 const GeneralPart = ({component: Component}) => {
     const [currentTab, setCurrentTab] = useState(0);
-    let tabs = [
+    const [tabs, setTabs] = useState([
         {name: "Личные данные", link: "PersonalInfoTab"},
         {name: "Избранное", link: "FavouritesTab"},
         {name: "Рецензии", link: "PersonalReviewsTab"},
         {name: "Подписки", link: "SubscriptionsTab"},
-        {name: "Контент", link: "admin/content"},
-        {name: "Подписки управление", link:"admin/subscriptions"},
-        {name: "Чаты с пользователями", link: "SupportTab"}
-    ];
+    ]);
 
-    // noinspection JSUnusedLocalSymbols
-    const user = authenticationService.getUser();
+    useEffect(() => {
+        const user = authenticationService.getUser();
+        if (!user) return; 
+
+        if (user.role.includes("support")) {
+            setTabs(prev => [...prev, 
+                {name: "Чаты с пользователями", link: "SupportTab"}
+            ]);
+        }
+        if (user.role.includes("admin")) {
+            setTabs(prev => [...prev, 
+                {name: "Контент", link: "admin/content"},
+                {name: "Подписки управление", link:"admin/subscriptions"}
+            ]);
+        }
+    }, []);
 
     const location = useLocation();
     const setInitialTab = () => {
