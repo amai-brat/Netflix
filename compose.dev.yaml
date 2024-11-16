@@ -95,10 +95,32 @@ services:
       - database
     environment:
       - JwtOptions:Key=${JWT_SECRET}
-      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
       - FrontendConfig:Url=${FRONTEND_URL}
       - ASPNETCORE_HTTP_PORTS=8090
       - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMqConfig__Username=${RABBIT_USER}
+      - RabbitMqConfig__Password=${RABBIT_PASSWORD}
+      - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+
+
+  support-persistent-service:
+    build:
+      context: "."
+      dockerfile: "./SupportPersistentAPI/Dockerfile"
+    ports:
+      - "10000:80"
+      - "10001:443"
+    depends_on:
+      - rabbitmq
+      - database
+    environment:
+      - JwtOptions:Key=${JWT_SECRET}
+      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
+      - RabbitMqConfig__Username=${RABBIT_USER}
+      - RabbitMqConfig__Password=${RABBIT_PASSWORD}
+      - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+      - FrontendConfig:Url=${FRONTEND_URL}
+
         
   database:
     image: postgres
@@ -151,6 +173,18 @@ services:
       - redis-data:/data
     command: >
       --requirepass ${REDIS_PASSWORD}
+
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    ports:
+      - 15672:15672
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
+ 
+
 volumes:
     redis-data:
     node_modules:

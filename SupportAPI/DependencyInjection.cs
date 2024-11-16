@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SupportAPI.Configuration;
 using System.Text;
 
 namespace SupportAPI
@@ -64,15 +65,22 @@ namespace SupportAPI
             return serviceCollection;
         }
 
-        public static IServiceCollection AddMassTransitRabbitMq(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddMassTransitRabbitMq(this IServiceCollection serviceCollection,
+            RabbitMqConfig rabbitConfiguration)
         {
             serviceCollection.AddMassTransit(cfg =>
             {
                 cfg.SetKebabCaseEndpointNameFormatter();
 
-                cfg.UsingInMemory((context, configure) =>
+                cfg.UsingRabbitMq((context, configurator) =>
                 {
-                    configure.ConfigureEndpoints(context);
+                    configurator.Host(new Uri(rabbitConfiguration.Hostname!), h =>
+                    {
+                        h.Username(rabbitConfiguration.Username);
+                        h.Password(rabbitConfiguration.Password);
+                    });
+
+                    configurator.ConfigureEndpoints(context);
                 });
             });
 

@@ -92,13 +92,35 @@ services:
     ports:
       - "8090:8090"
     depends_on:
+      - rabbitmq
+    environment:
+      - JwtOptions:Key=${JWT_SECRET}
+      - FrontendConfig:Url=${FRONTEND_URL}
+      - ASPNETCORE_HTTP_PORTS=8090
+      - RabbitMqConfig__Username=${RABBIT_USER}
+      - RabbitMqConfig__Password=${RABBIT_PASSWORD}
+      - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+
+
+  support-persistent-service:
+    build:
+      context: "."
+      dockerfile: "./SupportPersistentAPI/Dockerfile"
+    ports:
+      - "10000:80"
+      - "10001:443"
+    depends_on:
+      - rabbitmq
       - database
     environment:
       - JwtOptions:Key=${JWT_SECRET}
       - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
+      - RabbitMqConfig__Username=${RABBIT_USER}
+      - RabbitMqConfig__Password=${RABBIT_PASSWORD}
+      - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
       - FrontendConfig:Url=${FRONTEND_URL}
-      - ASPNETCORE_HTTP_PORTS=8090
-        
+
+
   database:
     image: postgres
     ports:
@@ -106,13 +128,13 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ~/postgres/Netflix:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
   
   minio:
     image: quay.io/minio/minio
     command: server --console-address ":9001" /data
     volumes:
-      - '~/minio/data:/data'
+      - minio-data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -147,6 +169,19 @@ services:
       - redis-data:/data
     command: >
       --requirepass ${REDIS_PASSWORD}
+
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    ports:
+      - 15672:15672
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
+
 volumes:
     redis-data:
+    db-data:
+    minio-data:
       

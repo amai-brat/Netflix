@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SupportPersistentAPI;
+using SupportPersistentAPI.Configuration;
 using SupportPersistentAPI.Data;
 using SupportPersistentAPI.Data.Extensions;
 using SupportPersistentAPI.Services;
@@ -15,7 +16,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
 builder.Services.AddDbContext(builder.Configuration);
-builder.Services.AddMassTransitRabbitMq();
+builder.Services.AddMassTransitRabbitMq(
+    builder.Configuration.GetSection("RabbitMqConfig").Get<RabbitMqConfig>()!
+);
 builder.Services.AddTransient<IHistoryService, HistoryService>();
 
 var app = builder.Build();

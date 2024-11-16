@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SupportPersistentAPI.Configuration;
 using SupportPersistentAPI.Consumers;
 using System.Text;
 
@@ -88,16 +89,23 @@ namespace SupportPersistentAPI
             return serviceCollection;
         }
 
-        public static IServiceCollection AddMassTransitRabbitMq(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddMassTransitRabbitMq(this IServiceCollection serviceCollection,
+            RabbitMqConfig rabbitConfiguration)
         {
             serviceCollection.AddMassTransit(cfg =>
             {
                 cfg.AddConsumer<ChatMessageConsumer>();
                 cfg.SetKebabCaseEndpointNameFormatter();
 
-                cfg.UsingInMemory((context, configure) =>
+                cfg.UsingRabbitMq((context, configurator) =>
                 {
-                    configure.ConfigureEndpoints(context);
+                    configurator.Host(new Uri(rabbitConfiguration.Hostname!), h =>
+                    {
+                        h.Username(rabbitConfiguration.Username);
+                        h.Password(rabbitConfiguration.Password);
+                    });
+
+                    configurator.ConfigureEndpoints(context);
                 });
             });
 
