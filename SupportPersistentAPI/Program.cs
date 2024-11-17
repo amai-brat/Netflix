@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using SupportPersistentAPI;
 using SupportPersistentAPI.Configuration;
@@ -40,7 +41,12 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
-app.UseHttpsRedirection();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+app.UseHsts();
 app.UseCors("Frontend");
 
 app.UseAuthentication();

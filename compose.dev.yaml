@@ -108,14 +108,16 @@ services:
       context: "."
       dockerfile: "./SupportPersistentAPI/Dockerfile"
     ports:
-      - "10000:80"
-      - "10001:443"
+      - "10000:8080"
+      - "10001:8081"
     depends_on:
       - rabbitmq
       - database
     environment:
       - JwtOptions:Key=${JWT_SECRET}
       - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}
       - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
