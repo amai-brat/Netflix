@@ -1,4 +1,5 @@
-﻿using SupportPersistentAPI.Data.Entities;
+﻿using Shared.MessageContracts;
+using SupportPersistentAPI.Data.Entities;
 using SupportPersistentAPI.Models;
 
 namespace SupportPersistentAPI.Services

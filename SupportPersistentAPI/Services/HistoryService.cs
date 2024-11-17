@@ -1,6 +1,7 @@
 ﻿using SupportPersistentAPI.Data.Repositories.Interfaces;
 using SupportPersistentAPI.Data.Entities;
 using SupportPersistentAPI.Models;
+using Shared.MessageContracts;
 
 namespace SupportPersistentAPI.Services
 {

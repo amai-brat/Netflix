@@ -1,5 +1,5 @@
 ﻿using MassTransit;
-using SupportPersistentAPI.Models;
+using Shared.MessageContracts;
 using SupportPersistentAPI.Services;
 
 namespace SupportPersistentAPI.Consumers
