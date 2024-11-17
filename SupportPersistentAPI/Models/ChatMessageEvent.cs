@@ -1,4 +1,6 @@
-﻿namespace SupportPersistentAPI.Models
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+namespace SupportPersistentAPI.Models
 {
     public class ChatMessageEvent
     {

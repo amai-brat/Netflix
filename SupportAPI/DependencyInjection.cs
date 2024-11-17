@@ -74,7 +74,7 @@ namespace SupportAPI
 
                 cfg.UsingRabbitMq((context, configurator) =>
                 {
-                    configurator.Host(new Uri(rabbitConfiguration.Hostname!), h =>
+                    configurator.Host(new Uri(rabbitConfiguration.Hostname), h =>
                     {
                         h.Username(rabbitConfiguration.Username);
                         h.Password(rabbitConfiguration.Password);
