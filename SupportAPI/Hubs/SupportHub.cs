@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Shared.MessageContracts;
 using SupportAPI.Models;
 using System.Collections.Concurrent;
 

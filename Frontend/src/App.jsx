@@ -20,7 +20,7 @@ import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
 import SupportChat from "./Pages/Shared/SupportChat/SupportChat.jsx";
 import {useEffect} from "react";
 import * as signalR from "@microsoft/signalr";
-import {baseSupportUrl} from "./httpClient/baseUrl.js";
+import {baseSupportHubUrl} from "./httpClient/baseUrl.js";
 import {useDataStore} from "./store/dataStoreProvider.jsx";
 import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
 import {authenticationService} from "./services/authentication.service.js";
@@ -36,7 +36,7 @@ const App = observer(() => {
         setOnFetchAuth(() => {store.setIsSignIn(true)})
         if(store.data.isSignIn && store.data.supportConnection === null){
             const supportConnection = new signalR.HubConnectionBuilder()
-                .withUrl(baseSupportUrl + "hub/support", {accessTokenFactory:
+                .withUrl(baseSupportHubUrl + "hub/support", {accessTokenFactory:
                         async () => await authenticationService.refreshTokenIfNotExpired(),
                 })
                 .configureLogging(signalR.LogLevel.Information)
