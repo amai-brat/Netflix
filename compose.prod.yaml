@@ -173,12 +173,13 @@ services:
     command: >
       --requirepass ${REDIS_PASSWORD}
 
+
   rabbitmq:
     image: rabbitmq:3-alpine
     ports:
       - 15672:15672
     volumes:
-      - ./rabbitmq:/var/lib/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
@@ -187,4 +188,5 @@ volumes:
     redis-data:
     db-data:
     minio-data:
+    rabbitmq-data:
       
