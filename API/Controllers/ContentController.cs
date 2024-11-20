@@ -44,6 +44,7 @@ namespace API.Controllers
             else 
                 return Ok(SetConstraintOnPersonCount(content));
         }
+
         [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any)]
         [HttpGet("filter")]
         public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
@@ -261,6 +262,8 @@ namespace API.Controllers
             return movieContentDto;
 
         }
+
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/serial/{id}")]
         public async Task<SerialContentAdminPageDto> GetSerialContentAdminPageDto(long id)
         {
