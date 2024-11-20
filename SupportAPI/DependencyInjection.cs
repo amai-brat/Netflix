@@ -1,8 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using SupportAPI.Consumers;
+using SupportAPI.Configuration;
 using System.Text;
 
 namespace SupportAPI
@@ -66,52 +65,22 @@ namespace SupportAPI
             return serviceCollection;
         }
 
-        public static IServiceCollection AddSwaggerGenWithBearer(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.ApiKey,
-                    Description = """
-                              Authorization using JWT by adding header
-                              Authorization: Bearer [token]
-                              """,
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Scheme = "Bearer"
-                });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-            });
-
-            return serviceCollection;
-        }
-
-        public static IServiceCollection AddMassTransitInMemory(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddMassTransitRabbitMq(this IServiceCollection serviceCollection,
+            RabbitMqConfig rabbitConfiguration)
         {
             serviceCollection.AddMassTransit(cfg =>
             {
-                cfg.AddConsumer<ChatMessageConsumer>();
                 cfg.SetKebabCaseEndpointNameFormatter();
 
-                cfg.UsingInMemory((context, configure) =>
+                cfg.UsingRabbitMq((context, configurator) =>
                 {
-                    configure.ConfigureEndpoints(context);
+                    configurator.Host(new Uri(rabbitConfiguration.Hostname), h =>
+                    {
+                        h.Username(rabbitConfiguration.Username);
+                        h.Password(rabbitConfiguration.Password);
+                    });
+
+                    configurator.ConfigureEndpoints(context);
                 });
             });
 
