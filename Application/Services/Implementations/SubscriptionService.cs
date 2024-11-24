@@ -121,11 +121,11 @@ public class SubscriptionService(
         return subscription;
     }
 
-    public async Task<List<AdminSubscriptionsDto>> GetSubscriptionsAsync()
+    public async Task<List<AdminSubscriptionDto>> GetSubscriptionsAsync()
     {
         var subscriptions = await subRepository.GetAllSubscriptionsWithAccessibleContentAsync();
         var result = subscriptions
-            .Select(subscription => new AdminSubscriptionsDto
+            .Select(subscription => new AdminSubscriptionDto
             {
                 Id = subscription.Id,
                 Name = subscription.Name,

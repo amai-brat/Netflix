@@ -23,7 +23,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         }
         
         // act
-        var response = await adminClient.GetFromJsonAsync<List<AdminSubscriptionsDto>>("/admin/subscription/all");
+        var response = await adminClient.GetFromJsonAsync<List<AdminSubscriptionDto>>("/admin/subscription/all");
         
         // assert
         Assert.NotNull(response);
