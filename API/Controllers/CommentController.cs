@@ -1,7 +1,7 @@
 using Application.Dto;
 using Application.Features.CommentNotifications.Commands.SetNotificationReaded;
 using Application.Features.CommentNotifications.Queries.GetAllUserCommentNotifications;
-using Application.Services.Abstractions;
+using Application.Features.Comments.Commands.AssignComment;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,12 +12,9 @@ namespace API.Controllers;
 [Route("comment")]
 [ApiController]
 public class CommentController(
-    ICommentService commentService,
     IMediator mediator
 ) : ControllerBase
 {
-    private readonly ICommentService _commentService = commentService;
-
     [HttpGet("notifications")]
     [Authorize]
     public async Task<IActionResult> GetAllUserCommentNotifications()
@@ -35,9 +32,9 @@ public class CommentController(
     {
         var userId = User.FindFirst("id")?.Value;
             
-        var id = await _commentService.AssignCommentAsync(text.Text, long.Parse(userId!), reviewId);
+        var result = await mediator.Send(new AssignCommentCommand(text.Text, long.Parse(userId!), reviewId));
             
-        return Ok(id);
+        return Ok(result.CommendId);
     }
     
     [HttpPost("set/readed")]

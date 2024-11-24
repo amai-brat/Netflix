@@ -1,6 +1,8 @@
 ﻿using Application.Dto;
+using Application.Features.Comments.Commands.DeleteComment;
 using Application.Services.Abstractions;
 using Infrastructure.Services.Abstractions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +12,7 @@ namespace API.Controllers
 	[Route("admin/usermanagement")]
 	public class UserManagementController(
 		IReviewService reviewService,
-		ICommentService commentService,
+		IMediator mediator,
 		IAuthService authService,
 		IUserService userService) : Controller
 	{
@@ -18,7 +20,7 @@ namespace API.Controllers
 		[HttpDelete("deleteComment/{commentId:long}")]
 		public async Task<IActionResult> DeleteUserComment(long commentId)
 		{
-			return Ok(await commentService.DeleteCommentByIdAsync(commentId));
+			return Ok(await mediator.Send(new DeleteCommentCommand(commentId)));
 		}
 
 		[Authorize(Roles = "admin, moderator")]

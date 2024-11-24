@@ -14,8 +14,6 @@ namespace Application
             serviceCollection.AddScoped<IContentService, ContentService>();
             serviceCollection.AddScoped<IReviewService, ReviewService>();
             serviceCollection.AddScoped<IFavouriteService, FavouriteService>();
-            serviceCollection.AddScoped<ICommentService, CommentService>();
-            serviceCollection.AddScoped<ICommentService, CommentService>();
 
             serviceCollection.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
             serviceCollection.AddMediatR(conf =>
