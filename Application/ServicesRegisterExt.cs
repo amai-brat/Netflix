@@ -16,9 +16,8 @@ namespace Application
             serviceCollection.AddScoped<IFavouriteService, FavouriteService>();
             serviceCollection.AddScoped<ICommentService, CommentService>();
             serviceCollection.AddScoped<ICommentService, CommentService>();
-            serviceCollection.AddScoped<INotificationService, NotificationService>();
 
-            serviceCollection.AddValidatorsFromAssembly(AssemblyReference.Assembly);
+            serviceCollection.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
             serviceCollection.AddMediatR(conf =>
             {
                 conf.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
