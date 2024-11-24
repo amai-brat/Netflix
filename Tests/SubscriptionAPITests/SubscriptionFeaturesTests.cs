@@ -1,14 +1,11 @@
-using Application.Cqrs.PipelineBehaviors;
 using Application.Exceptions.Base;
 using Application.Exceptions.ErrorMessages;
 using Application.Features.Subscriptions.Commands.CreateSubscription;
 using Application.Features.Subscriptions.Commands.DeleteSubscription;
 using Application.Features.Subscriptions.Commands.EditSubscription;
-using Application.Helpers;
 using Application.Repositories;
 using AutoFixture;
 using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -24,16 +21,13 @@ public class SubscriptionFeaturesTests
 
     public SubscriptionFeaturesTests()
     {
-        _serviceProvider = new ServiceCollection()
-            .AddMediatR(conf =>
+        _serviceProvider = new TestServiceProviderBuilder()
+            .With(services =>
             {
-                conf.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
-                conf.RegisterServicesFromAssembly(AssemblyReference.Assembly);
+                services.AddScoped<ISubscriptionRepository>(_ => _mockSubRepo.Object);
+                services.AddScoped<IContentRepository>(_ => _mockContentRepo.Object);
             })
-            .AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true)
-            .AddScoped<ISubscriptionRepository>(_ => _mockSubRepo.Object)
-            .AddScoped<IContentRepository>(_ => _mockContentRepo.Object)
-            .BuildServiceProvider();
+            .Build();
     }
 
     [Fact]
