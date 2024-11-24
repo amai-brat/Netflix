@@ -1,10 +1,8 @@
-using Application.Dto;
 using Application.Features.Subscriptions.Commands.CreateSubscription;
 using Application.Features.Subscriptions.Commands.DeleteSubscription;
 using Application.Features.Subscriptions.Commands.EditSubscription;
 using Application.Features.Subscriptions.Queries.GetAvailableContents;
 using Application.Features.Subscriptions.Queries.GetSubscriptions;
-using Application.Services.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

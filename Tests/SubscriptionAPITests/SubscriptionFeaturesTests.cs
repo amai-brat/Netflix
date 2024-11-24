@@ -1,28 +1,48 @@
-using Application.Dto;
+using Application.Cqrs.PipelineBehaviors;
+using Application.Exceptions.Base;
 using Application.Exceptions.ErrorMessages;
-using Application.Exceptions.Particular;
+using Application.Features.Subscriptions.Commands.CreateSubscription;
+using Application.Features.Subscriptions.Commands.DeleteSubscription;
+using Application.Features.Subscriptions.Commands.EditSubscription;
+using Application.Helpers;
 using Application.Repositories;
-using Application.Services.Implementations;
 using AutoFixture;
 using Domain.Entities;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace Tests.SubscriptionAPITests;
 
-[Obsolete("CQRS")]
-public class SubscriptionServiceTests
+public class SubscriptionFeaturesTests
 {
     private readonly Fixture _fixture = new();
     private readonly Mock<ISubscriptionRepository> _mockSubRepo = new();
     private readonly Mock<IContentRepository> _mockContentRepo = new();
-    
+    private readonly IServiceProvider _serviceProvider;
+
+    public SubscriptionFeaturesTests()
+    {
+        _serviceProvider = new ServiceCollection()
+            .AddMediatR(conf =>
+            {
+                conf.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+                conf.RegisterServicesFromAssembly(AssemblyReference.Assembly);
+            })
+            .AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true)
+            .AddScoped<ISubscriptionRepository>(_ => _mockSubRepo.Object)
+            .AddScoped<IContentRepository>(_ => _mockContentRepo.Object)
+            .BuildServiceProvider();
+    }
+
     [Fact]
     public async Task AddSubscription_CorrectDtoGiven_EntityAdded()
     {
         // arrange
         var contents = GetContents(10);
         var contentIds = contents.Select(x => x.Id).ToList();
-        var dto = _fixture.Build<NewSubscriptionDto>()
+        var command = _fixture.Build<CreateSubscriptionCommand>()
             .With(x => x.AccessibleContentIds, contentIds)
             .Create();
         var subscriptions = new List<Subscription>();
@@ -34,10 +54,10 @@ public class SubscriptionServiceTests
             .Callback((Subscription x) => { subscriptions.Add(x); })
             .ReturnsAsync(()  => subscriptions.Last());
         
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
 
         // act
-        var subscription = await service.AddSubscriptionAsync(dto);
+        var subscription = await mediator.Send(command);
         
         // assert
         _mockSubRepo.Verify(x => x.AddAsync(It.IsAny<Subscription>()), Times.Once);
@@ -57,18 +77,18 @@ public class SubscriptionServiceTests
     public async Task AddSubscription_IncorrectDtoGiven_ExceptionThrown(string name, string desc, int maxResolution, string errorMsg)
     {
         // arrange
-        var dto = _fixture.Build<NewSubscriptionDto>()
+        var command = _fixture.Build<CreateSubscriptionCommand>()
             .With(x => x.Name, name)
             .With(x => x.Description, desc)
             .With(x => x.MaxResolution, maxResolution)
             .Without(x => x.AccessibleContentIds)
             .Create();
 
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.AddSubscriptionAsync(dto));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(command));
         
         // assert
         Assert.Contains(errorMsg, exception.Message);
@@ -83,18 +103,18 @@ public class SubscriptionServiceTests
             .OmitAutoProperties()
             .CreateMany(5);
         
-        var dto = _fixture.Build<NewSubscriptionDto>()
+        var command = _fixture.Build<CreateSubscriptionCommand>()
             .With(x => x.AccessibleContentIds, [1])
             .Create();
 
         _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
             .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));
         
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.AddSubscriptionAsync(dto));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(command));
         
         // assert
         Assert.Contains(SubscriptionErrorMessages.GivenIdOfNonExistingContent, exception.Message);
@@ -125,10 +145,10 @@ public class SubscriptionServiceTests
             .Callback((Subscription sub) => { subscriptions.Remove(sub); })
             .Returns((Subscription sub) => sub);
 
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var subscription = await service.DeleteSubscriptionAsync(idToDelete);
+        var subscription = await mediator.Send(new DeleteSubcriptionCommand(idToDelete));
         
         // assert
         _mockSubRepo.Verify(x => x.Remove(subscription), Times.Once);
@@ -161,11 +181,11 @@ public class SubscriptionServiceTests
             .Callback((Subscription sub) => { subscriptions.Remove(sub); })
             .Returns((Subscription sub) => sub);
 
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.DeleteSubscriptionAsync(idToDelete));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(new DeleteSubcriptionCommand(idToDelete)));
         
         // assert
         _mockSubRepo.Verify(x => x.Remove(It.IsAny<Subscription>()), Times.Never);
@@ -185,7 +205,7 @@ public class SubscriptionServiceTests
             .With(x => x.AccessibleContent, contents[..3])
             .CreateMany(5)
             .ToList();
-        var dto = _fixture.Build<EditSubscriptionDto>()
+        var command = _fixture.Build<EditSubscriptionCommand>()
             .With(x => x.SubscriptionId, 1)
             .With(x => x.AccessibleContentIdsToAdd, contentIds[3..5])
             .With(x => x.AccessibleContentIdsToRemove, contentIds[5..])
@@ -196,27 +216,27 @@ public class SubscriptionServiceTests
         _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => subscriptions.FirstOrDefault(x => x.Id == id));
 
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var subscription = await service.EditSubscriptionAsync(dto);
+        var subscription = await mediator.Send(command);
         
         // assert
-        if (dto.NewName is not null)
-            Assert.Equal(dto.NewName, subscription.Name);
+        if (command.NewName is not null)
+            Assert.Equal(command.NewName, subscription.Name);
         
-        if (dto.NewDescription is not null)
-            Assert.Equal(dto.NewDescription, subscription.Description);
+        if (command.NewDescription is not null)
+            Assert.Equal(command.NewDescription, subscription.Description);
         
-        if (dto.NewMaxResolution is not null)
-            Assert.Equal(dto.NewMaxResolution, subscription.MaxResolution);
+        if (command.NewMaxResolution is not null)
+            Assert.Equal(command.NewMaxResolution, subscription.MaxResolution);
         
-        foreach (var id in dto.AccessibleContentIdsToAdd!)
+        foreach (var id in command.AccessibleContentIdsToAdd!)
         {
             Assert.True(subscription.AccessibleContent.SingleOrDefault(x => x.Id == id) is not null);
         }
         
-        foreach (var id in dto.AccessibleContentIdsToRemove!)
+        foreach (var id in command.AccessibleContentIdsToRemove!)
         {
             Assert.True(subscription.AccessibleContent.TrueForAll(x => x.Id != id));
         }
@@ -233,18 +253,18 @@ public class SubscriptionServiceTests
             .CreateMany()
             .ToList();
 
-        var dto = _fixture.Build<EditSubscriptionDto>()
+        var command = _fixture.Build<EditSubscriptionCommand>()
             .With(x => x.SubscriptionId, 0)
             .Create();
 
         _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => subscriptions.FirstOrDefault(x => x.Id == id));
         
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.EditSubscriptionAsync(dto));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(command));
         
         // assert
         Assert.Contains(SubscriptionErrorMessages.SubscriptionNotFound, exception.Message);
@@ -260,7 +280,7 @@ public class SubscriptionServiceTests
     public async Task EditSubscription_InvalidDtoGiven_ExceptionThrown(string name, string desc, int maxResolution, string errorMsg)
     {
         // arrange
-        var dto = _fixture.Build<EditSubscriptionDto>()
+        var command = _fixture.Build<EditSubscriptionCommand>()
             .With(x => x.NewName, name)
             .With(x => x.NewDescription, desc)
             .With(x => x.NewMaxResolution, maxResolution)
@@ -271,11 +291,11 @@ public class SubscriptionServiceTests
         _mockSubRepo.Setup(x => x.GetSubscriptionWithAccessibleContentAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Subscription() { Id = id });
         
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.EditSubscriptionAsync(dto));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(command));
         
         // assert
         Assert.Contains(errorMsg, exception.Message);
@@ -290,7 +310,7 @@ public class SubscriptionServiceTests
             .OmitAutoProperties()
             .CreateMany(5);
         
-        var dto = _fixture.Build<EditSubscriptionDto>()
+        var command = _fixture.Build<EditSubscriptionCommand>()
             .With(x => x.AccessibleContentIdsToAdd, [1])
             .Without(x => x.AccessibleContentIdsToRemove)
             .Create();
@@ -300,11 +320,11 @@ public class SubscriptionServiceTests
         _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
             .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));
         
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.EditSubscriptionAsync(dto));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(command));
         
         // assert
         Assert.Contains(SubscriptionErrorMessages.GivenIdOfNonExistingContent, exception.Message);
@@ -319,7 +339,7 @@ public class SubscriptionServiceTests
             .OmitAutoProperties()
             .CreateMany(5);
         
-        var dto = _fixture.Build<EditSubscriptionDto>()
+        var dto = _fixture.Build<EditSubscriptionCommand>()
             .With(x => x.AccessibleContentIdsToRemove, [2])
             .Without(x => x.AccessibleContentIdsToAdd)
             .Create();
@@ -329,11 +349,11 @@ public class SubscriptionServiceTests
         _mockContentRepo.Setup(x => x.GetContentByIdAsync(It.IsAny<long>()))
             .ReturnsAsync((long id) => content.FirstOrDefault(x => x.Id == id));
         
-        var service = new SubscriptionService(_mockSubRepo.Object, _mockContentRepo.Object);
+        var mediator = _serviceProvider.GetService<IMediator>()!;
         
         // act
-        var exception = await Assert.ThrowsAsync<SubscriptionServiceArgumentException>(
-            async () => await service.EditSubscriptionAsync(dto));
+        var exception = await Assert.ThrowsAsync<ArgumentValidationException>(
+            async () => await mediator.Send(dto));
         
         // assert
         Assert.Contains(SubscriptionErrorMessages.GivenIdOfNonExistingContent, exception.Message);

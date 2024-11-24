@@ -3,6 +3,7 @@ using Domain.Entities;
 
 namespace Application.Services.Abstractions;
 
+[Obsolete("CQRS")]
 public interface ISubscriptionService
 {
     public Task<Subscription> AddSubscriptionAsync(NewSubscriptionDto dto);

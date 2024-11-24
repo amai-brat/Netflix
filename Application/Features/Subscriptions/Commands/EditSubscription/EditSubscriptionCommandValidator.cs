@@ -4,14 +4,22 @@ using FluentValidation;
 
 namespace Application.Features.Subscriptions.Commands.EditSubscription;
 
-public class EditSubscriptionCommandValidator : AbstractValidator<EditSubscriptionCommand>
+internal class EditSubscriptionCommandValidator : AbstractValidator<EditSubscriptionCommand>
 {
     private readonly IContentRepository _contentRepository;
+    private readonly ISubscriptionRepository _subscriptionRepository;
 
-    public EditSubscriptionCommandValidator(IContentRepository contentRepository)
+    public EditSubscriptionCommandValidator(
+        IContentRepository contentRepository, 
+        ISubscriptionRepository subscriptionRepository)
     {
         _contentRepository = contentRepository;
-        
+        _subscriptionRepository = subscriptionRepository;
+
+        RuleFor(x => x.SubscriptionId)
+            .MustAsync(IsSubscriptionToEditExistsAsync)
+            .WithMessage(SubscriptionErrorMessages.SubscriptionNotFound);
+            
         RuleFor(x => x.NewName)
             .Matches("^[А-Яа-яA-Za-z0-9-_ ]+$")
             .When(x => x.NewName is not null)
@@ -35,12 +43,18 @@ public class EditSubscriptionCommandValidator : AbstractValidator<EditSubscripti
         RuleFor(x => x.AccessibleContentIdsToAdd)
             .MustAsync(AreContentsExistAsync!)
             .When(x => x.AccessibleContentIdsToAdd is not null)
-            .WithMessage(SubscriptionErrorMessages.SubscriptionNotFound);
+            .WithMessage(SubscriptionErrorMessages.GivenIdOfNonExistingContent);
         
         RuleFor(x => x.AccessibleContentIdsToRemove)
             .MustAsync(AreContentsExistAsync!)
             .When(x => x.AccessibleContentIdsToRemove is not null)
-            .WithMessage(SubscriptionErrorMessages.SubscriptionNotFound);
+            .WithMessage(SubscriptionErrorMessages.GivenIdOfNonExistingContent);
+    }
+
+    private async Task<bool> IsSubscriptionToEditExistsAsync(int subscriptionId, CancellationToken cancellationToken)
+    {
+        var subscription = await _subscriptionRepository.GetSubscriptionWithAccessibleContentAsync(subscriptionId);
+        return subscription is not null;
     }
     
     private async Task<bool> AreContentsExistAsync(List<long> contentIds, CancellationToken cancellationToken)

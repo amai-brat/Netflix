@@ -8,6 +8,7 @@ using Domain.Entities;
 
 namespace Application.Services.Implementations;
 
+[Obsolete("CQRS")]
 public class SubscriptionService(
     ISubscriptionRepository subRepository,
     IContentRepository contentRepository) : ISubscriptionService

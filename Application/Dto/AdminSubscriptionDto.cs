@@ -1,6 +1,7 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class AdminSubscriptionDto
 {
     public int Id { get; set; }

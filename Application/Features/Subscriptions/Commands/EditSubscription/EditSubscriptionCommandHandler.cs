@@ -1,6 +1,4 @@
 using Application.Cqrs.Commands;
-using Application.Exceptions.Base;
-using Application.Exceptions.ErrorMessages;
 using Application.Repositories;
 using Domain.Entities;
 
@@ -12,14 +10,8 @@ internal class EditSubscriptionCommandHandler(
 {
     public async Task<Subscription> Handle(EditSubscriptionCommand request, CancellationToken cancellationToken)
     {
-        var subscription = await subscriptionRepository.GetSubscriptionWithAccessibleContentAsync(request.SubscriptionId);
-        if (subscription is null)
-        {
-            throw new ArgumentValidationException(
-                SubscriptionErrorMessages.SubscriptionNotFound,
-                nameof(request.SubscriptionId));
-        }
-
+        var subscription = (await subscriptionRepository.GetSubscriptionWithAccessibleContentAsync(request.SubscriptionId))!;
+        
         if (request.NewName is not null)
             subscription.Name = request.NewName;
 

@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using Application.Dto;
+using Application.Features.Subscriptions.Commands.CreateSubscription;
+using Application.Features.Subscriptions.Commands.EditSubscription;
+using Application.Features.Subscriptions.Queries.GetSubscriptions;
 using DataAccess;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +25,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         }
         
         // act
-        var response = await adminClient.GetFromJsonAsync<List<AdminSubscriptionDto>>("/admin/subscription/all");
+        var response = await adminClient.GetFromJsonAsync<List<GetSubscriptionDto>>("/admin/subscription/all");
         
         // assert
         Assert.NotNull(response);
@@ -62,7 +64,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         // arrange 
         var adminClient = factory.CreateAdminHttpClient();
         
-        var dto = new NewSubscriptionDto
+        var dto = new CreateSubscriptionCommand
         {
             Name = "Fapah",
             Description = "UselessMouth",
@@ -83,7 +85,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
         // arrange 
         var adminClient = factory.CreateAdminHttpClient();
         
-        var dto = new NewSubscriptionDto
+        var dto = new CreateSubscriptionCommand
         {
             Name = "\t",
             Description = "\n",
@@ -157,7 +159,7 @@ public class SubscriptionIntegrationTests(WebAppFactory factory) : IClassFixture
             subscriptionsBefore = await context!.Subscriptions.ToListAsync();
         }
 
-        var dto = new EditSubscriptionDto
+        var dto = new EditSubscriptionCommand
         {
             SubscriptionId = subscriptionsBefore.First().Id,
             NewName = Guid.NewGuid().ToString()

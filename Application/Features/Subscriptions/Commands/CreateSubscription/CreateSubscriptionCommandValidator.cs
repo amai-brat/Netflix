@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace Application.Features.Subscriptions.Commands.CreateSubscription;
 
-public class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscriptionCommand>
+internal class CreateSubscriptionCommandValidator : AbstractValidator<CreateSubscriptionCommand>
 {
     private readonly IContentRepository _contentRepository;
     
