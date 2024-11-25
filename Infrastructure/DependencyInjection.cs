@@ -1,5 +1,6 @@
 using Application.Cache;
 using Application.Dto;
+using Application.Providers;
 using Application.Services.Abstractions;
 using DataAccess.Cache;
 using FluentValidation;

@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using Application.Features.Comments.Commands.DeleteComment;
+using Application.Features.Reviews.Commands.DeleteReview;
 using Application.Services.Abstractions;
 using Infrastructure.Services.Abstractions;
 using MediatR;
@@ -11,7 +12,6 @@ namespace API.Controllers
 	[ApiController]
 	[Route("admin/usermanagement")]
 	public class UserManagementController(
-		IReviewService reviewService,
 		IMediator mediator,
 		IAuthService authService,
 		IUserService userService) : Controller
@@ -27,7 +27,7 @@ namespace API.Controllers
 		[HttpDelete("deleteReview/{reviewId:long}")]
 		public async Task<IActionResult> DeleteUserReview(long reviewId)
 		{
-			return Ok(await reviewService.DeleteReviewByIdAsync(reviewId));
+			return Ok(await mediator.Send(new DeleteReviewCommand(reviewId)));
 		}
 
 		[Authorize(Roles = "admin")]

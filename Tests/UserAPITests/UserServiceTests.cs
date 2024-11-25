@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
+using Application.Providers;
 using Application.Repositories;
 using AutoFixture;
 using AutoMapper;
