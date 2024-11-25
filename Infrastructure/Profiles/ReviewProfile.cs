@@ -19,7 +19,6 @@ public class ReviewProfile : Profile
         CreateMap<Review, Application.Features.Reviews.Queries.GetReviews.ReviewDto>()
             .ForMember(x => x.LikesScore,
                 x => x.MapFrom(r => r.RatedByUsers!.Count(ur => ur.IsLiked)));
-
         
         CreateMap<User, UserDto>()
             .ForMember(x => x.Avatar,
@@ -27,7 +26,14 @@ public class ReviewProfile : Profile
             .ForMember(x => x.Name,
                 x => x.MapFrom(u => u.Nickname));
 
+        CreateMap<User, Application.Features.Reviews.Queries.GetReviews.UserDto>()
+            .ForMember(x => x.Avatar,
+                x => x.MapFrom(u => u.ProfilePictureUrl))
+            .ForMember(x => x.Name,
+                x => x.MapFrom(u => u.Nickname));
+        
         CreateMap<Comment, CommentDto>();
-
+        
+        CreateMap<Comment, Application.Features.Reviews.Queries.GetReviews.CommentDto>();
     }
 }

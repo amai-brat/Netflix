@@ -17,6 +17,7 @@ using Tests.Customizations;
 
 namespace Tests.ContentAPITests
 {
+    [Obsolete("CQRS")]
     public class ReviewServiceTests
     {
         private readonly Fixture _fixture = new();

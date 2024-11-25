@@ -8,7 +8,6 @@ using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Profiles;
-using Infrastructure.Providers.Abstractions;
 using Infrastructure.Services;
 using Moq;
 
