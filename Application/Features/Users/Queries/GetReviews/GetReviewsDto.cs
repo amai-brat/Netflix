@@ -1,6 +1,10 @@
-namespace Application.Dto;
+namespace Application.Features.Users.Queries.GetReviews;
 
-[Obsolete("CQRS")]
+public class GetReviewsDto
+{
+    public List<UserReviewDto> ReviewDtos { get; set; } = null!;
+}
+
 public class UserReviewDto
 {
     public long Id { get; set; }

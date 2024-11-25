@@ -9,6 +9,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Services;
 
+[Obsolete("CQRS")]
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,
     IFavouriteContentRepository favouriteContentRepository,

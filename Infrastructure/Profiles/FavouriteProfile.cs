@@ -13,5 +13,11 @@ public class FavouriteProfile : Profile
                 x => x.MapFrom(f => f.Content));
 
         CreateMap<ContentBase, ContentDto>();
+        
+        CreateMap<FavouriteContent, Application.Features.Users.Queries.GetFavourites.FavouriteDto>()
+            .ForMember(x => x.ContentBase, 
+                x => x.MapFrom(f => f.Content));
+
+        CreateMap<ContentBase, Application.Features.Users.Queries.GetFavourites.ContentDto>();
     }
 }

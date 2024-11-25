@@ -1,7 +1,5 @@
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Application.Dto;
+namespace Application.Features.Users.Queries.GetPersonalInfo;
 
-[Obsolete("CQRS")]
 public class PersonalInfoDto
 {
     public string Nickname { get; set; } = null!;

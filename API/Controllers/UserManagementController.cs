@@ -1,7 +1,7 @@
 ﻿using Application.Dto;
 using Application.Features.Comments.Commands.DeleteComment;
 using Application.Features.Reviews.Commands.DeleteReview;
-using Application.Services.Abstractions;
+using Application.Features.Users.Queries.GetPersonalInfo;
 using Infrastructure.Services.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -13,8 +13,7 @@ namespace API.Controllers
 	[Route("admin/usermanagement")]
 	public class UserManagementController(
 		IMediator mediator,
-		IAuthService authService,
-		IUserService userService) : Controller
+		IAuthService authService) : Controller
 	{
 		[Authorize(Roles = "admin, moderator")]
 		[HttpDelete("deleteComment/{commentId:long}")]
@@ -35,8 +34,8 @@ namespace API.Controllers
 		public async Task<IActionResult> GiveUserDifferentRole([FromBody] UserRoleDto userRoleDto)
 		{
 			await authService.ChangeRoleAsync(userRoleDto.UserId, userRoleDto.Role);
-
-			return Ok(await userService.GetPersonalInfoAsync(userRoleDto.UserId));
+			var infoDto = await mediator.Send(new GetPersonalInfoQuery(userRoleDto.UserId));
+			return Ok(infoDto);
 		}
 	}
 }

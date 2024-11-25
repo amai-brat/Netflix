@@ -12,6 +12,11 @@ public class ReviewProfile : Profile
             .ForMember(x => x.ContentName,
                 x => x.MapFrom(rev => rev.Content.Name));
 
+        CreateMap<Review, Application.Features.Users.Queries.GetReviews.UserReviewDto>()
+            .ForMember(x => x.ContentName,
+                x => x.MapFrom(rev => rev.Content.Name));
+
+        
         CreateMap<Review, ReviewDto>()
             .ForMember(x => x.LikesScore,
                 x => x.MapFrom(r => r.RatedByUsers!.Count(ur => ur.IsLiked)));

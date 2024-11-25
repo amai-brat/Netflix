@@ -40,7 +40,6 @@ public static class DependencyInjection
             .AddAuthProviderResolver()
             .AddRedisCache()
             .AddAutoMapper(typeof(DependencyInjection).Assembly)
-            .AddScoped<IUserService, UserService>()
             .AddKeyedSingleton<IMinioClient>(KeyedServices.Avatar, (provider, _) =>
             {
                 var options = provider.GetRequiredService<IOptions<MinioOptions>>().Value;

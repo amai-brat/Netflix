@@ -1,9 +1,17 @@
 using System.Security.Claims;
 using Application.Dto;
-using Application.Services.Abstractions;
+using Application.Features.Users.Commands.ChangeBirthday;
+using Application.Features.Users.Commands.ChangeProfilePicture;
+using Application.Features.Users.Queries.GetFavourites;
+using Application.Features.Users.Queries.GetPersonalInfo;
+using Application.Features.Users.Queries.GetReviews;
+using Application.Features.Users.Queries.GetReviewsPagesCount;
 using Infrastructure.Services.Abstractions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PersonalInfoDto = Application.Features.Users.Queries.GetPersonalInfo.PersonalInfoDto;
+using UserReviewDto = Application.Features.Users.Queries.GetReviews.UserReviewDto;
 
 namespace API.Controllers;
 
@@ -11,7 +19,7 @@ namespace API.Controllers;
 [ApiController]
 [Route("user")]
 public class UserController(
-    IUserService userService,
+    IMediator mediator,
     IAuthService authService) : ControllerBase
 {
     [HttpGet("get-personal-info")]
@@ -20,7 +28,7 @@ public class UserController(
     public async Task<IActionResult> GetPersonalInfoAsync()
     {
         var userId = GetUserId();
-        var result = await userService.GetPersonalInfoAsync(userId);
+        var result = await mediator.Send(new GetPersonalInfoQuery(userId));
         return Ok(result);
     }
 
@@ -32,7 +40,7 @@ public class UserController(
         var userId = GetUserId();
         var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)!.Value;
         await authService.ChangeEmailRequestAsync(userEmail, email);
-        var infoDto = await userService.GetPersonalInfoAsync(userId);
+        var infoDto = await mediator.Send(new GetPersonalInfoQuery(userId));
        
         return Ok(infoDto);
     }
@@ -48,8 +56,8 @@ public class UserController(
         }
         
         var userId = GetUserId();
-        _ = await userService.ChangeBirthdayAsync(userId, date);
-        var infoDto = await userService.GetPersonalInfoAsync(userId);
+        _ = await mediator.Send(new ChangeBirthdayCommand(userId, date));
+        var infoDto = await mediator.Send(new GetPersonalInfoQuery(userId));
         
         return Ok(infoDto);
     }
@@ -71,8 +79,8 @@ public class UserController(
     public async Task<IActionResult> ChangeProfilePictureAsync(IFormFile image)
     {
         var userId = GetUserId();
-        _ = await userService.ChangeProfilePictureAsync(userId, image.OpenReadStream(), image.ContentType);
-        var infoDto = await userService.GetPersonalInfoAsync(userId);
+        _ = await mediator.Send(new ChangeProfilePictureCommand(userId, image.OpenReadStream(), image.ContentType));
+        var infoDto = await mediator.Send(new GetPersonalInfoQuery(userId));
         
         return Ok(infoDto);
     }
@@ -98,9 +106,9 @@ public class UserController(
             }
         };
 
-        var reviews = await userService.GetReviewsAsync(dto);
+        var result = await mediator.Send(new GetReviewsQuery(dto));
 
-        return Ok(reviews);
+        return Ok(result.ReviewDtos);
     }
     
     [HttpGet("get-reviews-pages-count")]
@@ -114,19 +122,19 @@ public class UserController(
             UserId = userId,
             Search = input
         };
-
-        var count = await userService.GetReviewsPagesCountAsync(dto);
-
-        return Ok(count);
+        
+        var result = await mediator.Send(new GetReviewsPagesCountQuery(dto));
+        
+        return Ok(result.Count);
     }
 
     [HttpGet("get-favourites")]
     public async Task<IActionResult> GetFavouritesAsync()
     {
         var userId = GetUserId();
-        var result = await userService.GetFavouritesAsync(userId);
+        var result = await mediator.Send(new GetFavouritesQuery(userId));
        
-        return Ok(result);
+        return Ok(result.FavouriteDtos);
     }
 
     private long GetUserId()

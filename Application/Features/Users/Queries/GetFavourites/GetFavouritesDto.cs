@@ -1,6 +1,10 @@
-namespace Application.Dto;
+namespace Application.Features.Users.Queries.GetFavourites;
 
-[Obsolete("CQRS")]
+public class GetFavouritesDto
+{
+    public List<FavouriteDto> FavouriteDtos { get; set; } = null!;
+}
+
 public class FavouriteDto
 {
     public DateTimeOffset AddedAt { get; set; }
@@ -8,7 +12,6 @@ public class FavouriteDto
     public ContentDto ContentBase { get; set; } = null!;
 }
 
-[Obsolete("CQRS")]
 public class ContentDto
 {
     public long Id { get; set; }
