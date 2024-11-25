@@ -4,9 +4,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
+using Application.Features.Favourites.Commands.AddFavourite;
+using Application.Features.Favourites.Commands.RemoveFavourite;
 using Application.Services.Abstractions;
 using AutoMapper;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +19,7 @@ namespace API.Controllers
     [ApiController]
     public class ContentController(
         IContentService contentService,
-        IFavouriteService favouriteService,
+        IMediator mediator,
         IMapper mapper,
         IHttpClientFactory clientFactory) : ControllerBase
     {
@@ -56,7 +59,8 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> AddContentFavouriteAsync([FromBody] long contentId)
         {
-            await favouriteService.AddFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            var userId = long.Parse(User.FindFirst("id")!.Value);
+            await mediator.Send(new AddFavouriteCommand(contentId, userId));
             return Ok();
         }
 
@@ -64,7 +68,8 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveContentFavouriteAsync([FromBody] long contentId)
         {
-            await favouriteService.RemoveFavouriteAsync(contentId, long.Parse(User.FindFirst("Id")!.Value));
+            var userId = long.Parse(User.FindFirst("id")!.Value);
+            await mediator.Send(new RemoveFavouriteCommand(contentId, userId));
             return Ok();
         }
 
