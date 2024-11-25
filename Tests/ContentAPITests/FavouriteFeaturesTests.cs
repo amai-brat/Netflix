@@ -142,7 +142,10 @@ public class FavouriteFeaturesTests
         var users = BuildDefaultUserList();
         var contentId1 = contentId == -1 ? contentId : availableContent[Random.Shared.Next(0, availableContent.Count)].Id;
         var userId1 = userId == -1 ? userId : users[Random.Shared.Next(0, users.Count)].Id;
-        var userFav = new List<FavouriteContent>();
+        var userFav = new List<FavouriteContent>()
+        {
+            new() {UserId = long.MaxValue, ContentId = long.MaxValue}
+        };
 
         //Act
         _mockUser.Setup(repository => repository.GetUserByFilterAsync(It.IsAny<Expression<Func<User, bool>>>()))

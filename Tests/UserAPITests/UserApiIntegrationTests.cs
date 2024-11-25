@@ -4,7 +4,10 @@ using System.Text;
 using Application.Dto;
 using DataAccess;
 using Microsoft.Extensions.DependencyInjection;
+using FavouriteDto = Application.Features.Users.Queries.GetFavourites.FavouriteDto;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using PersonalInfoDto = Application.Features.Users.Queries.GetPersonalInfo.PersonalInfoDto;
+using UserReviewDto = Application.Features.Users.Queries.GetReviews.UserReviewDto;
 
 namespace Tests.UserAPITests;
 
