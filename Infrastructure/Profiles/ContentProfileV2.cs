@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+using Application.Features.Contents.Dtos;
 using Application.Features.Contents.Queries.GetContentTypes;
 using Application.Features.Contents.Queries.GetGenres;
 using Application.Features.Contents.Queries.GetPromos;
@@ -8,11 +8,11 @@ using Domain.Entities;
 
 namespace Infrastructure.Profiles;
 
-public class ContentProfile : Profile
+public class ContentProfileV2 : Profile
 {
-    public ContentProfile()
+    public ContentProfileV2()
     {
-        CreateMap<MovieContentAdminPageDto, MovieContent>()
+         CreateMap<MovieContentDto, MovieContent>()
             .ForMember(dest => dest.Name,
                 opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.ContentType,
@@ -42,7 +42,7 @@ public class ContentProfile : Profile
                             MaxResolution = sdto.MaxResolution ?? 0
                         })));
 
-        CreateMap<SerialContentAdminPageDto, SerialContent>()
+        CreateMap<SerialContentDto, SerialContent>()
             .ForMember(dest => dest.Name,
                 opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.ContentType,
@@ -82,11 +82,11 @@ public class ContentProfile : Profile
                             EpisodeNumber = edto.EpisodeNumber
                         }))
                     })));
-        CreateMap<MovieContent, MovieContentAdminPageDto>()
+        CreateMap<MovieContent, MovieContentDto>()
             .ForMember(dest => dest.Genres,
                 opt => opt.MapFrom(src => src.Genres.Select(g => g.Name).ToList()))
             .ForMember(dest => dest.PersonsInContent,
-                opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentAdminPageDto
+                opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentDto
                 {
                     Name = p.Name,
                     Profession = p.Profession.ProfessionName
@@ -98,7 +98,7 @@ public class ContentProfile : Profile
                     ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
                     : null))
             .ForMember(dest => dest.AllowedSubscriptions,
-                opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
+                opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionDto
                 {
                     Id = s.Id,
                     Name = s.Name,
@@ -106,7 +106,7 @@ public class ContentProfile : Profile
                     MaxResolution = s.MaxResolution
                 }).ToList()));
 
-        CreateMap<SerialContent, SerialContentAdminPageDto>()
+        CreateMap<SerialContent, SerialContentDto>()
             .ForMember(dest => dest.ContentType,
                 opt => opt.MapFrom(src => src.ContentType.ContentTypeName))
             .ForMember(dest => dest.Genres,
@@ -116,13 +116,13 @@ public class ContentProfile : Profile
                     ? new AgeRatings { Age = src.AgeRatings.Age, AgeMpaa = src.AgeRatings.AgeMpaa }
                     : null))
             .ForMember(dest => dest.PersonsInContent,
-                opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentAdminPageDto
+                opt => opt.MapFrom(src => src.PersonsInContent.Select(p => new PersonInContentDto
                 {
                     Name = p.Name,
                     Profession = p.Profession.ProfessionName
                 }).ToList()))
             .ForMember(dest => dest.AllowedSubscriptions,
-                opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionAdminPageDto
+                opt => opt.MapFrom(src => src.AllowedSubscriptions.Select(s => new SubscriptionDto
                 {
                     Id = s.Id,
                     Name = s.Name,
@@ -132,10 +132,10 @@ public class ContentProfile : Profile
             .ForMember(dest => dest.ReleaseYears,
                 opt => opt.MapFrom(src => src.YearRange))
             .ForMember(dest => dest.SeasonInfos,
-                opt => opt.MapFrom(src => src.SeasonInfos.Select(si => new SeasonInfoAdminPageDto
+                opt => opt.MapFrom(src => src.SeasonInfos.Select(si => new SeasonInfoDto
                 {
                     SeasonNumber = si.SeasonNumber,
-                    Episodes = si.Episodes.Select(e => new EpisodeAdminPageDto
+                    Episodes = si.Episodes.Select(e => new EpisodeDto
                     {
                         VideoUrl = e.VideoUrl,
                         EpisodeNumber = e.EpisodeNumber

@@ -1,7 +1,6 @@
-﻿namespace Application.Dto;
+namespace Application.Features.Contents.Dtos;
 
-[Obsolete("CQRS")]
-public class PersonInContentAdminPageDto
+public class PersonInContentDto
 {
     public string Name { get; set; } = null!;
     public string Profession { get; set; } = null!;

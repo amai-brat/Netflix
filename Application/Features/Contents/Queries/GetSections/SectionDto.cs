@@ -1,5 +1,5 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Application.Dto;
+namespace Application.Features.Contents.Queries.GetSections;
 
 public class SectionDto
 {

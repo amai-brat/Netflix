@@ -1,9 +1,8 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 
-namespace Application.Dto;
+namespace Application.Features.Contents.Dtos;
 
-[Obsolete("CQRS")]
-public class SerialContentAdminPageDto
+public class SerialContentDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = null!;
@@ -20,9 +19,9 @@ public class SerialContentAdminPageDto
     public Budget? Budget { get; set; }
 
     public List<string> Genres { get; set; } = new();
-    public List<PersonInContentAdminPageDto> PersonsInContent { get; set; } = new();
-    public List<SubscriptionAdminPageDto> AllowedSubscriptions { get; set; } = new();
+    public List<PersonInContentDto> PersonsInContent { get; set; } = new();
+    public List<SubscriptionDto> AllowedSubscriptions { get; set; } = new();
     
-    public List<SeasonInfoAdminPageDto> SeasonInfos { get; set; } = new();
+    public List<SeasonInfoDto> SeasonInfos { get; set; } = new();
     public YearRange ReleaseYears { get; set; } = null!;
 }

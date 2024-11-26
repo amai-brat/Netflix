@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+using Microsoft.AspNetCore.Http;
 
-namespace Application.Dto;
+namespace Application.Features.Contents.Dtos;
 
-[Obsolete("CQRS")]
-public class EpisodeAdminPageDto
+public class EpisodeDto
 {
     public int EpisodeNumber { get; set; }
     public string VideoUrl { get; set; } = null!;

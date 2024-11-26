@@ -4,6 +4,17 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
+using Application.Features.Contents.Commands.AddMovieContent;
+using Application.Features.Contents.Commands.AddSerialContent;
+using Application.Features.Contents.Commands.DeleteContent;
+using Application.Features.Contents.Commands.UpdateMovieContent;
+using Application.Features.Contents.Commands.UpdateSerialContent;
+using Application.Features.Contents.Dtos;
+using Application.Features.Contents.Queries.GetContentsByFilter;
+using Application.Features.Contents.Queries.GetContentTypes;
+using Application.Features.Contents.Queries.GetGenres;
+using Application.Features.Contents.Queries.GetPromos;
+using Application.Features.Contents.Queries.GetSections;
 using Application.Features.Favourites.Commands.AddFavourite;
 using Application.Features.Favourites.Commands.RemoveFavourite;
 using Application.Services.Abstractions;
@@ -51,8 +62,8 @@ namespace API.Controllers
         [HttpGet("filter")]
         public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
         {
-            var contents = await contentService.GetContentsByFilterAsync(filter);
-            return Ok(contents);
+            var result = await mediator.Send(new GetContentsByFilterQuery(filter));
+            return Ok(result.Contents);
         }
 
         [HttpPost("favourite/add")]
@@ -215,34 +226,34 @@ namespace API.Controllers
         }
         
         [HttpPost("serial/add"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
-        public async Task<IActionResult> AddSerialContent([FromForm] SerialContentAdminPageDto serialContentAdminPageDto)
+        public async Task<IActionResult> AddSerialContent([FromForm] SerialContentDto serialContentDto)
         {
-            await contentService.AddSerialContent(serialContentAdminPageDto);
+            await mediator.Send(new AddSerialContentCommand(serialContentDto));
             return Ok();
         }
         
         [Authorize(Roles = "admin")]
         [HttpPost("serial/update/{id}"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
-        public async Task<IActionResult> UpdateSerialContent([FromRoute] long id, [FromForm] SerialContentAdminPageDto serialContentAdminPageDto)
+        public async Task<IActionResult> UpdateSerialContent([FromRoute] long id, [FromForm] SerialContentDto serialContentDto)
         {
-            await contentService.UpdateSerialContent(serialContentAdminPageDto);
+            await mediator.Send(new UpdateSerialContentCommand(serialContentDto));
             return Ok();
         }
         
         [Authorize(Roles = "admin")]
         [HttpPost("movie/add"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
-        public async Task<IActionResult> AddMovieContent([FromForm] MovieContentAdminPageDto movieContentAdminPageDto)
+        public async Task<IActionResult> AddMovieContent([FromForm] MovieContentDto movieContentDto)
         {
-            await contentService.AddMovieContent(movieContentAdminPageDto);
+            await mediator.Send(new AddMovieContentCommand(movieContentDto));
             return Ok();
         }
         
         [Authorize(Roles = "admin")]
         [HttpPost("movie/update/{id}"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
         public async Task<IActionResult> UpdateMovieContent([FromRoute] long id,
-            [FromForm] MovieContentAdminPageDto movieContentAdminPageDto)
+            [FromForm] MovieContentDto movieContentDto)
         {
-            await contentService.UpdateMovieContent(movieContentAdminPageDto);
+            await mediator.Send(new UpdateMovieContentCommand(movieContentDto));
             return Ok();
         }
         
@@ -250,7 +261,7 @@ namespace API.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteContent(long id)
         {
-            await contentService.DeleteContent(id);
+            await mediator.Send(new DeleteContentCommand(id));
             return Ok();
         }
         
@@ -281,32 +292,32 @@ namespace API.Controllers
         [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetSections()
         {
-            var result = await contentService.GetSectionsAsync();
-            return Ok(result);
+            var result = await mediator.Send(new GetSectionsQuery());
+            return Ok(result.SectionDtos);
         }
 
         [HttpGet("promos")]
         [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetPromos()
         {
-            var result = await contentService.GetPromosAsync();
-            return Ok(result);
+            var result = await mediator.Send(new GetPromosQuery());
+            return Ok(result.PromoDtos);
         }
 
         [HttpGet("types")]
         [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetContentTypes()
         {
-            var result = await contentService.GetContentTypesAsync();
-            return Ok(result);
+            var result = await mediator.Send(new GetContentTypesQuery());
+            return Ok(result.ContentTypeDtos);
         }
 
         [HttpGet("genres")]
         [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetContentGenres()
         {
-            var result = await contentService.GetGenresAsync();
-            return Ok(result);
+            var result = await mediator.Send(new GetGenresQuery());
+            return Ok(result.GenreDtos);
         }
   
         private T SetConstraintOnPersonCount<T>(T content) where T : ContentBase

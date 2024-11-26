@@ -1,4 +1,4 @@
-namespace Application.Dto;
+namespace Application.Features.Contents.Queries.GetGenres;
 
 public class GenreDto
 {

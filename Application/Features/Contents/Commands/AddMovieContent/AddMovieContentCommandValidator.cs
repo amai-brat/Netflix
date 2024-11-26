@@ -1,13 +1,26 @@
-﻿using Application.Dto;
+using Application.Features.Contents.Dtos;
+using Application.Repositories;
 using FluentValidation;
 
-namespace Infrastructure.Validators;
+namespace Application.Features.Contents.Commands.AddMovieContent;
 
-[Obsolete("CQRS")]
-public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialContentAdminPageDto>
+internal class AddMovieContentCommandValidator : AbstractValidator<AddMovieContentCommand>
 {
-    public SerialContentDtoAdminPageValidator()
+    public AddMovieContentCommandValidator(ISubscriptionRepository subscriptionRepository)
     {
+        RuleFor(x => x.ContentDto)
+            .SetValidator(new MovieContentDtoValidator(subscriptionRepository));
+    }
+}
+
+public class MovieContentDtoValidator : AbstractValidator<MovieContentDto>
+{
+    private readonly ISubscriptionRepository _subscriptionRepository;
+
+    public MovieContentDtoValidator(ISubscriptionRepository subscriptionRepository)
+    {
+        _subscriptionRepository = subscriptionRepository;
+        
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Name must be not empty")
@@ -24,20 +37,27 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
             .MaximumLength(50);
         RuleFor(x => x.ContentType)
             .NotEmpty();
+        RuleFor(x => x.MovieLength)
+            .NotEmpty();
+        RuleFor(x => x.ReleaseDate)
+            .NotEmpty();
+        RuleFor(x => x.VideoUrl)
+            .NotEmpty();
         RuleFor(x => x.Genres)
             .NotEmpty();
         RuleFor(x => x.PersonsInContent)
             .NotEmpty();
         RuleFor(x => x.AllowedSubscriptions)
             .NotEmpty();
-        RuleFor(x => x.SeasonInfos)
-            .NotEmpty();
-        RuleFor(x => x.AgeRating)
+        RuleFor(x => x.AllowedSubscriptions)
+            .MustAsync(AreSubscriptionsExistAsync)
+            .WithMessage("Нельзя добавить свою подписку");
+        RuleFor(x => x.AgeRatings)
             .ChildRules(ageRating =>
             {
-                ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21);
+                ageRating.RuleFor(ar => ar!.Age).LessThanOrEqualTo(21).NotEmpty();
                 ageRating.RuleFor(ar => ar!.AgeMpaa).Length(0, 7); 
-            }).When(x => x.AgeRating != null);
+            }).When(x => x.AgeRatings != null);
         RuleFor(x => x.Ratings)
             .ChildRules(ratings =>
             {
@@ -59,8 +79,6 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
                 budget.RuleFor(b => b!.BudgetCurrencyName).NotEmpty().MaximumLength(10);
             })
             .When(x => x.Budget != null);
-        RuleFor(x => x.Genres)
-            .NotEmpty();
         RuleForEach(x => x.Genres).NotEmpty().MaximumLength(20);
         RuleFor(x => x.PersonsInContent).NotEmpty();
         RuleFor(x => x.AllowedSubscriptions).NotEmpty();
@@ -73,21 +91,19 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
         {
             sub.RuleFor(subdto => subdto.Name).NotEmpty().MaximumLength(50);
         });
-        RuleFor(x => x.ReleaseYears).ChildRules(ry =>
+    }
+
+    private async Task<bool> AreSubscriptionsExistAsync(List<SubscriptionDto> subscriptions, CancellationToken cancellationToken)
+    {
+        var dbSubscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
+        foreach (var subscription in subscriptions)
         {
-            ry.RuleFor(releaseYear => releaseYear.End).NotEmpty()
-                .GreaterThan(releaseYear => releaseYear.Start);
-            ry.RuleFor(releaseYear => releaseYear.End).NotEmpty();
-        });
-        RuleForEach(x => x.SeasonInfos).ChildRules(si =>
-        {
-            si.RuleFor(sii => sii.SeasonNumber).NotEmpty();
-            si.RuleForEach(sii => sii.Episodes).ChildRules(ep =>
+            if (!dbSubscriptions.Any(dbs => dbs.Name.Equals(subscription.Name)))
             {
-                ep.RuleFor(epi => epi.EpisodeNumber).NotEmpty();
-                ep.RuleFor(epi => epi.VideoUrl).NotEmpty();
-            });
-        });
-        RuleFor(x => x.SeasonInfos).NotEmpty();
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

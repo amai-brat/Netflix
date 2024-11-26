@@ -8,7 +8,6 @@ using Application;
 using DataAccess;
 using Infrastructure.Identity.Data;
 using Infrastructure.Options;
-using Infrastructure.Profiles;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +22,6 @@ builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 builder.Services.AddControllers().AddMvcOptions(options => options.ModelMetadataDetailsProviders.Add(new CustomMetadataProvider ()));
 builder.Services.AddContentApiServices();
-builder.Services.AddAutoMapper(typeof(ContentProfile));
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();

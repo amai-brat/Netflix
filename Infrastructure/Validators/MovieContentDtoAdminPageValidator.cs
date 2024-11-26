@@ -3,6 +3,7 @@ using FluentValidation;
 
 namespace Infrastructure.Validators;
 
+[Obsolete("CQRS")]
 public class MovieContentDtoAdminPageValidator : AbstractValidator<MovieContentAdminPageDto>
 {
     public MovieContentDtoAdminPageValidator()

@@ -1,10 +1,9 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Dto;
+namespace Application.Features.Contents.Dtos;
 
-[Obsolete("CQRS")]
-public class MovieContentAdminPageDto
+public class MovieContentDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = null!;
@@ -26,6 +25,6 @@ public class MovieContentAdminPageDto
     public Budget? Budget { get; set; }
     
     public List<string> Genres { get; set; } = new();
-    public List<PersonInContentAdminPageDto> PersonsInContent { get; set; } = new();
-    public List<SubscriptionAdminPageDto> AllowedSubscriptions { get; set; } = new();
+    public List<PersonInContentDto> PersonsInContent { get; set; } = new();
+    public List<SubscriptionDto> AllowedSubscriptions { get; set; } = new();
 }

@@ -1,13 +1,26 @@
-﻿using Application.Dto;
+using Application.Features.Contents.Dtos;
+using Application.Repositories;
 using FluentValidation;
 
-namespace Infrastructure.Validators;
+namespace Application.Features.Contents.Commands.AddSerialContent;
 
-[Obsolete("CQRS")]
-public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialContentAdminPageDto>
+internal class AddSerialContentCommandValidator : AbstractValidator<AddSerialContentCommand>
 {
-    public SerialContentDtoAdminPageValidator()
+    public AddSerialContentCommandValidator(ISubscriptionRepository subscriptionRepository)
     {
+        RuleFor(x => x.ContentDto)
+            .SetValidator(new SerialContentDtoValidator(subscriptionRepository));
+    }
+}
+
+public class SerialContentDtoValidator : AbstractValidator<SerialContentDto>
+{
+    private readonly ISubscriptionRepository _subscriptionRepository;
+
+    public SerialContentDtoValidator(ISubscriptionRepository subscriptionRepository)
+    {
+        _subscriptionRepository = subscriptionRepository;
+        
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Name must be not empty")
@@ -64,6 +77,9 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
         RuleForEach(x => x.Genres).NotEmpty().MaximumLength(20);
         RuleFor(x => x.PersonsInContent).NotEmpty();
         RuleFor(x => x.AllowedSubscriptions).NotEmpty();
+        RuleFor(x => x.AllowedSubscriptions)
+            .MustAsync(AreSubscriptionsExistAsync)
+            .WithMessage("Нельзя добавить свою подписку");
         RuleForEach(x => x.PersonsInContent).ChildRules(pic =>
         {
             pic.RuleFor(picdto => picdto.Name).NotEmpty().MaximumLength(70);
@@ -89,5 +105,19 @@ public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialConten
             });
         });
         RuleFor(x => x.SeasonInfos).NotEmpty();
+    }
+    
+    private async Task<bool> AreSubscriptionsExistAsync(List<SubscriptionDto> subscriptions, CancellationToken cancellationToken)
+    {
+        var dbSubscriptions = await _subscriptionRepository.GetAllSubscriptionsAsync();
+        foreach (var subscription in subscriptions)
+        {
+            if (!dbSubscriptions.Any(dbs => dbs.Name.Equals(subscription.Name)))
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }
