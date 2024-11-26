@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using API.Helpers;
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
 using Application.Features.Contents.Commands.AddMovieContent;

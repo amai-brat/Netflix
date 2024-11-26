@@ -1,3 +1,4 @@
+using API.Helpers;
 using Application.Dto;
 using Application.Features.CommentNotifications.Commands.SetNotificationReaded;
 using Application.Features.CommentNotifications.Queries.GetAllUserCommentNotifications;
@@ -19,9 +20,8 @@ public class CommentController(
     [Authorize]
     public async Task<IActionResult> GetAllUserCommentNotifications()
     {
-        var userId = User.FindFirst("id")?.Value;
-
-        var result = await mediator.Send(new GetAllUserCommentNotificationsQuery(long.Parse(userId!)));
+        var userId = this.GetUserId();
+        var result = await mediator.Send(new GetAllUserCommentNotificationsQuery(userId));
         
         return Ok(SetCommentNotifications(result.Notifications));
     }
@@ -30,9 +30,8 @@ public class CommentController(
     [Authorize]
     public async Task<IActionResult> AssignCommentAsync([FromQuery] long reviewId, [FromBody] CommentAssignDto text)
     {
-        var userId = User.FindFirst("id")?.Value;
-            
-        var result = await mediator.Send(new AssignCommentCommand(text.Text, long.Parse(userId!), reviewId));
+        var userId = this.GetUserId();
+        var result = await mediator.Send(new AssignCommentCommand(text.Text, userId, reviewId));
             
         return Ok(result.CommendId);
     }

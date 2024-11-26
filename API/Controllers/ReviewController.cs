@@ -1,4 +1,5 @@
-﻿using Application.Features.Reviews.Commands.AssignReview;
+﻿using API.Helpers;
+using Application.Features.Reviews.Commands.AssignReview;
 using Application.Features.Reviews.Commands.LikeReview;
 using Application.Features.Reviews.Queries.GetReviews;
 using Application.Features.Reviews.Queries.GetReviewsCount;
@@ -33,7 +34,7 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> AssignReviewAsync([FromBody] ReviewAssignDto review)
         {
-            var userId = GetUserId();
+            var userId = this.GetUserId();
             await mediator.Send(new AssignReviewCommand(review, userId));
 
             return Ok();
@@ -43,15 +44,10 @@ namespace API.Controllers
         [HttpPost("like/{reviewId:long}")]
         public async Task<IActionResult> LikeReviewAsync(long reviewId)
         {
-            var userId = GetUserId();
+            var userId = this.GetUserId();
             var result = await mediator.Send(new LikeReviewCommand(reviewId, userId));
 
             return Ok(result.IsSuccessful);
-        }
-        
-        private long GetUserId()
-        {
-            return long.Parse(HttpContext.User.FindFirst("id")!.Value);
         }
     }
 }

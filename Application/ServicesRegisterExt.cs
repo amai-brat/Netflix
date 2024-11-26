@@ -11,6 +11,7 @@ namespace Application
     {
         public static IServiceCollection AddContentApiServices(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<IContentVideoManager, ContentVideoManager>();
             serviceCollection.AddScoped<IContentService, ContentService>();
 
             serviceCollection.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);

@@ -9,7 +9,7 @@ namespace Application.Services.Implementations;
 
 public class ContentVideoManager(
     IContentRepository contentRepository,
-    IContentVideoProvider contentVideoProvider)
+    IContentVideoProvider contentVideoProvider) : IContentVideoManager
 {
     private readonly HashSet<int> _resolutions = [360, 480, 720, 1080, 1440, 2160];
 
