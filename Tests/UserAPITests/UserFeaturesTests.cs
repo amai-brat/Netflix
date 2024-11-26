@@ -12,7 +12,7 @@ using Application.Providers;
 using Application.Repositories;
 using AutoFixture;
 using Domain.Entities;
-using Infrastructure.Profiles;
+using Infrastructure;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -40,11 +40,7 @@ public class UserFeaturesTests
                 services.AddScoped<IUnitOfWork>(_ => _mockUnitOfWork.Object);
                 services.AddScoped<IReviewRepository>(_ => _mockReviewRepo.Object);
                 
-                services.AddAutoMapper(conf =>
-                {
-                    conf.AddProfile(new ReviewProfile());
-                    conf.AddProfile(new FavouriteProfile());
-                });
+                services.AddAutoMapper(typeof(DependencyInjection).Assembly);
             })
             .Build();
     }

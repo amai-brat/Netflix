@@ -8,6 +8,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Profiles;
 
+[Obsolete("CQRS")]
 public class ContentProfile : Profile
 {
     public ContentProfile()

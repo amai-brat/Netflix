@@ -1,13 +1,12 @@
-using Application.Dto;
+using Application.Features.Users.Queries.GetFavourites;
 using AutoMapper;
 using Domain.Entities;
 
 namespace Infrastructure.Profiles;
 
-[Obsolete("CQRS")]
-public class FavouriteProfile : Profile
+public class FavouriteProfileV2 : Profile
 {
-    public FavouriteProfile()
+    public FavouriteProfileV2()
     {
         CreateMap<FavouriteContent, FavouriteDto>()
             .ForMember(x => x.ContentBase, 
