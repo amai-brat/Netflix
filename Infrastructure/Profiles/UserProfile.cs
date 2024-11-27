@@ -1,6 +1,6 @@
+using Application.Identity;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Identity;
 
 namespace Infrastructure.Profiles;
 

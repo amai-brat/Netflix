@@ -1,13 +1,14 @@
 using System.Security.Claims;
 using API.Helpers;
 using Application.Dto;
+using Application.Features.Auth.Commands.ChangeEmailRequest;
+using Application.Features.Auth.Commands.ChangePassword;
 using Application.Features.Users.Commands.ChangeBirthday;
 using Application.Features.Users.Commands.ChangeProfilePicture;
 using Application.Features.Users.Queries.GetFavourites;
 using Application.Features.Users.Queries.GetPersonalInfo;
 using Application.Features.Users.Queries.GetReviews;
 using Application.Features.Users.Queries.GetReviewsPagesCount;
-using Infrastructure.Services.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +21,7 @@ namespace API.Controllers;
 [ApiController]
 [Route("user")]
 public class UserController(
-    IMediator mediator,
-    IAuthService authService) : ControllerBase
+    IMediator mediator) : ControllerBase
 {
     [HttpGet("get-personal-info")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
@@ -40,7 +40,8 @@ public class UserController(
     {
         var userId = this.GetUserId();
         var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)!.Value;
-        await authService.ChangeEmailRequestAsync(userEmail, email);
+        
+        await mediator.Send(new ChangeEmailRequestCommand(userEmail, email));
         var infoDto = await mediator.Send(new GetPersonalInfoQuery(userId));
        
         return Ok(infoDto);
@@ -66,12 +67,12 @@ public class UserController(
     [HttpPatch("change-password")]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<PersonalInfoDto>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordDto dto)
+    public async Task<IActionResult> ChangePasswordAsync([FromBody] PasswordsDto dto)
     {
         var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)!.Value;
-        var result = await authService.ChangePasswordAsync(userEmail, dto);
+        var result = await mediator.Send(new ChangePasswordCommand(userEmail, dto.PreviousPassword, dto.NewPassword));
 
-        return Ok(result);
+        return Ok(result.Email);
     }
 
     [HttpPatch("change-profile-picture")]

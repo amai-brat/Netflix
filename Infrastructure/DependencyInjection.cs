@@ -1,20 +1,17 @@
 using Application.Cache;
-using Application.Dto;
+using Application.Features.Auth.Commands.Register;
+using Application.Identity;
 using Application.Providers;
 using Application.Services.Abstractions;
 using DataAccess.Cache;
 using FluentValidation;
 using Infrastructure.Enums;
-using Infrastructure.Identity;
 using Infrastructure.Identity.Data;
 using Infrastructure.Options;
-using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Implementations;
 using Infrastructure.Providers.ProviderFactory;
 using Infrastructure.Services;
-using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Implementations;
-using Infrastructure.Validators;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -89,7 +86,7 @@ public static class DependencyInjection
     {
         serviceCollection.AddScoped<ITokenRepository, TokenRepository>();
         serviceCollection.AddScoped<ITokenGenerator, TokenGenerator>();
-        serviceCollection.AddScoped<IAuthService, AuthService>();
+        serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
         serviceCollection.AddScoped<ITwoFactorTokenSender, TwoFactorTokenSender>();
         
@@ -137,7 +134,7 @@ public static class DependencyInjection
     {
         serviceCollection.AddScoped<IAuthProvider, VkAuthProvider>();
         serviceCollection.AddScoped<IAuthProvider, GoogleAuthProvider>();
-        serviceCollection.AddScoped<AuthProviderResolver>();
+        serviceCollection.AddScoped<IAuthProviderResolver, AuthProviderResolver>();
         
         return serviceCollection;
     }

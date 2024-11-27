@@ -3,12 +3,16 @@ using System.Text.Json;
 using Application.Dto;
 using Application.Exceptions.Base;
 using Application.Exceptions.ErrorMessages;
+using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.SignIn;
+using Application.Features.Auth.Commands.TwoFactorAuthenticate;
+using Application.Features.Auth.Dtos;
+using Application.Helpers;
+using Application.Identity;
 using Application.Repositories;
+using Application.Services.Abstractions;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Helpers;
-using Infrastructure.Identity;
-using Infrastructure.Identity.Data;
 using Infrastructure.Options;
 using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Exceptions;
@@ -17,6 +21,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services.Implementations;
 
+[Obsolete("CQRS")]
 public class AuthService(
     UserManager<AppUser> userManager,
     SignInManager<AppUser> signInManager,

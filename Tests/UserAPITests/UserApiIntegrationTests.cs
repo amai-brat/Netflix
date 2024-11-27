@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
-using Application.Dto;
+using Application.Features.Auth.Commands.Register;
 using DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 using FavouriteDto = Application.Features.Users.Queries.GetFavourites.FavouriteDto;

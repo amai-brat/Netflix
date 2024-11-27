@@ -24,4 +24,9 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Helpers\" />
+      <Folder Include="Providers\Abstractions\" />
+    </ItemGroup>
+
 </Project>

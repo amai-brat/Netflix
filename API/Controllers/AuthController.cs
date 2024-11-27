@@ -1,9 +1,17 @@
 using System.Security.Claims;
-using Application.Dto;
-using FluentValidation;
+using Application.Features.Auth.Commands.ChangeEmail;
+using Application.Features.Auth.Commands.ConfirmEmail;
+using Application.Features.Auth.Commands.EnableTwoFactorAuth;
+using Application.Features.Auth.Commands.ExternallyAuthenticate;
+using Application.Features.Auth.Commands.RefreshToken;
+using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.RevokeToken;
+using Application.Features.Auth.Commands.SignIn;
+using Application.Features.Auth.Commands.TwoFactorAuthenticate;
+using Application.Features.Auth.Queries.GetAuthProviderRedirectUri;
+using Application.Features.Auth.Queries.IsEnabledTwoFactorAuth;
 using Infrastructure.Options;
-using Infrastructure.Providers.ProviderFactory;
-using Infrastructure.Services.Abstractions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -13,115 +21,79 @@ namespace API.Controllers;
 [ApiController]
 [Route("auth")]
 public class AuthController(
-    IAuthService authService,
-    IOptionsMonitor<FrontendConfig> monitor,
-    AuthProviderResolver authProviderResolver,
-    IValidator<SignUpDto> signUpDtoValidator) : ControllerBase
+    IMediator mediator,
+    IOptionsMonitor<FrontendConfig> monitor) : ControllerBase
 {
     private readonly FrontendConfig _frontendConfig = monitor.CurrentValue;
     
     [HttpGet("external/{provider}")]
-    public IActionResult GetRedirectUri(string provider)
+    public async Task<IActionResult> GetRedirectUri(string provider)
     {
-        var authProvider = authProviderResolver.GetAuthProvider(provider);
-        if (authProvider is null)
-            return BadRequest("Incorrect provider");
-        
-        return Redirect(authProvider.GetAuthUri());
+        var result = await mediator.Send(new GetAuthProviderRedirectUriQuery(provider));
+        return Redirect(result.Uri);
     }
     
     [HttpPost("external/{provider}")]
     public async Task<IActionResult> GetTokenAsync(string provider, [FromBody] AuthCode code)
     {
-        var authProvider = authProviderResolver.GetAuthProvider(provider);
-        if (authProvider is null)
-            return BadRequest("Incorrect provider");
-
-        var externalLoginDto = await authProvider.ExchangeCodeAsync(code.Code);
-
-        if (!externalLoginDto.IsSuccess)
-            return Unauthorized(externalLoginDto.ErrorDescription);
+        var result = await mediator.Send(new ExternallyAuthenticateCommand(provider, code));
+        if (result.Tokens is null)
+        {
+            return StatusCode(result.Code, result.Message);
+        }
         
-        var tokens = await authService.AuthenticateFromExternalAsync(externalLoginDto);
-        
-        SetRefreshTokenCookie(tokens.RefreshToken!);
-
-        return Ok(tokens.AccessToken);
+        return Ok(result.Tokens.AccessToken);
     }
     
     [HttpPost("signup")]
     public async Task<IActionResult> SignUpAsync(SignUpDto dto)
     {
-        var validationResult = await signUpDtoValidator.ValidateAsync(dto);
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-        
-        var userId = await authService.RegisterAsync(dto);
-        return Created("", userId);
+        var result = await mediator.Send(new RegisterCommand(dto));
+        return Created("user", result.UserId);
     }
 
     [HttpPost("signin")]
     public async Task<IActionResult> SignInAsync(LoginDto dto)
     {
-        var tokens = await authService.AuthenticateAsync(dto);
-
-        if (tokens == null)
+        var result = await mediator.Send(new SignInCommand(dto));
+        if (result.Tokens == null)
         {
-            return Accepted("", "2FA");
+            return StatusCode(result.Code, result.Message);
         }
         
-        if (tokens.RefreshToken != null)
-        {
-            SetRefreshTokenCookie(tokens.RefreshToken);
-        }
-
-        return Ok(tokens.AccessToken);
+        return Ok(result.Tokens.AccessToken);
     }
 
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshTokenAsync()
     {
-        var refreshToken = HttpContext.Request.Cookies["refresh-token"];
-        if (refreshToken is null)
+        var result = await mediator.Send(new RefreshTokenCommand());
+        if (result.Tokens == null)
         {
-            return Unauthorized("Refresh token is not found");
+            return StatusCode(result.Code, result.Message);
         }
-
-        var tokens = await authService.RefreshTokenAsync(refreshToken);
-        SetRefreshTokenCookie(tokens.RefreshToken!);
-
-        return Ok(tokens.AccessToken);
+        
+        return Ok(result.Tokens.AccessToken);
     }
 
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeTokenAsync()
     {
-        var refreshToken = HttpContext.Request.Cookies["refresh-token"];
-        if (refreshToken is null)
-        {
-            return Unauthorized("Refresh token is not found");
-        }
-
-        await authService.RevokeTokenAsync(refreshToken);
-
-        HttpContext.Response.Cookies.Delete("refresh-token");
-        
-        return NoContent();
+        var result = await mediator.Send(new RevokeTokenCommand());
+        return StatusCode(result.Code, result.Error);
     }
 
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmailAsync([FromQuery]long userId, [FromQuery] string token)
     {
-        _ = await authService.ConfirmEmailAsync(userId, token);
+        await mediator.Send(new ConfirmEmailCommand(userId, token));
         return Redirect(_frontendConfig.Url);
     }
 
     [HttpGet("confirm-email-change")]
     public async Task<IActionResult> ConfirmEmailChange([FromQuery]long userId, [FromQuery]string newEmail, [FromQuery]string token)
     {
-        _ = await authService.ChangeEmailAsync(userId, newEmail, token);
+        await mediator.Send(new ChangeEmailCommand(userId, newEmail, token));
         return Redirect(_frontendConfig.Url);
     }
 
@@ -130,7 +102,7 @@ public class AuthController(
     public async Task<IActionResult> EnableTwoFactorAuth()
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;
-        await authService.EnableTwoFactorAuthAsync(email);
+        await mediator.Send(new EnableTwoFactorAuthCommand(email));
         return Ok();
     }
 
@@ -139,32 +111,14 @@ public class AuthController(
     public async Task<IActionResult> IsEnabledTwoFactor()
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;
-        var result = await authService.IsEnabledTwoFactorAuthAsync(email);
-        return Ok(result);
+        var result = await mediator.Send(new IsEnabledTwoFactorAuthQuery(email));
+        return Ok(result.Enabled);
     }
     
     [HttpPost("send-2fa")]
     public async Task<IActionResult> SendTwoFactorToken(TwoFactorTokenDto dto)
     {
-        var result = await authService.TwoFactorAuthenticateAsync(dto);
-        if (result.RefreshToken != null)
-        {
-            SetRefreshTokenCookie(result.RefreshToken);
-        }
-        
-        return Ok(result.AccessToken);
-    }
-
-    private void SetRefreshTokenCookie(string refreshToken)
-    {
-        HttpContext.Response.Cookies.Append("refresh-token", 
-            refreshToken, 
-            new CookieOptions
-            {
-                SameSite = SameSiteMode.None,
-                HttpOnly = true,
-                Secure = true,
-                MaxAge = TimeSpan.FromDays(30)
-            });
+        var result = await mediator.Send(new TwoFactorAuthenticateCommand(dto));
+        return Ok(result.Tokens.AccessToken);
     }
 }

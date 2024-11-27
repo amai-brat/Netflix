@@ -1,3 +1,4 @@
+using Application.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Identity.Data;
