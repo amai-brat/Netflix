@@ -20,7 +20,7 @@ internal class GetContentQueryHandler(
     
     public async Task<object> Handle(GetContentQuery request, CancellationToken cancellationToken)
     {
-        var content = await contentRepository.GetContentByIdAsync(request.ContentId);
+        var content = await contentRepository.GetContentByFilterAsync(x => x.Id == request.ContentId);
         switch (content)
         {
             case null:
