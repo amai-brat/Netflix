@@ -78,8 +78,6 @@ public static class DependencyInjection
     
     private static IServiceCollection AddValidators(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IValidator<MovieContentAdminPageDto>, MovieContentDtoAdminPageValidator>();
-        serviceCollection.AddScoped<IValidator<SerialContentAdminPageDto>, SerialContentDtoAdminPageValidator>();
         serviceCollection.AddScoped<IValidator<SignUpDto>, SignUpDtoValidator>();
         
         return serviceCollection;
