@@ -1,5 +1,6 @@
 using Application.Cqrs.Commands;
 using Domain.Entities;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Application.Features.Subscriptions.Commands.EditSubscription;
 

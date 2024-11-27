@@ -1,3 +1,4 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Application.Features.Auth.Commands.ConfirmEmail;
 
 public class ConfirmEmailDto

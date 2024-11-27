@@ -1,3 +1,4 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Application.Features.Subscriptions.Queries.GetAvailableContents;
 
 public class SubscriptionContentDto

@@ -1,3 +1,4 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Application.Features.Users.Queries.GetPersonalInfo;
 
 public class PersonalInfoDto

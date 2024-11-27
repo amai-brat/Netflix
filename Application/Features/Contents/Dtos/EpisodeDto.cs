@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Application.Features.Contents.Dtos;
 

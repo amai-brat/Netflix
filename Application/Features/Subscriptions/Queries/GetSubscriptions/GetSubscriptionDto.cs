@@ -1,4 +1,5 @@
 using Application.Features.Subscriptions.Queries.GetAvailableContents;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Application.Features.Subscriptions.Queries.GetSubscriptions;
 
