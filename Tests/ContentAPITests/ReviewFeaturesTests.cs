@@ -228,6 +228,8 @@ public class ReviewFeaturesTests
                 reviews.Remove(r);
                 return r;
             });
+        _mockContent.Setup(repository => repository.GetContentByIdAsync(It.IsAny<long>()))
+            .ReturnsAsync(new ContentBase() { Ratings = new Ratings() { LocalRating = 0 } });
         
         var mediator = _serviceProvider.GetService<IMediator>()!;
         

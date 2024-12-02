@@ -29,7 +29,7 @@ internal class AssignReviewCommandHandler(
         content
                 .Ratings
                 .LocalRating =
-            ((content.Ratings.LocalRating ?? 0) * reviewCount + request.AssignDto.Score!.Value)
+            ((content.Ratings.LocalRating ?? 0) * (reviewCount - 1) + request.AssignDto.Score!.Value)
             / (reviewCount);
             
         // format float local rating to 2 decimal places
