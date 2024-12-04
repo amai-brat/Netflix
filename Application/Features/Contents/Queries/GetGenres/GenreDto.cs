@@ -1,0 +1,7 @@
+namespace Application.Features.Contents.Queries.GetGenres;
+
+public class GenreDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+}

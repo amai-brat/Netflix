@@ -1,5 +1,9 @@
-using Application.Dto;
-using Application.Services.Abstractions;
+using Application.Features.Subscriptions.Commands.CreateSubscription;
+using Application.Features.Subscriptions.Commands.DeleteSubscription;
+using Application.Features.Subscriptions.Commands.EditSubscription;
+using Application.Features.Subscriptions.Queries.GetAvailableContents;
+using Application.Features.Subscriptions.Queries.GetSubscriptions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,33 +13,31 @@ namespace API.Controllers;
 [Authorize(Roles = "admin")]
 [Route("admin/subscription")]
 public class SubscriptionController(
-    ISubscriptionService subscriptionService)
+    IMediator mediator)
     : ControllerBase
 {
     [HttpGet("all")]
     [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
-    [ProducesResponseType<List<AdminSubscriptionsDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<GetSubscriptionDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllSubscriptionsAsync()
     {
-        var result = await subscriptionService.GetSubscriptionsAsync();
-        
-        return Ok(result);
+        var result = await mediator.Send(new GetSubscriptionsQuery());
+        return Ok(result.Dtos);
     }
 
     [HttpGet("contents")]
     [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> GetAvailableContentsForSubscriptionAsync()
     {
-        var result = await subscriptionService.GetContentsAsync();
-
-        return Ok(result);
+        var result = await mediator.Send(new GetAvailableContentsQuery());
+        return Ok(result.Dtos);
     }
     
     [HttpPost("add")]
     [ProducesResponseType<int>(StatusCodes.Status201Created)]
-    public async Task<IActionResult> AddSubscriptionAsync(NewSubscriptionDto dto)
+    public async Task<IActionResult> AddSubscriptionAsync(CreateSubscriptionCommand command)
     {
-        var result = await subscriptionService.AddSubscriptionAsync(dto);
+        var result = await mediator.Send(command);
         return Created("", result.Id);
     }
 
@@ -43,15 +45,15 @@ public class SubscriptionController(
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteSubscriptionAsync(int subscriptionId)
     {
-        var result = await subscriptionService.DeleteSubscriptionAsync(subscriptionId);
+        var result = await mediator.Send(new DeleteSubcriptionCommand(subscriptionId));
         return Ok(result.Id);
     }
 
     [HttpPut("edit")]
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> EditSubscriptionAsync(EditSubscriptionDto dto)
+    public async Task<IActionResult> EditSubscriptionAsync(EditSubscriptionCommand command)
     {
-        var result = await subscriptionService.EditSubscriptionAsync(dto);
+        var result = await mediator.Send(command);
         return Ok(result.Id);
     }
 }

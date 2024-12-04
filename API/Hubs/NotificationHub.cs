@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
-using Application.Services.Abstractions;
+using Application.Features.CommentNotifications.Commands.SetNotificationReaded;
+using Application.Features.CommentNotifications.Queries.GetCommentNotification;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -8,10 +10,9 @@ namespace API.Hubs;
 
 [Authorize]
 public class NotificationHub(
-    INotificationService notificationService
+    IMediator mediator
     ): Hub
 {
-    private readonly INotificationService _notificationService = notificationService;
     private static readonly ConcurrentDictionary<long, string> Connections = [];
 
     public override Task OnDisconnectedAsync(Exception? exception)
@@ -36,7 +37,7 @@ public class NotificationHub(
     {
         var userId = long.Parse(Context.User?.FindFirst("id")?.Value!);
 
-        var commentNotification = await _notificationService.GetCommentNotificationByCommentIdAsync(commentId);
+        var commentNotification =  await mediator.Send(new GetCommentNotificationQuery(commentId));
 
         if (commentNotification is null)
             return;
@@ -49,7 +50,7 @@ public class NotificationHub(
 
     public async Task ReadNotification(long notificationId)
     {
-        await _notificationService.SetNotificationReadedAsync(notificationId);
+        await mediator.Send(new SetNotificationReadedCommand(notificationId));
         await Clients.Client(Context.ConnectionId).SendAsync("DeleteNotification", notificationId);
     }
     

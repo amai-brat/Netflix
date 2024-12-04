@@ -3,6 +3,7 @@ using FluentValidation;
 
 namespace Infrastructure.Validators;
 
+[Obsolete("CQRS")]
 public class SerialContentDtoAdminPageValidator : AbstractValidator<SerialContentAdminPageDto>
 {
     public SerialContentDtoAdminPageValidator()

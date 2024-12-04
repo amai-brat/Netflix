@@ -1,14 +1,15 @@
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
+using Application.Providers;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Providers.Abstractions;
 
 namespace Infrastructure.Services;
 
+[Obsolete("CQRS")]
 public class UserService(
     IProfilePicturesProvider profilePicturesProvider,
     IFavouriteContentRepository favouriteContentRepository,

@@ -1,5 +1,6 @@
 ﻿namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class SeasonInfoAdminPageDto
 {
     public int SeasonNumber { get; set; }

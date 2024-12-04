@@ -8,6 +8,7 @@ using Moq;
 
 namespace Tests.ContentAPITests
 {
+	[Obsolete("CQRS")]
 	public class CommentServiceTests
 	{
 		private readonly Fixture _fixture = new();

@@ -2,6 +2,7 @@
 
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class SerialContentAdminPageDto
 {
     public long Id { get; set; }

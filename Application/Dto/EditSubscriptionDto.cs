@@ -1,5 +1,6 @@
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class EditSubscriptionDto
 {
     public int SubscriptionId { get; set; }

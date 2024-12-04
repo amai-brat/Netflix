@@ -2,6 +2,7 @@ using Domain.Entities;
 
 namespace Application.Services.Abstractions;
 
+[Obsolete("CQRS")]
 public interface INotificationService
 {
     Task SetNotificationReadedAsync(long notificationId);

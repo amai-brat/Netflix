@@ -1,6 +1,10 @@
+using API.Helpers;
 using Application.Dto;
-using Application.Services.Abstractions;
+using Application.Features.CommentNotifications.Commands.SetNotificationReaded;
+using Application.Features.CommentNotifications.Queries.GetAllUserCommentNotifications;
+using Application.Features.Comments.Commands.AssignComment;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,40 +13,34 @@ namespace API.Controllers;
 [Route("comment")]
 [ApiController]
 public class CommentController(
-    ICommentService commentService,
-    INotificationService notificationService
+    IMediator mediator
 ) : ControllerBase
 {
-    private readonly ICommentService _commentService = commentService;
-    private readonly INotificationService _notificationService = notificationService;
-
     [HttpGet("notifications")]
     [Authorize]
     public async Task<IActionResult> GetAllUserCommentNotifications()
     {
-        var userId = User.FindFirst("id")?.Value;
-
-        var commentNotifications = await _notificationService.GetAllUserCommentNotificationsAsync(long.Parse(userId!));
+        var userId = this.GetUserId();
+        var result = await mediator.Send(new GetAllUserCommentNotificationsQuery(userId));
         
-        return Ok(SetCommentNotifications(commentNotifications));
+        return Ok(SetCommentNotifications(result.Notifications));
     }
     
     [HttpPost("assign")]
     [Authorize]
     public async Task<IActionResult> AssignCommentAsync([FromQuery] long reviewId, [FromBody] CommentAssignDto text)
     {
-        var userId = User.FindFirst("id")?.Value;
+        var userId = this.GetUserId();
+        var result = await mediator.Send(new AssignCommentCommand(text.Text, userId, reviewId));
             
-        var id = await _commentService.AssignCommentAsync(text.Text, long.Parse(userId!), reviewId);
-            
-        return Ok(id);
+        return Ok(result.CommendId);
     }
     
     [HttpPost("set/readed")]
     [Authorize]
     public async Task<IActionResult> AssignCommentAsync([FromQuery] long notificationId)
     {
-        await _notificationService.SetNotificationReadedAsync(notificationId);
+        await mediator.Send(new SetNotificationReadedCommand(notificationId));
         return Ok();
     }
 

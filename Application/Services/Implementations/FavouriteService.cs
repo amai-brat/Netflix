@@ -5,6 +5,7 @@ using Application.Services.Abstractions;
 
 namespace Application.Services.Implementations
 {
+    [Obsolete("CQRS")]
     public class FavouriteService(
         IContentRepository contentRepository,
         IFavouriteContentRepository favouriteContentRepository,

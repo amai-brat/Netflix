@@ -9,6 +9,7 @@ using Domain.Entities;
 
 namespace Application.Services.Implementations
 {
+	[Obsolete("CQRS")]
     public class ReviewService(
         IReviewRepository reviewRepository,
         IContentRepository contentRepository,

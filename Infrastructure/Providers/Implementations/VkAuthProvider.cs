@@ -1,8 +1,9 @@
 using System.Net.Http.Json;
 using System.Text;
 using Application.Dto;
+using Application.Features.Auth.Dtos;
+using Application.Providers;
 using Infrastructure.Options;
-using Infrastructure.Providers.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Providers.Implementations;

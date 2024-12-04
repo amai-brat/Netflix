@@ -9,6 +9,7 @@ using Moq;
 
 namespace Tests.SubscriptionAPITests;
 
+[Obsolete("CQRS")]
 public class SubscriptionServiceTests
 {
     private readonly Fixture _fixture = new();

@@ -11,6 +11,7 @@ using Application.Services.Implementations;
 
 namespace Tests.ContentAPITests
 {
+    [Obsolete("CQRS")]
     public class FavouriteServiceTests
     {
         private readonly Fixture _fixture = new();

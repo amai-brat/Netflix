@@ -1,5 +1,6 @@
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class ReviewDto
 {
     public long Id { get; set; }

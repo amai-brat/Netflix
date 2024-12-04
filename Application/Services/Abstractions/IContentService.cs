@@ -1,8 +1,14 @@
 ﻿using Application.Dto;
+using Application.Features.Contents.Queries.GetContentsByFilter;
+using Application.Features.Contents.Queries.GetContentTypes;
+using Application.Features.Contents.Queries.GetGenres;
+using Application.Features.Contents.Queries.GetPromos;
+using Application.Features.Contents.Queries.GetSections;
 using Domain.Entities;
 
 namespace Application.Services.Abstractions;
 
+[Obsolete("CQRS")]
 public interface IContentService
 {
     Task<ContentBase?> GetContentByIdAsync(long id);
