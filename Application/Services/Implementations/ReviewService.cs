@@ -24,67 +24,68 @@ namespace Application.Services.Implementations
 		    return await reviewRepository.GetReviewsCountAsync(contentId);
 	    }
 
-	    public async Task<bool> LikeReviewAsync(long reviewId, long userId)
-	    {
-		    if (!await reviewRepository.IsReviewLikedByUserAsync(reviewId, userId))
-		    {
-			    await reviewRepository.AddReviewLikeAsync(reviewId, userId);
-			    await reviewRepository.SaveChangesAsync();
-			    return true;
-		    }
+		public async Task<bool> LikeReviewAsync(long reviewId, long userId)
+		{
+			if (!await reviewRepository.IsReviewLikedByUserAsync(reviewId, userId))
+			{
+				await reviewRepository.AddReviewLikeAsync(reviewId, userId);
+				await reviewRepository.SaveChangesAsync();
+				return true;
+			}
 
-		    await reviewRepository.RemoveReviewLikeAsync(reviewId, userId);
-		    await reviewRepository.SaveChangesAsync();
+			await reviewRepository.RemoveReviewLikeAsync(reviewId, userId);
+			await reviewRepository.SaveChangesAsync();
 
-		    return false;
-	    }
+			return false;
+		}
 
-	    public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
-        {
-            if(!IsValidReview(review, out var errorMessage, out var param))
-                throw new ReviewServiceArgumentException(errorMessage!, param!);
+		public async Task AssignReviewWithRatingAsync(ReviewAssignDto review, long userId)
+		{
+			if(!IsValidReview(review, out var errorMessage, out var param))
+				throw new ReviewServiceArgumentException(errorMessage!, param!);
 
-            if (await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
-                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
+			if (await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId) is null)
+				throw new ReviewServiceArgumentException(ErrorMessages.NotFoundContent, $"{review.ContentId}");
 
-            if (await userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
-                throw new ReviewServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
+			if (await userRepository.GetUserByFilterAsync(u => u.Id == userId) is null)
+				throw new ReviewServiceArgumentException(ErrorMessages.NotFoundUser, $"{userId}");
 
-            await reviewRepository.AssignReviewAsync(new Review()
-            {
-                UserId = userId,
-                ContentId = review.ContentId,
-                Text = review.Text,
-                IsPositive = review.IsPositive,
-                Score = review.Score ?? -1,
-                WrittenAt = DateTimeOffset.UtcNow
-            });
-            
-            var content = await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId);
-            var reviewCount = await reviewRepository.GetReviewsCountAsync(review.ContentId);
-            if (content!.Ratings == null)
-            {
-	            content.Ratings = new Ratings();
-            }
+			await reviewRepository.AssignReviewAsync(new Review()
+			{
+				UserId = userId,
+				ContentId = review.ContentId,
+				Text = review.Text,
+				IsPositive = review.IsPositive,
+				Score = review.Score ?? -1,
+				WrittenAt = DateTimeOffset.UtcNow
+			});
+			
+			var content = await contentRepository.GetContentByFilterAsync(c => c.Id == review.ContentId);
+			var reviewCount = await reviewRepository.GetReviewsCountAsync(review.ContentId);
+			if (content!.Ratings == null)
+			{
+				content.Ratings = new Ratings();
+			}
+
             content
-		            .Ratings
-		            .LocalRating =
-	            ((content.Ratings.LocalRating ?? 0) * reviewCount + review.Score!.Value)
-	            / (reviewCount);
-            
+				.Ratings
+				.LocalRating =
+				((content.Ratings.LocalRating ?? 0) * (reviewCount-1) + review.Score!.Value)
+				/ (reviewCount);
+
             // format float local rating to 2 decimal places
             content.Ratings.LocalRating = (float) Math.Round(content.Ratings.LocalRating.Value, 2);
 
-            await contentRepository.SaveChangesAsync();
-        }
+			await contentRepository.SaveChangesAsync();
+		}
 
 		public async Task AssignReviewAsync(ReviewAssignDto review, long userId)
 		{
 			await AssignReviewWithRatingAsync(review, userId);
 		}
 		
-        public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId) =>
-            await reviewRepository.GetReviewsByFilterAsync(r => r.ContentId == contentId);
+		public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId) =>
+			await reviewRepository.GetReviewsByFilterAsync(r => r.ContentId == contentId);
 
 		public async Task<List<Review>> GetReviewsByContentIdAsync(long contentId, string sort) => 
 			((sort.ToLower(), await GetReviewsByContentIdAsync(contentId)) switch
@@ -148,6 +149,17 @@ namespace Application.Services.Implementations
 			}
 
 			var deletedReview = reviewRepository.DeleteReview(review);
+
+			//Обновляем оценки
+			var contentId = deletedReview.ContentId;
+			var content = await contentRepository.GetContentByIdAsync(contentId);
+            var reviewCount = await reviewRepository.GetReviewsCountAsync(contentId);
+
+			content!.Ratings!.LocalRating =
+				reviewCount == 0 
+				? 0
+				: (content.Ratings.LocalRating * reviewCount - deletedReview.Score) / (reviewCount - 1);
+			
 			await reviewRepository.SaveChangesAsync();
 
 			return deletedReview;

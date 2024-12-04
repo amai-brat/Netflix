@@ -37,6 +37,7 @@ namespace API.Controllers
             var result = await mediator.Send(new GetContentQuery(id));
             return Ok(result);
         }
+
         [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any)]
         [HttpGet("filter")]
         public async Task<IActionResult> GetContentsByFilterAsync([FromQuery] Filter filter)
@@ -171,6 +172,7 @@ namespace API.Controllers
             return Ok(result);
         }
         
+        [Authorize(Roles = "admin")]
         [HttpGet("admin/serial/{id}")]
         public async Task<IActionResult> GetSerialContentAdminPageDto(long id)
         {
