@@ -3,6 +3,7 @@ using Domain.Entities;
 
 namespace Application.Services.Abstractions
 {
+    [Obsolete("CQRS")]
     public interface IReviewService
     {
         Task<List<Review>> GetReviewsByContentIdAsync(long contentId);

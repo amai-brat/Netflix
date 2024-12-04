@@ -9,19 +9,20 @@ using Domain.Entities;
 
 namespace Application.Services.Implementations
 {
-	public class ReviewService(
-		IReviewRepository reviewRepository,
-		IContentRepository contentRepository,
-		IUserRepository userRepository,
-		IMinioCache minioCache,
-		IUserService userService,
-		IMapper mapper
-		) : IReviewService
-	{
-		public async Task<int> GetReviewsCountByContentIdAsync(long contentId)
-		{
-			return await reviewRepository.GetReviewsCountAsync(contentId);
-		}
+	[Obsolete("CQRS")]
+    public class ReviewService(
+        IReviewRepository reviewRepository,
+        IContentRepository contentRepository,
+        IUserRepository userRepository,
+        IMinioCache minioCache,
+        IUserService userService,
+        IMapper mapper
+        ) : IReviewService
+    {
+	    public async Task<int> GetReviewsCountByContentIdAsync(long contentId)
+	    {
+		    return await reviewRepository.GetReviewsCountAsync(contentId);
+	    }
 
 		public async Task<bool> LikeReviewAsync(long reviewId, long userId)
 		{

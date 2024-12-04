@@ -1,4 +1,4 @@
-using Infrastructure.Identity;
+using Application.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

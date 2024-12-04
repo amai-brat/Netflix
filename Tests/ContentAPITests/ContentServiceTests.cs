@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
+using Application.Features.Contents.Queries.GetContentsByFilter;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using Application.Services.Implementations;
@@ -19,19 +20,20 @@ using Xunit.Abstractions;
 
 namespace Tests.ContentAPITests
 {
+    [Obsolete("CQRS")]
     public class ContentServiceTests
     {
         private ITestOutputHelper _testOutputHelper;
-        private Fixture _fixture = new();
-        private Mock<IContentRepository> _mockContent = new();
-        private Mock<ISubscriptionRepository> _mockSubscription = new();
-        private Mock<IContentTypeRepository> _mockContentType = new();
-        private Mock<IGenreRepository> _mockGenre = new();
-        private Mock<IUserRepository> _mockUser = new();
-        private Mock<IValidator<MovieContentAdminPageDto>> _mockMovieContentValidator = new();
-        private Mock<IValidator<SerialContentAdminPageDto>> _mockSerialContentValidator = new();
-        private Mock<IContentVideoProvider> _mockContentVideoProvider = new();
-        private IMapper _mapper;
+        private readonly Fixture _fixture = new();
+        private readonly Mock<IContentRepository> _mockContent = new();
+        private readonly Mock<ISubscriptionRepository> _mockSubscription = new();
+        private readonly Mock<IContentTypeRepository> _mockContentType = new();
+        private readonly Mock<IGenreRepository> _mockGenre = new();
+        private readonly Mock<IUserRepository> _mockUser = new();
+        private readonly Mock<IValidator<MovieContentAdminPageDto>> _mockMovieContentValidator = new();
+        private readonly Mock<IValidator<SerialContentAdminPageDto>> _mockSerialContentValidator = new();
+        private readonly Mock<IContentVideoProvider> _mockContentVideoProvider = new();
+        private readonly IMapper _mapper;
 
         public ContentServiceTests(ITestOutputHelper testOutputHelper)
         {

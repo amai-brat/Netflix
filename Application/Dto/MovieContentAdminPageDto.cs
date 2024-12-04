@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class MovieContentAdminPageDto
 {
     public long Id { get; set; }

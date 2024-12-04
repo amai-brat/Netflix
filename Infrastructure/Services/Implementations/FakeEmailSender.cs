@@ -1,4 +1,4 @@
-using Infrastructure.Services.Abstractions;
+using Application.Services.Abstractions;
 
 namespace Infrastructure.Services.Implementations;
 

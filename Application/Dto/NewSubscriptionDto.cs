@@ -1,5 +1,6 @@
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class NewSubscriptionDto
 {
     public required string Name { get; set; }

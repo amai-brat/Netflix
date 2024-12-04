@@ -6,6 +6,7 @@ using Domain.Entities;
 
 namespace Application.Services.Implementations;
 
+[Obsolete("CQRS")]
 public class NotificationService(
     ICommentNotificationRepository commentNotificationRepository,
     IUserRepository userRepository

@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Features.Contents.Dtos;
 using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
@@ -11,13 +11,13 @@ namespace Tests.MapperTests;
 
 public class ContentMapperTests
 {
-    private Fixture _fixture = new();
+    private readonly Fixture _fixture = new();
 
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
     private ITestOutputHelper _testOutputHelper;
     public ContentMapperTests(ITestOutputHelper testOutcomeHelper)
     {
-        var mapperConfig = new MapperConfiguration(cfg => { cfg.AddProfile(new ContentProfile()); });
+        var mapperConfig = new MapperConfiguration(cfg => { cfg.AddProfile(new ContentProfileV2()); });
         _mapper = mapperConfig.CreateMapper();
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         _fixture.Customizations.Add(new DateOnlySpecimenBuilder());
@@ -29,10 +29,10 @@ public class ContentMapperTests
     public void MapSerialContentAdminPageDtoToSerialContent_MapsCorrectlyEachField()
     {
         // Arrange
-        var serialContentAdminPageDto = _fixture.Build<SerialContentAdminPageDto>().Create();
+        var serialContentAdminPageDto = _fixture.Build<SerialContentDto>().Create();
         
         // Act
-        var mappedContent = _mapper.Map<SerialContentAdminPageDto, SerialContent>(serialContentAdminPageDto);
+        var mappedContent = _mapper.Map<SerialContentDto, SerialContent>(serialContentAdminPageDto);
         
         Assert.Equal(serialContentAdminPageDto.Name, mappedContent!.Name);
         Assert.Equal(serialContentAdminPageDto.Description, mappedContent.Description);
@@ -94,7 +94,7 @@ public class ContentMapperTests
         var serialContent = _fixture.Build<SerialContent>().Create();
         
         // Act
-        var mappedContent = _mapper.Map<SerialContent, SerialContentAdminPageDto>(serialContent);
+        var mappedContent = _mapper.Map<SerialContent, SerialContentDto>(serialContent);
         
         // Assert
         Assert.Equal(serialContent.Name, mappedContent!.Name);
@@ -162,7 +162,7 @@ public class ContentMapperTests
         var movieContent = _fixture.Build<MovieContent>().Create();
         
         // Act
-        var mappedContent = _mapper.Map<MovieContent, MovieContentAdminPageDto>(movieContent);
+        var mappedContent = _mapper.Map<MovieContent, MovieContentDto>(movieContent);
         
         // Assert
         Assert.Equal(movieContent.Name, mappedContent!.Name);
@@ -206,10 +206,10 @@ public class ContentMapperTests
     public void MapMovieContentAdminPageDtoToMovieContent_MapsCorrectlyEachField()
     {
         // Arrange
-        var mcDto = _fixture.Build<MovieContentAdminPageDto>().Create();
+        var mcDto = _fixture.Build<MovieContentDto>().Create();
 
         // Act
-        var mappedContent = _mapper.Map<MovieContentAdminPageDto, MovieContent>(mcDto);
+        var mappedContent = _mapper.Map<MovieContentDto, MovieContent>(mcDto);
 
         // Assert
 

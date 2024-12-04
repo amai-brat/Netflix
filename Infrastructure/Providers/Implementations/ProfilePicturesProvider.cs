@@ -1,5 +1,5 @@
+using Application.Providers;
 using Infrastructure.Enums;
-using Infrastructure.Providers.Abstractions;
 using Infrastructure.Providers.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;

@@ -1,7 +1,12 @@
 using Application.Dto;
+using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.SignIn;
+using Application.Features.Auth.Commands.TwoFactorAuthenticate;
+using Application.Features.Auth.Dtos;
 
 namespace Infrastructure.Services.Abstractions;
 
+[Obsolete("CQRS")]
 public interface IAuthService
 {
     public Task<long?> RegisterAsync(SignUpDto dto); 

@@ -1,16 +1,16 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
-using Application.Dto;
 using Application.Exceptions.ErrorMessages;
+using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.SignIn;
+using Application.Identity;
 using Application.Repositories;
+using Application.Services.Abstractions;
 using AutoFixture;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Identity;
-using Infrastructure.Identity.Data;
 using Infrastructure.Options;
 using Infrastructure.Profiles;
-using Infrastructure.Services.Abstractions;
 using Infrastructure.Services.Exceptions;
 using Infrastructure.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +22,7 @@ using Tests.UserAPITests.Fakes;
 
 namespace Tests.UserAPITests;
 
+[Obsolete("CQRS")]
 public class AuthServiceTests
 {
     public AuthServiceTests()

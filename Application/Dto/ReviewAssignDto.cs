@@ -1,5 +1,6 @@
 ﻿namespace Application.Dto
 {
+    [Obsolete("CQRS")]
     public class ReviewAssignDto
     {
         public long ContentId { get; set; }

@@ -3,6 +3,11 @@ using System.Linq.Expressions;
 using Application.Dto;
 using Application.Exceptions.ErrorMessages;
 using Application.Exceptions.Particular;
+using Application.Features.Contents.Queries.GetContentsByFilter;
+using Application.Features.Contents.Queries.GetContentTypes;
+using Application.Features.Contents.Queries.GetGenres;
+using Application.Features.Contents.Queries.GetPromos;
+using Application.Features.Contents.Queries.GetSections;
 using Application.Repositories;
 using Application.Services.Abstractions;
 using Application.Services.Extensions;
@@ -13,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Services.Implementations;
 
+[Obsolete("CQRS")]
 public class ContentService(
     IContentRepository contentRepository,
     ISubscriptionRepository subscriptionRepository,

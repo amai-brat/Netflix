@@ -1,10 +1,10 @@
-using Infrastructure.Providers.Abstractions;
+using Application.Providers;
 using Infrastructure.Providers.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Providers.ProviderFactory;
 
-public class AuthProviderResolver(IServiceProvider serviceProvider)
+public class AuthProviderResolver(IServiceProvider serviceProvider) : IAuthProviderResolver
 {
     public IAuthProvider? GetAuthProvider(string provider) =>
         !Enum.TryParse<AuthProvider>(provider, true, out var providerRes) ? 

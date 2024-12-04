@@ -1,9 +1,14 @@
 ﻿using Application.Dto;
+using Application.Features.Contents.Queries.GetContentTypes;
+using Application.Features.Contents.Queries.GetGenres;
+using Application.Features.Contents.Queries.GetPromos;
+using Application.Features.Contents.Queries.GetSections;
 using AutoMapper;
 using Domain.Entities;
 
 namespace Infrastructure.Profiles;
 
+[Obsolete("CQRS")]
 public class ContentProfile : Profile
 {
     public ContentProfile()

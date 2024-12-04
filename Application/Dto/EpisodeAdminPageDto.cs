@@ -3,6 +3,7 @@
 
 namespace Application.Dto;
 
+[Obsolete("CQRS")]
 public class EpisodeAdminPageDto
 {
     public int EpisodeNumber { get; set; }

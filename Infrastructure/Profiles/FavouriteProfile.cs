@@ -4,6 +4,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Profiles;
 
+[Obsolete("CQRS")]
 public class FavouriteProfile : Profile
 {
     public FavouriteProfile()
