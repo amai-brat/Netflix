@@ -48,20 +48,31 @@
     border-bottom: 1px solid var(--main-color);
 }
 
+#support-chat-files-preview-wrap{
+    position: relative;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#support-chat-files-types-pop-up{
+    transform: translate(-48px, calc(-50% - 54px));
+}
+
 #support-chat-input {
     display: flex;
     padding: 10px;
 }
 
-#support-chat-input input {
+#support-chat-input textarea {
     flex: 1;
     padding: 10px;
     border: 1px solid var(--main-color);
     border-radius: 5px;
     color: var(--third-text-color);
+    resize: none;
 }
 
-#support-chat-input button {
+#support-chat-send-button{
     padding: 10px;
     margin-left: 5px;
     background-color: var(--main-btn-color);
@@ -71,7 +82,7 @@
     transition: background-color 0.3s;
 }
 
-#support-chat-input button:hover {
+#support-chat-send-button:hover {
     background-color: var(--secondary-btn-color);
 }
 
