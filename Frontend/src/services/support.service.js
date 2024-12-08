@@ -4,7 +4,8 @@ import {baseSupportUrl} from "../httpClient/baseUrl.js";
 export const supportService = {
     getUserSupportMessagesHistory,
     getSupportUsersUnansweredMessagesHistory,
-    getSupportUserMessagesHistory
+    getSupportUserMessagesHistory,
+    uploadChatFiles,
 };
 
 
@@ -20,5 +21,13 @@ async function getSupportUserMessagesHistory(id) {
 
 async function getSupportUsersUnansweredMessagesHistory() {
     const {response, data} = await fetchAuth('support/chats/unanswered', true, {}, baseSupportUrl)
+    return {response, data}
+}
+
+async function uploadChatFiles(id, formData) {
+    const {response, data} = await fetchAuth(`support/chats/${id}/files/upload`, true, {
+        method: "POST",
+        body: formData
+    }, baseSupportUrl)
     return {response, data}
 }

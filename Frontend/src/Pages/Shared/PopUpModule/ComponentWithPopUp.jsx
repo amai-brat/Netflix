@@ -1,13 +1,14 @@
 import {useEffect, useState} from "react";
 import "/src/Pages/Shared/PopUpModule/ComponentWithPopUp.css";
-const ComponentWithPopUp = ({Component, PopUp, id}) => {
+const ComponentWithPopUp = ({Component, PopUp, id, extraOpenStateOptions = []}) => {
     const [popUpDisplayed, setPopUpDisplayed] = useState(false)
 
     useEffect(() => {
         const handleOutsideClick = (e) => {
             const popUpElement = document.querySelector("#"+ id)
             const componentElement = document.querySelector("#"+ id + "-com")
-            if (popUpElement && !popUpElement.contains(e.target) && !componentElement.contains(e.target)) {
+            if (popUpElement && !popUpElement.contains(e.target) && !componentElement.contains(e.target) &&
+                !extraOpenStateOptions.some(method => !method(e))) {
                 setPopUpDisplayed(false);
             }
         }

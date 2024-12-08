@@ -1,0 +1,12 @@
+.support-chat-message-files-block-preview{
+    position: absolute;
+    transform: translate(0, -100%);
+    width: inherit;
+    max-height: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: var(--third-color);
+    padding: 10px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}

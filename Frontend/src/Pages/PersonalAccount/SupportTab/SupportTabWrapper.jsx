@@ -3,7 +3,8 @@ import {useState} from "react";
 
 const SupportTabWrapper = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
-    const [messageInput, setMessageInput] = useState("")
+    const [messageInput, setMessageInput] = useState("");
+    const [files, setFiles] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const wrapObj = {
         selectedUserId: selectedUserId,
@@ -11,7 +12,9 @@ const SupportTabWrapper = () => {
         messageInput: messageInput,
         setMessageInput: setMessageInput,
         currentPage: currentPage,
-        setCurrentPage: setCurrentPage
+        setCurrentPage: setCurrentPage,
+        files: files,
+        setFiles: setFiles
     }
     return(
         <SupportTab wrapObj={wrapObj}/>

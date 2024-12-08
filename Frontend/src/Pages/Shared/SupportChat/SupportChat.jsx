@@ -58,6 +58,10 @@ const SupportChat = observer(() => {
                     setMessages={setMessages}
                 />}
                 id={id}
+                extraOpenStateOptions={[
+                    (e) => !e.target.classList.contains("support-chat-message-files-block-file-image-modal"),
+                    (e) => !e.target.classList.contains("support-chat-message-files-block-file-image-modal-image")
+                ]}
             />}
         </div>
     )

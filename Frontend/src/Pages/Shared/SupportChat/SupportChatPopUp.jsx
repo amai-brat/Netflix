@@ -5,9 +5,16 @@ import {useEffect, useRef, useState} from "react";
 import SupportChatMessage from "./SupportChatMessage.jsx";
 import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import {authenticationService} from "../../../services/authentication.service.js";
+import {supportService} from "../../../services/support.service.js";
+import SupportChatFilesPreview from "./SupportChatFilesPreview.jsx";
+import ComponentWithPopUp from "../PopUpModule/ComponentWithPopUp.jsx";
+import SupportChatUploadFilesButton from "./SupportChatUploadFilesButton.jsx";
+import SupportChatFileTypesPopUp from "./SupportChatFileTypesPopUp.jsx";
+
 const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
     const endOfMessagesRef = useRef(null);
     const [messageInput, setMessageInput] = useState("")
+    const [files, setFiles] = useState([]);
     const store = useDataStore()
     const closePopUp = () => {
         setPopUpDisplayed(false)
@@ -17,19 +24,52 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
         setMessageInput(e.target.value)
     }
     
+    const errorMessage = () => {
+        if(messages === null || messages === undefined){
+            setMessages([{text: "Не удалось отправить сообщение", role: "user"}])
+        }else{
+            setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
+        }
+    }
+    
     const onSendMessageInputAsync = async () => {
-        if(messageInput !== null && messageInput.trim() !== ""){
+        if((messageInput !== null && messageInput.trim() !== "") || files.length > 0){
             try {
-                await store.data.supportConnection.invoke("SendMessage", +authenticationService.getUser()?.id, messageInput)
-                setMessages([...messages, {text: messageInput, role: "user"}])
+                const userId = +authenticationService.getUser()?.id
+                const filesDto = []
+                
+                //TODO: не забыть всё раскомментировать когда будет бэк
+                
+                files.forEach((file) => {
+                    filesDto.push({src: URL.createObjectURL(file), type: file.type, name: file.name})
+                })//убрать
+                
+                /*if(files.length > 0){
+                    const formData = new FormData();
+
+                    files.forEach(file => {
+                        formData.append("files", file);
+                    });
+
+                    const {response, data} = await supportService.uploadChatFiles(userId, formData);
+                    if (response.ok){
+                        data.forEach((url, index) => {
+                            filesDto.append({src: url, type: files[index].type, name: files[index].name})
+                        })
+                    }else{
+                        errorMessage()
+                        return
+                    }
+                }*/
+                const messageInputToSend = (messageInput !== null && messageInput.trim() !== "") ? messageInput : "";
+
+                await store.data.supportConnection.invoke("SendMessage", userId, messageInputToSend)//, filesDto)
+                setMessages([...messages, {text: messageInput, files: filesDto, role: "user"}])
             } catch (e) {
-                if(messages === null || messages === undefined){
-                    setMessages([{text: "Не удалось отправить сообщение", role: "user"}])
-                }else{
-                    setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
-                }
+                errorMessage()
             }
             setMessageInput("")
+            setFiles([])
         }
     }
 
@@ -56,20 +96,30 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
                 )}
                 <div ref={endOfMessagesRef}/>
             </div>
-            <div id="support-chat-input">
-                <input type="text" id="support-chat-message-input" 
-                       value={messageInput} 
-                       placeholder="Введите сообщение..." 
-                       onChange={onMessageInputChange} 
-                       onKeyUp={(e) => {
-                           if(e.key === "Enter") {
-                               onSendMessageInputAsync()
-                           }
-                       }}
-                />
-                <button id="support-chat-send-button" onClick={onSendMessageInputAsync}>
-                    <img id="support-chat-send-button-icon" src={sendIcon} alt="Send"/>
-                </button>
+            <div id="support-chat-input-wrap">
+                <div id="support-chat-files-preview-wrap">
+                    <SupportChatFilesPreview files={files} />
+                </div>
+                <div id="support-chat-input">
+                    <ComponentWithPopUp
+                        Component={SupportChatUploadFilesButton}
+                        PopUp={({setPopUpDisplayed}) => <SupportChatFileTypesPopUp setFiles={setFiles} setPopUpDisplayed={setPopUpDisplayed}/>}
+                        id="support-chat-files-types-pop-up"
+                    />
+                    <textarea id="support-chat-message-input"
+                              value={messageInput} 
+                           placeholder="Введите сообщение..." 
+                           onChange={onMessageInputChange} 
+                           onKeyUp={(e) => {
+                               if(e.key === "Enter") {
+                                   onSendMessageInputAsync()
+                               }
+                           }}
+                    />
+                    <button id="support-chat-send-button" onClick={onSendMessageInputAsync}>
+                        <img id="support-chat-send-button-icon" src={sendIcon} alt="Send"/>
+                    </button>
+                </div>
             </div>
         </div>
     )

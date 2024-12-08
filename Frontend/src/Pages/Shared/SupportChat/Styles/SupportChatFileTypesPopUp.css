@@ -1,0 +1,50 @@
+.support-chat-files-types-pop-up{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    width: auto;
+    height: 160px;
+    background-color: var(--third-color);
+    border-radius: 5px;
+}
+
+.support-chat-file-type-wrap{
+    position: relative;
+    height: 100%;
+}
+
+.support-chat-file-type-files-input{
+    position: absolute;
+    z-index: 100;
+    opacity: 0;
+    width: calc(100% - 5px);
+    height: 100%;
+    cursor: pointer;
+    font-size: 0;
+    border: 0;
+}
+
+.support-chat-file-type-upload-button{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    height: 100%;
+    width: 100%;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.support-chat-file-type-files-input:hover + .support-chat-file-type-upload-button {
+    background-color: rgba(0, 0, 0, 20%);
+}
+
+.support-chat-file-type-upload-button-icon{
+    width: 24px;
+    margin-right: 5px;
+}
