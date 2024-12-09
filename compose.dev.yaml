@@ -94,6 +94,9 @@ services:
     depends_on:
       - rabbitmq
     environment:
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
       - JwtOptions:Key=${JWT_SECRET}
       - FrontendConfig:Url=${FRONTEND_URL}
       - ASPNETCORE_HTTP_PORTS=8090
@@ -101,6 +104,11 @@ services:
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}
       - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+      - Minio:AccessKey=${MINIO_ACCESS_KEY}
+      - Minio:SecretKey=${MINIO_SECRET_KEY}
+      - Minio:Port=${MINIO_PORT}
+      - Minio:Endpoint=${MINIO_ENDPOINT}
+      - Minio:ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
 
 
   support-persistent-service:
@@ -144,6 +152,30 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+        
+  minio-temporary:
+    image: quay.io/minio/minio
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data-temporary:/data
+    ports:
+      - "9004:9000"
+      - "9005:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    
+  minio-permanent:
+    image: quay.io/minio/minio
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data-permanent:/data
+    ports:
+      - "9006:9000"
+      - "9007:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY} 
     
   proxy:
     build:
@@ -194,4 +226,6 @@ volumes:
     node_modules:
     rabbitmq-data:
     minio-data:
+    minio-data-temporary:
+    minio-data-permanent:
       

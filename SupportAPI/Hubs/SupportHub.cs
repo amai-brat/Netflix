@@ -4,14 +4,15 @@ using Microsoft.AspNetCore.SignalR;
 using Shared.MessageContracts;
 using SupportAPI.Models;
 using System.Collections.Concurrent;
+using SupportAPI.Models.Dto;
 
 namespace SupportAPI.Hubs
 {
     [Authorize]
     public class SupportHub(IBus bus): Hub
     {
-        private static readonly ConcurrentDictionary<string, string> UserIdConnection = [];
-        private static readonly ConcurrentDictionary<string, List<string>> ConnectionGroups = [];
+        protected internal static readonly ConcurrentDictionary<string, string> UserIdConnection = [];
+        protected internal static readonly ConcurrentDictionary<string, List<string>> ConnectionGroups = [];
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
