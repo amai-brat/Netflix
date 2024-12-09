@@ -54,8 +54,8 @@ public class FileUploadService(
             var putArgs = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithFileName(fileGuids[i].ToString())
-                .WithStreamData(uploadMessageWithFIleDto.Files[i].OpenReadStream())
-                .WithObjectSize(uploadMessageWithFIleDto.Files[i].Length);
+                .WithStreamData(uploadMessageWithFIleDto.Files[i].File.OpenReadStream())
+                .WithObjectSize(uploadMessageWithFIleDto.Files[i].File.Length);
                 
                 
             minioUploadTasks.Add(minio.PutObjectAsync(putArgs));

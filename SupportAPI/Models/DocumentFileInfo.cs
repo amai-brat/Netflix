@@ -1,16 +1,10 @@
 ﻿using SupportAPI.Models.Abstractions;
+using SupportAPI.Models.Abstractions.BaseFileInfos;
 
 namespace SupportAPI.Models;
 
-public class DocumentFileInfo: Downloadable
+public class DocumentFileInfo: BaseDocumentFileInfo ,IDownloadableWithFileType
 {
-    public string? Name { get; set; }
-    public required DocumentTypes DocType { get; set; }
-    public override FileType Type { get; set; } = FileType.Document;
-}
-public enum DocumentTypes
-{
-    Pdf,
-    Docx,
-    Xlsx
+    public FileType Type { get; set; } = FileType.Document;
+    public required string DownloadUrl { get; set; }
 }

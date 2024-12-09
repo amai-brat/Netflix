@@ -1,12 +1,10 @@
 ﻿using SupportAPI.Models.Abstractions;
+using SupportAPI.Models.Abstractions.BaseFileInfos;
 
 namespace SupportAPI.Models;
 
-public class VideoFileInfo: Downloadable
+public class VideoFileInfo: BaseVideoFileInfo, IDownloadableWithFileType
 {
-    public string? Name { get; set; }
-    // поддержка должна отмотать видео до этого времени
-    public string? TimeToWatch { get; set; }
-    public string? Studio { get; set; }
-    public override FileType Type { get; set; } = FileType.Video;
+    public FileType Type { get; set; } = FileType.Video;
+    public required string DownloadUrl { get; set; }
 }

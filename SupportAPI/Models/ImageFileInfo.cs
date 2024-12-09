@@ -1,9 +1,10 @@
 ﻿using SupportAPI.Models.Abstractions;
+using SupportAPI.Models.Abstractions.BaseFileInfos;
 
 namespace SupportAPI.Models;
 
-public class ImageFileInfo: Downloadable
+public class ImageFileInfo: BaseImageFileInfo, IDownloadableWithFileType
 {
-    public override FileType Type { get; set; } = FileType.Image;
-    public string Name { get; set; } = null!;
+    public FileType Type { get; set; } = FileType.Image;
+    public required string DownloadUrl { get; set; }
 }

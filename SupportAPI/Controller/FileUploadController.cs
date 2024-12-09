@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 using Shared.MessageContracts;
@@ -13,6 +14,7 @@ public class FileUploadController(
     IPublishEndpoint publishEndpoint): ControllerBase
 {
     [HttpPost("send-message-with-file")]
+    [Authorize]
     public async Task<IActionResult> SendMessageWithFile(
         long sessionId,
         [FromForm] UploadMessageWithFIleDto uploadMessageWithFIleDto)

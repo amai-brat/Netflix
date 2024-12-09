@@ -1,8 +1,8 @@
 ﻿namespace SupportAPI.Models.Abstractions;
 
-public abstract class FileWithType
+public interface IHavingFiletype
 {
-    public virtual FileType Type { get; set; }
+    FileType Type { get; set; } 
 }
 public enum FileType
 {

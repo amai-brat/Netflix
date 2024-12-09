@@ -93,6 +93,8 @@ services:
       - "8090:8090"
     depends_on:
       - rabbitmq
+      - redis
+      - minio-temporary
     environment:
       - Redis:Host=${REDIS_HOST}
       - Redis:Port=${REDIS_PORT}
@@ -104,11 +106,11 @@ services:
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}
       - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
-      - Minio:AccessKey=${MINIO_ACCESS_KEY}
-      - Minio:SecretKey=${MINIO_SECRET_KEY}
-      - Minio:Port=${MINIO_PORT}
-      - Minio:Endpoint=${MINIO_ENDPOINT}
-      - Minio:ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
+      - Minio__AccessKey=${MINIO_TEMP_ACCESS_KEY}
+      - Minio__SecretKey=${MINIO_TEMP_SECRET_KEY}
+      - Minio__Port=${MINIO_TEMP_PORT}
+      - Minio__Endpoint=${MINIO_TEMP_ENDPOINT}
+      - Minio__ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
 
 
   support-persistent-service:
@@ -131,6 +133,35 @@ services:
       - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
       - FrontendConfig:Url=${FRONTEND_URL}
 
+  support-permanent-s3-service:
+    build:
+      context: .
+      dockerfile: SupportPermanentS3Service/Dockerfile
+    ports:
+      - "10002:8080"
+      - "10003:8081"
+    depends_on:
+      - rabbitmq
+      - minio-permanent
+      - minio-temporary
+      - redis
+    environment:
+      - RabbitMqConfig:Username=${RABBIT_USER}
+      - RabbitMqConfig:Password=${RABBIT_PASSWORD}
+      - RabbitMqConfig:Hostname=${RABBIT_HOSTNAME}
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
+      - TempMinio:AccessKey=${MINIO_TEMP_ACCESS_KEY}
+      - TempMinio:SecretKey=${MINIO_TEMP_SECRET_KEY}
+      - TempMinio:Port=${MINIO_TEMP_PORT}
+      - TempMinio:Endpoint=${MINIO_TEMP_ENDPOINT}
+      - TempMinio:ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
+      - PermMinio:AccessKey=${PERM_MINIO_ACCESS_KEY}
+      - PermMinio:SecretKey=${PERM_MINIO_SECRET_KEY}
+      - PermMinio:Port=${PERM_MINIO_PORT}
+      - PermMinio:Endpoint=${PERM_MINIO_ENDPOINT}
+      - PermMinio:ExternalEndpoint=${PERM_MINIO_EXTERNAL_ENDPOINT}
         
   database:
     image: postgres
