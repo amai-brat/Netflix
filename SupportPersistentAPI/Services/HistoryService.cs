@@ -2,6 +2,7 @@
 using SupportPersistentAPI.Data.Entities;
 using SupportPersistentAPI.Models;
 using Shared.MessageContracts;
+using FileInfo = SupportPersistentAPI.Data.Entities.FileInfo;
 
 namespace SupportPersistentAPI.Services
 {
@@ -26,7 +27,14 @@ namespace SupportPersistentAPI.Services
                     new ChatMessageDto()
                     {
                         Role = scm.Role,
-                        Text = scm.Text
+                        Text = scm.Text,
+                        Files = scm.FileInfo?.Select(fi =>
+                            new FileInfoDto()
+                            {
+                                Name = fi.Name,
+                                Src = fi.Src,
+                                Type = fi.TypeLookup.Type
+                            }).ToList()
                     }).ToList();
 
             return chatMessagesDtos;
@@ -58,6 +66,13 @@ namespace SupportPersistentAPI.Services
                 SenderName = chatMessageEvent.SenderName,
                 Role = chatMessageEvent.Role,
                 Text = chatMessageEvent.Text,
+                FileInfo = chatMessageEvent.FileInfo?.Select(f => new FileInfo()
+                {
+                    Name = f.Name,
+                    Src = f.Src,
+                    Type = f.Type,
+                    TypeId = (int)f.Type
+                }).ToList()
             };
 
             chatSession.ChatMessages!.Add(newChatMessage);

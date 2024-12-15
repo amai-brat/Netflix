@@ -146,6 +146,7 @@ services:
       - minio-temporary
       - redis
     environment:
+      - JwtOptions:Key=${JWT_SECRET}
       - RabbitMqConfig:Username=${RABBIT_USER}
       - RabbitMqConfig:Password=${RABBIT_PASSWORD}
       - RabbitMqConfig:Hostname=${RABBIT_HOSTNAME}
@@ -166,7 +167,7 @@ services:
   database:
     image: postgres
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:

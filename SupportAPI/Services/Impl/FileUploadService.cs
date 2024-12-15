@@ -1,70 +1,79 @@
-﻿using System.Text.Json;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using MassTransit;
-using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
-using StackExchange.Redis;
-using SupportAPI.Models.Dto;
-using SupportAPI.Options;
 
 namespace SupportAPI.Services.Impl;
 
 public class FileUploadService(
     IMinioClient minio,
-    IOptions<MinioBucketOptions> minioOptions,
-    IDatabase database): IFileUploadService
+    AmazonS3Client s3Client,
+    ILogger<FileUploadService> logger): IFileUploadService
 {
-    public async Task<List<Guid>> UploadFileAsync(UploadMessageWithFIleDto uploadMessageWithFIleDto)
+    private const string BucketName = "chat-files";
+    private const string Policy = """
+                                  {
+                                      "Version": "2012-10-17",
+                                      "Statement": [
+                                          {
+                                              "Effect": "Allow",
+                                              "Principal": { "AWS": ["*"] },
+                                              "Action": ["s3:GetObject"],
+                                              "Resource": ["arn:aws:s3:::chat-files/*"]
+                                          }
+                                      ]
+                                  }
+                                  """;
+    public async Task<string> UploadFileAndSaveMetadataAsync(Stream s)
     {
-        // We'll send this array to permanent s3 storage telling these files are ready to be uploaded
-        var fileGuids = new List<Guid>();
-
-        // Upload files metadata + counter to Redis
-        foreach (var file in uploadMessageWithFIleDto.Files)
+        // We'll send this array to permanent s3 storage telling these files are uploaded and ready to be copied
+        Guid guid = NewId.NextGuid();
+        var resp = await s3Client.ListBucketsAsync(new ListBucketsRequest(){Prefix = BucketName});
+        if (resp.Buckets.Count == 0)
         {
-            var fileGuid = NewId.NextGuid();
-            fileGuids.Add(fileGuid);
+            await s3Client.PutBucketAsync(new PutBucketRequest(){BucketName = BucketName});
+            await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest()
+            {
+                BucketName = BucketName,
+                Policy = Policy
+            });
+        }
+        var transferUtility = new TransferUtility(s3Client);
+        
+        try
+        {
+            await transferUtility.UploadAsync(s, BucketName, guid.ToString());
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation($"Error during upload: {ex.Message}");
+        }
+        return s3Client.Config.ServiceURL + BucketName + "/" + guid;
+    }
+
+    public string GetBucketName()
+    {
+        return BucketName;
+    }
+    
+    public Task DeleteFileAndMetadataAsync(List<string> fileUrls)
+    {
+        // var deleteMetadataTasks = new List<Task>();
+        var deleteFileTasks = new List<Task>();
+        foreach (var fileUrl in fileUrls)
+        {
+            var currentGuid = fileUrl.Split("/").Last();
             
-            var transaction = database.CreateTransaction();
-            await transaction.StringSetAsync(
-                new RedisKey(fileGuid.ToString()).Prepend("metadata"),
-                new RedisValue(JsonSerializer.Serialize(uploadMessageWithFIleDto)),
-                TimeSpan.FromDays(1));
-            await transaction.StringIncrementAsync(new RedisKey(fileGuid.ToString()).Prepend("counter"));
-            await transaction.ExecuteAsync();
-        }
-        
-        // Upload files to Minio
-        var bucketName = "chat-files";
-        var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
-        bool found = await minio.BucketExistsAsync(bucketExistsArgs);
-        if (!found)
-        {
-            var makeBucketArgs = new MakeBucketArgs().WithBucket(bucketName);
-            var setPolicyArgs = new SetPolicyArgs().WithBucket(bucketName)
-                .WithPolicy(minioOptions.Value.FileBucketPolicy);
-            await minio.MakeBucketAsync(makeBucketArgs);
-            await minio.SetPolicyAsync(setPolicyArgs);
+            // deleteMetadataTasks.Add(database.KeyDeleteAsync(fileGuid.ToString()));
+            var removeArgs = new RemoveObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(currentGuid);
+            deleteFileTasks.Add(minio.RemoveObjectAsync(removeArgs));
         }
 
-        var minioUploadTasks = new List<Task>();
-        var redisUploadTasks = new List<Task>();
-        for (int i = 0; i < uploadMessageWithFIleDto.Files.Count; i++)
-        {
-            var putArgs = new PutObjectArgs()
-                .WithBucket(bucketName)
-                .WithFileName(fileGuids[i].ToString())
-                .WithStreamData(uploadMessageWithFIleDto.Files[i].File.OpenReadStream())
-                .WithObjectSize(uploadMessageWithFIleDto.Files[i].File.Length);
-                
-                
-            minioUploadTasks.Add(minio.PutObjectAsync(putArgs));
-            redisUploadTasks.Add(database.StringIncrementAsync(fileGuids[i].ToString()));
-        }
-
-        await Task.WhenAll(minioUploadTasks);
-        await Task.WhenAll(redisUploadTasks);
-        
-        return fileGuids;
+        // return Task.WhenAll(deleteMetadataTasks.Concat(deleteFileTasks));
+        return Task.WhenAll(deleteFileTasks);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Minio;
 using SupportAPI.Options;
 
@@ -12,7 +13,7 @@ public static class InfrastructureExtensions
     {
         serviceCollection.Configure<RedisOptions>(configuration.GetSection("Redis"));
         serviceCollection.Configure<MinioOptions>(configuration.GetSection("Minio"));
-        serviceCollection.Configure<MinioOptions>(configuration.GetSection("FileBucketMinioPolicy"));
+        serviceCollection.Configure<MinioBucketOptions>(configuration.GetSection("FileBucketMinioPolicy"));
         
         return serviceCollection;
     }
@@ -25,7 +26,7 @@ public static class InfrastructureExtensions
             var options = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
 
             return new MinioClient()
-                .WithEndpoint(options.Endpoint)
+                .WithEndpoint(options.ExternalEndpoint, options.Port)
                 .WithCredentials(options.AccessKey, options.SecretKey)
                 .WithSSL(options.Secure)
                 .Build();
@@ -33,4 +34,48 @@ public static class InfrastructureExtensions
         
         return serviceCollection;
     }
+    
+    public static IServiceCollection AddSwaggerGenWithBearer(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Description = """
+                              Authorization using JWT by adding header
+                              Authorization: Bearer [token]
+                              """,
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Scheme = "Bearer"
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Scheme = "Bearer",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                    },
+                    Array.Empty<string>()
+                }
+            });
+            options.AddServer(new OpenApiServer()
+            {
+                Url = "",
+                Description = "Base path for Support Hub"
+            });
+        });
+        
+        
+        return serviceCollection;
+    }
+    
 }

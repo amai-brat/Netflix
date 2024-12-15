@@ -59,11 +59,11 @@ namespace SupportPersistentAPI
             {
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Description = """
-                              Authorization using JWT by adding header
-                              Authorization: Bearer [token]
-                              """,
+                                  Authorization using JWT by adding header
+                                  Authorization: Bearer [token]
+                                  """,
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Scheme = "Bearer"
@@ -73,6 +73,7 @@ namespace SupportPersistentAPI
                     {
                         new OpenApiSecurityScheme
                         {
+                            Scheme = "Bearer",
                             Name = "Bearer",
                             In = ParameterLocation.Header,
                             Reference = new OpenApiReference
@@ -85,7 +86,6 @@ namespace SupportPersistentAPI
                     }
                 });
             });
-
             return serviceCollection;
         }
 
