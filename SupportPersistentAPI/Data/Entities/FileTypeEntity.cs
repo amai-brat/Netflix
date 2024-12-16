@@ -1,5 +1,4 @@
-﻿using Shared.MessageContracts;
-
+﻿
 namespace SupportPersistentAPI.Data.Entities;
 
 public class FileTypeEntity

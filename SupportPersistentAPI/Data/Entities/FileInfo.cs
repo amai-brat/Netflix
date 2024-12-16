@@ -9,6 +9,7 @@ public class FileInfo
     public required int TypeId { get; set; }
     public FileTypeEntity TypeLookup { get; set; } = null!;
     public required Uri Src { get; set; }
+    // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public required string Name { get; set; }
     // public string? Metadata { get; set; }
 }

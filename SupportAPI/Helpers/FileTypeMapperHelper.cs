@@ -8,12 +8,10 @@ public static class FileTypeMapperHelper
     {
         return fileType switch
         {
-            "Картинка" => FileType.Image,
-            "Аудио" => FileType.Audio,
-            "Видео" => FileType.Video,
-            "Документ" => FileType.Document,
-            "Файл" => FileType.Other,
-            _ => throw new ArgumentOutOfRangeException(nameof(fileType), fileType, null)
+            _ when fileType.Contains("image") => FileType.Image,
+            _ when fileType.Contains("audio") => FileType.Audio,
+            _ when fileType.Contains("video") => FileType.Video,
+            _ => FileType.Document
         };
     }
 }

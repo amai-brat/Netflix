@@ -28,11 +28,11 @@ namespace SupportPersistentAPI.Data
                 .HasForeignKey(fi => fi.TypeId);
 
             modelBuilder.Entity<FileTypeEntity>().HasData(
-                new FileTypeEntity(){Id = 1, Type = "Картинка"},
-                new FileTypeEntity(){Id = 2, Type = "Аудио"},
-                new FileTypeEntity(){Id = 3, Type = "Видео"},
-                new FileTypeEntity(){Id = 4, Type = "Файл"},
-                new FileTypeEntity(){Id = 5, Type = "Документ"}
+                new FileTypeEntity(){Id = 1, Type = "image"},
+                new FileTypeEntity(){Id = 2, Type = "audio"},
+                new FileTypeEntity(){Id = 3, Type = "video"},
+                new FileTypeEntity(){Id = 4, Type = "file"},
+                new FileTypeEntity(){Id = 5, Type = "document"}
             );
             
             base.OnModelCreating(modelBuilder);
