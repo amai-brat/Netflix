@@ -3,7 +3,7 @@ import "/src/Pages/Shared/SupportChat/Styles/SupportChatFiles.css";
 import {useRef, useState} from "react";
 import ReactDOM from "react-dom";
 const SupportChatFiles = ({ files }) => {
-    const fileUrls = useRef();
+    const fileUrls = useRef({});
     
     const ImageModal = ({ src }) => {
         const [isOpen, setIsOpen] = useState(false);
@@ -35,10 +35,10 @@ const SupportChatFiles = ({ files }) => {
                 files.map((file, index) => {
                     let fileSrc = file.src ? file.src : URL.createObjectURL(file);
                     
-                    if(fileUrls.hasOwnProperty(file.name)){
-                        fileSrc = fileUrls[file.name];
+                    if(fileUrls.current.hasOwnProperty(file.name)){
+                        fileSrc = fileUrls.current[file.name];
                     }else{
-                        fileUrls[file.name] = fileSrc;
+                        fileUrls.current[file.name] = fileSrc;
                     }
                     
                     const shortFileName = file.name ?

@@ -4,7 +4,6 @@ import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import sendIcon from "../../../assets/SendIcon.svg";
 import {supportService} from "../../../services/support.service.js";
 import SupportChatFiles from "../../Shared/SupportChat/SupportChatFiles.jsx";
-import {authenticationService} from "../../../services/authentication.service.js";
 import SupportChatFilesPreview from "../../Shared/SupportChat/SupportChatFilesPreview.jsx";
 import ComponentWithPopUp from "../../Shared/PopUpModule/ComponentWithPopUp.jsx";
 import SupportChatUploadFilesButton from "../../Shared/SupportChat/SupportChatUploadFilesButton.jsx";
