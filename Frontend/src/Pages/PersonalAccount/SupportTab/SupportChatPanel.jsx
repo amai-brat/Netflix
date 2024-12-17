@@ -49,33 +49,28 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
         if((messageInput !== null && messageInput.trim() !== "") || files.length > 0){
             try {
                 const filesDto = []
-
-                //TODO: не забыть всё раскомментировать когда будет бэк
-
-                files.forEach((file) => {
-                    filesDto.push({src: URL.createObjectURL(file), type: file.type, name: file.name})
-                })//убрать
                 
-                /*if(files.length > 0){
+                if(files.length > 0){
                     const formData = new FormData();
 
                     files.forEach(file => {
                         formData.append("files", file);
                     });
 
-                    const {response, data} = await supportService.uploadChatFiles(selectedUserId, formData);
+                    const {response, data} = await supportService.uploadChatFiles(formData);
                     if (response.ok){
                         data.forEach((url, index) => {
-                            filesDto.append({src: url, type: files[index].type, name: files[index].name})
+                            filesDto.push({src: url, type: files[index].type, name: files[index].name})
                         })
                     }else{
                         setUsersMessagesHelp("Не удалось отправить сообщение", false)
                         return
                     }
-                }*/
+                }
+                
                 const messageInputToSend = (messageInput !== null && messageInput.trim() !== "") ? messageInput : "";
                 
-                await store.data.supportConnection.invoke("SendMessage", selectedUserId, messageInputToSend)//, filesDto)
+                await store.data.supportConnection.invoke("SendMessage", selectedUserId, messageInputToSend, filesDto)
                 setUsersMessagesHelp(messageInput, true, false, filesDto)
             } catch (e) {
                 setUsersMessagesHelp("Не удалось отправить сообщение", false)

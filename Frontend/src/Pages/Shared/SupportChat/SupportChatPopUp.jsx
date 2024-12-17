@@ -38,32 +38,27 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
                 const userId = +authenticationService.getUser()?.id
                 const filesDto = []
                 
-                //TODO: не забыть всё раскомментировать когда будет бэк
-                
-                files.forEach((file) => {
-                    filesDto.push({src: URL.createObjectURL(file), type: file.type, name: file.name})
-                })//убрать
-                
-                /*if(files.length > 0){
+                if(files.length > 0){
                     const formData = new FormData();
 
                     files.forEach(file => {
                         formData.append("files", file);
                     });
 
-                    const {response, data} = await supportService.uploadChatFiles(userId, formData);
+                    const {response, data} = await supportService.uploadChatFiles(formData);
                     if (response.ok){
                         data.forEach((url, index) => {
-                            filesDto.append({src: url, type: files[index].type, name: files[index].name})
+                            filesDto.push({src: url, type: files[index].type, name: files[index].name})
                         })
                     }else{
                         errorMessage()
                         return
                     }
-                }*/
+                }
+                
                 const messageInputToSend = (messageInput !== null && messageInput.trim() !== "") ? messageInput : "";
 
-                await store.data.supportConnection.invoke("SendMessage", userId, messageInputToSend)//, filesDto)
+                await store.data.supportConnection.invoke("SendMessage", userId, messageInputToSend, filesDto)
                 setMessages([...messages, {text: messageInput, files: filesDto, role: "user"}])
             } catch (e) {
                 errorMessage()
