@@ -2,18 +2,15 @@
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using MassTransit;
-using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
-using SupportAPI.Options;
 
 namespace SupportAPI.Services.Impl;
 
 public class FileUploadService(
     IMinioClient minio,
     AmazonS3Client s3Client,
-    ILogger<FileUploadService> logger,
-    IOptions<FilePathOptions> filePathOptions): IFileUploadService
+    ILogger<FileUploadService> logger): IFileUploadService
 {
     private const string BucketName = "chat-files";
     // private const string Policy = """
