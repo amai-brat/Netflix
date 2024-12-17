@@ -35,7 +35,7 @@ const SupportChatFiles = ({ files }) => {
                 files.map((file, index) => {
                     let fileSrc = file.src ? file.src : URL.createObjectURL(file);
                     
-                    if(fileUrls.current.hasOwnProperty(file.name)){
+                    if(file.name in fileUrls.current){
                         fileSrc = fileUrls.current[file.name];
                     }else{
                         fileUrls.current[file.name] = fileSrc;
