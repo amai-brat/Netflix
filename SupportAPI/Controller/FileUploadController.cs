@@ -80,12 +80,11 @@ public class FileUploadController(
             {
                 var uriRewrite = new UriBuilder(uri)
                 {
-                    Scheme = "https",
+                    Scheme = "http",
                     Host = "localhost",
-                    Port = 443,
-                    Path = "/perm-s3" + uri.PathAndQuery
+                    Port = 9000,
+                    Path = "/perm-s3" + uri.AbsolutePath
                 }.Uri;
-                
                 rewrittenUrls.Add(uriRewrite);
             }
         }

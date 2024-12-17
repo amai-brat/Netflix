@@ -13,6 +13,7 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenWithBearer();
+builder.Services.AddHttpClient();
 builder.Services.AddAuthorization();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
