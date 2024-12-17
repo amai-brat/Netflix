@@ -11,9 +11,10 @@ import ComponentWithPopUp from "../PopUpModule/ComponentWithPopUp.jsx";
 import SupportChatUploadFilesButton from "./SupportChatUploadFilesButton.jsx";
 import SupportChatFileTypesPopUp from "./SupportChatFileTypesPopUp.jsx";
 
-const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
+const SupportChatPopUp = ({setPopUpDisplayed}) => {
     const endOfMessagesRef = useRef(null);
     const [messageInput, setMessageInput] = useState("")
+    const [messages, setMessages] = useState(undefined)
     const [files, setFiles] = useState([]);
     const store = useDataStore()
     const closePopUp = () => {
@@ -31,6 +32,35 @@ const SupportChatPopUp = ({setPopUpDisplayed, messages, setMessages}) => {
             setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
         }
     }
+
+    useEffect(() => {
+        if (authenticationService.isCurrentUserSupport()){
+            return
+        }
+        let isChatOk = false
+        const getUserSupportMessagesHistoryAsync = async () => {
+            try{
+                const {response, data} = await supportService.getUserSupportMessagesHistory();
+                if(response.ok){
+                    setMessages(data)
+                    isChatOk = true
+                }else{
+                    setMessages(null)
+                }
+            }
+            catch (error){
+                setMessages(null)
+            }
+        }
+
+        getUserSupportMessagesHistoryAsync().then(() => {
+            if(isChatOk && store.data.supportConnection !== null){
+                store.data.supportConnection.on("ReceiveMessage", (supportMessage) => {
+                    setMessages(messages => [...messages, supportMessage.message])
+                });
+            }
+        })
+    }, [store.data.supportConnection]);
     
     const onSendMessageInputAsync = async () => {
         if((messageInput !== null && messageInput.trim() !== "") || files.length > 0){
