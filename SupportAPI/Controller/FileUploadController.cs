@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -15,10 +16,11 @@ public class FileUploadController(
     IFileUploadService fileUploadService,
     IHttpClientFactory clientFactory): ControllerBase
 {
-    [HttpPost("send-message-with-file"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
+    
+    [HttpPost("support/chats/{id}/files/upload"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
     [DisableFormValueModelBinding]
     [Authorize]
-    public async Task<IActionResult> SendMessageWithFile(CancellationToken cancellationToken)
+    public async Task<IActionResult> SendMessageWithFile(int id, CancellationToken cancellationToken)
     {
         Stream? currentStream;
         if (!MultipartRequestHelper.IsMultipartContentType(HttpContext.Request.ContentType))
@@ -41,7 +43,10 @@ public class FileUploadController(
                 if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
                     currentStream = section.Body;
-                    var result = await fileUploadService.UploadFileAndSaveMetadataAsync(currentStream);
+                    var metadata = new Dictionary<string, string>();
+                    metadata.Add("role", User.Claims.First(c => c.Type == ClaimTypes.Role).Value);
+                    metadata.Add("for", id.ToString());
+                    var result = await fileUploadService.UploadFileAndSaveMetadataAsync(currentStream, metadata, cancellationToken);
                     await currentStream.DisposeAsync();
                     urls.Add(result);
                 }
@@ -65,7 +70,7 @@ public class FileUploadController(
         }
         finally
         {
-            await fileUploadService.DeleteFileAndMetadataAsync(urls);
+            await fileUploadService.DeleteFileAndMetadataAsync(urls, cancellationToken);
         }
 
         var rewrittenUrls = new List<Uri>();
@@ -78,7 +83,7 @@ public class FileUploadController(
                     Scheme = "https",
                     Host = "localhost",
                     Port = 443,
-                    Path = uri.PathAndQuery
+                    Path = "/perm-s3" + uri.PathAndQuery
                 }.Uri;
                 
                 rewrittenUrls.Add(uriRewrite);

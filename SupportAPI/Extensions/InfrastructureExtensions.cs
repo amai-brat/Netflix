@@ -14,6 +14,7 @@ public static class InfrastructureExtensions
         serviceCollection.Configure<RedisOptions>(configuration.GetSection("Redis"));
         serviceCollection.Configure<MinioOptions>(configuration.GetSection("Minio"));
         serviceCollection.Configure<MinioBucketOptions>(configuration.GetSection("FileBucketMinioPolicy"));
+        serviceCollection.Configure<FilePathOptions>(configuration.GetSection("FilePath"));
         
         return serviceCollection;
     }

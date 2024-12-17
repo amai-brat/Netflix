@@ -111,6 +111,7 @@ services:
       - Minio__Port=${MINIO_TEMP_PORT}
       - Minio__Endpoint=${MINIO_TEMP_ENDPOINT}
       - Minio__ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
+      - FilePath__BasePath=${FILE_PATH}
 
 
   support-persistent-service:
