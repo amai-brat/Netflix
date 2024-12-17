@@ -82,24 +82,4 @@ public class FileUploadService(
 
         return Task.WhenAll(deleteFileTasks);
     }
-
-    public async Task<Stream?> GetFileAsync(Guid guid, CancellationToken cancellationToken)
-    {
-        var resp = await s3Client.GetObjectAsync(BucketName, guid.ToString(), cancellationToken);
-
-        return resp.ResponseStream;
-    }
-
-    public async Task<bool> CanGetFileAsync(Guid guid, string role, int id, CancellationToken cancellationToken)
-    {
-        var resp = await s3Client.GetObjectMetadataAsync(BucketName, guid.ToString(), cancellationToken);
-        var metadata = resp.Metadata;
-        
-        if (role == "user")
-        {
-            return metadata["for"] == id.ToString();
-        }
-
-        return true;
-    }
 }
