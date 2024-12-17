@@ -24,8 +24,8 @@ async function getSupportUsersUnansweredMessagesHistory() {
     return {response, data}
 }
 
-async function uploadChatFiles(formData) {
-    const {response, data} = await fetchAuth('send-message-with-file', true, {
+async function uploadChatFiles(id, formData) {
+    const {response, data} = await fetchAuth(`support/chats/${id}/files/upload`, true, {
         method: "POST",
         body: formData
     }, baseSupportHubUrl)
