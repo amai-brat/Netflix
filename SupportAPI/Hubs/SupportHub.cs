@@ -2,16 +2,17 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Shared.MessageContracts;
-using SupportAPI.Models;
 using System.Collections.Concurrent;
+using SupportAPI.Helpers;
+using SupportAPI.Models.Dto;
 
 namespace SupportAPI.Hubs
 {
     [Authorize]
-    public class SupportHub(IBus bus): Hub
+    public class SupportHub(IBus bus, ILogger<SupportHub> logger): Hub
     {
-        private static readonly ConcurrentDictionary<string, string> UserIdConnection = [];
-        private static readonly ConcurrentDictionary<string, List<string>> ConnectionGroups = [];
+        protected internal static readonly ConcurrentDictionary<string, string> UserIdConnection = [];
+        protected internal static readonly ConcurrentDictionary<string, List<string>> ConnectionGroups = [];
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
@@ -52,9 +53,10 @@ namespace SupportAPI.Hubs
                 ConnectionGroups.TryAdd(Context.ConnectionId, []);
             }
         }
-
-        public async Task SendMessage(long chatSessionId, string message)
+        
+        public async Task SendMessage(long chatSessionId, string message, List<FileInfoDto>? fileInfo)
         {
+            logger.LogInformation("started sending message");
             var userId = long.Parse(Context.User?.FindFirst("id")!.Value!);
             var senderName = Context.User!.Identity!.Name!;
             var role = Context.User!.IsInRole("support") ? "support" : "user";
@@ -71,7 +73,13 @@ namespace SupportAPI.Hubs
                 Role = role,
                 DateTimeSent = DateTimeOffset.Now,
                 SenderId = userId,
-                Text = message
+                Text = message,
+                FileInfo = fileInfo?.Select(f => new Shared.MessageContracts.FileInfo()
+                {
+                    Name = f.Name,
+                    Src = f.Src,
+                    Type = FileTypeMapperHelper.MapFileType(f.Type)
+                }).ToList()
             };
 
             var receiveMessageDto = new ReceiveMessageDto()
@@ -81,7 +89,8 @@ namespace SupportAPI.Hubs
                 Message = new ChatMessageDto()
                 {
                     Role = role,
-                    Text = message
+                    Text = message,
+                    Files = fileInfo
                 }
             };
 
@@ -122,7 +131,7 @@ namespace SupportAPI.Hubs
             ConnectionGroups[Context.ConnectionId] = [];
         }
 
-        private bool IsInRolesOr(params string[] roles)
+        internal bool IsInRolesOr(params string[] roles)
         {
             foreach (var role in roles)
             {

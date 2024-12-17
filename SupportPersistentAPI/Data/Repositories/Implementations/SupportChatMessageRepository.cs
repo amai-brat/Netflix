@@ -16,6 +16,8 @@ namespace SupportPersistentAPI.Data.Repositories.Implementations
         {
             return await dbContext.SupportChatMessages
                 .Where(scm => scm.ChatSessionId == chatSessionId)
+                .Include(scm => scm.FileInfo)!
+                    .ThenInclude(fi => fi.TypeLookup)
                 .OrderBy(scm => scm.DateTimeSent)
                 .ToListAsync();
         }

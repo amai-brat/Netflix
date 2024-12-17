@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace SupportAPI.Models
+namespace SupportAPI.Models.Dto
 {
     public class ReceiveMessageDto
     {

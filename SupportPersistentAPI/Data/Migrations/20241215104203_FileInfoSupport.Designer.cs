@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SupportPersistentAPI.Data;
@@ -11,9 +12,11 @@ using SupportPersistentAPI.Data;
 namespace SupportPersistentAPI.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241215104203_FileInfoSupport")]
+    partial class FileInfoSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,27 +91,27 @@ namespace SupportPersistentAPI.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Type = "image"
+                            Type = "Картинка"
                         },
                         new
                         {
                             Id = 2,
-                            Type = "audio"
+                            Type = "Аудио"
                         },
                         new
                         {
                             Id = 3,
-                            Type = "video"
+                            Type = "Видео"
                         },
                         new
                         {
                             Id = 4,
-                            Type = "file"
+                            Type = "Файл"
                         },
                         new
                         {
                             Id = 5,
-                            Type = "document"
+                            Type = "Документ"
                         });
                 });
 
