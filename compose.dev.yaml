@@ -93,7 +93,16 @@ services:
       - "8090:8090"
     depends_on:
       - rabbitmq
+      - redis
+      - minio-temporary
     environment:
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
+      - ProxyMinio:Scheme=${PROXY_MINIO_SCHEME}
+      - ProxyMinio:Port=${PROXY_MINIO_PORT}
+      - ProxyMinio:RoutingKey=${PROXY_MINIO_ROUTING_KEY}
+      - ProxyMinio:Host=${PROXY_MINIO_HOST}
       - JwtOptions:Key=${JWT_SECRET}
       - FrontendConfig:Url=${FRONTEND_URL}
       - ASPNETCORE_HTTP_PORTS=8090
@@ -101,6 +110,12 @@ services:
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}
       - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+      - Minio__AccessKey=${MINIO_TEMP_ACCESS_KEY}
+      - Minio__SecretKey=${MINIO_TEMP_SECRET_KEY}
+      - Minio__Port=${MINIO_TEMP_PORT}
+      - Minio__Endpoint=${MINIO_TEMP_ENDPOINT}
+      - Minio__ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
+      - FilePath__BasePath=${FILE_PATH}
 
 
   support-persistent-service:
@@ -123,11 +138,45 @@ services:
       - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
       - FrontendConfig:Url=${FRONTEND_URL}
 
+  support-permanent-s3-service:
+    build:
+      context: .
+      dockerfile: SupportPermanentS3Service/Dockerfile
+    ports:
+      - "10002:8080"
+      - "10003:8081"
+    depends_on:
+      - rabbitmq
+      - minio-permanent
+      - minio-temporary
+      - redis
+    environment:
+      - JwtOptions:Key=${JWT_SECRET}
+      - ProxyMinio:Scheme=${PROXY_MINIO_SCHEME}
+      - ProxyMinio:Port=${PROXY_MINIO_PORT}
+      - ProxyMinio:RoutingKey=${PROXY_MINIO_ROUTING_KEY}
+      - ProxyMinio:Host=${PROXY_MINIO_HOST}
+      - RabbitMqConfig:Username=${RABBIT_USER}
+      - RabbitMqConfig:Password=${RABBIT_PASSWORD}
+      - RabbitMqConfig:Hostname=${RABBIT_HOSTNAME}
+      - Redis:Host=${REDIS_HOST}
+      - Redis:Port=${REDIS_PORT}
+      - Redis:Password=${REDIS_PASSWORD}
+      - TempMinio:AccessKey=${MINIO_TEMP_ACCESS_KEY}
+      - TempMinio:SecretKey=${MINIO_TEMP_SECRET_KEY}
+      - TempMinio:Port=${MINIO_TEMP_PORT}
+      - TempMinio:Endpoint=${MINIO_TEMP_ENDPOINT}
+      - TempMinio:ExternalEndpoint=${MINIO_TEMP_EXTERNAL_ENDPOINT}
+      - PermMinio:AccessKey=${PERM_MINIO_ACCESS_KEY}
+      - PermMinio:SecretKey=${PERM_MINIO_SECRET_KEY}
+      - PermMinio:Port=${PERM_MINIO_PORT}
+      - PermMinio:Endpoint=${PERM_MINIO_ENDPOINT}
+      - PermMinio:ExternalEndpoint=${PERM_MINIO_EXTERNAL_ENDPOINT}
         
   database:
     image: postgres
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
@@ -144,6 +193,30 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+        
+  minio-temporary:
+    image: quay.io/minio/minio
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data-temporary:/data
+    ports:
+      - "9004:9000"
+      - "9005:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    
+  minio-permanent:
+    image: quay.io/minio/minio
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data-permanent:/data
+    ports:
+      - "9006:9000"
+      - "9007:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY} 
     
   proxy:
     build:
@@ -194,4 +267,6 @@ volumes:
     node_modules:
     rabbitmq-data:
     minio-data:
+    minio-data-temporary:
+    minio-data-permanent:
       

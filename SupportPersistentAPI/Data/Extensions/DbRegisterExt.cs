@@ -17,6 +17,8 @@ namespace SupportPersistentAPI.Data.Extensions
             {
                 builder.UseNpgsql(configuration["Database:ConnectionString"]);
                 builder.UseSnakeCaseNamingConvention();
+                builder.EnableSensitiveDataLogging();
+                builder.EnableDetailedErrors();
             });
         }
     }

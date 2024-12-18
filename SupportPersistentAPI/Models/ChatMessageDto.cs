@@ -6,5 +6,6 @@ namespace SupportPersistentAPI.Models
     {
         public string Role { get; set; } = null!;
         public string Text { get; set; } = null!;
+        public List<FileInfoDto>? Files { get; set; }
     }
 }

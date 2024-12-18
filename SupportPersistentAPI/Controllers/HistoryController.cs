@@ -17,8 +17,8 @@ namespace SupportPersistentAPI.Controllers
         public async Task<IActionResult> GetHistory()
         {
             var userId = long.Parse(User.FindFirst("id")!.Value);
-
-            var chatHistory = await historyService.GetMessagesByChatSessionIdAsync(userId);
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            var chatHistory = await historyService.GetMessagesByChatSessionIdAsync(userId, token);
 
             return Ok(chatHistory);
         }
@@ -29,7 +29,9 @@ namespace SupportPersistentAPI.Controllers
         {
             try
             {
-                return Ok(await historyService.GetMessagesByChatSessionIdAsync(chatSessionId));
+                var authToken = Request.Headers["Authorization"];
+                var token = authToken.ToString().Split(" ")[1];
+                return Ok(await historyService.GetMessagesByChatSessionIdAsync(chatSessionId, token));
             }
             catch (Exception ex)
             {

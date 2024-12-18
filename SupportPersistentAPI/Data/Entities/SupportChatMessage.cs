@@ -13,5 +13,6 @@
 
         public long ChatSessionId { get; set; }
         public SupportChatSession ChatSession { get; set; } = null!;
+        public List<FileInfo>? FileInfo { get; set; }
     }
 }

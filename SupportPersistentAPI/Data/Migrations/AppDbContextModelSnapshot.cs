@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using SupportPersistentAPI.Data;
 
 #nullable disable
 
@@ -16,12 +17,102 @@ namespace SupportPersistentAPI.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SupportAPI.Data.Entities.SupportChatMessage", b =>
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.FileInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Src")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("src");
+
+                    b.Property<long?>("SupportChatMessageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("support_chat_message_id");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("type_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_file_infos");
+
+                    b.HasIndex("SupportChatMessageId")
+                        .HasDatabaseName("ix_file_infos_support_chat_message_id");
+
+                    b.HasIndex("TypeId")
+                        .HasDatabaseName("ix_file_infos_type_id");
+
+                    b.ToTable("file_infos", (string)null);
+                });
+
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.FileTypeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("pk_file_types");
+
+                    b.ToTable("file_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Type = "image"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Type = "audio"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Type = "video"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Type = "file"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Type = "document"
+                        });
+                });
+
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.SupportChatMessage", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +157,7 @@ namespace SupportPersistentAPI.Data.Migrations
                     b.ToTable("support_chat_messages", (string)null);
                 });
 
-            modelBuilder.Entity("SupportAPI.Data.Entities.SupportChatSession", b =>
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.SupportChatSession", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,9 +180,26 @@ namespace SupportPersistentAPI.Data.Migrations
                     b.ToTable("support_chat_sessions", (string)null);
                 });
 
-            modelBuilder.Entity("SupportAPI.Data.Entities.SupportChatMessage", b =>
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.FileInfo", b =>
                 {
-                    b.HasOne("SupportAPI.Data.Entities.SupportChatSession", "ChatSession")
+                    b.HasOne("SupportPersistentAPI.Data.Entities.SupportChatMessage", null)
+                        .WithMany("FileInfo")
+                        .HasForeignKey("SupportChatMessageId")
+                        .HasConstraintName("fk_file_infos_support_chat_messages_support_chat_message_id");
+
+                    b.HasOne("SupportPersistentAPI.Data.Entities.FileTypeEntity", "TypeLookup")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_file_infos_file_types_type_id");
+
+                    b.Navigation("TypeLookup");
+                });
+
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.SupportChatMessage", b =>
+                {
+                    b.HasOne("SupportPersistentAPI.Data.Entities.SupportChatSession", "ChatSession")
                         .WithMany("ChatMessages")
                         .HasForeignKey("ChatSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -101,7 +209,12 @@ namespace SupportPersistentAPI.Data.Migrations
                     b.Navigation("ChatSession");
                 });
 
-            modelBuilder.Entity("SupportAPI.Data.Entities.SupportChatSession", b =>
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.SupportChatMessage", b =>
+                {
+                    b.Navigation("FileInfo");
+                });
+
+            modelBuilder.Entity("SupportPersistentAPI.Data.Entities.SupportChatSession", b =>
                 {
                     b.Navigation("ChatMessages");
                 });
