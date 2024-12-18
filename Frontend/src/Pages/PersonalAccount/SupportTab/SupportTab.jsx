@@ -44,7 +44,7 @@ const SupportTab = observer(({wrapObj}) => {
                                 } else {
                                     return prevUsersMessages.map(userMessages =>
                                         userMessages.id === userMessage.id
-                                            ? { ...userMessages, isAnswered: false, messages: [...userMessages.messages, userMessage.message] }
+                                            ? { ...userMessages, isAnswered: false, messages: (userMessages.messages ? [...userMessages.messages, userMessage.message] : null) }
                                             : userMessages
                                     );
                                 }

@@ -13,6 +13,7 @@ public static class InfrastructureExtensions
     {
         serviceCollection.Configure<RedisOptions>(configuration.GetSection("Redis"));
         serviceCollection.Configure<MinioOptions>(configuration.GetSection("Minio"));
+        serviceCollection.Configure<MinioProxyOptions>(configuration.GetSection("ProxyMinio"));
         
         return serviceCollection;
     }

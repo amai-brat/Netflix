@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Options;
-using Minio;
+﻿using Minio;
 using Minio.DataModel.Args;
 using SupportPermanentS3Service.Enums;
-using SupportPermanentS3Service.Options;
 
 namespace SupportPermanentS3Service.Services.Impl;
 
 public class FileCopyService(
     [FromKeyedServices(KeyedMinios.Temporary)] IMinioClient tempMinio,
-    [FromKeyedServices(KeyedMinios.Permanent)] IMinioClient permMinio,
-    IOptions<PermanentMinioOptions> options)
+    [FromKeyedServices(KeyedMinios.Permanent)] IMinioClient permMinio)
     : IFileCopyService
 {
     public const string BucketName = "chat-files";
@@ -69,16 +66,20 @@ public class FileCopyService(
                 });
 
             copyTasks.Add(tempMinio.GetObjectAsync(getObjectArgs, cancellationToken));
-            var current = options.Value;
-            uriList.Add(new UriBuilder(Uri.UriSchemeHttp, current.ExternalEndpoint,
-                current.Port, $"file/{guid}").Uri);
+            var presignedGetUrl = new PresignedGetObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(guid)
+                .WithExpiry(3600);
+
+            var result = await permMinio.PresignedGetObjectAsync(presignedGetUrl);
+            uriList.Add(new Uri(result));
+            // var current = options.Value;
+            //
+            // uriList.Add(new UriBuilder(Uri.UriSchemeHttp, current.ExternalEndpoint,
+            //     current.Port, $"file/{guid}").Uri);
         }
 
         await Task.WhenAll(copyTasks);
-        foreach (var uri in uriList)
-        {
-            Console.WriteLine(uri.ToString());
-        }
         return uriList;
     }
     
@@ -109,5 +110,15 @@ public class FileCopyService(
         }
 
         return true;
+    }
+
+    public async Task<Uri> GetPresignedUriAsync(Guid guid, CancellationToken cancellationToken)
+    {
+        var presignedGetUrl = new PresignedGetObjectArgs()
+            .WithBucket(BucketName)
+            .WithObject(guid.ToString())
+            .WithExpiry(3600);
+
+        return new Uri(await permMinio.PresignedGetObjectAsync(presignedGetUrl));
     }
 }

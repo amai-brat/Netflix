@@ -56,7 +56,7 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
                         formData.append("files", file);
                     });
 
-                    const {response, data} = await supportService.uploadChatFiles(formData);
+                    const {response, data} = await supportService.uploadChatFiles(selectedUserId, formData);
                     if (response.ok){
                         data.forEach((url, index) => {
                             filesDto.push({src: url, type: files[index].type, name: files[index].name})

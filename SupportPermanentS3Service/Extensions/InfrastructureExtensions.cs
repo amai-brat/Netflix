@@ -57,6 +57,7 @@ public static class InfrastructureExtensions
         serviceCollection.Configure<TemporaryMinioOptions>(configuration.GetSection("TempMinio"));
         serviceCollection.Configure<RedisOptions>(configuration.GetSection("Redis"));
         serviceCollection.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMqConfig"));
+        serviceCollection.Configure<MinioProxyOptions>(configuration.GetSection("ProxyMinio"));
         return serviceCollection;
     }
 

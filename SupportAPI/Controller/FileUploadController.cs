@@ -3,8 +3,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using SupportAPI.Filters;
 using SupportAPI.Helpers;
+using SupportAPI.Options;
 using SupportAPI.Services;
 using ContentDispositionHeaderValue = Microsoft.Net.Http.Headers.ContentDispositionHeaderValue;
 using MediaTypeHeaderValue = Microsoft.Net.Http.Headers.MediaTypeHeaderValue;
@@ -14,7 +16,8 @@ namespace SupportAPI.Controller;
 [ApiController]
 public class FileUploadController(
     IFileUploadService fileUploadService,
-    IHttpClientFactory clientFactory): ControllerBase
+    IHttpClientFactory clientFactory,
+    IOptions<MinioProxyOptions> proxyOptions): ControllerBase
 {
     
     [HttpPost("support/chats/{id}/files/upload"), RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue, ValueLengthLimit = Int32.MaxValue),DisableRequestSizeLimit]
@@ -74,18 +77,18 @@ public class FileUploadController(
         }
 
         var rewrittenUrls = new List<Uri>();
+        var options = proxyOptions.Value;
         if (resp != null)
         {
             foreach (var uri in resp)
             {
                 var uriRewrite = new UriBuilder(uri)
                 {
-                    Scheme = "https",
-                    Host = "localhost",
-                    Port = 443,
-                    Path = "/perm-s3" + uri.PathAndQuery
+                    Scheme = options.Scheme,
+                    Host = options.Host,
+                    Port = options.Port,
+                    Path = options.RoutingKey + uri.AbsolutePath
                 }.Uri;
-                
                 rewrittenUrls.Add(uriRewrite);
             }
         }
