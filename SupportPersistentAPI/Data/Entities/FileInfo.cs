@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Shared.MessageContracts;
+﻿using Shared.MessageContracts;
 
 namespace SupportPersistentAPI.Data.Entities;
 
