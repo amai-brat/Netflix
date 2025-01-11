@@ -99,10 +99,10 @@ services:
       - Redis:Host=${REDIS_HOST}
       - Redis:Port=${REDIS_PORT}
       - Redis:Password=${REDIS_PASSWORD}
-      - ProxyMinio:Scheme=${PROXY_MINIO_SCHEME}
-      - ProxyMinio:Port=${PROXY_MINIO_PORT}
-      - ProxyMinio:RoutingKey=${PROXY_MINIO_ROUTING_KEY}
-      - ProxyMinio:Host=${PROXY_MINIO_HOST}
+      - ProxyMinio:Scheme=${PROXY_TEMP_MINIO_SCHEME}
+      - ProxyMinio:Port=${PROXY_TEMP_MINIO_PORT}
+      - ProxyMinio:RoutingKey=${PROXY_TEMP_MINIO_ROUTING_KEY}
+      - ProxyMinio:Host=${PROXY_TEMP_MINIO_HOST}
       - JwtOptions:Key=${JWT_SECRET}
       - FrontendConfig:Url=${FRONTEND_URL}
       - ASPNETCORE_HTTP_PORTS=8090
@@ -172,6 +172,8 @@ services:
       - PermMinio:Port=${PERM_MINIO_PORT}
       - PermMinio:Endpoint=${PERM_MINIO_ENDPOINT}
       - PermMinio:ExternalEndpoint=${PERM_MINIO_EXTERNAL_ENDPOINT}
+      - Hangfire:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT_HANGFIRE}
+      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT_FILES}
         
   database:
     image: postgres
@@ -235,6 +237,7 @@ services:
       - "80:80"
       - "443:443"
       - "9000:9000"
+      - "9001:9001"
     depends_on:
       - api
       - subscription-service

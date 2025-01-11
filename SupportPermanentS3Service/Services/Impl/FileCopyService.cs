@@ -1,12 +1,15 @@
 ﻿using Minio;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 using SupportPermanentS3Service.Enums;
+using SupportPermanentS3Service.Models.Dto;
 
 namespace SupportPermanentS3Service.Services.Impl;
 
 public class FileCopyService(
     [FromKeyedServices(KeyedMinios.Temporary)] IMinioClient tempMinio,
-    [FromKeyedServices(KeyedMinios.Permanent)] IMinioClient permMinio)
+    [FromKeyedServices(KeyedMinios.Permanent)] IMinioClient permMinio,
+    ILogger<FileCopyService> logger)
     : IFileCopyService
 {
     public const string BucketName = "chat-files";
@@ -23,8 +26,20 @@ public class FileCopyService(
                      ]
                  }
                  """;
+
     public async Task<List<Uri>> CopyFilesAsync(List<Uri> fileUris,
         CancellationToken cancellationToken)
+    {
+        var fields = fileUris
+            .Select(x => x.AbsolutePath[1..])
+            .Select(FieldDto.Parse)
+            .ToList();
+        
+        return await CopyFilesAsync(fields, cancellationToken);
+    }
+    
+    public async Task<List<Uri>> CopyFilesAsync(List<FieldDto> fieldsToCopy,
+        CancellationToken cancellationToken = default)
     {
         var uriList = new List<Uri>();
         var copyTasks = new List<Task>();
@@ -41,9 +56,9 @@ public class FileCopyService(
             await permMinio.SetPolicyAsync(setPolicyArgs, cancellationToken);
         }
         
-        foreach (var fileUri in fileUris)
+        foreach (var (bucket, @object) in fieldsToCopy)
         {
-            var guid = fileUri.Segments.Last();
+            var guid = @object;
             var statObjArgs = new StatObjectArgs()
                 .WithBucket(BucketName)
                 .WithObject(guid);
@@ -51,7 +66,7 @@ public class FileCopyService(
             var metadata = stats.MetaData;
             
             var getObjectArgs = new GetObjectArgs()
-                .WithBucket(fileUri.Segments[1].Replace("/",""))
+                .WithBucket(bucket)
                 .WithObject(guid)
                 .WithCallbackStream(async (s, ct) =>
                 {
@@ -101,24 +116,47 @@ public class FileCopyService(
         var statsArgs = new StatObjectArgs()
             .WithBucket(BucketName)
             .WithObject(guid.ToString());
-        var resp = await permMinio.StatObjectAsync(statsArgs, cancellationToken);
-        var metadata = resp.MetaData;
-        
-        if (role == "user")
+        try
         {
-            return metadata["for"] == id.ToString();
-        }
+            var resp = await permMinio.StatObjectAsync(statsArgs, cancellationToken);
+            var metadata = resp.MetaData;
 
-        return true;
+            if (role == "user")
+            {
+                return metadata["for"] == id.ToString();
+            }
+
+            return true;
+        }
+        catch (ObjectNotFoundException)
+        {
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error while getting file: {@Exception}", ex);
+            throw;
+        }
     }
 
-    public async Task<Uri> GetPresignedUriAsync(Guid guid, CancellationToken cancellationToken)
+    public async Task<Uri?> GetPresignedUriAsync(Guid guid, CancellationToken cancellationToken)
     {
+        try
+        {
+            await permMinio.StatObjectAsync(new StatObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(guid.ToString()), cancellationToken);
+        }
+        catch (ObjectNotFoundException)
+        {
+            return null;
+        }
+        
         var presignedGetUrl = new PresignedGetObjectArgs()
             .WithBucket(BucketName)
             .WithObject(guid.ToString())
             .WithExpiry(3600);
-
+        
         return new Uri(await permMinio.PresignedGetObjectAsync(presignedGetUrl));
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -150,5 +152,22 @@ public static class InfrastructureExtensions
             });
 
         return serviceCollection;
+    }
+
+    public static IServiceCollection AddHangfire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(conf =>
+        {
+            conf.UseSimpleAssemblyNameTypeSerializer();
+            conf.UseRecommendedSerializerSettings();
+            conf.UsePostgreSqlStorage(psqlConf =>
+            {
+                // нужно вручную создавать базу данных через CREATE DATABASE
+                psqlConf.UseNpgsqlConnection(configuration["Hangfire:ConnectionString"]);
+            });
+        });
+        services.AddHangfireServer();
+
+        return services;
     }
 }

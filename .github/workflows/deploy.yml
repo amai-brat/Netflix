@@ -46,6 +46,8 @@ jobs:
           dotnetVersion: ${{ steps.setup-dotnet.outputs.dotnet-version }}
           minimumSeverity: WARNING
           minimumReportSeverity: WARNING
+          ignoreIssueType: |
+            UnusedAutoPropertyAccessor.Global
 
   build-front:
     name: Build and test front

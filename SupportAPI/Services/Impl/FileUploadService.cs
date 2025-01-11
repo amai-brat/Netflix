@@ -1,47 +1,50 @@
-﻿using Amazon.S3;
+﻿using System.Text.Json;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using MassTransit;
-using Minio;
-using Minio.DataModel.Args;
+using Shared.Consts;
+using StackExchange.Redis;
+using SupportAPI.Services.MetadataExtractor;
 
 namespace SupportAPI.Services.Impl;
 
 public class FileUploadService(
-    IMinioClient minio,
+    IDatabase redisDatabase,
     AmazonS3Client s3Client,
     ILogger<FileUploadService> logger): IFileUploadService
 {
     private const string BucketName = "chat-files";
-    // private const string Policy = """
-    //                               {
-    //                                   "Version": "2012-10-17",
-    //                                   "Statement": [
-    //                                       {
-    //                                           "Effect": "Allow",
-    //                                           "Principal": { "AWS": ["*"] },
-    //                                           "Action": ["s3:GetObject"],
-    //                                           "Resource": ["arn:aws:s3:::chat-files/*"]
-    //                                       }
-    //                                   ]
-    //                               }
-    //                               """;
-    public async Task<string> UploadFileAndSaveMetadataAsync(
+    private const string Policy = """
+                                  {
+                                      "Version": "2012-10-17",
+                                      "Statement": [
+                                          {
+                                              "Effect": "Allow",
+                                              "Principal": { "AWS": ["*"] },
+                                              "Action": ["s3:GetObject"],
+                                              "Resource": ["arn:aws:s3:::chat-files/*"]
+                                          }
+                                      ]
+                                  }
+                                  """;
+    public async Task<UploadedFileDto> UploadFileAndSaveMetadataAsync(
         Stream s,
+        string contentType,
         Dictionary<string,string> metadata,
         CancellationToken cancellationToken)
     {
         // We'll send this array to permanent s3 storage telling these files are uploaded and ready to be copied
-        Guid guid = NewId.NextGuid();
+        var guid = NewId.NextGuid();
         var resp = await s3Client.ListBucketsAsync(new ListBucketsRequest(){Prefix = BucketName}, cancellationToken);
         if (resp.Buckets.Count == 0)
         {
             await s3Client.PutBucketAsync(new PutBucketRequest(){BucketName = BucketName}, cancellationToken);
-            // await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest()
-            // {
-            //     BucketName = BucketName,
-            //     Policy = Policy
-            // });
+            await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest()
+            {
+                BucketName = BucketName,
+                Policy = Policy
+            }, cancellationToken);
         }
         var transferUtility = new TransferUtility(s3Client);
         
@@ -51,20 +54,51 @@ public class FileUploadService(
             {
                 BucketName = BucketName,
                 InputStream = s,
-                Key = guid.ToString()
+                Key = guid.ToString(),
+                ContentType = contentType
             };
             foreach (var mkv in metadata)
             {
                 req.Metadata.Add(mkv.Key, mkv.Value);
             }
             await transferUtility.UploadAsync(req, cancellationToken);
+            
+            // uploaded to temp storage: counter++
+            await redisDatabase.HashIncrementAsync(
+                RedisKeysConsts.CountersKey, 
+                new FieldDto(BucketName, guid.ToString()).ToString());
         }
         catch (Exception ex)
         {
-            logger.LogInformation($"Error during upload: {ex.Message}");
+            logger.LogInformation("Error during upload: {Message}", ex.Message);
             throw;
         }
-        return s3Client.Config.ServiceURL + BucketName + "/" + guid;
+        
+        return new UploadedFileDto(
+            Name: new FieldDto(BucketName, guid.ToString()),
+            Url: s3Client.Config.ServiceURL + BucketName + "/" + guid);
+    }
+    
+    public async Task ExtractFileMetadataToTempDatabaseAsync(FieldDto fieldDto, CancellationToken cancellationToken = default)
+    {
+        var tempDir = Directory.CreateTempSubdirectory();
+        var tempFileName = Path.Combine(tempDir.FullName, fieldDto.ObjectName);
+        
+        var resp = await s3Client.GetObjectAsync(fieldDto.BucketName, fieldDto.ObjectName, cancellationToken);
+        
+        var type = resp.Headers.ContentType;
+        await resp.WriteResponseStreamToFileAsync(tempFileName, append: false, cancellationToken);
+        
+        var extractor = MetadataExtractorFactory.Create(type);
+        var metadata = extractor.ExtractMetadata(tempFileName, type);
+        var serialized = JsonSerializer.Serialize(metadata);
+        
+        Directory.Delete(tempDir.FullName, recursive: true);
+        
+        await redisDatabase.HashSetAsync(RedisKeysConsts.MetadataKey, fieldDto.ToString(), serialized);
+        
+        // uploaded metadata to temp storage: counter++
+        await redisDatabase.HashIncrementAsync(RedisKeysConsts.CountersKey, fieldDto.ToString());
     }
     
     public Task DeleteFileAndMetadataAsync(List<string> fileUrls, CancellationToken cancellationToken)
@@ -73,11 +107,13 @@ public class FileUploadService(
         foreach (var fileUrl in fileUrls)
         {
             var currentGuid = fileUrl.Split("/").Last();
-            
-            var removeArgs = new RemoveObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(currentGuid);
-            deleteFileTasks.Add(minio.RemoveObjectAsync(removeArgs, cancellationToken));
+
+            var removeArgs = new DeleteObjectRequest
+            {
+                BucketName = BucketName, 
+                Key = currentGuid
+            };
+            deleteFileTasks.Add(s3Client.DeleteObjectAsync(removeArgs, cancellationToken));
         }
 
         return Task.WhenAll(deleteFileTasks);

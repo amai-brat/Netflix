@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -16,7 +15,6 @@ namespace SupportAPI.Controller;
 [ApiController]
 public class FileUploadController(
     IFileUploadService fileUploadService,
-    IHttpClientFactory clientFactory,
     IOptions<MinioProxyOptions> proxyOptions): ControllerBase
 {
     
@@ -28,30 +26,34 @@ public class FileUploadController(
         Stream? currentStream;
         if (!MultipartRequestHelper.IsMultipartContentType(HttpContext.Request.ContentType))
         {
-            return BadRequest("");
+            return BadRequest("Request must be multipart/form-data");
         }
-        var boundary = MultipartRequestHelper.GetBoundary(
-            MediaTypeHeaderValue.Parse(Request.ContentType), 70);
+        var boundary = MultipartRequestHelper.GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType), 70);
         var reader = new MultipartReader(boundary, HttpContext.Request.Body);
         var section = await reader.ReadNextSectionAsync(cancellationToken);
         var urls = new List<string>();
         while (section != null)
         {
-            var hasContentDispositionHeader = 
-                ContentDispositionHeaderValue.TryParse(
-                    section.ContentDisposition, out var contentDisposition);
-
-            if (hasContentDispositionHeader)
+            if (ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition) &&
+                MediaTypeHeaderValue.TryParse(section.ContentType, out var contentType))
             {
                 if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
                     currentStream = section.Body;
-                    var metadata = new Dictionary<string, string>();
-                    metadata.Add("role", User.Claims.First(c => c.Type == ClaimTypes.Role).Value);
-                    metadata.Add("for", id.ToString());
-                    var result = await fileUploadService.UploadFileAndSaveMetadataAsync(currentStream, metadata, cancellationToken);
+                    var metadata = new Dictionary<string, string>
+                    {
+                        { "role", User.Claims.First(c => c.Type == ClaimTypes.Role).Value },
+                        { "for", id.ToString() }
+                    };
+                    var result = await fileUploadService.UploadFileAndSaveMetadataAsync(
+                        currentStream, 
+                        contentType.MediaType.ToString(), 
+                        metadata, 
+                        cancellationToken);
                     await currentStream.DisposeAsync();
-                    urls.Add(result);
+
+                    await fileUploadService.ExtractFileMetadataToTempDatabaseAsync(result.Name, cancellationToken);
+                    urls.Add(result.Url);
                 }
                 else
                 {
@@ -61,38 +63,26 @@ public class FileUploadController(
             section = await reader.ReadNextSectionAsync(cancellationToken);
         }
         
-        var client = clientFactory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
-            HttpContext.Request.Headers.Authorization.ToString().Split(" ")[1]);
-        List<Uri>? resp;
-        try
+        var proxiedUris = GetProxiedUris(urls.Select(x => new Uri(x)));
+        return Ok(proxiedUris);
+    }
+
+    private List<Uri> GetProxiedUris(IEnumerable<Uri> uris)
+    {
+        var result = new List<Uri>();
+        var options = proxyOptions.Value;
+        foreach (var uri in uris)
         {
-            var result = await client.PostAsJsonAsync("http://support-permanent-s3-service:8080/copy-to-perm",
-                urls, cancellationToken);
-            resp = await result.Content.ReadFromJsonAsync<List<Uri>>(cancellationToken: cancellationToken);
-        }
-        finally
-        {
-            await fileUploadService.DeleteFileAndMetadataAsync(urls, cancellationToken);
+            var uriRewrite = new UriBuilder(uri)
+            {
+                Scheme = options.Scheme,
+                Host = options.Host,
+                Port = options.Port,
+                Path = options.RoutingKey + uri.AbsolutePath
+            }.Uri;
+            result.Add(uriRewrite);
         }
 
-        var rewrittenUrls = new List<Uri>();
-        var options = proxyOptions.Value;
-        if (resp != null)
-        {
-            foreach (var uri in resp)
-            {
-                var uriRewrite = new UriBuilder(uri)
-                {
-                    Scheme = options.Scheme,
-                    Host = options.Host,
-                    Port = options.Port,
-                    Path = options.RoutingKey + uri.AbsolutePath
-                }.Uri;
-                rewrittenUrls.Add(uriRewrite);
-            }
-        }
-        return Ok(rewrittenUrls);
+        return result;
     }
-    
 }

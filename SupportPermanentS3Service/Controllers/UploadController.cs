@@ -34,20 +34,41 @@ public class UploadController(
         {
             return Unauthorized();
         }
+        
         var uri = await fileCopyService.GetPresignedUriAsync(guid, cancellationToken);
+        return uri is not null
+            ? Ok(GetProxiedUri(uri))
+            : Ok(GetProcessingImageUri());
+    }
+
+    private Uri GetProxiedUri(Uri uri)
+    {
         var options = proxyOptions.Value;
-        Console.WriteLine(options.Scheme);
-        Console.WriteLine(options.Host);
-        Console.WriteLine(options.Port);
-        Console.WriteLine(options.RoutingKey);
-        var uriRewrite = new UriBuilder(uri)
+        return new UriBuilder(uri)
         {
             Scheme = options.Scheme,
             Host = options.Host,
             Port = options.Port,
             Path = options.RoutingKey + uri.AbsolutePath
         }.Uri;
-        Console.WriteLine(uriRewrite.ToString());
-        return Ok(uriRewrite);
+    }
+
+    private Uri GetProcessingImageUri()
+    {
+        // var builder =  new UriBuilder
+        // {
+        //     Scheme = Request.Scheme,
+        //     Host = Request.Host.Host,
+        //     Path = "/imgs/processing.png",
+        // };
+        //
+        // if (Request.Host.Port.HasValue)
+        // {
+        //     builder.Port = Request.Host.Port.Value;
+        // }
+        //
+        // return builder.Uri;
+
+        return new Uri("https://i.imgur.com/QtmQQrc.png");
     }
 }
