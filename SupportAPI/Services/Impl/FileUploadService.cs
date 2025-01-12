@@ -93,7 +93,7 @@ public class FileUploadService(
         var metadata = extractor.ExtractMetadata();
         var serialized = JsonSerializer.Serialize(metadata);
         
-        // Directory.Delete(tempDir.FullName, recursive: true);
+        Directory.Delete(tempDir.FullName, recursive: true);
         
         await redisDatabase.HashSetAsync(RedisKeysConsts.MetadataKey, fieldDto.ToString(), serialized);
         

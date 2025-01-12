@@ -1,4 +1,3 @@
-using Hangfire;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
@@ -7,29 +6,19 @@ using StackExchange.Redis;
 using SupportPermanentS3Service.Enums;
 using SupportPermanentS3Service.Models.Dto;
 
-namespace SupportPermanentS3Service.BackgroundServices;
+namespace SupportPermanentS3Service.Services.Impl;
 
 public class TempCleanerService(
-    IRecurringJobManager recurringJobManager,
     [FromKeyedServices(KeyedMinios.Temporary)] IMinioClient minioClient,
     IDatabase redisDatabase,
-    ILogger<TempCleanerService> logger) : BackgroundService
+    ILogger<TempCleanerService> logger) : ITempCleanerService
 {
     private const int CanBeDeletedCount = 5;
-    
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        recurringJobManager.AddOrUpdate("cleaner", 
-            () => CleanTempAsync(stoppingToken),
-            "00 00 * * *"); // каждый день в 00:00
-        
-        return Task.CompletedTask;
-    }
 
     public async Task CleanTempAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Cleaning temp at {DateTime}", DateTime.UtcNow);
-
+    
         var entries = await redisDatabase.HashGetAllAsync(RedisKeysConsts.CountersKey);
         var fieldsToClean = await GetFieldsToCleanAsync(entries);
         
@@ -38,7 +27,7 @@ public class TempCleanerService(
         
         await CleanCountersAsync(fieldsToClean, cancellationToken);
     }
-
+    
     private async Task<List<FieldDto>> GetFieldsToCleanAsync(HashEntry[] entries)
     {
         List<FieldDto> fieldsToClean = [];
@@ -62,10 +51,10 @@ public class TempCleanerService(
                 }
             }
         }
-
+    
         return fieldsToClean;
     }
-
+    
     private async Task CleanTempStorageAsync(List<FieldDto> fields, CancellationToken cancellationToken = default)
     {
         try
@@ -83,7 +72,7 @@ public class TempCleanerService(
             logger.LogWarning("Temp minio: {@Exception}", e);
         }
     }
-
+    
     private async Task CleanTempMetadataAsync(List<FieldDto> fields, CancellationToken _ = default)
     {
         var array = fields
