@@ -1,9 +1,17 @@
 namespace SupportAPI.Services.MetadataExtractor;
 
-public class AudioMetadataExtractor : BaseMetadataExtractor
+public class AudioMetadataExtractor(string path, string mimeType) 
+    : BaseMetadataExtractor(path, mimeType)
 {
-    public override Dictionary<string, string> ExtractMetadata(string path, string mimeType)
+    public override Dictionary<string, string> ExtractMetadata()
     {
-        return base.ExtractMetadata(path, mimeType);
+        var metadata =  base.ExtractMetadata();
+        
+        metadata.Add("album", File.Tag.Album);
+        metadata.Add("artist", string.Join(", ", File.Tag.Performers));
+        metadata.Add("audio_title", File.Tag.Title);
+        metadata.Add("audio_duration", File.Properties.Duration.ToString());
+        
+        return metadata;
     }
 }

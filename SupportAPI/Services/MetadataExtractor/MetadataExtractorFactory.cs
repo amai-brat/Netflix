@@ -27,14 +27,14 @@ public static class MetadataExtractorFactory
         "video/webm" // .webm
     ];
 
-    public static BaseMetadataExtractor Create(string fileMimeType)
+    public static BaseMetadataExtractor Create(string path, string fileMimeType)
     {
         return fileMimeType switch
         {
-            _ when ImageMimeTypes.Contains(fileMimeType) => new ImageMetadataExtractor(),
-            _ when AudioMimeTypes.Contains(fileMimeType) => new AudioMetadataExtractor(),
-            _ when VideoMimeTypes.Contains(fileMimeType) => new VideoMetadataExtractor(),
-            _ => new BaseMetadataExtractor()
+            _ when ImageMimeTypes.Contains(fileMimeType) => new ImageMetadataExtractor(path, fileMimeType),
+            _ when AudioMimeTypes.Contains(fileMimeType) => new AudioMetadataExtractor(path, fileMimeType),
+            _ when VideoMimeTypes.Contains(fileMimeType) => new VideoMetadataExtractor(path, fileMimeType),
+            _ => new BaseMetadataExtractor(path, fileMimeType)
         };
     }
 }

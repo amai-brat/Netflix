@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Shared.Consts;
 using StackExchange.Redis;
 using SupportPermanentS3Service.Models.Dto;
@@ -13,7 +14,12 @@ public class MetadataCopyService(
         foreach (var field in fieldsToCopy)
         {
             var redisValue = await redisDatabase.HashGetAsync(RedisKeysConsts.MetadataKey, field.ToString());
-            Console.WriteLine($"{field}: {redisValue.ToString()}");
+            var dick = JsonSerializer.Deserialize<Dictionary<string, string>>(redisValue.ToString())!;
+            Console.WriteLine($"{field}:");
+            foreach (var (key, value) in dick)
+            {
+                Console.WriteLine($"\t{key}: {value}");
+            }
         }
     }
 }
