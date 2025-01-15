@@ -11,5 +11,4 @@ public class FileInfo
     public required string Src { get; set; }
     // ReSharper disable once EntityFramework.ModelValidation.UnlimitedStringLength
     public required string Name { get; set; }
-    // public string? Metadata { get; set; }
 }
