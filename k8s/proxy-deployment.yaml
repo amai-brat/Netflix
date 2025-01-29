@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: proxy
+  name: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: proxy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: proxy
+    spec:
+      containers:
+        - image: proxy
+          name: proxy
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: proxy-cm0
+              subPath: nginx.conf
+            - mountPath: /root/ssl-keys/voltorka-key.txt
+              name: proxy-cm1
+              subPath: voltorka-key.txt
+            - mountPath: /root/ssl-keys/voltorka-bundle.txt
+              name: proxy-cm2
+              subPath: voltorka-bundle.txt
+            - mountPath: /root/ssl-keys/voltorka-s3-key.txt
+              name: proxy-cm3
+              subPath: voltorka-s3-key.txt
+            - mountPath: /root/ssl-keys/voltorka-s3-bundle.txt
+              name: proxy-cm4
+              subPath: voltorka-s3-bundle.txt
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            items:
+              - key: nginx.prod.conf
+                path: nginx.conf
+            name: proxy-cm0
+          name: proxy-cm0
+        - configMap:
+            items:
+              - key: key.pem
+                path: voltorka-key.txt
+            name: proxy-cm1
+          name: proxy-cm1
+        - configMap:
+            items:
+              - key: cert.pem
+                path: voltorka-bundle.txt
+            name: proxy-cm2
+          name: proxy-cm2
+        - configMap:
+            items:
+              - key: key.pem
+                path: voltorka-s3-key.txt
+            name: proxy-cm3
+          name: proxy-cm3
+        - configMap:
+            items:
+              - key: cert.pem
+                path: voltorka-s3-bundle.txt
+            name: proxy-cm4
+          name: proxy-cm4
