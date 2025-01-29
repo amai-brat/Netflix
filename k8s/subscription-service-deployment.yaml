@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: subscription-service
+  name: subscription-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: subscription-service
+  template:
+    metadata:
+      labels:
+        io.kompose.service: subscription-service
+    spec:
+      containers:
+        - env:
+            - name: DATABASE_CONNECTION_STRING_GENERAL
+              value: postgres://postgres:admin@database:5432/Netflix
+            - name: JWT_KEY
+              value: 23ec772b436632ee93e30373ebc1817b355bdfd1356fd677d993b2f90923bb816e55bbf53d6a74fea0c38d1beaf0bbce87a2d8dddcaa629dbc75284e64a27697a17d7f537a6d45d2138ba25c187a3306e376a7f85ee78c91a5d35cbf0e986d66514bd11641dfe57c704312ddf4262293f092e8b7c2aad412263afacab3550cebd1c78dae487ced46596647deee24ff9689f8244df3928198f97f44f5117734db47eac0d243814a11c43a3214a225368a8be0ad5cbb52d4c3fffaec009f5ec84b592ff338d71cd74f658f654df2e388dd79fbb2a17efd3367fdfcf3da2a60b2c4038d0e746f57b29597a5cf0716ffc5f53dbecd3c11e6ea0cba4d3218dd292ea1
+          image: subscription-service
+          name: subscription-service
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+      restartPolicy: Always
