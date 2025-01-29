@@ -1,0 +1,62 @@
+apiVersion: v1
+data:
+  key.pem: |
+    -----BEGIN PRIVATE KEY-----
+    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
+    2aDWPnqMEP10ilF1G1B7m2GsEwk1tOU=
+    -----END PRIVATE KEY-----
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: proxy
+  name: proxy-cm1
