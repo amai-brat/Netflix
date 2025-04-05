@@ -3,8 +3,16 @@ syntax = "proto3";
 package payment;
 
 service PaymentService {
-  rpc ProcessPayment (PaymentRequest) returns (stream PaymentResponse);
+  rpc ProcessPayment (PaymentRequest) returns (PaymentResponse);
   rpc CompensatePayment (CompensationRequest) returns (CompensationResponse);
+
+  rpc GetTransactionStatus (TransactionStatusRequest) returns (TransactionStatusResponse);
+}
+
+enum Status {
+  PENDING = 0;
+  SUCCESS = 1;
+  FAILED = 2;
 }
 
 message PaymentRequest {
@@ -21,12 +29,6 @@ message PaymentRequest {
 }
 
 message PaymentResponse {
-  enum Status {
-    PENDING = 0;
-    SUCCESS = 1;
-    FAILED = 2;
-  }
-  
   string transaction_id = 1;
   Status status = 2;
 }
@@ -36,4 +38,13 @@ message CompensationRequest {
 }
 
 message CompensationResponse {
+}
+
+message TransactionStatusRequest {
+  string transaction_id = 1;
+}
+
+message TransactionStatusResponse { 
+  string transaction_id = 1;
+  Status status = 2;
 }

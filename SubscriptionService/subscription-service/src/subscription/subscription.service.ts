@@ -6,7 +6,7 @@ import {Subscription} from "../entities/subscription.entity";
 import {UserSubscription, UserSubscriptionStatus} from "../entities/user_subscription.entity";
 import { BuySubscriptionDto } from "./subscription.dto";
 import { ClientGrpc } from "@nestjs/microservices";
-import { PaymentRequest, PaymentResponse, PaymentResponse_Status, PaymentService } from "../proto/payment";
+import { PaymentRequest, PaymentResponse, Status, PaymentService } from "../proto/payment";
 
 @Injectable()
 export class SubscriptionService implements OnModuleInit {
@@ -79,7 +79,7 @@ export class SubscriptionService implements OnModuleInit {
         });
 
         const savedUserSub = await this.userSubscriptionRepository.save(userSubscription);
-        this.handlePaymentProcessing(user.id, savedUserSub.id, dto, subscription.price).then(
+        await this.handlePaymentProcessing(user.id, savedUserSub.id, dto, subscription.price).then(
             () => this.logger.log("Payment service was called"));
         
         return savedUserSub;
@@ -114,7 +114,7 @@ export class SubscriptionService implements OnModuleInit {
 
         // cancel only last subscription
         const toCancel = toCancels.at(-1);
-        toCancel.status = UserSubscriptionStatus.CANCELLED;
+        if (toCancel) toCancel.status = UserSubscriptionStatus.CANCELLED;
 
         await this.userSubscriptionRepository.save(toCancel);
     }
@@ -132,58 +132,39 @@ export class SubscriptionService implements OnModuleInit {
             amount: amount,
           };
       
-          const paymentStream = this.paymentServiceClient.ProcessPayment(req);
+          let response = await this.paymentServiceClient.ProcessPayment(req);
           
-          const sub = paymentStream.subscribe({
-            next: async (response: PaymentResponse) => {
-              let canClose = false;
+          const userSubscription = await this.userSubscriptionRepository.findOneByOrFail(
+            { id: userSubscriptionId },
+          );
+  
+          if (!userSubscription) return;
 
-              const userSubscription = await this.userSubscriptionRepository.findOneByOrFail(
-                { id: userSubscriptionId },
-              );
-      
-              if (!userSubscription) return;
-      
-              if (response.transactionId) {
-                userSubscription.transactionId = response.transactionId;
-              }
-      
-              switch (response.status) {
-                case PaymentResponse_Status.SUCCESS:
-                  canClose = true;
-                  userSubscription.status = UserSubscriptionStatus.COMPLETED;
-                  break;
-                case PaymentResponse_Status.FAILED:
-                  canClose = true;
-                  userSubscription.status = UserSubscriptionStatus.FAILED;
-                  break;
-                case PaymentResponse_Status.PENDING:
-                  userSubscription.status = UserSubscriptionStatus.PENDING;
-                  break;
-              }
-      
-              await this.userSubscriptionRepository.save(userSubscription);
-      
-              if (response.status === PaymentResponse_Status.FAILED) {
-                await this.paymentServiceClient.CompensatePayment({
-                  transactionId: response.transactionId,
-                });
-              }
+          userSubscription.transactionId = response.transactionId;
 
-              if (canClose) sub.unsubscribe();
-            },
-            error: async (error) => {
-              const userSubscription = await this.userSubscriptionRepository.findOneByOrFail(
-                { id: userSubscriptionId },
-              );
-              if (userSubscription) {
-                userSubscription.status = UserSubscriptionStatus.FAILED;
-                await this.userSubscriptionRepository.save(userSubscription);
-              }
+          while (response.status == Status.PENDING) {
+            setTimeout(() => {
+              this.paymentServiceClient.GetTransactionStatus({transactionId: response.transactionId})
+                .then(resp => response = resp);
+            }, 100);
+          }
 
-              sub.unsubscribe();
-            },
-          });
+          switch (response.status) {
+            case Status.SUCCESS:
+              userSubscription.status = UserSubscriptionStatus.COMPLETED;
+              break;
+            case Status.FAILED:
+              userSubscription.status = UserSubscriptionStatus.FAILED;
+              break;
+          }
+
+          await this.userSubscriptionRepository.save(userSubscription);
+      
+          if (response.status === Status.FAILED) {
+            await this.paymentServiceClient.CompensatePayment({
+              transactionId: response.transactionId,
+            });
+          }
         } catch (error) {
           const userSubscription = await this.userSubscriptionRepository.findOneByOrFail({
             id: userSubscriptionId,

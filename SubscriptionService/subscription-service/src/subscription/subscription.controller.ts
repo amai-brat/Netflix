@@ -76,7 +76,7 @@ export class SubscriptionController {
     async buySubscription(@Request() req, @Body() body: BuySubscriptionDto): Promise<UserSubscription> {
         const userId = req.user.id;
         
-        const subscriptionId = body.subscriptionId;
+        const subscriptionId = body?.subscriptionId;
         if (!subscriptionId || typeof subscriptionId !== 'number'){
             throw new BadRequestException("Invalid request body!");
         }
@@ -112,7 +112,7 @@ export class SubscriptionController {
     async cancelSubscription(@Request() req): Promise<void>{
         const userId = req.user.id;
         
-        const subscriptionId = req.body.subscriptionId;
+        const subscriptionId = req.body?.subscriptionId;
         if (!subscriptionId || typeof subscriptionId !== 'number'){
             throw new BadRequestException("Invalid request body!");
         }

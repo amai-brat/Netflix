@@ -6,10 +6,47 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
 
 export const protobufPackage = "payment";
+
+export enum Status {
+  PENDING = 0,
+  SUCCESS = 1,
+  FAILED = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function statusFromJSON(object: any): Status {
+  switch (object) {
+    case 0:
+    case "PENDING":
+      return Status.PENDING;
+    case 1:
+    case "SUCCESS":
+      return Status.SUCCESS;
+    case 2:
+    case "FAILED":
+      return Status.FAILED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Status.UNRECOGNIZED;
+  }
+}
+
+export function statusToJSON(object: Status): string {
+  switch (object) {
+    case Status.PENDING:
+      return "PENDING";
+    case Status.SUCCESS:
+      return "SUCCESS";
+    case Status.FAILED:
+      return "FAILED";
+    case Status.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
 
 export interface PaymentRequest {
   card: PaymentRequest_Card | undefined;
@@ -26,46 +63,7 @@ export interface PaymentRequest_Card {
 
 export interface PaymentResponse {
   transactionId: string;
-  status: PaymentResponse_Status;
-}
-
-export enum PaymentResponse_Status {
-  PENDING = 0,
-  SUCCESS = 1,
-  FAILED = 2,
-  UNRECOGNIZED = -1,
-}
-
-export function paymentResponse_StatusFromJSON(object: any): PaymentResponse_Status {
-  switch (object) {
-    case 0:
-    case "PENDING":
-      return PaymentResponse_Status.PENDING;
-    case 1:
-    case "SUCCESS":
-      return PaymentResponse_Status.SUCCESS;
-    case 2:
-    case "FAILED":
-      return PaymentResponse_Status.FAILED;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return PaymentResponse_Status.UNRECOGNIZED;
-  }
-}
-
-export function paymentResponse_StatusToJSON(object: PaymentResponse_Status): string {
-  switch (object) {
-    case PaymentResponse_Status.PENDING:
-      return "PENDING";
-    case PaymentResponse_Status.SUCCESS:
-      return "SUCCESS";
-    case PaymentResponse_Status.FAILED:
-      return "FAILED";
-    case PaymentResponse_Status.UNRECOGNIZED:
-    default:
-      return "UNRECOGNIZED";
-  }
+  status: Status;
 }
 
 export interface CompensationRequest {
@@ -73,6 +71,15 @@ export interface CompensationRequest {
 }
 
 export interface CompensationResponse {
+}
+
+export interface TransactionStatusRequest {
+  transactionId: string;
+}
+
+export interface TransactionStatusResponse {
+  transactionId: string;
+  status: Status;
 }
 
 function createBasePaymentRequest(): PaymentRequest {
@@ -327,7 +334,7 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
   fromJSON(object: any): PaymentResponse {
     return {
       transactionId: isSet(object.transactionId) ? globalThis.String(object.transactionId) : "",
-      status: isSet(object.status) ? paymentResponse_StatusFromJSON(object.status) : 0,
+      status: isSet(object.status) ? statusFromJSON(object.status) : 0,
     };
   },
 
@@ -337,7 +344,7 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
       obj.transactionId = message.transactionId;
     }
     if (message.status !== 0) {
-      obj.status = paymentResponse_StatusToJSON(message.status);
+      obj.status = statusToJSON(message.status);
     }
     return obj;
   },
@@ -454,9 +461,144 @@ export const CompensationResponse: MessageFns<CompensationResponse> = {
   },
 };
 
+function createBaseTransactionStatusRequest(): TransactionStatusRequest {
+  return { transactionId: "" };
+}
+
+export const TransactionStatusRequest: MessageFns<TransactionStatusRequest> = {
+  encode(message: TransactionStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.transactionId !== "") {
+      writer.uint32(10).string(message.transactionId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TransactionStatusRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTransactionStatusRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.transactionId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TransactionStatusRequest {
+    return { transactionId: isSet(object.transactionId) ? globalThis.String(object.transactionId) : "" };
+  },
+
+  toJSON(message: TransactionStatusRequest): unknown {
+    const obj: any = {};
+    if (message.transactionId !== "") {
+      obj.transactionId = message.transactionId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TransactionStatusRequest>, I>>(base?: I): TransactionStatusRequest {
+    return TransactionStatusRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TransactionStatusRequest>, I>>(object: I): TransactionStatusRequest {
+    const message = createBaseTransactionStatusRequest();
+    message.transactionId = object.transactionId ?? "";
+    return message;
+  },
+};
+
+function createBaseTransactionStatusResponse(): TransactionStatusResponse {
+  return { transactionId: "", status: 0 };
+}
+
+export const TransactionStatusResponse: MessageFns<TransactionStatusResponse> = {
+  encode(message: TransactionStatusResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.transactionId !== "") {
+      writer.uint32(10).string(message.transactionId);
+    }
+    if (message.status !== 0) {
+      writer.uint32(16).int32(message.status);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TransactionStatusResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTransactionStatusResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.transactionId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.status = reader.int32() as any;
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TransactionStatusResponse {
+    return {
+      transactionId: isSet(object.transactionId) ? globalThis.String(object.transactionId) : "",
+      status: isSet(object.status) ? statusFromJSON(object.status) : 0,
+    };
+  },
+
+  toJSON(message: TransactionStatusResponse): unknown {
+    const obj: any = {};
+    if (message.transactionId !== "") {
+      obj.transactionId = message.transactionId;
+    }
+    if (message.status !== 0) {
+      obj.status = statusToJSON(message.status);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TransactionStatusResponse>, I>>(base?: I): TransactionStatusResponse {
+    return TransactionStatusResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TransactionStatusResponse>, I>>(object: I): TransactionStatusResponse {
+    const message = createBaseTransactionStatusResponse();
+    message.transactionId = object.transactionId ?? "";
+    message.status = object.status ?? 0;
+    return message;
+  },
+};
+
 export interface PaymentService {
-  ProcessPayment(request: PaymentRequest): Observable<PaymentResponse>;
+  ProcessPayment(request: PaymentRequest): Promise<PaymentResponse>;
   CompensatePayment(request: CompensationRequest): Promise<CompensationResponse>;
+  GetTransactionStatus(request: TransactionStatusRequest): Promise<TransactionStatusResponse>;
 }
 
 export const PaymentServiceServiceName = "payment.PaymentService";
@@ -468,11 +610,12 @@ export class PaymentServiceClientImpl implements PaymentService {
     this.rpc = rpc;
     this.ProcessPayment = this.ProcessPayment.bind(this);
     this.CompensatePayment = this.CompensatePayment.bind(this);
+    this.GetTransactionStatus = this.GetTransactionStatus.bind(this);
   }
-  ProcessPayment(request: PaymentRequest): Observable<PaymentResponse> {
+  ProcessPayment(request: PaymentRequest): Promise<PaymentResponse> {
     const data = PaymentRequest.encode(request).finish();
-    const result = this.rpc.serverStreamingRequest(this.service, "ProcessPayment", data);
-    return result.pipe(map((data) => PaymentResponse.decode(new BinaryReader(data))));
+    const promise = this.rpc.request(this.service, "ProcessPayment", data);
+    return promise.then((data) => PaymentResponse.decode(new BinaryReader(data)));
   }
 
   CompensatePayment(request: CompensationRequest): Promise<CompensationResponse> {
@@ -480,13 +623,16 @@ export class PaymentServiceClientImpl implements PaymentService {
     const promise = this.rpc.request(this.service, "CompensatePayment", data);
     return promise.then((data) => CompensationResponse.decode(new BinaryReader(data)));
   }
+
+  GetTransactionStatus(request: TransactionStatusRequest): Promise<TransactionStatusResponse> {
+    const data = TransactionStatusRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetTransactionStatus", data);
+    return promise.then((data) => TransactionStatusResponse.decode(new BinaryReader(data)));
+  }
 }
 
 interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
-  clientStreamingRequest(service: string, method: string, data: Observable<Uint8Array>): Promise<Uint8Array>;
-  serverStreamingRequest(service: string, method: string, data: Uint8Array): Observable<Uint8Array>;
-  bidirectionalStreamingRequest(service: string, method: string, data: Observable<Uint8Array>): Observable<Uint8Array>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
