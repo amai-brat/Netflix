@@ -129,7 +129,8 @@ public class TokenService(
             new(ClaimTypes.Name, user.Nickname),
             new("subscribeId", JsonSerializer.Serialize(
                 user.UserSubscriptions!
-                    .Where(x => x.ExpiresAt < DateTimeOffset.Now)
+                    .Where(x => x.ExpiresAt < DateTimeOffset.Now 
+                                && x.Status == UserSubscriptionStatus.Completed)
                     .Select(x => x.SubscriptionId).ToList()))
         };
         

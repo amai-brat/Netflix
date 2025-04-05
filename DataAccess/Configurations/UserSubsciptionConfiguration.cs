@@ -8,7 +8,7 @@ namespace DataAccess.Configurations
 	{
 		public void Configure(EntityTypeBuilder<UserSubscription> builder)
 		{
-			builder.HasKey(us => new { us.UserId, us.SubscriptionId });
+			builder.HasKey(us => us.Id);
 
 			builder.HasOne(us => us.Subscription)
 				.WithMany()

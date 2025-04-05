@@ -1,5 +1,6 @@
 using Application.Repositories;
 using Application.Services.Abstractions;
+using Domain.Entities;
 
 namespace Application.Services.Implementations;
 
@@ -12,6 +13,7 @@ public class PermissionChecker(
         var user = await userRepository.GetUserWithSubscriptionsAsync(x => x.Id == userId);
         var userSubscriptions = user?
             .UserSubscriptions?
+            .Where(x => x.Status == UserSubscriptionStatus.Completed)
             .Select(s => s.SubscriptionId)
             .ToList();
         

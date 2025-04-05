@@ -61,6 +61,7 @@ namespace DataAccess.Extensions
 
 			var userToSubscription = new UserSubscription()
 			{
+				Id = -2,
 				SubscriptionId = 1,
 				UserId = -1,
 				BoughtAt = DateTimeOffset.Now.AddDays(-2),

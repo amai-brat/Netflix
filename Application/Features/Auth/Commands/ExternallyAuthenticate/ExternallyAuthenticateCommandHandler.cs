@@ -72,7 +72,8 @@ internal class ExternallyAuthenticateCommandHandler(
         {
             Subscription = subscription,
             ExpiresAt = DateTimeOffset.UtcNow.AddMonths(6),
-            BoughtAt = DateTimeOffset.UtcNow
+            BoughtAt = DateTimeOffset.UtcNow,
+            Status = UserSubscriptionStatus.Completed
         }));
         
         var user = new User

@@ -2,6 +2,7 @@
 {
 	public class UserSubscription
 	{
+		public int Id { get; set; }
 		public User User { get; set; } = null!;
 		public long UserId { get; set; }
 
@@ -10,5 +11,16 @@
 
 		public DateTimeOffset ExpiresAt { get; set; }
 		public DateTimeOffset BoughtAt { get; set; }
+
+		public Guid? TransactionId { get; set; }
+
+		public UserSubscriptionStatus Status { get; set; }
+	}
+
+	public enum UserSubscriptionStatus
+	{
+		Pending = 0,
+		Completed = 1,
+		Failed = 2
 	}
 }
