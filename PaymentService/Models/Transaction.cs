@@ -29,7 +29,7 @@ public class Transaction
 
     public ReasonType Reason { get; set; }
 
-    public int CurrenctyId { get; set; }
+    public int CurrencyId { get; set; }
     public Currency Currency { get; set; } = null!;
     
     public decimal Amount { get; set; }

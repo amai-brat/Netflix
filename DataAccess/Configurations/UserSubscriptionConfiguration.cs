@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Configurations
 {
-	public class UserSubsciptionConfiguration : IEntityTypeConfiguration<UserSubscription>
+	public class UserSubscriptionConfiguration : IEntityTypeConfiguration<UserSubscription>
 	{
 		public void Configure(EntityTypeBuilder<UserSubscription> builder)
 		{

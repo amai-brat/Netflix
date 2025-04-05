@@ -10,7 +10,7 @@ public class TransactionEntityConfiguration : IEntityTypeConfiguration<Transacti
     {
         builder.HasOne(x => x.Currency)
             .WithMany()
-            .HasForeignKey(x => x.CurrenctyId);
+            .HasForeignKey(x => x.CurrencyId);
         
         builder.Property(x => x.AccountNumberFrom)
             .HasMaxLength(25);
