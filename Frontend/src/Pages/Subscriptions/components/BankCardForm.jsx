@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import {useNavigate} from "react-router-dom";
 import {subscriptionService} from "../../../services/subscription.service.js";
 import {authenticationService} from "../../../services/authentication.service.js";
+import _ from "lodash";
 
 export const BankCardForm = ({ subscriptionId }) => {
     const validate = values => {
@@ -43,7 +44,8 @@ export const BankCardForm = ({ subscriptionId }) => {
         },
         validate,
         onSubmit: async (values) => {
-            let {response} = await subscriptionService.buySubscription(values);
+            const v = {card: {..._.omit(values, ['subscriptionId'])}, subscriptionId: values.subscriptionId}
+            let {response} = await subscriptionService.buySubscription(v);
             
             if (response.ok)
             {

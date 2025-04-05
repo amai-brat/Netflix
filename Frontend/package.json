@@ -26,6 +26,7 @@
     "hls.js": "^1.5.8",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
     "mobx": "^6.12.3",
     "mobx-react": "^9.1.1",
     "react": "^18.2.0",
