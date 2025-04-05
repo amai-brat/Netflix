@@ -7,6 +7,8 @@ import { User } from './entities/user.entity';
 import { Subscription } from './entities/subscription.entity';
 import { UserSubscription } from './entities/user_subscription.entity';
 import {ConfigModule, ConfigService} from "@nestjs/config";
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
 @Module({
     imports: [
@@ -25,6 +27,17 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
         ConfigModule.forRoot({
             isGlobal: true,
         }),
+        ClientsModule.register([
+            {
+                name: "PAYMENT_PACKAGE",
+                transport: Transport.GRPC,
+                options: {
+                    url: "localhost:5228",
+                    package: "payment",
+                    protoPath: join(__dirname, 'proto/payment.proto')
+                },
+            },
+        ])
     ],
     controllers: [SubscriptionController],
     providers: [SubscriptionService, JwtStrategy],
