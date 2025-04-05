@@ -1,4 +1,4 @@
-import {BadRequestException, ForbiddenException, Inject, Injectable, OnModuleInit} from "@nestjs/common";
+import {BadRequestException, ForbiddenException, Inject, Injectable, Logger, OnModuleInit} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {MoreThan, Repository} from "typeorm";
 import {User} from "../entities/user.entity";
@@ -6,11 +6,12 @@ import {Subscription} from "../entities/subscription.entity";
 import {UserSubscription, UserSubscriptionStatus} from "../entities/user_subscription.entity";
 import { BuySubscriptionDto } from "./subscription.dto";
 import { ClientGrpc } from "@nestjs/microservices";
-import { PaymentRequest, PaymentResponse, PaymentResponse_Status, PaymentService } from "src/proto/payment";
+import { PaymentRequest, PaymentResponse, PaymentResponse_Status, PaymentService } from "../proto/payment";
 
 @Injectable()
 export class SubscriptionService implements OnModuleInit {
     private paymentServiceClient: PaymentService;
+    private readonly logger = new Logger(SubscriptionService.name);
 
     constructor(
         @InjectRepository(User)
@@ -41,7 +42,7 @@ export class SubscriptionService implements OnModuleInit {
     async getBoughtSubscriptionsByUserId(userId: number){
         const user = await this.userRepository.findOneByOrFail({ id: userId })
 
-        const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id });
+        const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id, status: UserSubscriptionStatus.COMPLETED });
 
         return Array.isArray(subscriptions) ? subscriptions: [subscriptions];
     }
@@ -49,24 +50,22 @@ export class SubscriptionService implements OnModuleInit {
     async getCurrentSubscriptionsByUserId(userId: number){
         const user = await this.userRepository.findOneByOrFail({ id: userId })
 
-        const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id });
-        return subscriptions.filter(sub => sub.expiresAt > new Date());
+        const subscriptions = await this.userSubscriptionRepository.findBy({ userId: user.id, status: UserSubscriptionStatus.COMPLETED });
+        return subscriptions.filter(sub => !sub.isExpired);
     }
 
     async processSubscriptionPurchase(userId: number, dto: BuySubscriptionDto){
         const user = await this.userRepository.findOneByOrFail({ id: userId });
         const subscription = await this.subscriptionRepository.findOneByOrFail({id: dto.subscriptionId});
 
-        const current_subsriptions = await this.userSubscriptionRepository.find({
-          where: {
+        const currentSubsriptions = await this.userSubscriptionRepository.findBy({
             subscriptionId: subscription.id, 
             userId: user.id, 
             expiresAt: MoreThan(new Date()),
             status: UserSubscriptionStatus.COMPLETED
-          }
         });
 
-        if (current_subsriptions.length > 0) {
+        if (currentSubsriptions && currentSubsriptions.length > 0) {
           throw new BadRequestException("There is active subscription");
         }
 
@@ -75,17 +74,18 @@ export class SubscriptionService implements OnModuleInit {
             expiresAt: new Date(new Date().setDate(new Date().getDate() + 30)),
             subscriptionId: dto.subscriptionId,
             userId: user.id,
-            status: UserSubscriptionStatus.PENDING
+            status: UserSubscriptionStatus.PENDING,
+            transactionId: null
         });
 
         const savedUserSub = await this.userSubscriptionRepository.save(userSubscription);
         this.handlePaymentProcessing(user.id, savedUserSub.id, dto, subscription.price).then(
-            () => console.log("GOOOOOAL!"));
+            () => this.logger.log("Payment service was called"));
         
         return savedUserSub;
     }
 
-    async getStatus(userId: number, userSubscriptionId: number): Promise<UserSubscription> {
+    async getUserSubscription(userId: number, userSubscriptionId: number): Promise<UserSubscription> {
       const user = await this.userRepository.findOneByOrFail({ id: userId });
       const userSubscription = await this.userSubscriptionRepository.findOneByOrFail({ id: userSubscriptionId });
       if (userSubscription.userId !== user.id) {
@@ -97,12 +97,26 @@ export class SubscriptionService implements OnModuleInit {
 
     async cancelSubscription(userId: number, subscriptionId: number){
         const user = await this.userRepository.findOneByOrFail({ id: userId })
-        const userSubscription = await this.userSubscriptionRepository.findOneByOrFail({ 
+        const userSubscriptions = await this.userSubscriptionRepository.findBy({ 
             userId: user.id, 
             subscriptionId: subscriptionId 
         });
-        
-        await this.userSubscriptionRepository.remove(userSubscription);
+        console.log(userSubscriptions)
+        const toCancels = userSubscriptions
+          .filter(x => 
+            !x.isExpired && 
+            x.status == UserSubscriptionStatus.COMPLETED
+          ).sort(x => +x.expiresAt);
+
+        if (toCancels.length > 1) {
+          this.logger.error(`User ${userId} should have only one non-expired subscription of type ${subscriptionId} at the same time, but has ${toCancels.length}`);
+        }
+
+        // cancel only last subscription
+        const toCancel = toCancels.at(-1);
+        toCancel.status = UserSubscriptionStatus.CANCELLED;
+
+        await this.userSubscriptionRepository.save(toCancel);
     }
 
     private async handlePaymentProcessing(
@@ -120,9 +134,11 @@ export class SubscriptionService implements OnModuleInit {
       
           const paymentStream = this.paymentServiceClient.ProcessPayment(req);
           
-          paymentStream.subscribe({
+          const sub = paymentStream.subscribe({
             next: async (response: PaymentResponse) => {
-              const userSubscription = await this.userSubscriptionRepository.findOneBy(
+              let canClose = false;
+
+              const userSubscription = await this.userSubscriptionRepository.findOneByOrFail(
                 { id: userSubscriptionId },
               );
       
@@ -134,9 +150,11 @@ export class SubscriptionService implements OnModuleInit {
       
               switch (response.status) {
                 case PaymentResponse_Status.SUCCESS:
+                  canClose = true;
                   userSubscription.status = UserSubscriptionStatus.COMPLETED;
                   break;
                 case PaymentResponse_Status.FAILED:
+                  canClose = true;
                   userSubscription.status = UserSubscriptionStatus.FAILED;
                   break;
                 case PaymentResponse_Status.PENDING:
@@ -151,19 +169,23 @@ export class SubscriptionService implements OnModuleInit {
                   transactionId: response.transactionId,
                 });
               }
+
+              if (canClose) sub.unsubscribe();
             },
             error: async (error) => {
-              const userSubscription = await this.userSubscriptionRepository.findOneBy(
+              const userSubscription = await this.userSubscriptionRepository.findOneByOrFail(
                 { id: userSubscriptionId },
               );
               if (userSubscription) {
                 userSubscription.status = UserSubscriptionStatus.FAILED;
                 await this.userSubscriptionRepository.save(userSubscription);
               }
+
+              sub.unsubscribe();
             },
           });
         } catch (error) {
-          const userSubscription = await this.userSubscriptionRepository.findOneBy({
+          const userSubscription = await this.userSubscriptionRepository.findOneByOrFail({
             id: userSubscriptionId,
           });
           if (userSubscription) {

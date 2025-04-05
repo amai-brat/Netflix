@@ -76,7 +76,7 @@ export class SubscriptionController {
     async buySubscription(@Request() req, @Body() body: BuySubscriptionDto): Promise<UserSubscription> {
         const userId = req.user.id;
         
-        const subscriptionId = req.body.subscriptionId;
+        const subscriptionId = body.subscriptionId;
         if (!subscriptionId || typeof subscriptionId !== 'number'){
             throw new BadRequestException("Invalid request body!");
         }
@@ -94,7 +94,7 @@ export class SubscriptionController {
     @ApiOkResponse({ schema: {type: 'object', properties: { status: {type: 'number' } }} })
     @Get(':id/status')
     async getSubscriptionStatus(@Req() req, @Param('id') id: number) {
-        const userSubscription = await this.subscriptionService.getStatus(req.user.id, id);
+        const userSubscription = await this.subscriptionService.getUserSubscription(req.user.id, id);
         return {
             status: userSubscription.status,
         };

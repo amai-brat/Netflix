@@ -3,8 +3,10 @@ import { SubscriptionService } from './subscription.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Subscription } from '../entities/subscription.entity';
-import { UserSubscription } from '../entities/user_subscription.entity';
+import { UserSubscription, UserSubscriptionStatus } from '../entities/user_subscription.entity';
 import { EntityNotFoundError } from 'typeorm';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 
 describe('SubscriptionService', () => {
     let service: SubscriptionService;
@@ -18,7 +20,7 @@ describe('SubscriptionService', () => {
         { id: 2, name: "Мультфильмы", description: "Мультфильмы подписка", max_resolution: 1080, price: 322 }
     ]
     const fakeUserSubscriptions: UserSubscription[] = [
-        { userId: 1, subscriptionId: 1, boughtAt: new Date(), expiresAt: new Date() }
+        new UserSubscription(1, 2, 1, new Date(), new Date(), "", 1)
     ]
     
     const mockUserRepository = {
@@ -44,7 +46,7 @@ describe('SubscriptionService', () => {
         }),
     }
     const mockUserSubscriptionRepository = {
-        create: jest.fn().mockImplementation(() => new UserSubscription()),
+        create: jest.fn().mockImplementation((us) => {us.id = 228; us.status = 1; return us;}),
         save: jest.fn().mockImplementation(async (userSubscription: UserSubscription) => {
             let savedElementIndex: number;
             
@@ -65,13 +67,18 @@ describe('SubscriptionService', () => {
             let removingElementIndex = fakeUserSubscriptions.indexOf(userSubscription);
             fakeUserSubscriptions.splice(removingElementIndex, 1);
         }),
-        findBy: jest.fn().mockImplementation(async ( findOptions: { userId: number }) => {
-            let userSubscription = fakeUserSubscriptions.find(s => s.userId == findOptions.userId);
+        findBy: jest.fn().mockImplementation(async ( findOptions: { userId: number, subscriptionId: number }) => {
+            let userSubscription;
+            if (findOptions.subscriptionId !== undefined) {
+                userSubscription = fakeUserSubscriptions.filter(s => s.userId == findOptions.userId && s.subscriptionId == findOptions.subscriptionId);
+            }
+            else {
+                userSubscription = fakeUserSubscriptions.filter(s => s.userId == findOptions.userId)
+            };
             return Promise.resolve(userSubscription);
         }),
-        findOneByOrFail: jest.fn().mockImplementation(async ( findOptions: { userId: number, subscriptionId: number }) => {
-            let userSubscription = fakeUserSubscriptions.find(us => us.subscriptionId == findOptions.subscriptionId
-                && us.userId == findOptions.userId);
+        findOneByOrFail: jest.fn().mockImplementation(async ( findOptions: { id: number }) => {
+            let userSubscription = fakeUserSubscriptions.find(us =>  us.id === findOptions.id);
             if (!userSubscription){
                 throw new EntityNotFoundError(Subscription, findOptions);
             }
@@ -82,6 +89,18 @@ describe('SubscriptionService', () => {
 
     beforeEach(async() => {
         const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                ClientsModule.register([
+                    {
+                      name: 'PAYMENT_PACKAGE',
+                      transport: Transport.GRPC,
+                      options: {
+                        package: 'payment',
+                        protoPath: join(__dirname, '../proto/payment.proto'),
+                      },
+                    },
+                  ]),
+            ],
             providers: [
                 SubscriptionService,
                 {
@@ -96,7 +115,7 @@ describe('SubscriptionService', () => {
                     provide: getRepositoryToken(UserSubscription),
                     useValue: mockUserSubscriptionRepository
                 }
-            ]
+            ],
         }).compile();
 
         service = module.get<SubscriptionService>(SubscriptionService);
@@ -127,29 +146,29 @@ describe('SubscriptionService', () => {
         const randomSubscriptionId = fakeSubscriptions[Math.floor(Math.random() * fakeSubscriptions.length)].id;
         const user = fakeUsers[1];
         
-        const expectedUserSubscription = new UserSubscription();
+        const expectedUserSubscription = UserSubscription.create();
         expectedUserSubscription.subscriptionId = randomSubscriptionId;
         expectedUserSubscription.userId = user.id;
+        expectedUserSubscription.transactionId = undefined;
 
-        const result = await service.processSubscriptionPurchase(user.id, randomSubscriptionId);
-
-        expect(mockUserSubscriptionRepository.save).toHaveBeenCalledWith({
-            boughtAt: expect.any(Date),
-            expiresAt: expect.any(Date),
-            subscriptionId: randomSubscriptionId,
-            userId: user.id
-        });
+        const result = await service.processSubscriptionPurchase(user.id, {subscriptionId: randomSubscriptionId, card: null});
 
         expect(fakeUserSubscriptions).toContainEqual({
             ...expectedUserSubscription,
+            id: expect.any(Number),
             boughtAt: expect.any(Date),
             expiresAt: expect.any(Date),
+            status: expect.any(Number),
+            transactionId: null
         })
 
-        expect(result).toEqual({
+        const {transactionId, ...rest} = result;
+        expect(rest).toEqual({
             ...expectedUserSubscription,
+            id: expect.any(Number),
             expiresAt: expect.any(Date),
             boughtAt: expect.any(Date),
+            status: expect.any(Number)
         });
     });
 
@@ -163,18 +182,21 @@ describe('SubscriptionService', () => {
         expect(result).toEqual(expectedUserSubscriptions);
     });
 
-    it('should cancel subscription and remove it by subscription id', async() => {
-        const randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+    it('should cancel subscription', async() => {
+        const randomUser = fakeUsers[0];
         const randomSubscriptionId = fakeSubscriptions[Math.floor(Math.random() * fakeSubscriptions.length)].id;
-        await service.processSubscriptionPurchase(randomUser.id, randomSubscriptionId);
+        await service.processSubscriptionPurchase(randomUser.id, {subscriptionId: randomSubscriptionId, card: null});
 
         await service.cancelSubscription(randomUser.id, randomSubscriptionId);
 
-        expect(fakeUserSubscriptions).not.toContainEqual({
+        expect(fakeUserSubscriptions).toContainEqual({
+            id: expect.any(Number),
+            transactionId: null,
             subscriptionId: randomSubscriptionId,
             userId: randomUser.id,
             boughtAt: expect.any(Date),
             expiresAt: expect.any(Date),
+            status: UserSubscriptionStatus.CANCELLED
         });
     })
 })
