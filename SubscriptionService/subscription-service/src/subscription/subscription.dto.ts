@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 class CardDto {
   @ApiProperty()
@@ -6,10 +6,10 @@ class CardDto {
 
   @ApiProperty()
   cardOwner: string;
-  
+
   @ApiProperty()
   validThru: string;
-  
+
   @ApiProperty()
   cvc: number;
 }
