@@ -15,17 +15,19 @@ enum Status {
   FAILED = 2;
 }
 
+message Card {
+  string card_number = 1;
+  string card_owner = 2;
+  string valid_thru = 3;
+  int32 cvc = 4;
+}
+
 message PaymentRequest {
-  message Card {
-    string card_number = 1;
-    string card_owner = 2;
-    string valid_thru = 3;
-    int32 cvc = 4;
-  }
-  
   Card card = 1;
   int64 user_id = 2;
   int32 amount = 3;
+  string currency_code = 4;
+  string reason = 5;
 }
 
 message PaymentResponse {
@@ -44,7 +46,7 @@ message TransactionStatusRequest {
   string transaction_id = 1;
 }
 
-message TransactionStatusResponse { 
+message TransactionStatusResponse {
   string transaction_id = 1;
   Status status = 2;
 }

@@ -1,4 +1,4 @@
-import {BadRequestException, ForbiddenException, Inject, Injectable, Logger, OnModuleInit} from "@nestjs/common";
+import {BadRequestException, ForbiddenException, Inject, Injectable, Logger, NotFoundException, OnModuleInit} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {MoreThan, Repository} from "typeorm";
 import {User} from "../entities/user.entity";
@@ -6,11 +6,12 @@ import {Subscription} from "../entities/subscription.entity";
 import {UserSubscription, UserSubscriptionStatus} from "../entities/user_subscription.entity";
 import { BuySubscriptionDto } from "./subscription.dto";
 import { ClientGrpc } from "@nestjs/microservices";
-import { PaymentRequest, PaymentResponse, Status, PaymentService } from "../proto/payment";
+import { payment } from '../proto/payment';
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class SubscriptionService implements OnModuleInit {
-    private paymentServiceClient: PaymentService;
+    private paymentServiceClient: payment.PaymentService;
     private readonly logger = new Logger(SubscriptionService.name);
 
     constructor(
@@ -24,11 +25,11 @@ export class SubscriptionService implements OnModuleInit {
         private readonly userSubscriptionRepository: Repository<UserSubscription>,
 
         @Inject('PAYMENT_PACKAGE')
-        private grpcClient: ClientGrpc
+        private readonly grpcClient: ClientGrpc
     ) {}
 
     onModuleInit() {
-        this.paymentServiceClient = this.grpcClient.getService<PaymentService>('PaymentService');
+        this.paymentServiceClient = this.grpcClient.getService<payment.PaymentService>('PaymentService');
     }
 
     async getAllSubscriptions(){
@@ -78,11 +79,10 @@ export class SubscriptionService implements OnModuleInit {
             transactionId: null
         });
 
-        const savedUserSub = await this.userSubscriptionRepository.save(userSubscription);
-        await this.handlePaymentProcessing(user.id, savedUserSub.id, dto, subscription.price).then(
-            () => this.logger.log("Payment service was called"));
+        const savedUserSub = await this.userSubscriptionRepository.save(userSubscription);   
+        const result = await this.handlePaymentProcessing(user.id, savedUserSub.id, dto, subscription.price);
         
-        return savedUserSub;
+        return result;
     }
 
     async getUserSubscription(userId: number, userSubscriptionId: number): Promise<UserSubscription> {
@@ -114,8 +114,11 @@ export class SubscriptionService implements OnModuleInit {
 
         // cancel only last subscription
         const toCancel = toCancels.at(-1);
-        if (toCancel) toCancel.status = UserSubscriptionStatus.CANCELLED;
-
+        if (!toCancel) {
+          throw new NotFoundException("User does not have such subscription");
+        }
+        
+        toCancel.status = UserSubscriptionStatus.CANCELLED;
         await this.userSubscriptionRepository.save(toCancel);
     }
 
@@ -124,16 +127,19 @@ export class SubscriptionService implements OnModuleInit {
         userSubscriptionId: number,
         dto: BuySubscriptionDto,
         amount: number,
-      ) {
+      ): Promise<UserSubscription> {
         try {
-          const req: PaymentRequest = {
+          const req: payment.PaymentRequest = {
             card: dto.card,
             userId: userId,
             amount: amount,
+            currencyCode: "RUB",
+            reason: "subscription"
           };
       
-          let response = await this.paymentServiceClient.ProcessPayment(req);
-          
+          const response = await firstValueFrom(this.paymentServiceClient.processPayment(req));
+          let status = response.status;
+
           const userSubscription = await this.userSubscriptionRepository.findOneByOrFail(
             { id: userSubscriptionId },
           );
@@ -142,29 +148,31 @@ export class SubscriptionService implements OnModuleInit {
 
           userSubscription.transactionId = response.transactionId;
 
-          while (response.status == Status.PENDING) {
-            setTimeout(() => {
-              this.paymentServiceClient.GetTransactionStatus({transactionId: response.transactionId})
-                .then(resp => response = resp);
+          while (response.status == payment.Status.PENDING) {
+            setTimeout(async () => {
+              await firstValueFrom(this.paymentServiceClient.getTransactionStatus({transactionId: response.transactionId}))
+                .then(resp => status = resp.status);
             }, 100);
           }
 
-          switch (response.status) {
-            case Status.SUCCESS:
+          switch (status) {
+            case payment.Status.SUCCESS:
               userSubscription.status = UserSubscriptionStatus.COMPLETED;
               break;
-            case Status.FAILED:
+            case payment.Status.FAILED:
               userSubscription.status = UserSubscriptionStatus.FAILED;
               break;
           }
 
           await this.userSubscriptionRepository.save(userSubscription);
       
-          if (response.status === Status.FAILED) {
-            await this.paymentServiceClient.CompensatePayment({
+          if (response.status === payment.Status.FAILED) {
+            await firstValueFrom(this.paymentServiceClient.compensatePayment({
               transactionId: response.transactionId,
-            });
+            }));
           }
+
+          return userSubscription;
         } catch (error) {
           const userSubscription = await this.userSubscriptionRepository.findOneByOrFail({
             id: userSubscriptionId,
@@ -173,6 +181,8 @@ export class SubscriptionService implements OnModuleInit {
             userSubscription.status = UserSubscriptionStatus.FAILED;
             await this.userSubscriptionRepository.save(userSubscription);
           }
+
+          return userSubscription;
         }
       }
 }

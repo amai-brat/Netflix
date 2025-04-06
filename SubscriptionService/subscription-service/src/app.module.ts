@@ -29,11 +29,11 @@ import { join } from 'path';
         }),
         ClientsModule.register([
             {
-                name: "PAYMENT_PACKAGE",
+                name: 'PAYMENT_PACKAGE',
                 transport: Transport.GRPC,
                 options: {
-                    url: "localhost:5228",
-                    package: "payment",
+                    url: 'localhost:5228',
+                    package: 'payment',
                     protoPath: join(__dirname, 'proto/payment.proto')
                 },
             },

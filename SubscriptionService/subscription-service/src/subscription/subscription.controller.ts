@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from '../entities/subscription.entity';
 import { UserSubscription } from '../entities/user_subscription.entity';
@@ -85,6 +85,8 @@ export class SubscriptionController {
             return await this.subscriptionService.processSubscriptionPurchase(userId, body);
         }
         catch (err) {
+            if (err instanceof HttpException) throw err;
+
             throw new InternalServerErrorException("Smth went wrong")
         }
     }
@@ -120,8 +122,10 @@ export class SubscriptionController {
         try{
             await this.subscriptionService.cancelSubscription(userId, subscriptionId);
         }
-        catch{
-            throw new NotFoundException("User does not have such subscription");
+        catch (err) {
+            if (err instanceof HttpException) throw err;
+
+            throw new InternalServerErrorException("Smth went wrong")
         }
     }
 }
