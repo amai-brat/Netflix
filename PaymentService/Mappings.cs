@@ -1,5 +1,3 @@
-using Payment;
-using PaymentService.Models;
 using Card = Payment.Card;
 
 namespace PaymentService;
