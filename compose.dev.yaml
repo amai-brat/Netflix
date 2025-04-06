@@ -83,6 +83,7 @@ services:
     environment:
       - JWT_KEY=${JWT_SECRET}
       - DATABASE_CONNECTION_STRING_GENERAL=${DATABASE_CONNECTION_STRING_GENERAL_NODEJS}
+      - PAYMENT_SERVICE_URL=${PAYMENT_SERVICE_URL}
 
 
   support-service:
@@ -174,7 +175,21 @@ services:
       - PermMinio:ExternalEndpoint=${PERM_MINIO_EXTERNAL_ENDPOINT}
       - Hangfire:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT_HANGFIRE}
       - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT_FILES}
-        
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: PaymentService/Dockerfile
+    ports:
+      - "10004:5228"
+      - "10005:5229"
+    depends_on:
+      - database
+    environment:
+      - ASPNETCORE_HTTP_PORTS=5228
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings:DATABASE_CONNECTION_STRING_PAYMENT=${DATABASE_CONNECTION_STRING_PAYMENT}
+   
   database:
     image: postgres
     ports:

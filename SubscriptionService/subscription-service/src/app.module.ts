@@ -15,8 +15,7 @@ import { join } from 'path';
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: (configService: ConfigService) => (
-                {
+            useFactory: (configService: ConfigService) => ({
                 type: 'postgres',
                 url: configService.get<string>('DATABASE_CONNECTION_STRING_GENERAL'),
                 entities: [User, Subscription, UserSubscription],
@@ -27,15 +26,19 @@ import { join } from 'path';
         ConfigModule.forRoot({
             isGlobal: true,
         }),
-        ClientsModule.register([
+        ClientsModule.registerAsync([
             {
                 name: 'PAYMENT_PACKAGE',
-                transport: Transport.GRPC,
-                options: {
-                    url: 'localhost:5228',
-                    package: 'payment',
-                    protoPath: join(__dirname, 'proto/payment.proto')
-                },
+                inject: [ConfigService], 
+                imports: [ConfigModule],
+                useFactory: (configService: ConfigService) => ({
+                    transport: Transport.GRPC,
+                    options: {
+                        url: configService.get<string>('PAYMENT_SERVICE_URL'),
+                        package: 'payment',
+                        protoPath: join(__dirname, 'proto/payment.proto')
+                    },
+                })
             },
         ])
     ],
