@@ -7,11 +7,11 @@ public static class Dice
         return Random.Shared.NextDouble() < 0.5;
     }
 
-    public static T Flip<T>(int count = -1) where T : Enum
+    public static T Flip<T>(int min = 0, int max = -1) where T : Enum
     {
         var values = Enum.GetValues(typeof(T));
-        return (T)values.GetValue(Random.Shared.Next(count == -1 
+        return (T)values.GetValue(Random.Shared.Next(min, max == -1 
             ? values.Length
-            : count))!;
+            : max))!;
     }
 }

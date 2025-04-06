@@ -101,7 +101,7 @@ export class SubscriptionService implements OnModuleInit {
             userId: user.id, 
             subscriptionId: subscriptionId 
         });
-        console.log(userSubscriptions)
+
         const toCancels = userSubscriptions
           .filter(x => 
             !x.isExpired && 
@@ -148,11 +148,18 @@ export class SubscriptionService implements OnModuleInit {
 
           userSubscription.transactionId = response.transactionId;
 
-          while (response.status == payment.Status.PENDING) {
-            setTimeout(async () => {
-              await firstValueFrom(this.paymentServiceClient.getTransactionStatus({transactionId: response.transactionId}))
-                .then(resp => status = resp.status);
-            }, 100);
+          let retries = 0;
+          while (status == payment.Status.PENDING) {
+            await firstValueFrom(this.paymentServiceClient.getTransactionStatus({transactionId: response.transactionId}))
+              .then(resp => status = resp.status);
+
+            await new Promise(resolve => setTimeout(resolve, 100 * retries));
+            retries++;
+
+            if (retries >= 5) {
+              status = payment.Status.FAILED;
+              break;
+            }
           }
 
           switch (status) {

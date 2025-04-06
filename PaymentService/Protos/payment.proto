@@ -10,9 +10,10 @@ service PaymentService {
 }
 
 enum Status {
-  PENDING = 0;
-  SUCCESS = 1;
-  FAILED = 2;
+  UNKNOWN = 0;
+  PENDING = 1;
+  SUCCESS = 2;
+  FAILED = 3;
 }
 
 message Card {

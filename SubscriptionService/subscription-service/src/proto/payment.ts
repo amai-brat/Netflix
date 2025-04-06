@@ -24,9 +24,10 @@ export namespace payment {
         ): Observable<TransactionStatusResponse>;
     }
     export enum Status {
-        PENDING = 0,
-        SUCCESS = 1,
-        FAILED = 2,
+        UNKNOWN = 0,
+        PENDING = 1,
+        SUCCESS = 2,
+        FAILED = 3,
     }
     export interface Card {
         cardNumber?: string;

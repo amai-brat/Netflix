@@ -43,7 +43,7 @@ public class PaymentService(
                 GetReasonType(request.Reason),
                 currency,
                 request.Amount,
-                status: Dice.Flip<TransactionStatus>(3)
+                status: Dice.Flip<TransactionStatus>(0, 3)
                 );
 
             transaction = await transactionRepository.AddTransaction(transaction);
@@ -87,6 +87,12 @@ public class PaymentService(
             throw new RpcException(new Status(StatusCode.NotFound, "Transaction not found"));
         }
 
+        transaction.Status = Dice.Flip()
+            ? TransactionStatus.Completed
+            : TransactionStatus.Failed;
+        
+        await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        
         return new TransactionStatusResponse
         {
             TransactionId = transaction.Id.ToString(),
