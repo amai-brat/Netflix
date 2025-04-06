@@ -45,14 +45,31 @@ export const BankCardForm = ({ subscriptionId }) => {
         validate,
         onSubmit: async (values) => {
             const v = {card: {..._.omit(values, ['subscriptionId'])}, subscriptionId: values.subscriptionId}
-            let {response} = await subscriptionService.buySubscription(v);
+            let {response, data} = await subscriptionService.buySubscription(v);
             
             if (response.ok)
             {
-                await authenticationService.refreshToken();
-                document.getElementById("serverMessage").textContent = 
-                    "Успешная покупка. Перенаправление на главную страницу";
-                setTimeout(() => navigate("/mainContent"), 2000);
+                // 0: "PENDING",
+                // 1: "COMPLETED",
+                // 2: "FAILED",
+                // 3: "CANCELLED"
+
+                switch (data.status) {
+                    case 0:
+                    case 1:
+                        await authenticationService.refreshToken();
+                        document.getElementById("serverMessage").textContent = 
+                            "Успешная покупка. Перенаправление на главную страницу";
+                        setTimeout(() => navigate("/mainContent"), 2000);
+                        break;
+                    case 2:
+                        document.getElementById("serverMessage").textContent = 
+                            "Произошла ошибка при покупке. Попробуйте ещё раз";
+                        break;
+                    case 3:
+                        console.error("Сервер не должен возвращать такой статус");
+                        break;
+                }
             }
             else {
                 document.getElementById("serverMessage").textContent = "Ошибка";
