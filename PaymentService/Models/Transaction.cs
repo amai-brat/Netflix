@@ -33,4 +33,27 @@ public class Transaction
     public Currency Currency { get; set; } = null!;
     
     public decimal Amount { get; set; }
+
+    public static Transaction Create(
+        long userId,
+        string accountNumberFrom,
+        string accountNumberTo,
+        ReasonType reason,
+        Currency currency,
+        decimal amount,
+        TransactionStatus status = TransactionStatus.Pending)
+    {
+        return new Transaction
+        {
+            Status = status,
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Time = DateTime.UtcNow,
+            AccountNumberFrom = accountNumberFrom,
+            AccountNumberTo = accountNumberTo,
+            Reason = reason,
+            Currency = currency,
+            Amount = amount,
+        };
+    }
 }
