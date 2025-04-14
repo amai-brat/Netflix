@@ -164,6 +164,9 @@ export class SubscriptionService implements OnModuleInit {
     dto: BuySubscriptionDto,
     amount: number,
   ): Promise<UserSubscription> {
+    // to compensate if smth go wrong
+    let transactionId: string | null;
+
     try {
       const req: payment.PaymentRequest = {
         card: dto.card,
@@ -185,6 +188,7 @@ export class SubscriptionService implements OnModuleInit {
 
       if (!userSubscription) return;
 
+      transactionId = response.transactionId;
       userSubscription.transactionId = response.transactionId;
 
       let retries = 0;
@@ -231,9 +235,18 @@ export class SubscriptionService implements OnModuleInit {
         await this.userSubscriptionRepository.findOneByOrFail({
           id: userSubscriptionId,
         });
+      
       if (userSubscription) {
         userSubscription.status = UserSubscriptionStatus.FAILED;
         await this.userSubscriptionRepository.save(userSubscription);
+      }
+      
+      if (transactionId) {
+        await firstValueFrom(
+          this.paymentServiceClient.compensatePayment({
+            transactionId: transactionId,
+          }),
+        );
       }
 
       return userSubscription;

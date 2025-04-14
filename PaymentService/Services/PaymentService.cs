@@ -71,8 +71,8 @@ public class PaymentService(
         if (transaction is not null)
         {
             transaction.Status = TransactionStatus.Rejected;
+            await unitOfWork.SaveChangesAsync(context.CancellationToken);
         }
-        await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
         return new CompensationResponse();
     }
