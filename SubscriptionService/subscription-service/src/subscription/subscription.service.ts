@@ -219,7 +219,7 @@ export class SubscriptionService implements OnModuleInit {
 
       await this.userSubscriptionRepository.save(userSubscription);
 
-      if (response.status === payment.Status.FAILED) {
+      if (status === payment.Status.FAILED) {
         await firstValueFrom(
           this.paymentServiceClient.compensatePayment({
             transactionId: response.transactionId,
