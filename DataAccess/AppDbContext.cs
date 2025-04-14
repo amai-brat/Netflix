@@ -48,7 +48,7 @@ namespace DataAccess
 			modelBuilder.ApplyConfiguration(new SerialContentEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
 			modelBuilder.ApplyConfiguration(new UsersReviewsEntityConfiguration());
-			modelBuilder.ApplyConfiguration(new UserSubsciptionConfiguration());
+			modelBuilder.ApplyConfiguration(new UserSubscriptionConfiguration());
 
 			modelBuilder.SeedWithTestData();
 

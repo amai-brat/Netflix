@@ -26,8 +26,23 @@ jobs:
       - run: npm run lint
         working-directory: Frontend
 
-  inspect-back:
-    name: Inspect back
+  inspect-back-nest:
+    name: Inspect back NestJS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache-dependency-path: SubscriptionService/subscription-service/package-lock.json
+          node-version: "latest"
+          cache: "npm"
+      - run: npm ci
+        working-directory: SubscriptionService/subscription-service
+      - run: npm run lint
+        working-directory: SubscriptionService/subscription-service
+        
+  inspect-back-dotnet:
+    name: Inspect back .NET
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -67,9 +82,33 @@ jobs:
       - run: npx vitest
         working-directory: Frontend
 
-  build-back:
-    name: Build and test back
-    needs: [inspect-back]
+  build-back-nest:
+    name: Build and test NestJS
+    needs: [inspect-back-nest]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache-dependency-path: SubscriptionService/subscription-service/package-lock.json
+          node-version: "latest"
+          cache: "npm"
+      - name: Restore dependencies
+        run: npm ci
+        working-directory: SubscriptionService/subscription-service
+      - name: Build
+        run: npm run build
+        working-directory: SubscriptionService/subscription-service
+      - name: Run tests
+        run: npm run test
+        working-directory: SubscriptionService/subscription-service
+      - name: Run e2e-tests
+        run: npm run test
+        working-directory: SubscriptionService/subscription-service
+  
+  build-back-dotnet:
+    name: Build and test back .NET
+    needs: [inspect-back-dotnet]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -86,7 +125,7 @@ jobs:
 
   deploy:
     name: Deploy new code
-    needs: [build-front, build-back]
+    needs: [build-front, build-back-dotnet, build-back-nest]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest 
     steps:   

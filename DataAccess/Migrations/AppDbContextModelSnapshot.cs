@@ -152,7 +152,7 @@ namespace DataAccess.Migrations
                             ReviewId = -1L,
                             Text = "Полностью согласен",
                             UserId = -2L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 7, 4, 14, 6, 18, 436, DateTimeKind.Unspecified).AddTicks(8666), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2025, 4, 5, 8, 50, 8, 916, DateTimeKind.Unspecified).AddTicks(2263), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -361,7 +361,7 @@ namespace DataAccess.Migrations
                         {
                             UserId = -1L,
                             ContentId = -1L,
-                            AddedAt = new DateTimeOffset(new DateTime(2024, 7, 4, 13, 26, 18, 436, DateTimeKind.Unspecified).AddTicks(8650), new TimeSpan(0, 3, 0, 0, 0))
+                            AddedAt = new DateTimeOffset(new DateTime(2025, 4, 5, 8, 10, 8, 916, DateTimeKind.Unspecified).AddTicks(2249), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -533,7 +533,7 @@ namespace DataAccess.Migrations
                             Score = 9,
                             Text = "Невероятный фильм всем рекомендую, очень хороший фильм. Обожаю этот фильм не знаю, что еще сказать. Нет знаешь, нет я не знаю. Ты понял? Скажи! Мы один человек?",
                             UserId = -1L,
-                            WrittenAt = new DateTimeOffset(new DateTime(2024, 7, 4, 13, 56, 18, 436, DateTimeKind.Unspecified).AddTicks(8658), new TimeSpan(0, 3, 0, 0, 0))
+                            WrittenAt = new DateTimeOffset(new DateTime(2025, 4, 5, 8, 40, 8, 916, DateTimeKind.Unspecified).AddTicks(2256), new TimeSpan(0, 3, 0, 0, 0))
                         });
                 });
 
@@ -658,7 +658,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -1L,
-                            BirthDay = new DateOnly(2004, 7, 4),
+                            BirthDay = new DateOnly(2005, 4, 5),
                             Email = "testEmail@gmail.com",
                             Nickname = "testUser",
                             ProfilePictureUrl = "https://i.pinimg.com/originals/2b/64/2f/2b642f9183fa80b8c47a9d8f8971eb4d.jpg"
@@ -666,7 +666,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = -2L,
-                            BirthDay = new DateOnly(1999, 7, 4),
+                            BirthDay = new DateOnly(2000, 4, 5),
                             Email = "testEmail2@gmail.com",
                             Nickname = "testUser2",
                             ProfilePictureUrl = "https://st.kp.yandex.net/images/actor_iphone/iphone360_25584.jpg"
@@ -675,13 +675,12 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserSubscription", b =>
                 {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("SubscriptionId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("subscription_id");
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("BoughtAt")
                         .HasColumnType("timestamp with time zone")
@@ -691,21 +690,42 @@ namespace DataAccess.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expires_at");
 
-                    b.HasKey("UserId", "SubscriptionId")
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("subscription_id");
+
+                    b.Property<Guid?>("TransactionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("transaction_id");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
                         .HasName("pk_user_subscriptions");
 
                     b.HasIndex("SubscriptionId")
                         .HasDatabaseName("ix_user_subscriptions_subscription_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_subscriptions_user_id");
 
                     b.ToTable("user_subscriptions", (string)null);
 
                     b.HasData(
                         new
                         {
-                            UserId = -1L,
+                            Id = -2,
+                            BoughtAt = new DateTimeOffset(new DateTime(2025, 4, 3, 8, 40, 8, 916, DateTimeKind.Unspecified).AddTicks(1903), new TimeSpan(0, 3, 0, 0, 0)),
+                            ExpiresAt = new DateTimeOffset(new DateTime(2025, 5, 5, 8, 40, 8, 916, DateTimeKind.Unspecified).AddTicks(1929), new TimeSpan(0, 3, 0, 0, 0)),
+                            Status = 0,
                             SubscriptionId = 1,
-                            BoughtAt = new DateTimeOffset(new DateTime(2024, 7, 2, 13, 56, 18, 436, DateTimeKind.Unspecified).AddTicks(8423), new TimeSpan(0, 3, 0, 0, 0)),
-                            ExpiresAt = new DateTimeOffset(new DateTime(2024, 8, 3, 13, 56, 18, 436, DateTimeKind.Unspecified).AddTicks(8463), new TimeSpan(0, 3, 0, 0, 0))
+                            UserId = -1L
                         });
                 });
 

@@ -7,7 +7,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Subscription service API')
-    .setDescription('This api is just an extension to the main application. It is based on an existing database and only validates JWT tokens that have been signed in the main application.')
+    .setDescription(
+      'This api is just an extension to the main application. It is based on an existing database and only validates JWT tokens that have been signed in the main application.',
+    )
     .setVersion('1.0')
     .addTag('subscription')
     .addBearerAuth()

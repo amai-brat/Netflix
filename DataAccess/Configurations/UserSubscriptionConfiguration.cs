@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Configurations
 {
-	public class UserSubsciptionConfiguration : IEntityTypeConfiguration<UserSubscription>
+	public class UserSubscriptionConfiguration : IEntityTypeConfiguration<UserSubscription>
 	{
 		public void Configure(EntityTypeBuilder<UserSubscription> builder)
 		{
-			builder.HasKey(us => new { us.UserId, us.SubscriptionId });
+			builder.HasKey(us => us.Id);
 
 			builder.HasOne(us => us.Subscription)
 				.WithMany()
