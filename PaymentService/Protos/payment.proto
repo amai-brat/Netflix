@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package payment;
+
+service PaymentService {
+  rpc ProcessPayment (PaymentRequest) returns (PaymentResponse);
+  rpc CompensatePayment (CompensationRequest) returns (CompensationResponse);
+
+  rpc GetTransactionStatus (TransactionStatusRequest) returns (TransactionStatusResponse);
+}
+
+enum Status {
+  UNKNOWN = 0;
+  PENDING = 1;
+  SUCCESS = 2;
+  FAILED = 3;
+}
+
+message Card {
+  string card_number = 1;
+  string card_owner = 2;
+  string valid_thru = 3;
+  int32 cvc = 4;
+}
+
+message PaymentRequest {
+  Card card = 1;
+  int64 user_id = 2;
+  int32 amount = 3;
+  string currency_code = 4;
+  string reason = 5;
+}
+
+message PaymentResponse {
+  string transaction_id = 1;
+  Status status = 2;
+}
+
+message CompensationRequest {
+  string transaction_id = 1;
+}
+
+message CompensationResponse {
+}
+
+message TransactionStatusRequest {
+  string transaction_id = 1;
+}
+
+message TransactionStatusResponse {
+  string transaction_id = 1;
+  Status status = 2;
+}

@@ -47,7 +47,7 @@ describe('BankCardForm', () => {
 
     test('submits form successfully', async () => {
         const user = userEvent.setup();
-        subscriptionService.buySubscription.mockResolvedValueOnce({ response: { ok: true }, data: {} });
+        subscriptionService.buySubscription.mockResolvedValueOnce({ response: { ok: true }, data: { status: 1} });
         authenticationService.refreshToken.mockResolvedValueOnce();
 
         const { getByLabelText, getByRole } = setup();

@@ -33,11 +33,14 @@ const Subscriptions = () => {
 
     useEffect(() => {
         if (!subscriptions) return;
-        const purchasedIds = purchasedSubscriptions.map(x => x.subscriptionId); 
-        for (let i = 0; i < subscriptions.length; i++) {
-            subscriptions[i].isCurrentPurchased = purchasedIds.includes(subscriptions[i].id);
-        }
-    }, [subscriptions, purchasedSubscriptions]);
+        const purchasedIds = new Set(purchasedSubscriptions.map(x => x.subscriptionId));
+        const updatedSubscriptions = subscriptions.map(sub => ({
+            ...sub,
+            isCurrentPurchased: purchasedIds.has(sub.id)
+        }));
+        setSubscriptions(updatedSubscriptions);
+
+    }, [purchasedSubscriptions]);
     
     const modalStyles = {
         content: {

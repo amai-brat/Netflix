@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import {useNavigate} from "react-router-dom";
 import {subscriptionService} from "../../../services/subscription.service.js";
 import {authenticationService} from "../../../services/authentication.service.js";
+import _ from "lodash";
 
 export const BankCardForm = ({ subscriptionId }) => {
     const validate = values => {
@@ -43,14 +44,32 @@ export const BankCardForm = ({ subscriptionId }) => {
         },
         validate,
         onSubmit: async (values) => {
-            let {response} = await subscriptionService.buySubscription(values);
+            const v = {card: {..._.omit(values, ['subscriptionId'])}, subscriptionId: values.subscriptionId}
+            let {response, data} = await subscriptionService.buySubscription(v);
             
             if (response.ok)
             {
-                await authenticationService.refreshToken();
-                document.getElementById("serverMessage").textContent = 
-                    "Успешная покупка. Перенаправление на главную страницу";
-                setTimeout(() => navigate("/mainContent"), 2000);
+                // 0: "PENDING",
+                // 1: "COMPLETED",
+                // 2: "FAILED",
+                // 3: "CANCELLED"
+
+                switch (data.status) {
+                    case 0:
+                    case 1:
+                        await authenticationService.refreshToken();
+                        document.getElementById("serverMessage").textContent = 
+                            "Успешная покупка. Перенаправление на главную страницу";
+                        setTimeout(() => navigate("/mainContent"), 2000);
+                        break;
+                    case 2:
+                        document.getElementById("serverMessage").textContent = 
+                            "Произошла ошибка при покупке. Попробуйте ещё раз";
+                        break;
+                    case 3:
+                        console.error("Сервер не должен возвращать такой статус");
+                        break;
+                }
             }
             else {
                 document.getElementById("serverMessage").textContent = "Ошибка";
