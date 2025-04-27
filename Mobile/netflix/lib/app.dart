@@ -1,23 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/domain/repositories/auth_repository.dart';
+import 'package:netflix/domain/use_cases/signin_use_case.dart';
+import 'package:netflix/domain/use_cases/signout_use_case.dart';
+import 'package:netflix/domain/use_cases/signup_use_case.dart';
+import 'package:netflix/ui/core/bloc/user/user_bloc.dart';
 import 'package:netflix/ui/main/main_page.dart';
 import 'package:netflix/ui/profile/profile_page.dart';
 import 'package:netflix/ui/search/search_page.dart';
+import 'package:netflix/utils/di.dart';
 
 class NetflixApp extends StatelessWidget {
   const NetflixApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.dark(
-          primary: Color(0xFFE50914),
-          secondary: Color(0xFFE50914),
-          surface: Color(0xFF000000),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) => UserBloc(
+                authRepository: locator<AuthRepository>(),
+                signUpUseCase: locator<SignUpUseCase>(),
+                signInUseCase: locator<SignInUseCase>(),
+                signOutUseCase: locator<SignOutUseCase>(),
+              ),
         ),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          colorScheme: ColorScheme.dark(
+            primary: Color(0xFFE50914),
+            secondary: Color(0xFFE50914),
+            surface: Color(0xFF000000),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFE50914),
+              foregroundColor: Color(0xFFFFFFFF),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            fillColor: Colors.grey[900],
+            filled: true,
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        initialRoute: '/',
+        routes: {'/': (context) => const NetflixAppView()},
       ),
-      initialRoute: '/',
-      routes: {'/': (context) => const NetflixAppView()},
     );
   }
 }

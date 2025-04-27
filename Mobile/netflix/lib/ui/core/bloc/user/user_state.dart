@@ -1,9 +1,19 @@
+enum UserStatus { initial, loading, authenticated, unauthenticated }
+
 class UserState {
-  final bool authorized;
+  final UserStatus status;
+  final bool isAuthenticated;
+  final String? error;
 
-  UserState({required this.authorized});
+  UserState({required this.status, required this.isAuthenticated, this.error});
 
-  UserState copyWith({bool? authorized}) {
-    return UserState(authorized: authorized ?? this.authorized);
+  UserState.initial() : status = UserStatus.initial, isAuthenticated = false, error = null;
+
+  UserState copyWith({UserStatus? status, bool? isAuthenticated, String? error}) {
+    return UserState(
+      status: status ?? this.status,
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      error: error ?? this.error
+    );
   }
 }
