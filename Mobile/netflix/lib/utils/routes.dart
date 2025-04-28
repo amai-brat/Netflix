@@ -6,8 +6,18 @@ class Routes {
   static const auth = '/auth';
   static const subscriptions = '/subscriptions';
 
-  static const profilePersonal= '/profile/personal';
-  static const profileFavorites = '/profile/favorites';
-  static const profileReviews = '/profile/reviews';
-  static const profileSubscriptions = '/profile/subscriptions';
+
+  static const profile = '/profile';
+
+  static const profilePersonal = '$profile/$profilePersonalRelative';
+  static const profilePersonalRelative = 'personal';
+
+  static const profileFavorites = '$profile/$profileFavoritesRelative';
+  static const profileFavoritesRelative = 'favorites';
+
+  static const profileReviews = '$profile/$profileReviewsRelative';
+  static const profileReviewsRelative = 'reviews';
+
+  static const profileSubscriptions = '$profile/$profileSubscriptionsRelative';
+  static const profileSubscriptionsRelative = 'subscriptions';
 }

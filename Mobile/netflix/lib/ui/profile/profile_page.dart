@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:netflix/ui/auth/auth_page.dart';
 import 'package:netflix/ui/core/bloc/user/user_bloc.dart';
 import 'package:netflix/ui/core/bloc/user/user_event.dart';
@@ -50,22 +51,22 @@ class _ProfilePageState extends State<ProfilePage> {
           ListTile(
             title: const Text('Личные данные'),
             leading: const Icon(Icons.info),
-            onTap: () => _navigateTo(context, Routes.profilePersonal),
+            onTap: () => _goTo(context, Routes.profilePersonal),
           ),
           ListTile(
             title: const Text('Избранное'),
             leading: const Icon(Icons.favorite),
-            onTap: () => _navigateTo(context, Routes.profileFavorites),
+            onTap: () => _goTo(context, Routes.profileFavorites),
           ),
           ListTile(
             title: const Text('Рецензии'),
             leading: const Icon(Icons.reviews),
-            onTap: () => _navigateTo(context, Routes.profileReviews),
+            onTap: () => _goTo(context, Routes.profileReviews),
           ),
           ListTile(
             title: const Text('Подписки'),
             leading: const Icon(Icons.subscriptions),
-            onTap: () => _navigateTo(context, Routes.profileSubscriptions),
+            onTap: () => _goTo(context, Routes.profileSubscriptions),
           ),
           const Divider(),
           ListTile(
@@ -78,8 +79,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _navigateTo(BuildContext context, String route) {
+  void _goTo(BuildContext context, String route) {
     Navigator.of(context).pop(); // Close drawer
-    Navigator.of(context).pushNamed(route);
+    context.go(route);
   }
 }

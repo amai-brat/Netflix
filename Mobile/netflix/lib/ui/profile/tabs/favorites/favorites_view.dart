@@ -12,8 +12,9 @@ class _FavoritesViewState extends State<FavoritesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('$check'),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Избранное')),
+      body: Center(child: Text('$check')),
     );
   }
 }

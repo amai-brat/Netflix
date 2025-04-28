@@ -12,8 +12,9 @@ class _SubscriptionsViewState extends State<SubscriptionsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('$check'),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Мои подписки')),
+      body: Center(child: Text('$check')),
     );
   }
 }
