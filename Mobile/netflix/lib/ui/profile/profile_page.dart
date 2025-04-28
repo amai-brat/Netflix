@@ -4,6 +4,7 @@ import 'package:netflix/ui/auth/auth_page.dart';
 import 'package:netflix/ui/core/bloc/user/user_bloc.dart';
 import 'package:netflix/ui/core/bloc/user/user_event.dart';
 import 'package:netflix/ui/core/bloc/user/user_state.dart';
+import 'package:netflix/utils/routes.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -49,22 +50,22 @@ class _ProfilePageState extends State<ProfilePage> {
           ListTile(
             title: const Text('Личные данные'),
             leading: const Icon(Icons.info),
-            onTap: () => _navigateTo(context, '/personal'),
+            onTap: () => _navigateTo(context, Routes.profilePersonal),
           ),
           ListTile(
             title: const Text('Избранное'),
             leading: const Icon(Icons.favorite),
-            onTap: () => _navigateTo(context, '/favorites'),
+            onTap: () => _navigateTo(context, Routes.profileFavorites),
           ),
           ListTile(
             title: const Text('Рецензии'),
             leading: const Icon(Icons.reviews),
-            onTap: () => _navigateTo(context, '/reviews'),
+            onTap: () => _navigateTo(context, Routes.profileReviews),
           ),
           ListTile(
             title: const Text('Подписки'),
             leading: const Icon(Icons.subscriptions),
-            onTap: () => _navigateTo(context, '/subscriptions'),
+            onTap: () => _navigateTo(context, Routes.profileSubscriptions),
           ),
           const Divider(),
           ListTile(
@@ -78,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateTo(BuildContext context, String route) {
-    Navigator.pop(context); // Close drawer
-    Navigator.pushNamed(context, route);
+    Navigator.of(context).pop(); // Close drawer
+    Navigator.of(context).pushNamed(route);
   }
 }

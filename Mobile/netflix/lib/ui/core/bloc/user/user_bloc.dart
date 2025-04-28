@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/use_cases/signin_use_case.dart';

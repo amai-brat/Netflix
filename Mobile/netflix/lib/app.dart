@@ -7,8 +7,10 @@ import 'package:netflix/domain/use_cases/signup_use_case.dart';
 import 'package:netflix/ui/core/bloc/user/user_bloc.dart';
 import 'package:netflix/ui/main/main_page.dart';
 import 'package:netflix/ui/profile/profile_page.dart';
+import 'package:netflix/ui/profile/tabs/personal_info/personal_info_view.dart';
 import 'package:netflix/ui/search/search_page.dart';
 import 'package:netflix/utils/di.dart';
+import 'package:netflix/utils/routes.dart';
 
 class NetflixApp extends StatelessWidget {
   const NetflixApp({super.key});
@@ -51,7 +53,10 @@ class NetflixApp extends StatelessWidget {
           ),
         ),
         initialRoute: '/',
-        routes: {'/': (context) => const NetflixAppView()},
+        routes: {
+          Routes.main: (context) => const NetflixAppView(),
+          Routes.profilePersonal: (context) => const PersonalInfoView()
+        },
       ),
     );
   }

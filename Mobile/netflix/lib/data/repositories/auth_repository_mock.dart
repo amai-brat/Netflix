@@ -64,7 +64,9 @@ class AuthRepositoryMock extends AuthRepository {
     // No status cached, fetch from storage
     try {
       await _fetch();
-    } catch (e) {} finally {}
+    } catch (e) {
+      _isAuthenticated = null;
+    }
 
     return _isAuthenticated ?? false;
   }
