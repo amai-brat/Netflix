@@ -4,20 +4,20 @@ class UserState {
   final UserStatus status;
   final bool isAuthenticated;
   final int? userId;
-  final String? error;
+  final String error;
 
   UserState({
     required this.status,
     required this.isAuthenticated,
     this.userId,
-    this.error,
+    required this.error,
   });
 
   UserState.initial()
     : status = UserStatus.initial,
       isAuthenticated = false,
       userId = null,
-      error = null;
+      error = '';
 
   UserState copyWith({
     UserStatus? status,
