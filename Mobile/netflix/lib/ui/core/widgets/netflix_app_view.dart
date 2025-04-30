@@ -3,27 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:netflix/ui/core/cubit/navigation/navigation_cubit.dart';
 
-import '../../../utils/routes.dart';
-
 class NetflixAppView extends StatelessWidget {
-  final Widget screen;
+  final StatefulNavigationShell navigationShell;
 
-  NetflixAppView({super.key, required this.screen});
+  NetflixAppView({super.key, required this.navigationShell});
 
   final tabs = [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
     BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Поиск'),
     BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
   ];
-
-  String _switchBarItemIndexToRoute(int index) {
-    return switch (index) {
-      0 => Routes.main,
-      1 => Routes.search,
-      2 => Routes.profile,
-      int() => throw Exception('Bad navigation bar index'),
-    };
-  }
 
   BlocBuilder<NavigationCubit, NavigationState> _buildBottomNavigation(
     List<BottomNavigationBarItem> tabs,
@@ -34,7 +23,7 @@ class NetflixAppView extends StatelessWidget {
         onTap: (value) {
           if (state.index != value) {
             context.read<NavigationCubit>().getNavBarItem(value);
-            context.go(_switchBarItemIndexToRoute(value));
+            navigationShell.goBranch(value);
           }
         },
         items: tabs,
@@ -46,7 +35,7 @@ class NetflixAppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screen,
+      body: navigationShell,
       bottomNavigationBar: _buildBottomNavigation(tabs),
     );
   }

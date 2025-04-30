@@ -15,61 +15,77 @@ import 'package:netflix/utils/routes.dart';
 
 class AppRouter {
   AppRouter._();
-  
+
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
-  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static final GoRouter _router = GoRouter(
     initialLocation: Routes.main,
     debugLogDiagnostics: true,
     navigatorKey: _rootNavigatorKey,
     routes: [
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) {
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
           return BlocProvider(
             create: (context) => NavigationCubit(),
-            child: NetflixAppView(screen: child),
+            child: NetflixAppView(navigationShell: navigationShell),
           );
         },
-        routes: [
-          GoRoute(
-            path: Routes.main,
-            pageBuilder:
-                (context, state) => const NoTransitionPage(child: MainPage()),
-          ),
-          GoRoute(
-            path: Routes.search,
-            pageBuilder:
-                (context, state) => const NoTransitionPage(child: SearchPage()),
-          ),
-          GoRoute(
-            path: Routes.subscriptions,
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: SubscriptionsPage()),
-          ),
-          GoRoute(
-            path: Routes.profile,
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: ProfilePage()),
+        branches: [
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.profilePersonalRelative,
-                builder: (context, state) => PersonalInfoView(),
+                path: Routes.main,
+                pageBuilder:
+                    (context, state) =>
+                        const NoTransitionPage(child: MainPage()),
               ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
               GoRoute(
-                path: Routes.profileFavoritesRelative,
-                builder: (context, state) => FavoritesView(),
+                path: Routes.search,
+                pageBuilder:
+                    (context, state) =>
+                        const NoTransitionPage(child: SearchPage()),
               ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
               GoRoute(
-                path: Routes.profileReviewsRelative,
-                builder: (context, state) => ReviewsView(),
+                path: Routes.profile,
+                pageBuilder:
+                    (context, state) =>
+                        const NoTransitionPage(child: ProfilePage()),
+                routes: [
+                  GoRoute(
+                    path: Routes.profilePersonalRelative,
+                    builder: (context, state) => PersonalInfoView(),
+                  ),
+                  GoRoute(
+                    path: Routes.profileFavoritesRelative,
+                    builder: (context, state) => FavoritesView(),
+                  ),
+                  GoRoute(
+                    path: Routes.profileReviewsRelative,
+                    builder: (context, state) => ReviewsView(),
+                  ),
+                  GoRoute(
+                    path: Routes.profileSubscriptionsRelative,
+                    builder: (context, state) => SubscriptionsView(),
+                  ),
+                ],
               ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
               GoRoute(
-                path: Routes.profileSubscriptionsRelative,
-                builder: (context, state) => SubscriptionsView(),
+                path: Routes.subscriptions,
+                pageBuilder:
+                    (context, state) =>
+                        const NoTransitionPage(child: SubscriptionsPage()),
               ),
             ],
           ),
