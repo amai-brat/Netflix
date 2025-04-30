@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:netflix/domain/dtos/bank_card_dto.dart';
 import 'package:netflix/domain/models/subscription.dart';
 import 'package:netflix/domain/models/user_subscription.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
@@ -49,11 +52,34 @@ class SubscriptionRepositoryMock extends SubscriptionRepository {
   }
 
   @override
-  Future<Result<UserSubscriptionsResponse>> getUserSubscriptions({required int userId}) async {
-    final userSubs = _userSubscriptions
-        .where((us) => us.userId == userId)
-        .toList();
+  Future<Result<UserSubscriptionsResponse>> getUserSubscriptions({
+    required int userId,
+  }) async {
+    final userSubs =
+        _userSubscriptions.where((us) => us.userId == userId).toList();
 
     return Result.ok(UserSubscriptionsResponse(userSubscriptions: userSubs));
+  }
+
+  @override
+  Future<Result<void>> purchaseSubscription({
+    required int userId,
+    required int subscriptionId,
+    required BankCardDto card
+  }) async {
+    final now = DateTime.now();
+    _userSubscriptions.add(
+      UserSubscription(
+        id: Random().nextInt(10_000),
+        userId: userId,
+        subscriptionId: subscriptionId,
+        expiresAt: now.add(Duration(days: 30)),
+        boughtAt: now,
+        transactionId: null,
+        status: UserSubscriptionStatus.completed,
+      ),
+    );
+
+    return Result.ok(null);
   }
 }
