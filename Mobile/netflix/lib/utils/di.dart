@@ -1,7 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:netflix/data/repositories/auth_repository_mock.dart';
+import 'package:netflix/data/repositories/subscription_repository_mock.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
+import 'package:netflix/domain/repositories/subscription_repository.dart';
 import 'package:netflix/domain/use_cases/signin_use_case.dart';
 import 'package:netflix/domain/use_cases/signout_use_case.dart';
 import 'package:netflix/domain/use_cases/signup_use_case.dart';
@@ -15,6 +17,9 @@ void setupLocator() {
   // repos
   locator.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryMock(authService: locator<AuthServiceMock>()),
+  );
+  locator.registerLazySingleton<SubscriptionRepository>(
+    () => SubscriptionRepositoryMock(),
   );
 
   // use cases

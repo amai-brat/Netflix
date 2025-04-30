@@ -10,6 +10,7 @@ import 'package:netflix/ui/profile/tabs/personal_info/personal_info_view.dart';
 import 'package:netflix/ui/profile/tabs/reviews/reviews_view.dart';
 import 'package:netflix/ui/profile/tabs/subscriptions/subscriptions_view.dart';
 import 'package:netflix/ui/search/search_page.dart';
+import 'package:netflix/ui/subscriptions/subscriptions_page.dart';
 import 'package:netflix/utils/routes.dart';
 
 class AppRouter {
@@ -41,6 +42,12 @@ class AppRouter {
             path: Routes.search,
             pageBuilder:
                 (context, state) => const NoTransitionPage(child: SearchPage()),
+          ),
+          GoRoute(
+            path: Routes.subscriptions,
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: SubscriptionsPage()),
           ),
           GoRoute(
             path: Routes.profile,
