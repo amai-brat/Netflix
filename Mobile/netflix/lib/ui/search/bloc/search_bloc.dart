@@ -101,25 +101,27 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
-  Future<void> _onSearchQueryChanged(
+  void _onSearchQueryChanged(
       SearchQueryChanged event,
       Emitter<SearchState> emit,
-      ) async {
+      ) {
     _searchTimer?.cancel();
 
+    final newParams = state.filterParams.copyWith(
+      searchQuery: (event.query, false),
+    );
+
+    emit(state.copyWith(filterParams: newParams));
+
     _searchTimer = Timer(const Duration(milliseconds: 300), () {
-      final newParams = state.filterParams.copyWith(
-        searchQuery: (event.query, false),
-      );
       add(ApplyFilters(newParams));
     });
   }
 
-  Future<void> _onSortChanged(
+  void _onSortChanged(
       SortChanged event,
       Emitter<SearchState> emit,
-      ) async {
-
+      ){
     final newParams = state.filterParams.copyWith(
       sortBy: (event.sort, false),
     );
