@@ -136,7 +136,7 @@ class ContentRepositoryMock extends ContentRepository {
         return false;
       }
       if (params.selectedGenres.isNotEmpty &&
-          !params.selectedGenres.any((genre) =>
+          !params.selectedGenres.every((genre) =>
               movie.genres.any((movieGenre) => movieGenre.id == genre.id))) {
         return false;
       }
@@ -144,7 +144,7 @@ class ContentRepositoryMock extends ContentRepository {
           !params.selectedTypes.any((type) => type.id == movie.type.id)) {
         return false;
       }
-      if (params.country != null && movie.country != params.country) {
+      if (params.country != null && movie.country.toLowerCase() != params.country!.toLowerCase()) {
         return false;
       }
       if (params.yearFrom != null && movie.year < params.yearFrom!) {
