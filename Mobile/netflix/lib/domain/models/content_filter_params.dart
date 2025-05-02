@@ -28,7 +28,7 @@ class ContentFilterParams {
     (String?, bool)? searchQuery,
     (SortBy?, bool)? sortBy,
     (List<Genre>?, bool)? selectedGenres,
-    (List<ContentType>, bool)? selectedTypes,
+    (List<ContentType>?, bool)? selectedTypes,
     (String?, bool)? country,
     (int?, bool)? yearFrom,
     (int?, bool)? yearTo,
