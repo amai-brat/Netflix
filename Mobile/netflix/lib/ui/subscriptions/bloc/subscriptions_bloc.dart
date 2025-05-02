@@ -41,10 +41,7 @@ class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
   }
 
   bool isPurchased(Subscription sub) {
-    return state.userSubscriptions.indexWhere(
-          (us) => us.subscriptionId == sub.id,
-        ) >
-        -1;
+    return state.userSubscriptions.any((us) => us.subscriptionId == sub.id);
   }
 
   FutureOr<void> _onSubscriptionsPageOpened(

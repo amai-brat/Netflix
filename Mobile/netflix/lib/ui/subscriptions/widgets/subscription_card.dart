@@ -28,7 +28,7 @@ class SubscriptionCard extends StatelessWidget {
             ),
           ),
           const Expanded(
-            flex: 1, // 1fr equivalent
+            flex: 1,
             child: Center(child: CheckMark()),
           ),
         ],
@@ -40,11 +40,13 @@ class SubscriptionCard extends StatelessWidget {
     return isPurchasable
         ? ElevatedButton(
           onPressed: () {
+            final bloc = context.read<SubscriptionsBloc>();
+
             showDialog(
               context: context,
               builder: (context) {
-                return BlocProvider<SubscriptionsBloc>(
-                  create: (context) => SubscriptionsBloc.createViaLocator(),
+                return BlocProvider<SubscriptionsBloc>.value(
+                  value: bloc,
                   child: BankCardForm(subscription: subscription),
                 );
               },

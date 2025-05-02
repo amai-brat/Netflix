@@ -12,7 +12,9 @@ class SubscriptionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create:
-          (context) => SubscriptionsBloc.createViaLocator(),
+          (context) =>
+              SubscriptionsBloc.createViaLocator()
+                ..add(SubscriptionsPageOpened()),
       child: Scaffold(
         appBar: AppBar(title: const Text('Подписки')),
         body: _buildBody(),
@@ -29,9 +31,10 @@ class SubscriptionsPage extends StatelessWidget {
           ).showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
+      buildWhen:
+          (previous, current) =>
+              previous.userSubscriptions != current.userSubscriptions,
       builder: (context, state) {
-        context.watch<SubscriptionsBloc>().add(SubscriptionsPageOpened());
-
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Center(
