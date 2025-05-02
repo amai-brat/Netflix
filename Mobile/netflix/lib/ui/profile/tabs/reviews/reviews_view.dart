@@ -12,8 +12,9 @@ class _ReviewsViewState extends State<ReviewsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('$check'),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Рецензии')),
+      body: Center(child: Text('$check')),
     );
   }
 }

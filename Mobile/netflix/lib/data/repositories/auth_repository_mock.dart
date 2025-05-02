@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/domain/models/user.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
@@ -22,11 +23,12 @@ class AuthRepositoryMock extends AuthRepository {
     required String email,
     required String password,
   }) async {
-    if (_users.indexWhere((element) => element.email == email) < 0) {
+    final user = _users.firstWhereOrNull((element) => element.email == email);
+    if (user == null) {
       return Result.error('Пользователь не найден');
     }
 
-    await _authService.saveToken();
+    await _authService.saveToken(user);
     return Result.ok(null);
   }
 
@@ -79,5 +81,21 @@ class AuthRepositoryMock extends AuthRepository {
       case Error<String?>():
         break;
     }
+  }
+
+  @override
+  Future<int?> get currentUserId async {
+    final result = await _authService.fetchToken();
+    switch (result) {
+      case Ok<String?>():
+        if (result.value == null) {
+          return null;
+        }
+        return int.tryParse(result.value!);
+      case Error<String?>():
+        break;
+    }
+
+    return null;
   }
 }

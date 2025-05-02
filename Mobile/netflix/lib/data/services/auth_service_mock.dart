@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:netflix/domain/models/user.dart';
 import 'package:netflix/utils/result.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -18,9 +19,9 @@ class AuthServiceMock {
     return Result.ok(token);
   }
 
-  Future<Result<void>> saveToken() async {
+  Future<Result<void>> saveToken(User user) async {
     final dir = await getDirectory();
-    await File('$dir/$authFile').writeAsString('token');
+    await File('$dir/$authFile').writeAsString('${user.id}');
 
     return Result.ok(null);
   }

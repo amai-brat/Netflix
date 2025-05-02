@@ -48,7 +48,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     );
   }
 
-  FutureOr<void> _onSignUpPressed(SignUpPressed event, Emitter<UserState> emit) async {
+  FutureOr<void> _onSignUpPressed(
+    SignUpPressed event,
+    Emitter<UserState> emit,
+  ) async {
     final resultUp = await _signUpUseCase.execute(
       event.login,
       event.email,
@@ -63,21 +66,39 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  FutureOr<void> _onSignInPressed(SignInPressed event, Emitter<UserState> emit) async {
+  FutureOr<void> _onSignInPressed(
+    SignInPressed event,
+    Emitter<UserState> emit,
+  ) async {
     final resultIn = await _signInUseCase.execute(event.email, event.password);
     switch (resultIn) {
       case Ok<void>():
-        emit(state.copyWith(status: UserStatus.authenticated, isAuthenticated: true));
+        emit(
+          state.copyWith(
+            status: UserStatus.authenticated,
+            isAuthenticated: true,
+            error: '',
+          ),
+        );
       case Error<void>():
         emit(state.copyWith(error: resultIn.error));
     }
   }
 
-  FutureOr<void> _onSignOutPressed(SignOutPressed event, Emitter<UserState> emit) async {
+  FutureOr<void> _onSignOutPressed(
+    SignOutPressed event,
+    Emitter<UserState> emit,
+  ) async {
     final resultOut = await _signOutUseCase.execute();
     switch (resultOut) {
       case Ok<void>():
-        emit(state.copyWith(status: UserStatus.unauthenticated, isAuthenticated: false));
+        emit(
+          state.copyWith(
+            status: UserStatus.unauthenticated,
+            isAuthenticated: false,
+            error: '',
+          ),
+        );
       case Error<void>():
         emit(state.copyWith(error: resultOut.error));
     }

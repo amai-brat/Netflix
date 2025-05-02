@@ -12,8 +12,9 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('$check'),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Персональная информация')),
+      body: Center(child: Text('$check')),
     );
   }
 }

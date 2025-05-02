@@ -1,10 +1,15 @@
 import 'package:get_it/get_it.dart';
 import 'package:netflix/data/repositories/auth_repository_mock.dart';
+import 'package:netflix/data/repositories/subscription_repository_mock.dart';
 import 'package:netflix/data/repositories/content_repository_mock.dart';
 import 'package:netflix/data/repositories/content_type_repository_mock.dart';
 import 'package:netflix/data/repositories/genre_repository_mock.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
+import 'package:netflix/domain/repositories/subscription_repository.dart';
+import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/purchase_subscription_use_case.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/domain/repositories/content_type_repository.dart';
 import 'package:netflix/domain/repositories/genre_repository.dart';
@@ -24,6 +29,9 @@ void setupLocator() {
   // repos
   locator.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryMock(authService: locator<AuthServiceMock>()),
+  );
+  locator.registerLazySingleton<SubscriptionRepository>(
+    () => SubscriptionRepositoryMock(),
   );
 
   locator.registerLazySingleton<ContentRepository>(
@@ -55,5 +63,23 @@ void setupLocator() {
   );
   locator.registerLazySingleton(
         () => GetAllContentTypesUseCase(contentTypeRepository: locator<ContentTypeRepository>()),
+  );
+
+  locator.registerLazySingleton(
+    () => GetSubscriptionsUseCase(
+      subscriptionRepository: locator<SubscriptionRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+    () => GetUserSubscriptionsUseCase(
+      subscriptionRepository: locator<SubscriptionRepository>(),
+      authRepository: locator<AuthRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+    () => PurchaseSubscriptionUseCase(
+      subscriptionRepository: locator<SubscriptionRepository>(),
+      authRepository: locator<AuthRepository>(),
+    ),
   );
 }
