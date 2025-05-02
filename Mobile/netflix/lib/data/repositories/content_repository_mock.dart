@@ -6,7 +6,7 @@ import 'package:netflix/domain/repositories/content_repository.dart';
 
 class ContentRepositoryMock extends ContentRepository {
   @override
-  Future<List<Content>> getMovies(ContentFilterParams params, int page, int perPage) async {
+  Future<List<Content>> getContent(ContentFilterParams params, int page, int perPage) async {
     await Future.delayed(Duration(seconds: 1));
     const allContent = [
       Content(

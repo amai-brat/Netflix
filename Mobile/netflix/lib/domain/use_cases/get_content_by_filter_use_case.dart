@@ -11,7 +11,7 @@ class GetContentByFilterUseCase {
 
   Future<Result<List<Content>>> execute(ContentFilterParams params, int page, int perPage) async {
     try {
-      return Result.ok(await _contentRepository.getMovies(params, page, perPage));
+      return Result.ok(await _contentRepository.getContent(params, page, perPage));
     } catch (e) {
       return Result.error(e.toString());
     }
