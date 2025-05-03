@@ -48,6 +48,8 @@ class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
     SubscriptionsPageOpened event,
     Emitter<SubscriptionsState> emit,
   ) async {
+    emit(state.copyWith(status: SubscriptionsStatus.loading));
+
     final subsResult = await _getSubscriptionsUseCase.execute();
     switch (subsResult) {
       case Ok<SubscriptionsResponse>():
@@ -66,12 +68,18 @@ class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
       case Ok<UserSubscriptionsResponse>():
         emit(
           state.copyWith(
+            status: SubscriptionsStatus.completed,
             userSubscriptions: userSubsResult.value.userSubscriptions,
             error: '',
           ),
         );
       case Error<UserSubscriptionsResponse>():
-        emit(state.copyWith(error: userSubsResult.error));
+        emit(
+          state.copyWith(
+            error: userSubsResult.error,
+            status: SubscriptionsStatus.completed,
+          ),
+        );
     }
   }
 

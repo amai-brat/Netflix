@@ -31,10 +31,11 @@ class SubscriptionsPage extends StatelessWidget {
           ).showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
-      buildWhen:
-          (previous, current) =>
-              previous.userSubscriptions != current.userSubscriptions,
       builder: (context, state) {
+        if (state.status == SubscriptionsStatus.loading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Center(

@@ -48,6 +48,7 @@ class SubscriptionRepositoryMock extends SubscriptionRepository {
 
   @override
   Future<Result<SubscriptionsResponse>> getAllSubscriptions() async {
+    await Future.delayed(Duration(milliseconds: 500));
     return Result.ok(SubscriptionsResponse(subscriptions: _subscriptions));
   }
 
