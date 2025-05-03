@@ -19,7 +19,7 @@ class FavoritesView extends StatelessWidget {
       )..add(LoadInitialData()),
       child: Scaffold(
           appBar: AppBar(
-            title: const Text('Персональная информация'),
+            title: const Text('Избранное'),
             backgroundColor: AppColors.inputGrey,
           ),
           backgroundColor: AppColors.backgroundBlack,
