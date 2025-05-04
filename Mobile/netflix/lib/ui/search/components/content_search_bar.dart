@@ -31,10 +31,16 @@ class _ContentSearchBarState extends State<ContentSearchBar> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-      child: BlocBuilder<SearchBloc, SearchState>(
+      child: BlocConsumer<SearchBloc, SearchState>(
+          listener: (context, state) {
+            if (state.filterParams.searchQuery != _searchBarController.text) {
+              _searchBarController.text = state.filterParams.searchQuery;
+              _searchBarController.selection = TextSelection.collapsed(
+                  offset: state.filterParams.searchQuery.length);
+            }
+          },
         builder: (context, state) {
           final ctx = context.read<SearchBloc>();
-          _searchBarController.text = state.filterParams.searchQuery;
 
           return TextField(
             controller: _searchBarController,

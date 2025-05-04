@@ -31,10 +31,17 @@ class _FavoriteSearchBarState extends State<FavoriteSearchBar> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-      child: BlocBuilder<FavoriteBloc, FavoriteState>(
+      child: BlocConsumer<FavoriteBloc, FavoriteState>(
+        listener: (context, state) {
+          if (state.filterParams.searchQuery != _searchBarController.text) {
+            _searchBarController.text = state.filterParams.searchQuery;
+            _searchBarController.selection = TextSelection.collapsed(
+              offset: state.filterParams.searchQuery.length,
+            );
+          }
+        },
         builder: (context, state) {
           final ctx = context.read<FavoriteBloc>();
-          _searchBarController.text = state.filterParams.searchQuery;
 
           return TextField(
             controller: _searchBarController,
