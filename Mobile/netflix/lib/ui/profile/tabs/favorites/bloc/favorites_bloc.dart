@@ -77,7 +77,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
         emit(state.copyWith(
           favorites: [...state.favorites, ...result.value],
           page: nextPage,
-          hasMore: result.value.isNotEmpty,
+          hasMore: result.value.length >= state.perPage,
           isLoadingMore: false,
         ));
       default:
@@ -142,7 +142,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
           filterParams: state.filterParams,
           isLoading: false,
           page: 0,
-          hasMore: favorites.value.isNotEmpty
+          hasMore: favorites.value.length >= state.perPage
         ));
       }
       default:{

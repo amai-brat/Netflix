@@ -90,7 +90,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         emit(state.copyWith(
           contents: [...state.contents, ...result.value],
           page: nextPage,
-          hasMore: result.value.isNotEmpty,
+          hasMore: result.value.length >= state.perPage,
           isLoadingMore: false,
         ));
       default:
@@ -155,7 +155,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           filterParams: state.filterParams,
           isLoading: false,
           page: 0,
-          hasMore: contents.value.isNotEmpty
+          hasMore: contents.value.length >= state.perPage
         ));
       }
       default:{
