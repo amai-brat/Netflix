@@ -1,5 +1,5 @@
-import 'package:netflix/domain/models/content_type.dart';
-import 'genre.dart';
+import 'package:netflix/domain/models/content/content_type.dart';
+import 'content/genre.dart';
 
 class ContentFilterParams {
   final String searchQuery;

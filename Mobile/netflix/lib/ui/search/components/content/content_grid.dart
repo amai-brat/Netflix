@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/ui/search/bloc/search_bloc.dart';
 import 'package:netflix/ui/search/bloc/search_event.dart';
 import 'package:netflix/ui/search/bloc/search_state.dart';
-import 'content_card.dart';
+import '../../../core/widgets/content_card.dart';
 
 class ContentGrid extends StatelessWidget {
   const ContentGrid({super.key});

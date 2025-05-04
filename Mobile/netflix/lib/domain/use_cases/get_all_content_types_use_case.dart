@@ -1,4 +1,4 @@
-import 'package:netflix/domain/models/content_type.dart';
+import 'package:netflix/domain/models/content/content_type.dart';
 import 'package:netflix/domain/repositories/content_type_repository.dart';
 import 'package:netflix/utils/result.dart';
 
