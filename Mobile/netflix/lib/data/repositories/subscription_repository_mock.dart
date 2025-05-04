@@ -66,7 +66,7 @@ class SubscriptionRepositoryMock extends SubscriptionRepository {
   Future<Result<void>> purchaseSubscription({
     required int userId,
     required int subscriptionId,
-    required BankCardDto card
+    required BankCardDto card,
   }) async {
     final now = DateTime.now();
     _userSubscriptions.add(
@@ -79,6 +79,18 @@ class SubscriptionRepositoryMock extends SubscriptionRepository {
         transactionId: null,
         status: UserSubscriptionStatus.completed,
       ),
+    );
+
+    return Result.ok(null);
+  }
+
+  @override
+  Future<Result<void>> cancelSubscription({
+    required int userId,
+    required int subscriptionId,
+  }) async {
+    _userSubscriptions.removeWhere(
+      (us) => us.userId == userId && us.subscriptionId == subscriptionId,
     );
 
     return Result.ok(null);

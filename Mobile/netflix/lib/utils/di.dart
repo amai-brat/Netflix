@@ -9,6 +9,7 @@ import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
+import 'package:netflix/domain/use_cases/cancel_subscription_use_case.dart';
 import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
 import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
 import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
@@ -38,16 +39,14 @@ void setupLocator() {
   );
 
   locator.registerLazySingleton<ContentRepository>(
-        () => ContentRepositoryMock(),
+    () => ContentRepositoryMock(),
   );
-  locator.registerLazySingleton<GenreRepository>(
-        () => GenreRepositoryMock(),
-  );
+  locator.registerLazySingleton<GenreRepository>(() => GenreRepositoryMock());
   locator.registerLazySingleton<ContentTypeRepository>(
-        () => ContentTypeRepositoryMock(),
+    () => ContentTypeRepositoryMock(),
   );
   locator.registerLazySingleton<FavoriteRepository>(
-          () => FavoriteRepositoryMock(),
+    () => FavoriteRepositoryMock(),
   );
 
   // use cases
@@ -62,16 +61,22 @@ void setupLocator() {
   );
 
   locator.registerLazySingleton(
-        () => GetContentByFilterUseCase(contentRepository: locator<ContentRepository>()),
+    () => GetContentByFilterUseCase(
+      contentRepository: locator<ContentRepository>(),
+    ),
   );
   locator.registerLazySingleton(
-        () => GetAllGenresUseCase(genreRepository: locator<GenreRepository>()),
+    () => GetAllGenresUseCase(genreRepository: locator<GenreRepository>()),
   );
   locator.registerLazySingleton(
-        () => GetAllContentTypesUseCase(contentTypeRepository: locator<ContentTypeRepository>()),
+    () => GetAllContentTypesUseCase(
+      contentTypeRepository: locator<ContentTypeRepository>(),
+    ),
   );
   locator.registerLazySingleton(
-        () => GetFavoriteByFilterUseCase(favoriteRepository: locator<FavoriteRepository>()),
+    () => GetFavoriteByFilterUseCase(
+      favoriteRepository: locator<FavoriteRepository>(),
+    ),
   );
 
   locator.registerLazySingleton(
@@ -87,6 +92,12 @@ void setupLocator() {
   );
   locator.registerLazySingleton(
     () => PurchaseSubscriptionUseCase(
+      subscriptionRepository: locator<SubscriptionRepository>(),
+      authRepository: locator<AuthRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+    () => CancelSubscriptionUseCase(
       subscriptionRepository: locator<SubscriptionRepository>(),
       authRepository: locator<AuthRepository>(),
     ),

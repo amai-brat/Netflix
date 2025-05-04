@@ -18,4 +18,10 @@ class PurchasePressed extends SubscriptionsEvent {
   });
 }
 
+class CancelPressed extends SubscriptionsEvent {
+  final int subscriptionId;
+
+  CancelPressed({required this.subscriptionId});
+}
+
 class UserSubscriptionsUpdated extends SubscriptionsEvent {}

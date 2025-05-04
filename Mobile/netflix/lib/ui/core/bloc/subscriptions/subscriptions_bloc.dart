@@ -5,31 +5,36 @@ import 'package:netflix/domain/dtos/bank_card_dto.dart';
 import 'package:netflix/domain/models/subscription.dart';
 import 'package:netflix/domain/responses/subscriptions_response.dart';
 import 'package:netflix/domain/responses/user_subscriptions_response.dart';
+import 'package:netflix/domain/use_cases/cancel_subscription_use_case.dart';
 import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
 import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
 import 'package:netflix/domain/use_cases/purchase_subscription_use_case.dart';
-import 'package:netflix/ui/subscriptions/bloc/subscriptions_event.dart';
-import 'package:netflix/ui/subscriptions/bloc/subscriptions_state.dart';
+import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_event.dart';
+import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_state.dart';
 import 'package:netflix/utils/result.dart';
 
-import '../../../utils/di.dart';
+import '../../../../utils/di.dart';
 
 class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
   final GetSubscriptionsUseCase _getSubscriptionsUseCase;
   final GetUserSubscriptionsUseCase _getUserSubscriptionsUseCase;
   final PurchaseSubscriptionUseCase _purchaseSubscriptionUseCase;
+  final CancelSubscriptionUseCase _cancelSubscriptionUseCase;
 
   SubscriptionsBloc({
     required GetSubscriptionsUseCase getSubscriptionsUseCase,
     required GetUserSubscriptionsUseCase getUserSubscriptionsUseCase,
     required PurchaseSubscriptionUseCase purchaseSubscriptionUseCase,
+    required CancelSubscriptionUseCase cancelSubscriptionUseCase,
   }) : _getSubscriptionsUseCase = getSubscriptionsUseCase,
        _getUserSubscriptionsUseCase = getUserSubscriptionsUseCase,
        _purchaseSubscriptionUseCase = purchaseSubscriptionUseCase,
+       _cancelSubscriptionUseCase = cancelSubscriptionUseCase,
        super(SubscriptionsState.initial()) {
     on<SubscriptionsPageOpened>(_onSubscriptionsPageOpened);
     on<PurchasePressed>(_onPurchasePressed);
     on<UserSubscriptionsUpdated>(_onUserSubscriptionsUpdated);
+    on<CancelPressed>(_onCancelPressed);
   }
 
   static SubscriptionsBloc createViaLocator() {
@@ -37,6 +42,7 @@ class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
       getSubscriptionsUseCase: locator<GetSubscriptionsUseCase>(),
       getUserSubscriptionsUseCase: locator<GetUserSubscriptionsUseCase>(),
       purchaseSubscriptionUseCase: locator<PurchaseSubscriptionUseCase>(),
+      cancelSubscriptionUseCase: locator<CancelSubscriptionUseCase>(),
     );
   }
 
@@ -121,6 +127,23 @@ class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
         );
       case Error<UserSubscriptionsResponse>():
         emit(state.copyWith(error: userSubsResult.error));
+    }
+  }
+
+  FutureOr<void> _onCancelPressed(
+    CancelPressed event,
+    Emitter<SubscriptionsState> emit,
+  ) async {
+    final result = await _cancelSubscriptionUseCase.execute(
+      subscriptionId: event.subscriptionId,
+    );
+
+    switch (result) {
+      case Ok<void>():
+        add(UserSubscriptionsUpdated());
+        emit(state.copyWith(error: ''));
+      case Error<void>():
+        emit(state.copyWith(error: result.error));
     }
   }
 }
