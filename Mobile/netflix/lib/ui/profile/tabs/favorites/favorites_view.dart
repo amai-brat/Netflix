@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_favorite_by_filter_use_case.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_bloc.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_event.dart';
 import 'package:netflix/ui/profile/tabs/favorites/components/content/favorite_list.dart';

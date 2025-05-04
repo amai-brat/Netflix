@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/favorite_filter_params.dart';
-import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_favorite_by_filter_use_case.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_event.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_state.dart';
 import 'package:netflix/utils/result.dart';

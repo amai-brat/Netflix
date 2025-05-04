@@ -2,7 +2,7 @@ import 'package:netflix/domain/dtos/bank_card_dto.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
 
-import '../../utils/result.dart';
+import '../../../utils/result.dart';
 
 class PurchaseSubscriptionUseCase {
   final SubscriptionRepository _subscriptionRepository;

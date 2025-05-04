@@ -5,10 +5,10 @@ import 'package:netflix/domain/dtos/bank_card_dto.dart';
 import 'package:netflix/domain/models/subscription.dart';
 import 'package:netflix/domain/responses/subscriptions_response.dart';
 import 'package:netflix/domain/responses/user_subscriptions_response.dart';
-import 'package:netflix/domain/use_cases/cancel_subscription_use_case.dart';
-import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
-import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
-import 'package:netflix/domain/use_cases/purchase_subscription_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/cancel_subscription_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/get_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/get_user_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/purchase_subscription_use_case.dart';
 import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_event.dart';
 import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_state.dart';
 import 'package:netflix/utils/result.dart';
@@ -37,7 +37,7 @@ class SubscriptionsBloc extends Bloc<SubscriptionsEvent, SubscriptionsState> {
     on<CancelPressed>(_onCancelPressed);
   }
 
-  static SubscriptionsBloc createViaLocator() {
+  factory SubscriptionsBloc.createViaLocator() {
     return SubscriptionsBloc(
       getSubscriptionsUseCase: locator<GetSubscriptionsUseCase>(),
       getUserSubscriptionsUseCase: locator<GetUserSubscriptionsUseCase>(),

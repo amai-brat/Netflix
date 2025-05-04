@@ -3,7 +3,7 @@
 import 'package:netflix/domain/models/content/content.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
 
-import '../../utils/result.dart';
+import '../../../utils/result.dart';
 
 class GetContentByIdUseCase {
   final ContentRepository _contentRepository;
