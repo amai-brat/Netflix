@@ -6,6 +6,10 @@ class Routes {
   static const auth = '/auth';
   static const subscriptions = '/subscriptions';
 
+  static const contentRouteName = 'content';
+  static const contentRoutePath = '/content';
+  static const contentTemplate = '/content/:id';
+
 
   static const profile = '/profile';
 

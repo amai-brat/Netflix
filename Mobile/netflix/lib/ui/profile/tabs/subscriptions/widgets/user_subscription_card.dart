@@ -4,8 +4,6 @@ import 'package:netflix/domain/models/subscription.dart';
 import 'package:netflix/domain/models/user_subscription.dart';
 import 'package:intl/intl.dart';
 import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_bloc.dart';
-import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_event.dart';
-import 'package:netflix/ui/core/widgets/confirmation_dialog.dart';
 import 'package:netflix/ui/profile/tabs/subscriptions/widgets/cancel_subscription_confirmation_dialog.dart';
 import 'package:netflix/ui/subscriptions/widgets/check_mark.dart';
 

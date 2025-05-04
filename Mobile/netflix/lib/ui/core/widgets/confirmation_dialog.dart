@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:netflix/utils/app_colors.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final String title;

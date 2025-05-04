@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:netflix/ui/content/content_page.dart';
 import 'package:netflix/ui/core/cubit/navigation/navigation_cubit.dart';
 import 'package:netflix/ui/core/widgets/netflix_app_view.dart';
 import 'package:netflix/ui/main/main_page.dart';
@@ -86,6 +87,21 @@ class AppRouter {
                 pageBuilder:
                     (context, state) =>
                         const NoTransitionPage(child: SubscriptionsPage()),
+              ),
+              GoRoute(
+                name: Routes.contentRouteName,
+                path: Routes.contentTemplate,
+                pageBuilder: (context, state) {
+                  final contentId = int.tryParse(
+                    state.pathParameters['id'] ?? '',
+                  );
+                  if (contentId == null) {
+                    throw Exception('Incorrect content id given in route');
+                  }
+                  return NoTransitionPage(
+                    child: ContentPage(contentId: contentId),
+                  );
+                },
               ),
             ],
           ),
