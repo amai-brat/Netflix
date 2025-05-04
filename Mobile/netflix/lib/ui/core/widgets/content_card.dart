@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:netflix/domain/models/content/content.dart';
 import 'package:netflix/utils/app_colors.dart';
 
 import '../../../utils/routes.dart';
 
 class ContentCard extends StatelessWidget {
-  final Content content;
+  final int id;
+  final String name;
+  final String posterUrl;
 
-  const ContentCard({super.key, required this.content});
+  const ContentCard({super.key, required this.id, required this.name, required this.posterUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class ContentCard extends StatelessWidget {
       onTap: () {
         context.pushNamed(
           Routes.contentRouteName,
-          pathParameters: {'id': content.id.toString()},
+          pathParameters: {'id': id.toString()},
         );
       },
       child: Card(
@@ -32,7 +33,7 @@ class ContentCard extends StatelessWidget {
                     borderRadius: BorderRadius.all(Radius.circular(8)),
                   ),
                   child: Image.network(
-                    content.posterUrl,
+                    posterUrl,
                     fit: BoxFit.cover,
                     width: double.infinity,
                   ),
@@ -42,7 +43,7 @@ class ContentCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                content.title,
+                name,
                 style: TextStyle(
                   color: AppColors.textWhite,
                   fontSize: 16,
