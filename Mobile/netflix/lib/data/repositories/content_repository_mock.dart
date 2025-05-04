@@ -9,7 +9,10 @@ import 'package:netflix/domain/models/content/trailer_info.dart';
 import 'package:netflix/domain/models/content_filter_params.dart';
 import 'package:netflix/domain/models/content/content_type.dart';
 import 'package:netflix/domain/models/content/genre.dart';
+import 'package:netflix/domain/models/sections/section.dart';
+import 'package:netflix/domain/models/sections/section_content.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
+import 'package:netflix/domain/responses/sections_response.dart';
 import 'package:netflix/utils/result.dart';
 
 class ContentRepositoryMock extends ContentRepository {
@@ -20,33 +23,38 @@ class ContentRepositoryMock extends ContentRepository {
 
   static const allContent = [
     Content(
-        id: 1,
-        title: 'Aboba',
-        posterUrl:
-        'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
-        rating: 7.5,
-        year: 2020,
-        genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
-        type: ContentType(id: 1, name: 'Фильм'),
-        country: 'США',
-        slogan: 'Em',
-        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
-        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
-        personsInContent: [
-          PersonInContent(id: 1, contentId: 1, name: 'Ильюка Мэддисон', profession: Profession(id: 1, professionName: 'Клоун'))
-        ],
-        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
-        trailerInfo: TrailerInfo(
-          name: 'SHTO',
-          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      id: 1,
+      title: 'Aboba',
+      posterUrl:
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+      rating: 7.5,
+      year: 2020,
+      genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
+      type: ContentType(id: 1, name: 'Фильм'),
+      country: 'США',
+      slogan: 'Em',
+      ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+      budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+      personsInContent: [
+        PersonInContent(
+          id: 1,
+          contentId: 1,
+          name: 'Ильюка Мэддисон',
+          profession: Profession(id: 1, professionName: 'Клоун'),
         ),
-        description: description
+      ],
+      ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+      trailerInfo: TrailerInfo(
+        name: 'SHTO',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      ),
+      description: description,
     ),
     Content(
       id: 2,
       title: 'Biba',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5,
       year: 2024,
       genres: [Genre(id: 2, name: 'Драма'), Genre(id: 3, name: 'Комедия')],
@@ -61,19 +69,16 @@ class ContentRepositoryMock extends ContentRepository {
         name: 'SHTO',
         url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       ),
-      description: description
+      description: description,
     ),
     Content(
       id: 3,
       title: 'Boba',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 1,
       year: 2000,
-      genres: [
-        Genre(id: 10, name: 'Фантастика'),
-        Genre(id: 2, name: 'Драма'),
-      ],
+      genres: [Genre(id: 10, name: 'Фантастика'), Genre(id: 2, name: 'Драма')],
       type: ContentType(id: 2, name: 'Сериал'),
       country: 'США',
       slogan: 'Em',
@@ -91,7 +96,7 @@ class ContentRepositoryMock extends ContentRepository {
       id: 4,
       title: 'Tralalelo',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 9,
       year: 2014,
       genres: [
@@ -115,7 +120,7 @@ class ContentRepositoryMock extends ContentRepository {
       id: 5,
       title: 'Bambini',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.2,
       year: 2019,
       genres: [
@@ -139,7 +144,7 @@ class ContentRepositoryMock extends ContentRepository {
       id: 6,
       title: 'Gussini',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -157,10 +162,10 @@ class ContentRepositoryMock extends ContentRepository {
       ),
     ),
     Content(
-      id: 6,
+      id: 7,
       title: 'Test1',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -178,10 +183,10 @@ class ContentRepositoryMock extends ContentRepository {
       ),
     ),
     Content(
-      id: 6,
+      id: 8,
       title: 'Test2',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -199,10 +204,10 @@ class ContentRepositoryMock extends ContentRepository {
       ),
     ),
     Content(
-      id: 6,
+      id: 9,
       title: 'Test3',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -220,10 +225,10 @@ class ContentRepositoryMock extends ContentRepository {
       ),
     ),
     Content(
-      id: 6,
+      id: 10,
       title: 'Test4',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -241,10 +246,10 @@ class ContentRepositoryMock extends ContentRepository {
       ),
     ),
     Content(
-      id: 6,
+      id: 11,
       title: 'Test5',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -262,10 +267,10 @@ class ContentRepositoryMock extends ContentRepository {
       ),
     ),
     Content(
-      id: 6,
+      id: 12,
       title: 'Test6',
       posterUrl:
-      'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
+          'https://avatars.mds.yandex.net/get-entity_search/2362199/1143543517/S600xU_2x',
       rating: 5.9,
       year: 2014,
       genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
@@ -285,48 +290,50 @@ class ContentRepositoryMock extends ContentRepository {
   ];
 
   @override
-  Future<List<Content>> getContent(ContentFilterParams params,
-      int page,
-      int perPage,) async {
+  Future<List<Content>> getContent(
+    ContentFilterParams params,
+    int page,
+    int perPage,
+  ) async {
     await Future.delayed(Duration(seconds: 1));
 
     final filteredContent =
-    allContent.where((movie) {
-      if (params.searchQuery.isNotEmpty &&
-          !movie.title.toLowerCase().contains(
-            params.searchQuery.toLowerCase(),
-          )) {
-        return false;
-      }
-      if (params.selectedGenres.isNotEmpty &&
-          !params.selectedGenres.every(
+        allContent.where((movie) {
+          if (params.searchQuery.isNotEmpty &&
+              !movie.title.toLowerCase().contains(
+                params.searchQuery.toLowerCase(),
+              )) {
+            return false;
+          }
+          if (params.selectedGenres.isNotEmpty &&
+              !params.selectedGenres.every(
                 (genre) =>
-                movie.genres.any((movieGenre) => movieGenre.id == genre.id),
-          )) {
-        return false;
-      }
-      if (params.selectedTypes.isNotEmpty &&
-          !params.selectedTypes.any((type) => type.id == movie.type.id)) {
-        return false;
-      }
-      if (params.country != null &&
-          movie.country.toLowerCase() != params.country!.toLowerCase()) {
-        return false;
-      }
-      if (params.yearFrom != null && movie.year < params.yearFrom!) {
-        return false;
-      }
-      if (params.yearTo != null && movie.year > params.yearTo!) {
-        return false;
-      }
-      if (params.ratingFrom != null && movie.rating < params.ratingFrom!) {
-        return false;
-      }
-      if (params.ratingTo != null && movie.rating > params.ratingTo!) {
-        return false;
-      }
-      return true;
-    }).toList();
+                    movie.genres.any((movieGenre) => movieGenre.id == genre.id),
+              )) {
+            return false;
+          }
+          if (params.selectedTypes.isNotEmpty &&
+              !params.selectedTypes.any((type) => type.id == movie.type.id)) {
+            return false;
+          }
+          if (params.country != null &&
+              movie.country.toLowerCase() != params.country!.toLowerCase()) {
+            return false;
+          }
+          if (params.yearFrom != null && movie.year < params.yearFrom!) {
+            return false;
+          }
+          if (params.yearTo != null && movie.year > params.yearTo!) {
+            return false;
+          }
+          if (params.ratingFrom != null && movie.rating < params.ratingFrom!) {
+            return false;
+          }
+          if (params.ratingTo != null && movie.rating > params.ratingTo!) {
+            return false;
+          }
+          return true;
+        }).toList();
 
     filteredContent.sort((a, b) {
       switch (params.sortBy) {
@@ -347,7 +354,7 @@ class ContentRepositoryMock extends ContentRepository {
       }
     });
     final takenContent =
-    filteredContent.skip(page * perPage).take(perPage).toList();
+        filteredContent.skip(page * perPage).take(perPage).toList();
     return takenContent;
   }
 
@@ -361,5 +368,26 @@ class ContentRepositoryMock extends ContentRepository {
     }
 
     return Result.ok(content);
+  }
+
+  @override
+  Future<Result<SectionsResponse>> getSections() async {
+    final sectionNames = ['Новинки', 'Классика', 'Аниме'];
+    return Result.ok(
+      SectionsResponse(
+        data:
+            sectionNames
+                .map(
+                  (name) => Section(
+                    name: name,
+                    contents:
+                        allContent
+                            .map((c) => SectionContent.fromContent(c))
+                            .toList(),
+                  ),
+                )
+                .toList(),
+      ),
+    );
   }
 }

@@ -10,6 +10,7 @@ import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
 import 'package:netflix/domain/use_cases/cancel_subscription_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_sections_use_case.dart';
 import 'package:netflix/domain/use_cases/get_content_by_id_use_case.dart';
 import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
 import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
@@ -69,6 +70,9 @@ void setupLocator() {
   locator.registerLazySingleton(
     () =>
         GetContentByIdUseCase(contentRepository: locator<ContentRepository>()),
+  );
+  locator.registerLazySingleton(
+    () => GetSectionsUseCase(contentRepository: locator<ContentRepository>()),
   );
   locator.registerLazySingleton(
     () => GetAllGenresUseCase(genreRepository: locator<GenreRepository>()),
