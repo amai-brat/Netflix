@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/user_review.dart';
-import 'package:netflix/domain/use_cases/get_reviews_use_case.dart';
-import 'package:netflix/domain/use_cases/get_total_reviews_pages_use_case.dart';
+import 'package:netflix/domain/use_cases/user/get_reviews_use_case.dart';
+import 'package:netflix/domain/use_cases/user/get_total_reviews_pages_use_case.dart';
 import 'package:netflix/utils/di.dart';
 import 'package:netflix/utils/result.dart';
 

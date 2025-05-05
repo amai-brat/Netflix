@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/user_info.dart';
-import 'package:netflix/domain/use_cases/get_user_info_use_case.dart';
-import 'package:netflix/domain/use_cases/change_email_use_case.dart';
-import 'package:netflix/domain/use_cases/change_birthdate_use_case.dart';
-import 'package:netflix/domain/use_cases/change_password_use_case.dart';
+import 'package:netflix/domain/use_cases/user/get_user_info_use_case.dart';
+import 'package:netflix/domain/use_cases/user/change_email_use_case.dart';
+import 'package:netflix/domain/use_cases/user/change_birthdate_use_case.dart';
+import 'package:netflix/domain/use_cases/user/change_password_use_case.dart';
 import 'package:netflix/utils/di.dart';
 import 'package:netflix/utils/result.dart';
 
