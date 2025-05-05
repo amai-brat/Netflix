@@ -1,4 +1,4 @@
-import 'package:netflix/domain/models/genre.dart';
+import 'package:netflix/domain/models/content/genre.dart';
 import 'package:netflix/domain/repositories/genre_repository.dart';
 
 class GenreRepositoryMock extends GenreRepository {

@@ -1,7 +1,7 @@
 import 'package:netflix/domain/repositories/subscription_repository.dart';
 import 'package:netflix/domain/responses/subscriptions_response.dart';
 
-import '../../utils/result.dart';
+import '../../../utils/result.dart';
 
 class GetSubscriptionsUseCase {
   final SubscriptionRepository _subscriptionRepository;

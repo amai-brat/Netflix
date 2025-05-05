@@ -14,6 +14,11 @@ abstract class SubscriptionRepository {
   Future<Result<void>> purchaseSubscription({
     required int userId,
     required int subscriptionId,
-    required BankCardDto card
+    required BankCardDto card,
+  });
+
+  Future<Result<void>> cancelSubscription({
+    required int userId,
+    required int subscriptionId,
   });
 }

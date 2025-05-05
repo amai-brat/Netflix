@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/subscription.dart';
-import 'package:netflix/ui/subscriptions/bloc/subscriptions_bloc.dart';
+import 'package:netflix/ui/core/bloc/subscriptions/subscriptions_bloc.dart';
 import 'package:netflix/ui/subscriptions/widgets/bank_card_form.dart';
 import 'package:netflix/ui/subscriptions/widgets/check_mark.dart';
 

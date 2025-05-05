@@ -9,19 +9,22 @@ import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
-import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
-import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
-import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
-import 'package:netflix/domain/use_cases/purchase_subscription_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/cancel_subscription_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_sections_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_content_by_id_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_favorite_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/get_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/get_user_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/subscription/purchase_subscription_use_case.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/domain/repositories/content_type_repository.dart';
 import 'package:netflix/domain/repositories/genre_repository.dart';
-import 'package:netflix/domain/use_cases/get_all_content_types_use_case.dart';
-import 'package:netflix/domain/use_cases/get_all_genres_use_case.dart';
-import 'package:netflix/domain/use_cases/get_content_by_filter_use_case.dart';
-import 'package:netflix/domain/use_cases/signin_use_case.dart';
-import 'package:netflix/domain/use_cases/signout_use_case.dart';
-import 'package:netflix/domain/use_cases/signup_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_all_content_types_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_all_genres_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_content_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/auth/signin_use_case.dart';
+import 'package:netflix/domain/use_cases/auth/signout_use_case.dart';
+import 'package:netflix/domain/use_cases/auth/signup_use_case.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -38,16 +41,14 @@ void setupLocator() {
   );
 
   locator.registerLazySingleton<ContentRepository>(
-        () => ContentRepositoryMock(),
+    () => ContentRepositoryMock(),
   );
-  locator.registerLazySingleton<GenreRepository>(
-        () => GenreRepositoryMock(),
-  );
+  locator.registerLazySingleton<GenreRepository>(() => GenreRepositoryMock());
   locator.registerLazySingleton<ContentTypeRepository>(
-        () => ContentTypeRepositoryMock(),
+    () => ContentTypeRepositoryMock(),
   );
   locator.registerLazySingleton<FavoriteRepository>(
-          () => FavoriteRepositoryMock(),
+    () => FavoriteRepositoryMock(),
   );
 
   // use cases
@@ -62,16 +63,29 @@ void setupLocator() {
   );
 
   locator.registerLazySingleton(
-        () => GetContentByFilterUseCase(contentRepository: locator<ContentRepository>()),
+    () => GetContentByFilterUseCase(
+      contentRepository: locator<ContentRepository>(),
+    ),
   );
   locator.registerLazySingleton(
-        () => GetAllGenresUseCase(genreRepository: locator<GenreRepository>()),
+    () =>
+        GetContentByIdUseCase(contentRepository: locator<ContentRepository>()),
   );
   locator.registerLazySingleton(
-        () => GetAllContentTypesUseCase(contentTypeRepository: locator<ContentTypeRepository>()),
+    () => GetSectionsUseCase(contentRepository: locator<ContentRepository>()),
   );
   locator.registerLazySingleton(
-        () => GetFavoriteByFilterUseCase(favoriteRepository: locator<FavoriteRepository>()),
+    () => GetAllGenresUseCase(genreRepository: locator<GenreRepository>()),
+  );
+  locator.registerLazySingleton(
+    () => GetAllContentTypesUseCase(
+      contentTypeRepository: locator<ContentTypeRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+    () => GetFavoriteByFilterUseCase(
+      favoriteRepository: locator<FavoriteRepository>(),
+    ),
   );
 
   locator.registerLazySingleton(
@@ -87,6 +101,12 @@ void setupLocator() {
   );
   locator.registerLazySingleton(
     () => PurchaseSubscriptionUseCase(
+      subscriptionRepository: locator<SubscriptionRepository>(),
+      authRepository: locator<AuthRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+    () => CancelSubscriptionUseCase(
       subscriptionRepository: locator<SubscriptionRepository>(),
       authRepository: locator<AuthRepository>(),
     ),
