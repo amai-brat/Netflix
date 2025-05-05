@@ -10,11 +10,13 @@ class ChangePasswordDialog extends StatefulWidget {
 }
 
 class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
+  final _formKey = GlobalKey<FormState>();
+
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  bool _submitted = false;
+  String? _confirmPasswordError;
 
   @override
   void dispose() {
@@ -22,6 +24,19 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  String? passwordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Обязательное поле';
+    } else if (value.length < 8) {
+      return 'Минимальная длина пароля - 8 символов';
+    } else if (value.length > 30) {
+      return 'Максимальная длина пароля - 30 символов';
+    } else if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@;.,$!%*?&]).+$').hasMatch(value)) {
+      return 'Пароль должен содержать хотя бы одну букву, цифру и спецсимвол';
+    }
+    return null;
   }
 
   @override
@@ -32,18 +47,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         final error = state is PersonalInfoLoaded ? state.passwordError : null;
         final success = state is PersonalInfoLoaded ? state.passwordUpdateSuccess : null;
 
-        String? newPasswordError;
-        String? confirmPasswordError;
-
-        if (_submitted) {
-          if (_newPasswordController.text.length < 8) {
-            newPasswordError = 'Пароль должен быть не менее 8 символов';
-          }
-          if (_newPasswordController.text != _confirmPasswordController.text) {
-            confirmPasswordError = 'Пароли не совпадают';
-          }
-        }
-
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -52,87 +55,102 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           insetPadding: const EdgeInsets.symmetric(horizontal: 24),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Смена пароля',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: _currentPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Текущий пароль',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Смена пароля',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  obscureText: true,
-                  enabled: !isLoading,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _newPasswordController,
-                  decoration: InputDecoration(
-                    labelText: 'Новый пароль',
-                    border: const OutlineInputBorder(),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    errorText: newPasswordError,
-                  ),
-                  obscureText: true,
-                  enabled: !isLoading,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _confirmPasswordController,
-                  decoration: InputDecoration(
-                    labelText: 'Подтвердите пароль',
-                    border: const OutlineInputBorder(),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    errorText: confirmPasswordError ?? error,
-                  ),
-                  obscureText: true,
-                  enabled: !isLoading,
-                ),
-                if (success != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    success,
-                    style: const TextStyle(color: Colors.green),
-                  ),
-                ],
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: isLoading ? null : () => Navigator.pop(context),
-                      child: const Text('Отмена'),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _currentPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Текущий пароль',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
-                    const SizedBox(width: 12),
-                    TextButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                        setState(() {
-                          _submitted = true;
-                        });
-
-                        if (_newPasswordController.text.length >= 8 &&
-                            _newPasswordController.text == _confirmPasswordController.text) {
-                          context.read<PersonalInfoBloc>().add(
-                            ChangePasswordEvent(
-                              oldPassword: _currentPasswordController.text,
-                              newPassword: _newPasswordController.text,
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('Сохранить'),
+                    obscureText: true,
+                    enabled: !isLoading,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _newPasswordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Новый пароль',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    obscureText: true,
+                    enabled: !isLoading,
+                    validator: passwordValidator,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Введите пароль повторно',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      errorText: _confirmPasswordError,
+                    ),
+                    obscureText: true,
+                    enabled: !isLoading,
+                  ),
+                  if (success != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      success,
+                      style: const TextStyle(color: Colors.green),
                     ),
                   ],
-                ),
-              ],
+                  if (error != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      error,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: isLoading ? null : () => Navigator.pop(context),
+                        child: const Text('Отмена'),
+                      ),
+                      const SizedBox(width: 12),
+                      TextButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                          final formValid = _formKey.currentState!.validate();
+                          final passwordsMatch = _newPasswordController.text ==
+                              _confirmPasswordController.text;
+
+                          setState(() {
+                            _confirmPasswordError = passwordsMatch
+                                ? null
+                                : 'Пароли не совпадают';
+                          });
+
+                          if (formValid && passwordsMatch) {
+                            context.read<PersonalInfoBloc>().add(
+                              ChangePasswordEvent(
+                                oldPassword: _currentPasswordController.text,
+                                newPassword: _newPasswordController.text,
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text('Сохранить'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
