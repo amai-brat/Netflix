@@ -1,4 +1,4 @@
-import 'package:netflix/domain/models/content.dart';
+import 'package:netflix/domain/models/content/content.dart';
 
 class Favorite {
   final int id;

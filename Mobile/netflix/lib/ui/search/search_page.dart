@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:netflix/domain/use_cases/get_all_content_types_use_case.dart';
-import 'package:netflix/domain/use_cases/get_all_genres_use_case.dart';
-import 'package:netflix/domain/use_cases/get_content_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_all_content_types_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_all_genres_use_case.dart';
+import 'package:netflix/domain/use_cases/content/get_content_by_filter_use_case.dart';
 import 'package:netflix/ui/search/bloc/search_bloc.dart';
 import 'package:netflix/ui/search/bloc/search_event.dart';
 import 'package:netflix/ui/search/components/content/content_grid.dart';

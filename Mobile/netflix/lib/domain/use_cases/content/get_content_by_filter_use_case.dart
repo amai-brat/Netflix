@@ -1,4 +1,4 @@
-import 'package:netflix/domain/models/content.dart';
+import 'package:netflix/domain/models/content/content.dart';
 import 'package:netflix/domain/models/content_filter_params.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/utils/result.dart';

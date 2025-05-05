@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
-import 'package:netflix/domain/use_cases/signin_use_case.dart';
-import 'package:netflix/domain/use_cases/signout_use_case.dart';
-import 'package:netflix/domain/use_cases/signup_use_case.dart';
+import 'package:netflix/domain/use_cases/auth/signin_use_case.dart';
+import 'package:netflix/domain/use_cases/auth/signout_use_case.dart';
+import 'package:netflix/domain/use_cases/auth/signup_use_case.dart';
 import 'package:netflix/ui/core/bloc/user/user_event.dart';
 import 'package:netflix/ui/core/bloc/user/user_state.dart';
 import 'package:netflix/utils/result.dart';
+
+import '../../../../utils/di.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc({
@@ -24,6 +26,15 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<SignUpPressed>(_onSignUpPressed);
     on<SignInPressed>(_onSignInPressed);
     on<SignOutPressed>(_onSignOutPressed);
+  }
+
+  factory UserBloc.createViaLocator() {
+    return UserBloc(
+      authRepository: locator<AuthRepository>(),
+      signUpUseCase: locator<SignUpUseCase>(),
+      signInUseCase: locator<SignInUseCase>(),
+      signOutUseCase: locator<SignOutUseCase>(),
+    );
   }
 
   final AuthRepository _authRepository;

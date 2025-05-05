@@ -1,7 +1,7 @@
-import 'package:netflix/domain/models/content.dart';
+import 'package:netflix/domain/models/content/content.dart';
 import 'package:netflix/domain/models/content_filter_params.dart';
-import 'package:netflix/domain/models/content_type.dart';
-import 'package:netflix/domain/models/genre.dart';
+import 'package:netflix/domain/models/content/content_type.dart';
+import 'package:netflix/domain/models/content/genre.dart';
 
 class SearchState {
   final List<Content> contents;

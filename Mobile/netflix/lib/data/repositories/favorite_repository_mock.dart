@@ -1,13 +1,21 @@
 import 'package:collection/collection.dart';
-import 'package:netflix/domain/models/content.dart';
-import 'package:netflix/domain/models/content_type.dart';
+import 'package:netflix/domain/models/content/age_ratings.dart';
+import 'package:netflix/domain/models/content/budget.dart';
+import 'package:netflix/domain/models/content/content.dart';
+import 'package:netflix/domain/models/content/content_type.dart';
+import 'package:netflix/domain/models/content/ratings.dart';
+import 'package:netflix/domain/models/content/trailer_info.dart';
 import 'package:netflix/domain/models/favorite.dart';
 import 'package:netflix/domain/models/favorite_filter_params.dart';
-import 'package:netflix/domain/models/genre.dart';
+import 'package:netflix/domain/models/content/genre.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
 
 class FavoriteRepositoryMock extends FavoriteRepository {
-  
+  static const description = """
+Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.
+Проходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.
+""";
+
   @override
   Future<List<Favorite>> getFavorites(FavoriteFilterParams params, int page, int perPage) async {
     await Future.delayed(Duration(seconds: 1));
@@ -21,6 +29,16 @@ class FavoriteRepositoryMock extends FavoriteRepository {
         genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
         type: ContentType(id: 1, name: 'Фильм'),
         country: 'США',
+        slogan: 'Em',
+        description: description,
+        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+        personsInContent: [],
+        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+        trailerInfo: TrailerInfo(
+          name: 'SHTO',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
       ),
       Content(
         id: 2,
@@ -31,6 +49,16 @@ class FavoriteRepositoryMock extends FavoriteRepository {
         genres: [Genre(id: 2, name: 'Драма'), Genre(id: 3, name: 'Комедия')],
         type: ContentType(id: 3, name: 'Мультфильм'),
         country: 'США',
+        slogan: 'Em',
+        description: description,
+        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+        personsInContent: [],
+        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+        trailerInfo: TrailerInfo(
+          name: 'SHTO',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
       ),
       Content(
         id: 3,
@@ -41,6 +69,16 @@ class FavoriteRepositoryMock extends FavoriteRepository {
         genres: [Genre(id: 10, name: 'Фантастика'), Genre(id: 2, name: 'Драма')],
         type: ContentType(id: 2, name: 'Сериал'),
         country: 'США',
+        slogan: 'Em',
+        description: description,
+        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+        personsInContent: [],
+        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+        trailerInfo: TrailerInfo(
+          name: 'SHTO',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
       ),
       Content(
         id: 4,
@@ -51,6 +89,16 @@ class FavoriteRepositoryMock extends FavoriteRepository {
         genres: [Genre(id: 6, name: 'Повседневность'), Genre(id: 4, name: 'Триллер')],
         type: ContentType(id: 1, name: 'Фильм'),
         country: 'США',
+        slogan: 'Em',
+        description: description,
+        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+        personsInContent: [],
+        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+        trailerInfo: TrailerInfo(
+          name: 'SHTO',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
       ),
       Content(
         id: 5,
@@ -61,6 +109,16 @@ class FavoriteRepositoryMock extends FavoriteRepository {
         genres: [Genre(id: 6, name: 'Повседневность'), Genre(id: 9, name: 'Трагедия')],
         type: ContentType(id: 3, name: 'Мультфильм'),
         country: 'США',
+        slogan: 'Em',
+        description: description,
+        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+        personsInContent: [],
+        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+        trailerInfo: TrailerInfo(
+          name: 'SHTO',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
       ),
       Content(
         id: 6,
@@ -71,6 +129,16 @@ class FavoriteRepositoryMock extends FavoriteRepository {
         genres: [Genre(id: 1, name: 'Боевик'), Genre(id: 2, name: 'Драма')],
         type: ContentType(id: 2, name: 'Сериал'),
         country: 'США',
+        slogan: 'Em',
+        description: description,
+        ageRatings: AgeRatings(age: 18, ageMpaa: 'R'),
+        budget: Budget(budgetCurrencyName: '\$', budgetValue: 228000),
+        personsInContent: [],
+        ratings: Ratings(imdbRating: 9.8, kinopoiskRating: 7.4, localRating: 5),
+        trailerInfo: TrailerInfo(
+          name: 'SHTO',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
       )
     ];
     final favoriteData = [

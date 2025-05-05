@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/ui/search/bloc/search_bloc.dart';
 import 'package:netflix/ui/search/bloc/search_event.dart';
 import 'package:netflix/ui/search/bloc/search_state.dart';
-import 'content_card.dart';
+import '../../../core/widgets/content_card.dart';
 
 class ContentGrid extends StatelessWidget {
   const ContentGrid({super.key});
@@ -39,7 +39,9 @@ class ContentGrid extends StatelessWidget {
                     if (i >= state.contents.length) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    return ContentCard(content: state.contents[i]);
+
+                    final content = state.contents[i];
+                    return ContentCard(id: content.id, name: content.title, posterUrl: content.posterUrl);
                   },
                 )
             );
