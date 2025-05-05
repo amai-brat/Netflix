@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/user_info.dart';
 import 'package:netflix/domain/use_cases/get_user_info_use_case.dart';
 import 'package:netflix/domain/use_cases/change_email_use_case.dart';

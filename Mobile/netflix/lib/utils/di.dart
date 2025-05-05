@@ -2,21 +2,26 @@ import 'package:get_it/get_it.dart';
 import 'package:netflix/data/repositories/auth_repository_mock.dart';
 import 'package:netflix/data/repositories/favorite_repository_mock.dart';
 import 'package:netflix/data/repositories/personal_info_repository.dart';
+import 'package:netflix/data/repositories/reviews_repository.dart';
 import 'package:netflix/data/repositories/subscription_repository_mock.dart';
 import 'package:netflix/data/repositories/content_repository_mock.dart';
 import 'package:netflix/data/repositories/content_type_repository_mock.dart';
 import 'package:netflix/data/repositories/genre_repository_mock.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/data/services/personal_info_service_mock.dart';
+import 'package:netflix/data/services/reviews_service_mock.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
 import 'package:netflix/domain/repositories/personal_info_repository.dart';
+import 'package:netflix/domain/repositories/reviews_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
 import 'package:netflix/domain/use_cases/change_birthdate_use_case.dart';
 import 'package:netflix/domain/use_cases/change_email_use_case.dart';
 import 'package:netflix/domain/use_cases/change_password_use_case.dart';
 import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/get_reviews_use_case.dart';
 import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
+import 'package:netflix/domain/use_cases/get_total_reviews_pages_use_case.dart';
 import 'package:netflix/domain/use_cases/get_user_info_use_case.dart';
 import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
 import 'package:netflix/domain/use_cases/purchase_subscription_use_case.dart';
@@ -36,6 +41,7 @@ void setupLocator() {
   // services
   locator.registerLazySingleton<AuthServiceMock>(() => AuthServiceMock());
   locator.registerLazySingleton<PersonalInfoServiceMock>(() => PersonalInfoServiceMock());
+  locator.registerLazySingleton<ReviewsServiceMock>(() => ReviewsServiceMock());
 
   // repos
   locator.registerLazySingleton<AuthRepository>(
@@ -55,10 +61,13 @@ void setupLocator() {
         () => ContentTypeRepositoryMock(),
   );
   locator.registerLazySingleton<FavoriteRepository>(
-          () => FavoriteRepositoryMock(),
+        () => FavoriteRepositoryMock(),
   );
   locator.registerLazySingleton<PersonalInfoRepository>(
-        () => PersonalInfoRepositoryImpl(service: locator<PersonalInfoServiceMock>()),
+    () => PersonalInfoRepositoryImpl(service: locator<PersonalInfoServiceMock>()),
+  );
+  locator.registerLazySingleton<ReviewsRepository>(
+    () => ReviewsRepositoryImpl(service: locator<ReviewsServiceMock>())
   );
 
   // use cases
@@ -114,5 +123,12 @@ void setupLocator() {
   );
   locator.registerLazySingleton(
     () => GetUserInfoUseCase(repository: locator<PersonalInfoRepository>())
+  );
+
+  locator.registerLazySingleton(
+    () => GetReviewsUseCase(repository: locator<ReviewsRepository>())
+  );
+  locator.registerLazySingleton(
+    () => GetTotalReviewPagesUseCase(repository: locator<ReviewsRepository>())
   );
 }
