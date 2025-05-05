@@ -18,13 +18,9 @@ import 'package:netflix/domain/repositories/subscription_repository.dart';
 import 'package:netflix/domain/use_cases/change_birthdate_use_case.dart';
 import 'package:netflix/domain/use_cases/change_email_use_case.dart';
 import 'package:netflix/domain/use_cases/change_password_use_case.dart';
-import 'package:netflix/domain/use_cases/get_favorite_by_filter_use_case.dart';
 import 'package:netflix/domain/use_cases/get_reviews_use_case.dart';
-import 'package:netflix/domain/use_cases/get_subscriptions_use_case.dart';
 import 'package:netflix/domain/use_cases/get_total_reviews_pages_use_case.dart';
 import 'package:netflix/domain/use_cases/get_user_info_use_case.dart';
-import 'package:netflix/domain/use_cases/get_user_subscriptions_use_case.dart';
-import 'package:netflix/domain/use_cases/purchase_subscription_use_case.dart';
 import 'package:netflix/domain/use_cases/subscription/cancel_subscription_use_case.dart';
 import 'package:netflix/domain/use_cases/content/get_sections_use_case.dart';
 import 'package:netflix/domain/use_cases/content/get_content_by_id_use_case.dart';
@@ -72,7 +68,7 @@ void setupLocator() {
     () => PersonalInfoRepositoryImpl(service: locator<PersonalInfoServiceMock>()),
   );
   locator.registerLazySingleton<ReviewsRepository>(
-    () => ReviewsRepositoryImpl(service: locator<ReviewsServiceMock>()
+    () => ReviewsRepositoryImpl(service: locator<ReviewsServiceMock>())
   );
 
   // use cases
@@ -146,7 +142,7 @@ void setupLocator() {
     () => GetReviewsUseCase(repository: locator<ReviewsRepository>())
   );
   locator.registerLazySingleton(
-    () => GetTotalReviewPagesUseCase(repository: locator<ReviewsRepository>()
+    () => GetTotalReviewPagesUseCase(repository: locator<ReviewsRepository>())
   );
     
   locator.registerLazySingleton(
