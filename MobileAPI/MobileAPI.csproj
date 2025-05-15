@@ -6,4 +6,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HotChocolate" Version="15.1.4" />
+      <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.4" />
+      <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.4" />
+      <PackageReference Include="HotChocolate.Data.EntityFramework" Version="15.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
