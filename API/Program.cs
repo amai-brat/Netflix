@@ -8,6 +8,7 @@ using Application;
 using DataAccess;
 using Infrastructure.Identity.Data;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,22 +33,7 @@ builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
 
 var app = builder.Build();
 
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    await Task.Delay(1000);
-    
-    var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
-    if (dbContext!.Database.IsRelational())
-    {
-        await dbContext.Database.MigrateAsync();
-    }
-
-    var identityDbContext = scope.ServiceProvider.GetService<IdentityDbContext>();
-    if (identityDbContext!.Database.IsRelational())
-    {
-        await identityDbContext.Database.MigrateAsync();
-    }
-}
+await Migrator.MigrateAsync(app.Services);
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
