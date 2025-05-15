@@ -1,4 +1,4 @@
-enum UserStatus { initial, loading, authenticated, unauthenticated }
+enum UserStatus { initial, loading, signUpSuccess, authenticated, unauthenticated }
 
 class UserState {
   final UserStatus status;

@@ -1,5 +1,8 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:netflix/data/repositories/auth_repository_mock.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:netflix/data/repositories/auth_repository_impl.dart';
 import 'package:netflix/data/repositories/favorite_repository_mock.dart';
 import 'package:netflix/data/repositories/personal_info_repository.dart';
 import 'package:netflix/data/repositories/reviews_repository.dart';
@@ -37,18 +40,47 @@ import 'package:netflix/domain/use_cases/content/get_content_by_filter_use_case.
 import 'package:netflix/domain/use_cases/auth/signin_use_case.dart';
 import 'package:netflix/domain/use_cases/auth/signout_use_case.dart';
 import 'package:netflix/domain/use_cases/auth/signup_use_case.dart';
+import 'package:netflix/utils/consts.dart';
+
+import '../data/services/auth_service.dart';
 
 final GetIt locator = GetIt.instance;
 
 void setupLocator() {
+  // etc
+  locator.registerLazySingleton<FlutterSecureStorage>(
+    () => FlutterSecureStorage(
+      aOptions: const AndroidOptions(encryptedSharedPreferences: true),
+    ),
+  );
+
   // services
+  locator.registerLazySingleton<GraphQLClient>(() {
+    final HttpLink httpLink = HttpLink(dotenv.env['GRAPHQL_SERVER']!);
+    final AuthLink authLink = AuthLink(
+      getToken:
+          () async =>
+              'Bearer ${await locator<FlutterSecureStorage>().read(key: Consts.accessToken)}',
+    );
+
+    final Link link = authLink.concat(httpLink);
+    return GraphQLClient(cache: GraphQLCache(), link: link);
+  });
   locator.registerLazySingleton<AuthServiceMock>(() => AuthServiceMock());
-  locator.registerLazySingleton<PersonalInfoServiceMock>(() => PersonalInfoServiceMock());
+  locator.registerLazySingleton<AuthService>(
+    () => AuthService(locator<GraphQLClient>()),
+  );
+  locator.registerLazySingleton<PersonalInfoServiceMock>(
+    () => PersonalInfoServiceMock(),
+  );
   locator.registerLazySingleton<ReviewsServiceMock>(() => ReviewsServiceMock());
 
   // repos
   locator.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryMock(authService: locator<AuthServiceMock>()),
+    () => AuthRepositoryImpl(
+      authService: locator<AuthService>(),
+      secureStorage: locator<FlutterSecureStorage>(),
+    ),
   );
   locator.registerLazySingleton<SubscriptionRepository>(
     () => SubscriptionRepositoryMock(),
@@ -62,13 +94,14 @@ void setupLocator() {
     () => ContentTypeRepositoryMock(),
   );
   locator.registerLazySingleton<FavoriteRepository>(
-        () => FavoriteRepositoryMock(),
+    () => FavoriteRepositoryMock(),
   );
   locator.registerLazySingleton<PersonalInfoRepository>(
-    () => PersonalInfoRepositoryImpl(service: locator<PersonalInfoServiceMock>()),
+    () =>
+        PersonalInfoRepositoryImpl(service: locator<PersonalInfoServiceMock>()),
   );
   locator.registerLazySingleton<ReviewsRepository>(
-    () => ReviewsRepositoryImpl(service: locator<ReviewsServiceMock>())
+    () => ReviewsRepositoryImpl(service: locator<ReviewsServiceMock>()),
   );
 
   // use cases
@@ -126,25 +159,25 @@ void setupLocator() {
     ),
   );
   locator.registerLazySingleton(
-    () => ChangeBirthDateUseCase(repository: locator<PersonalInfoRepository>())
+    () => ChangeBirthDateUseCase(repository: locator<PersonalInfoRepository>()),
   );
   locator.registerLazySingleton(
-    () => ChangeEmailUseCase(repository: locator<PersonalInfoRepository>())
+    () => ChangeEmailUseCase(repository: locator<PersonalInfoRepository>()),
   );
   locator.registerLazySingleton(
-    () => ChangePasswordUseCase(repository: locator<PersonalInfoRepository>())
+    () => ChangePasswordUseCase(repository: locator<PersonalInfoRepository>()),
   );
   locator.registerLazySingleton(
-    () => GetUserInfoUseCase(repository: locator<PersonalInfoRepository>())
+    () => GetUserInfoUseCase(repository: locator<PersonalInfoRepository>()),
   );
 
   locator.registerLazySingleton(
-    () => GetReviewsUseCase(repository: locator<ReviewsRepository>())
+    () => GetReviewsUseCase(repository: locator<ReviewsRepository>()),
   );
   locator.registerLazySingleton(
-    () => GetTotalReviewPagesUseCase(repository: locator<ReviewsRepository>())
+    () => GetTotalReviewPagesUseCase(repository: locator<ReviewsRepository>()),
   );
-    
+
   locator.registerLazySingleton(
     () => CancelSubscriptionUseCase(
       subscriptionRepository: locator<SubscriptionRepository>(),

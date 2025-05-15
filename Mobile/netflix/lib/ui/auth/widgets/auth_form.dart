@@ -6,6 +6,7 @@ import 'package:netflix/ui/auth/bloc/auth_state.dart';
 import 'package:netflix/ui/core/bloc/user/user_bloc.dart';
 import 'package:netflix/ui/core/bloc/user/user_event.dart';
 import 'package:netflix/ui/core/bloc/user/user_state.dart';
+import 'package:provider/provider.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -63,6 +64,11 @@ class _AuthFormState extends State<AuthForm> {
   Widget build(BuildContext context) {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
+        if (state.status == UserStatus.signUpSuccess) {
+          context.read<AuthBloc>().add(
+            AuthFormTypeChanged(AuthFormType.signin),
+          );
+        }
         if (state.error.isNotEmpty) {
           ScaffoldMessenger.of(
             context,
@@ -84,7 +90,7 @@ class _AuthFormState extends State<AuthForm> {
                         AuthFieldsChanged(login: value),
                       );
                     },
-                    validator: widget.loginValidator
+                    validator: widget.loginValidator,
                   ),
                   SizedBox(height: 8),
                 ],
@@ -92,7 +98,9 @@ class _AuthFormState extends State<AuthForm> {
                   key: _emailFieldKey,
                   decoration: InputDecoration(hintText: 'Почта'),
                   onChanged: (value) {
-                    context.read<AuthBloc>().add(AuthFieldsChanged(email: value));
+                    context.read<AuthBloc>().add(
+                      AuthFieldsChanged(email: value),
+                    );
                   },
                   validator: widget.emailValidator,
                 ),
@@ -123,9 +131,6 @@ class _AuthFormState extends State<AuthForm> {
                               email: state.email,
                               password: state.password,
                             ),
-                          );
-                          context.read<AuthBloc>().add(
-                            AuthFormTypeChanged(AuthFormType.signin),
                           );
                         case AuthFormType.signin:
                           context.read<UserBloc>().add(
