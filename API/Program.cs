@@ -5,12 +5,9 @@ using API.Middlewares.ExceptionHandler;
 using DataAccess.Extensions;
 using Infrastructure;
 using Application;
-using DataAccess;
-using Infrastructure.Identity.Data;
 using Infrastructure.Options;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

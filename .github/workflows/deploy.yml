@@ -63,6 +63,7 @@ jobs:
           minimumReportSeverity: WARNING
           ignoreIssueType: |
             UnusedAutoPropertyAccessor.Global
+            NotAccessedPositionalProperty.Global
 
   build-front:
     name: Build and test front
