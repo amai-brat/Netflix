@@ -3,6 +3,8 @@ using Application.Exceptions.Base;
 using DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MobileAPI.Helpers;
+using MobileAPI.Options;
 using MobileAPI.Types;
 using MobileAPI.Types.Auth;
 using MobileAPI.Types.Subscriptions;
@@ -23,6 +25,7 @@ public static class DependencyInjection
                 PayloadErrorsFieldName = "errors",
                 ApplyToAllMutations = true
             })
+            .AddType<SubscriptionType>()
             .AddErrorFilter(error =>
             {
                 return error.Exception switch
@@ -37,12 +40,14 @@ public static class DependencyInjection
             .AddQueryType<Query>()
                 .AddTypeExtension<SubscriptionQuery>()
             .AddMutationType()
-                .AddTypeExtension<AuthMutation>();
+                .AddTypeExtension<AuthMutation>()
+                .AddTypeExtension<SubscriptionMutation>();
 
         return services;
     }
-    
-    public static IServiceCollection AddJwtAuthentication(this IServiceCollection serviceCollection, IConfiguration configuration)
+
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
         serviceCollection
             .AddAuthentication(options =>
@@ -60,7 +65,8 @@ public static class DependencyInjection
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:Key"]!)),
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:Key"]!)),
                     ClockSkew = TimeSpan.Zero
                 };
                 options.Events = new JwtBearerEvents
@@ -76,6 +82,7 @@ public static class DependencyInjection
                         {
                             context.Token = accessToken;
                         }
+
                         return Task.CompletedTask;
                     }
                 };
@@ -83,4 +90,20 @@ public static class DependencyInjection
 
         return serviceCollection;
     }
+
+    public static IServiceCollection AddServiceApis(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<JwtTokenHandler>();
+        
+        var options = configuration.GetSection("Services").Get<ServicesOptions>() 
+                      ?? throw new InvalidOperationException("Services options are missing.");
+        
+        services.AddHttpClient("SubscriptionService", client =>
+        {
+            client.BaseAddress = new Uri(options.SubscriptionServiceUrl);
+        }).AddHttpMessageHandler<JwtTokenHandler>();
+
+        return services;
+    }
+
 }
