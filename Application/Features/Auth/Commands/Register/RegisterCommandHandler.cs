@@ -45,6 +45,9 @@ internal class RegisterCommandHandler(
         var identityResult = await userManager.CreateAsync(appUser, request.SignUpDto.Password);
         if (identityResult.Succeeded)
         {
+            // сильно душит, поэтому без проверки почты
+            appUser.EmailConfirmed = true;
+            
             await userManager.AddToRoleAsync(appUser, "user");
             await unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        if (state.status == UserStatus.unauthenticated) {
+        if (state.status != UserStatus.authenticated) {
           return AuthPage();
         }
 
