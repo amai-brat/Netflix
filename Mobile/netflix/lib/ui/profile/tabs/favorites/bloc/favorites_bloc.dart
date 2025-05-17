@@ -2,17 +2,21 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/favorite_filter_params.dart';
 import 'package:netflix/domain/use_cases/content/get_favorite_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/content/remove_from_favorite_use_case.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_event.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_state.dart';
 import 'package:netflix/utils/result.dart';
 
 class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   final GetFavoriteByFilterUseCase _getFavoriteByFilterUseCase;
+  final RemoveFromFavoriteUseCase _removeFromFavoriteUseCase;
   Timer? _searchTimer;
 
   FavoriteBloc({
     required GetFavoriteByFilterUseCase getFavoriteByFilterUseCase,
+    required RemoveFromFavoriteUseCase removeFromFavoriteUseCase,
   })  : _getFavoriteByFilterUseCase = getFavoriteByFilterUseCase,
+        _removeFromFavoriteUseCase = removeFromFavoriteUseCase,
         super(FavoriteState(
           filterParams: const FavoriteFilterParams(),
       )) {
@@ -24,6 +28,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     on<ApplyFilters>(_onApplyFilters);
     on<ResetFilters>(_onResetFilters);
     on<ResetSort>(_onResetSort);
+    on<RemoveFavorite>(_onRemoveFavorite);
   }
 
   Future<void> _onLoadInitialData(
@@ -177,6 +182,27 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
       filterParams: resetParams,
     ));
     add(ApplyFilters(resetParams));
+  }
+
+  Future<void> _onRemoveFavorite (
+      RemoveFavorite event,
+      Emitter<FavoriteState> emit,
+      ) async {
+    final result = await _removeFromFavoriteUseCase.execute(event.contentId);
+
+    switch(result){
+      case Ok():{
+        emit(state.copyWith(
+          favorites: state.favorites.where((f) => f.id != event.contentId).toList()
+        ));
+      }
+      default:{
+        emit(state.copyWith(
+          error: 'Ошибка удаления из избранного',
+          isLoading: false,
+        ));
+      }
+    }
   }
 
   @override

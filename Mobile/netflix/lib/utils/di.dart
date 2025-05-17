@@ -18,6 +18,7 @@ import 'package:netflix/domain/repositories/favorite_repository.dart';
 import 'package:netflix/domain/repositories/personal_info_repository.dart';
 import 'package:netflix/domain/repositories/reviews_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
+import 'package:netflix/domain/use_cases/content/remove_from_favorite_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_birthdate_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_email_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_password_use_case.dart';
@@ -137,6 +138,11 @@ void setupLocator() {
   );
   locator.registerLazySingleton(
     () => GetFavoriteByFilterUseCase(
+      favoriteRepository: locator<FavoriteRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+        () => RemoveFromFavoriteUseCase(
       favoriteRepository: locator<FavoriteRepository>(),
     ),
   );
