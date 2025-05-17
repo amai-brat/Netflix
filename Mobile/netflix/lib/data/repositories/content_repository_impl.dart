@@ -370,13 +370,13 @@ class ContentRepositoryImpl extends ContentRepository {
   _createFilterArgument(ContentFilterParams params) {
     return {
       'country': params.country,
-      'genres': params.selectedGenres.isEmpty ? null : params.selectedGenres.map((g) => g.id),
+      'genres': params.selectedGenres.isEmpty ? null : params.selectedGenres.map((g) => g.id).toList(),
       'name': params.searchQuery.isEmpty ? null : params.searchQuery,
       'ratingFrom': params.ratingFrom,
       'ratingTo': params.ratingTo,
       'releaseYearFrom': params.yearFrom,
       'releaseYearTo': params.yearTo,
-      'types': params.selectedTypes.isEmpty ? null : params.selectedTypes.map((t) => t.id),
+      'types': params.selectedTypes.isEmpty ? null : params.selectedTypes.map((t) => t.id).toList(),
       'sortBy': params.sortBy?.stringValue
     };
   }

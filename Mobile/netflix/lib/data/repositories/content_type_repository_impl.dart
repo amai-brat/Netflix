@@ -14,7 +14,7 @@ class ContentTypeRepositoryImpl extends ContentTypeRepository {
       query GetContentTypes() {
         contentTypes {
           id
-          name
+          contentTypeName
         }
       }
     ''';

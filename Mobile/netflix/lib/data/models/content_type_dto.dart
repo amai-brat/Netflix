@@ -8,7 +8,7 @@ class ContentTypeDto {
 
   ContentTypeDto.fromMap(Map<String, dynamic> map)
       : id = map['id'],
-        name = map['name'];
+        name = map['contentTypeName'];
 
   ContentType toContentType() => ContentType(id: id, name: name);
 }
