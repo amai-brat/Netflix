@@ -48,7 +48,8 @@ public static class DependencyInjection
                 .AddTypeExtension<ContentTypeQuery>()
                 .AddTypeExtension<FavouriteContentQuery>()
             .AddMutationType()
-                .AddTypeExtension<AuthMutation>();
+                .AddTypeExtension<AuthMutation>()
+                .AddTypeExtension<FavouriteContentMutation>();
 
         return services;
     }
