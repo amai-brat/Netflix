@@ -11,6 +11,10 @@
       <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.4" />
       <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.4" />
       <PackageReference Include="HotChocolate.Data.EntityFramework" Version="15.1.4" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
