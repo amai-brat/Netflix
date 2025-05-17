@@ -2,7 +2,7 @@ import 'package:netflix/domain/models/content/content.dart';
 
 class Favorite {
   final int id;
-  final int userScore;
+  final int? userScore;
   final DateTime addedDate;
   final Content content;
 

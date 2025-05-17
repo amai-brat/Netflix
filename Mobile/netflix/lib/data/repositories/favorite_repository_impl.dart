@@ -1,0 +1,66 @@
+import 'dart:convert';
+import 'package:collection/collection.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:netflix/data/models/favourite_dto.dart';
+import 'package:netflix/domain/models/content/age_ratings.dart';
+import 'package:netflix/domain/models/content/budget.dart';
+import 'package:netflix/domain/models/content/content.dart';
+import 'package:netflix/domain/models/content/content_type.dart';
+import 'package:netflix/domain/models/content/ratings.dart';
+import 'package:netflix/domain/models/content/trailer_info.dart';
+import 'package:netflix/domain/models/favorite.dart';
+import 'package:netflix/domain/models/favorite_filter_params.dart';
+import 'package:netflix/domain/models/content/genre.dart';
+import 'package:netflix/domain/repositories/favorite_repository.dart';
+
+class FavoriteRepositoryImpl extends FavoriteRepository {
+  final GraphQLClient _client;
+
+  FavoriteRepositoryImpl(this._client);
+
+  @override
+  Future<List<Favorite>> getFavorites(FavoriteFilterParams params, int page, int perPage) async {
+    const query = r'''
+      query GetFavouriteContents($filter: FavouriteFilterInput!, $first: Int, $after: String) {
+        favouriteContents (filter: $filter, first: $first, after: $after) {
+          nodes {
+            id
+            score
+            addedAt
+            contentBase {
+              id
+              name
+              posterUrl
+            }
+          }
+        }
+      }
+    ''';
+
+    final options = QueryOptions(
+      document: gql(query),
+      variables: {
+        'filter': _createFavouriteFilterArgument(params),
+        'first': perPage,
+        'after': base64Encode(utf8.encode((page*perPage - 1).toString())),
+      },
+    );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      final error = result.exception!.linkException ?? result.exception!.graphqlErrors.map((e) => e.message).join('\n');
+      throw Exception(error);
+    }
+
+    final favourites = result.data?['favouriteContents']['nodes'] ?? [];
+    return (favourites as List).map((json) => FavoriteDto.fromMap(json).toFavorite()).toList();
+  }
+
+  _createFavouriteFilterArgument(FavoriteFilterParams params) {
+    return {
+      'name' : params.searchQuery.isEmpty ? null : params.searchQuery,
+      'sortBy' : params.sortBy?.stringValue
+    };
+  }
+}

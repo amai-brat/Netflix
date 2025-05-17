@@ -52,7 +52,7 @@ class FavoriteCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    'Моя оценка: ${favorite.userScore}',
+                    'Моя оценка: ${favorite.userScore ?? 'Нет оценки'}',
                     style: TextStyle(
                       color: AppColors.textWhite,
                       fontSize: 16,
