@@ -3,13 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:netflix/data/repositories/auth_repository_impl.dart';
-import 'package:netflix/data/repositories/favorite_repository_mock.dart';
+import 'package:netflix/data/repositories/favorite_repository_impl.dart';
 import 'package:netflix/data/repositories/personal_info_repository.dart';
 import 'package:netflix/data/repositories/reviews_repository.dart';
 import 'package:netflix/data/repositories/subscription_repository_mock.dart';
-import 'package:netflix/data/repositories/content_repository_mock.dart';
-import 'package:netflix/data/repositories/content_type_repository_mock.dart';
-import 'package:netflix/data/repositories/genre_repository_mock.dart';
+import 'package:netflix/data/repositories/content_repository_impl.dart';
+import 'package:netflix/data/repositories/content_type_repository_impl.dart';
+import 'package:netflix/data/repositories/genre_repository_impl.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/data/services/personal_info_service_mock.dart';
 import 'package:netflix/data/services/reviews_service_mock.dart';
@@ -87,14 +87,14 @@ void setupLocator() {
   );
 
   locator.registerLazySingleton<ContentRepository>(
-    () => ContentRepositoryMock(),
+    () => ContentRepositoryImpl(locator<GraphQLClient>()),
   );
-  locator.registerLazySingleton<GenreRepository>(() => GenreRepositoryMock());
+  locator.registerLazySingleton<GenreRepository>(() => GenreRepositoryImpl(locator<GraphQLClient>()));
   locator.registerLazySingleton<ContentTypeRepository>(
-    () => ContentTypeRepositoryMock(),
+    () => ContentTypeRepositoryImpl(locator<GraphQLClient>()),
   );
   locator.registerLazySingleton<FavoriteRepository>(
-    () => FavoriteRepositoryMock(),
+    () => FavoriteRepositoryImpl(locator<GraphQLClient>()),
   );
   locator.registerLazySingleton<PersonalInfoRepository>(
     () =>
