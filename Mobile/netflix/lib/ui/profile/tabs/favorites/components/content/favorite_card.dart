@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/favorite.dart';
+import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_bloc.dart';
+import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_event.dart';
 import 'package:netflix/utils/app_colors.dart';
 
 class FavoriteCard extends StatelessWidget {
@@ -52,7 +55,7 @@ class FavoriteCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    'Моя оценка: ${favorite.userScore}',
+                    'Моя оценка: ${favorite.userScore ?? 'Нет оценки'}',
                     style: TextStyle(
                       color: AppColors.textWhite,
                       fontSize: 16,
@@ -69,6 +72,16 @@ class FavoriteCard extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0, right: 8.0),
+            child: IconButton(
+              onPressed: () => context.read<FavoriteBloc>().add(RemoveFavorite(favorite.content.id)),
+              icon: Icon(Icons.delete_outline, color: AppColors.primaryRed),
+              iconSize: 24,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
           ),
         ],

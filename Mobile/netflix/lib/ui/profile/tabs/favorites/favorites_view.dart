@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/use_cases/content/get_favorite_by_filter_use_case.dart';
+import 'package:netflix/domain/use_cases/content/remove_from_favorite_use_case.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_bloc.dart';
 import 'package:netflix/ui/profile/tabs/favorites/bloc/favorites_event.dart';
 import 'package:netflix/ui/profile/tabs/favorites/components/content/favorite_list.dart';
@@ -15,7 +16,8 @@ class FavoritesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => FavoriteBloc(
-          getFavoriteByFilterUseCase: locator<GetFavoriteByFilterUseCase>(),
+        getFavoriteByFilterUseCase: locator<GetFavoriteByFilterUseCase>(),
+        removeFromFavoriteUseCase: locator<RemoveFromFavoriteUseCase>()
       )..add(LoadInitialData()),
       child: Scaffold(
           appBar: AppBar(

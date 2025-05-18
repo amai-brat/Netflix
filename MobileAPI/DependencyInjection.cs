@@ -7,6 +7,10 @@ using MobileAPI.Helpers;
 using MobileAPI.Options;
 using MobileAPI.Types;
 using MobileAPI.Types.Auth;
+using MobileAPI.Types.Content;
+using MobileAPI.Types.ContentType;
+using MobileAPI.Types.FavouriteContent;
+using MobileAPI.Types.Genre;
 using MobileAPI.Types.Subscriptions;
 
 namespace MobileAPI;
@@ -19,6 +23,9 @@ public static class DependencyInjection
         services
             .AddGraphQLServer()
             .AddAuthorization()
+            .AddFiltering()
+            .AddSorting()
+            .AddProjections()
             .RegisterDbContextFactory<AppDbContext>()
             .AddMutationConventions(new MutationConventionOptions
             {
@@ -39,9 +46,14 @@ public static class DependencyInjection
             })
             .AddQueryType<Query>()
                 .AddTypeExtension<SubscriptionQuery>()
+                .AddTypeExtension<ContentQuery>()
+                .AddTypeExtension<GenreQuery>()
+                .AddTypeExtension<ContentTypeQuery>()
+                .AddTypeExtension<FavouriteContentQuery>()
             .AddMutationType()
                 .AddTypeExtension<AuthMutation>()
-                .AddTypeExtension<SubscriptionMutation>();
+                .AddTypeExtension<SubscriptionMutation>()
+                .AddTypeExtension<FavouriteContentMutation>();
 
         return services;
     }

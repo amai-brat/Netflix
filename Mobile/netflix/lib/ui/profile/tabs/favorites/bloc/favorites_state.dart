@@ -5,6 +5,7 @@ class FavoriteState {
   final List<Favorite> favorites;
   final int page;
   final int perPage;
+  final int removedCount;
   final bool hasMore;
   final bool isLoadingMore;
   final bool isLoading;
@@ -16,6 +17,7 @@ class FavoriteState {
     this.favorites = const [],
     this.page = 0,
     this.perPage = 4,
+    this.removedCount = 0,
     this.hasMore = true,
     this.isLoadingMore = false,
     this.isLoading = false,
@@ -27,6 +29,7 @@ class FavoriteState {
   FavoriteState copyWith({
     List<Favorite>? favorites,
     int? page,
+    int? removedCount,
     bool? hasMore,
     bool? isLoadingMore,
     bool? isLoading,
@@ -38,6 +41,7 @@ class FavoriteState {
       favorites: favorites ?? this.favorites,
       page: page ?? this.page,
       perPage: perPage,
+      removedCount: removedCount ?? this.removedCount,
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isLoading: isLoading ?? this.isLoading,
