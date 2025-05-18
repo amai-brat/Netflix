@@ -15,7 +15,7 @@ public class FavouriteContentQuery
     [Authorize]
     [UsePaging]
     [UseProjection]
-    public IQueryable<FavouriteDto> GetFavouriteContents(
+    public async Task<IQueryable<FavouriteDto>> GetFavouriteContents(
         [Argument] FavouriteFilter filter, 
         [Service] AppDbContext context,
         [Service] IHttpContextAccessor accessor)
@@ -44,8 +44,9 @@ public class FavouriteContentQuery
                     null :
                     f.Content.Reviews.FirstOrDefault(r => userId == r.UserId)!.Score,
         });
-        
-        return OrderByFavouriteFilter(dtoContents, filter);
+        if (filter.SortBy is FavouriteSortBy.UserRatingAsc or FavouriteSortBy.UserRatingDesc)
+            dtoContents = OrderByFavouriteFilter(await dtoContents.ToListAsync(), filter).AsQueryable();
+        return dtoContents;
     }
     
     private static Expression<Func<Domain.Entities.FavouriteContent, bool>> IsContentNameContain(FavouriteFilter filter) =>
@@ -71,13 +72,13 @@ public class FavouriteContentQuery
                 _ => favourites
             };
     
-    private static IQueryable<FavouriteDto> OrderByFavouriteFilter(IQueryable<FavouriteDto> favourites, FavouriteFilter filter) =>
+    private static IEnumerable<FavouriteDto> OrderByFavouriteFilter(IEnumerable<FavouriteDto> favourites, FavouriteFilter filter) =>
         !filter.SortBy.HasValue ?
             favourites
             : filter.SortBy.Value switch
             {
-                FavouriteSortBy.UserRatingDesc => favourites.OrderByDescending(f => f.Score),
-                FavouriteSortBy.UserRatingAsc => favourites.OrderBy(f => f.Score),
+                FavouriteSortBy.UserRatingDesc => favourites.OrderByDescending(f => f.Score ?? -1),
+                FavouriteSortBy.UserRatingAsc => favourites.OrderBy(f => f.Score ?? 11),
                 _ => favourites
             };
 }
