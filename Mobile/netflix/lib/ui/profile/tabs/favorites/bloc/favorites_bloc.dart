@@ -39,7 +39,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
 
     await Future.delayed(Duration(milliseconds: 200));
 
-    final favorites = await _getFavoriteByFilterUseCase.execute(state.filterParams, 0, state.perPage);
+    final favorites = await _getFavoriteByFilterUseCase.execute(state.filterParams, 0, state.perPage, 0);
 
     switch (favorites) {
       case Ok(): {
@@ -74,7 +74,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     await Future.delayed(Duration(milliseconds: 200));
 
     final result = await _getFavoriteByFilterUseCase.execute(
-      state.filterParams, nextPage, state.perPage
+      state.filterParams, nextPage, state.perPage, state.removedCount
     );
 
     switch (result) {
@@ -137,8 +137,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
       ApplyFilters event,
       Emitter<FavoriteState> emit,
       ) async {
-    emit(state.copyWith(isLoading: true, page: 0, hasMore: true));
-    final favorites = await _getFavoriteByFilterUseCase.execute(event.params, 0, state.perPage);
+    emit(state.copyWith(isLoading: true, page: 0, removedCount: 0, hasMore: true));
+    final favorites = await _getFavoriteByFilterUseCase.execute(event.params, 0, state.perPage, 0);
 
     switch(favorites){
       case Ok():{
@@ -147,6 +147,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
           filterParams: state.filterParams,
           isLoading: false,
           page: 0,
+          removedCount: 0,
           hasMore: favorites.value.length >= state.perPage
         ));
       }
@@ -193,7 +194,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     switch(result){
       case Ok():{
         emit(state.copyWith(
-          favorites: state.favorites.where((f) => f.content.id != event.contentId).toList()
+          favorites: state.favorites.where((f) => f.content.id != event.contentId).toList(),
+          removedCount: state.removedCount + 1
         ));
       }
       default:{

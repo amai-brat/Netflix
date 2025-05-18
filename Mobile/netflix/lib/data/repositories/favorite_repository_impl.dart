@@ -11,7 +11,7 @@ class FavoriteRepositoryImpl extends FavoriteRepository {
   FavoriteRepositoryImpl(this._client);
 
   @override
-  Future<List<Favorite>> getFavorites(FavoriteFilterParams params, int page, int perPage) async {
+  Future<List<Favorite>> getFavorites(FavoriteFilterParams params, int page, int perPage, int removedCount) async {
     const query = r'''
       query GetFavouriteContents($filter: FavouriteFilterInput!, $first: Int, $after: String) {
         favouriteContents (filter: $filter, first: $first, after: $after) {
@@ -33,8 +33,9 @@ class FavoriteRepositoryImpl extends FavoriteRepository {
       variables: {
         'filter': _createFavouriteFilterArgument(params),
         'first': perPage,
-        'after': base64Encode(utf8.encode((page*perPage - 1).toString())),
+        'after': base64Encode(utf8.encode((page*perPage - 1 - removedCount).toString())),
       },
+      fetchPolicy: FetchPolicy.networkOnly
     );
 
     final result = await _client.query(options);
