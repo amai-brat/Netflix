@@ -193,7 +193,7 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     switch(result){
       case Ok():{
         emit(state.copyWith(
-          favorites: state.favorites.where((f) => f.id != event.contentId).toList()
+          favorites: state.favorites.where((f) => f.content.id != event.contentId).toList()
         ));
       }
       default:{

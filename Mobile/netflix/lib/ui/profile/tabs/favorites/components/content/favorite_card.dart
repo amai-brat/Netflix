@@ -77,8 +77,8 @@ class FavoriteCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 12.0, right: 8.0),
             child: IconButton(
-              onPressed: () => context.read<FavoriteBloc>().add(RemoveFavorite(favorite.id)),
-              icon: Icon(Icons.delete_outline, color: AppColors.textWhite),
+              onPressed: () => context.read<FavoriteBloc>().add(RemoveFavorite(favorite.content.id)),
+              icon: Icon(Icons.delete_outline, color: AppColors.primaryRed),
               iconSize: 24,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),

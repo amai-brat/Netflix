@@ -16,7 +16,6 @@ class FavoriteRepositoryImpl extends FavoriteRepository {
       query GetFavouriteContents($filter: FavouriteFilterInput!, $first: Int, $after: String) {
         favouriteContents (filter: $filter, first: $first, after: $after) {
           nodes {
-            id
             score
             addedAt
             contentBase {
