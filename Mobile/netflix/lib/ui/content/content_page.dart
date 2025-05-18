@@ -21,12 +21,25 @@ class ContentPage extends StatelessWidget {
           (context) =>
               ContentBloc.createViaLocator()
                 ..add(ContentPageOpened(contentId: contentId)),
-      child: BlocBuilder<ContentBloc, ContentState>(
+      child: BlocConsumer<ContentBloc, ContentState>(
+        listener: (context, state) {
+          if (state.error.isNotEmpty) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.error)));
+          }
+        },
         builder: (context, state) {
           if (state.isLoading) {
             return Scaffold(
               appBar: AppBar(title: const Text('Загрузка...')),
               body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (state.content == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text("Ошибка")),
+              body: Center(child: const Text('Что-то пошло не так')),
             );
           }
 
@@ -40,7 +53,9 @@ class ContentPage extends StatelessWidget {
                     ContentDescription(description: state.content!.description),
                     ContentTrailer(trailerInfo: state.content!.trailerInfo),
                     ContentRatings(ratings: state.content!.ratings),
-                    ContentPersons(personsInContent: state.content!.personsInContent)
+                    ContentPersons(
+                      personsInContent: state.content!.personsInContent,
+                    ),
                   ],
                 ),
               ),

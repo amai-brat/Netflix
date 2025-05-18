@@ -1,6 +1,7 @@
 using System.Text;
 using Application.Exceptions.Base;
 using DataAccess;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MobileAPI.Helpers;
@@ -11,6 +12,7 @@ using MobileAPI.Types.Content;
 using MobileAPI.Types.ContentType;
 using MobileAPI.Types.FavouriteContent;
 using MobileAPI.Types.Genre;
+using MobileAPI.Types.Section;
 using MobileAPI.Types.Subscriptions;
 
 namespace MobileAPI;
@@ -33,6 +35,9 @@ public static class DependencyInjection
                 ApplyToAllMutations = true
             })
             .AddType<SubscriptionType>()
+            .AddInterfaceType<ContentBase>()
+                .AddType<MovieContent>()
+                .AddType<SerialContent>()
             .AddErrorFilter(error =>
             {
                 return error.Exception switch
@@ -50,6 +55,7 @@ public static class DependencyInjection
                 .AddTypeExtension<GenreQuery>()
                 .AddTypeExtension<ContentTypeQuery>()
                 .AddTypeExtension<FavouriteContentQuery>()
+                .AddTypeExtension<SectionQuery>()
             .AddMutationType()
                 .AddTypeExtension<AuthMutation>()
                 .AddTypeExtension<SubscriptionMutation>()

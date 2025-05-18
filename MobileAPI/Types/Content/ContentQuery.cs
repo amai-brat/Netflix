@@ -3,6 +3,7 @@ using Application.Services.Extensions;
 using DataAccess;
 using Domain.Entities;
 using HotChocolate.Language;
+using Microsoft.EntityFrameworkCore;
 
 namespace MobileAPI.Types.Content;
 
@@ -22,6 +23,13 @@ public class ContentQuery
                 .CombineExpressions(IsContentRatingBetween(filter)));
         contents = OrderByFilter(contents, filter);
         return contents;
+    }
+
+    [UseProjection]
+    public IQueryable<ContentBase> GetContentById([Argument] long id, [Service] AppDbContext context)
+    {
+        return context.ContentBases
+            .Where(x => x.Id == id);
     }
     
     private static Expression<Func<ContentBase, bool>> IsContentNameContain(Filter filter) =>
