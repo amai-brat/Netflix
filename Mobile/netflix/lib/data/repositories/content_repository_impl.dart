@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:netflix/data/models/api_content_dto.dart';
 import 'package:netflix/data/models/api_section_dto.dart';
@@ -14,8 +13,6 @@ import 'package:netflix/domain/models/content/trailer_info.dart';
 import 'package:netflix/domain/models/content_filter_params.dart';
 import 'package:netflix/domain/models/content/content_type.dart';
 import 'package:netflix/domain/models/content/genre.dart';
-import 'package:netflix/domain/models/sections/section.dart';
-import 'package:netflix/domain/models/sections/section_content.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/domain/responses/sections_response.dart';
 import 'package:netflix/utils/result.dart';

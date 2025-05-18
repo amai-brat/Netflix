@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:netflix/data/mappers/subscription_mapper.dart';
 import 'package:netflix/data/models/api_subscription.dart';
 import 'package:netflix/data/models/api_user_subscription.dart';
 import 'package:netflix/data/services/subscription_service.dart';
 import 'package:netflix/domain/dtos/bank_card_dto.dart';
-import 'package:netflix/domain/models/subscription.dart';
 import 'package:netflix/domain/models/user_subscription.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
 import 'package:netflix/domain/responses/subscriptions_response.dart';
@@ -73,7 +70,9 @@ class SubscriptionRepositoryImpl extends SubscriptionRepository {
       case Ok<ApiUserSubscription>():
         final sub = SubscriptionMapper.mapUserSubscriptionFrom(apiRes.value);
         if (sub.status == UserSubscriptionStatus.failed) {
-          return Result.error("Покупка подписки не удалась. Попробуйте ещё раз");
+          return Result.error(
+            "Покупка подписки не удалась. Попробуйте ещё раз",
+          );
         }
         return Result.ok(null);
       case Error<ApiUserSubscription>():
@@ -87,7 +86,7 @@ class SubscriptionRepositoryImpl extends SubscriptionRepository {
     required int subscriptionId,
   }) async {
     final apiRes = await _subscriptionService.cancelSubscription(
-      subscriptionId: subscriptionId
+      subscriptionId: subscriptionId,
     );
 
     switch (apiRes) {

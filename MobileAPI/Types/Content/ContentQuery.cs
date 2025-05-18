@@ -3,7 +3,6 @@ using Application.Services.Extensions;
 using DataAccess;
 using Domain.Entities;
 using HotChocolate.Language;
-using Microsoft.EntityFrameworkCore;
 
 namespace MobileAPI.Types.Content;
 
