@@ -16,6 +16,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 
+builder.Services.AddServiceApis(builder.Configuration);
 builder.Services.AddMobileGraphQL();
 
 var app = builder.Build();

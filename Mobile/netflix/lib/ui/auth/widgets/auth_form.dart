@@ -6,7 +6,6 @@ import 'package:netflix/ui/auth/bloc/auth_state.dart';
 import 'package:netflix/ui/core/bloc/user/user_bloc.dart';
 import 'package:netflix/ui/core/bloc/user/user_event.dart';
 import 'package:netflix/ui/core/bloc/user/user_state.dart';
-import 'package:provider/provider.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});

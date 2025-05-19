@@ -23,6 +23,13 @@ public class ContentQuery
         contents = OrderByFilter(contents, filter);
         return contents;
     }
+
+    [UseProjection]
+    public IQueryable<ContentBase> GetContentById([Argument] long id, [Service] AppDbContext context)
+    {
+        return context.ContentBases
+            .Where(x => x.Id == id);
+    }
     
     private static Expression<Func<ContentBase, bool>> IsContentNameContain(Filter filter) =>
         content => filter.Name == null || content.Name.ToLower().Contains(filter.Name.ToLower());

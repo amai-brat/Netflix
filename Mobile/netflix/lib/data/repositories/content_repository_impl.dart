@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:netflix/data/models/api_content_dto.dart';
+import 'package:netflix/data/models/api_section_dto.dart';
 import 'package:netflix/data/models/content_card_dto.dart';
 import 'package:netflix/domain/models/content/age_ratings.dart';
 import 'package:netflix/domain/models/content/budget.dart';
@@ -12,8 +13,6 @@ import 'package:netflix/domain/models/content/trailer_info.dart';
 import 'package:netflix/domain/models/content_filter_params.dart';
 import 'package:netflix/domain/models/content/content_type.dart';
 import 'package:netflix/domain/models/content/genre.dart';
-import 'package:netflix/domain/models/sections/section.dart';
-import 'package:netflix/domain/models/sections/section_content.dart';
 import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/domain/responses/sections_response.dart';
 import 'package:netflix/utils/result.dart';
@@ -336,35 +335,111 @@ class ContentRepositoryImpl extends ContentRepository {
 
   @override
   Future<Result<Content>> getContentById({required int contentId}) async {
-    await Future.delayed(Duration(milliseconds: 500));
+    const query = r'''
+      query GetContentbyId($id: Long!) {
+        contentById(id: $id) {
+          id
+          name
+          description
+          slogan
+          posterUrl
+          country
+          ... on MovieContent {
+            releaseDate
+          }
+          contentType {
+            id
+            contentTypeName
+          }
+          personsInContent {
+            id
+            contentId
+            name
+            profession {
+              id
+              professionName
+            }
+          }
+          genres {
+            id
+            name
+          }
+          trailerInfo {
+            url
+            name
+          }
+          budget {
+            budgetValue
+            budgetCurrencyName
+          }
+          ratings {
+            kinopoiskRating
+            imdbRating
+            localRating
+          }
+          ageRatings {
+            age
+            ageMpaa
+          }
+        }
+      }
+    ''';
 
-    final content = allContent.firstWhereOrNull((c) => c.id == contentId);
-    if (content == null) {
-      return Result.error('Контнет не найден');
+    final options = QueryOptions(
+      document: gql(query),
+      variables: {
+        'id': contentId
+      },
+    );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      final error = result.exception!.linkException ?? result.exception!.graphqlErrors.map((e) => e.message).join('\n');
+      throw Exception(error);
     }
 
-    return Result.ok(content);
+    final apiContentList = result.data?['contentById'] as List;
+    if (apiContentList.isEmpty) {
+      return Result.error("Контент не найден");
+    }
+
+    return Result.ok(ApiContentDto.fromMap(apiContentList[0]).toContent());
   }
 
   @override
   Future<Result<SectionsResponse>> getSections() async {
-    final sectionNames = ['Новинки', 'Классика', 'Аниме'];
-    return Result.ok(
-      SectionsResponse(
-        data:
-            sectionNames
-                .map(
-                  (name) => Section(
-                    name: name,
-                    contents:
-                        allContent
-                            .map((c) => SectionContent.fromContent(c))
-                            .toList(),
-                  ),
-                )
-                .toList(),
-      ),
+    const query = r'''
+      query Sections {
+        sections {
+          name
+          contents {
+            id
+            name
+            posterUrl
+          }
+        }
+      }
+    ''';
+
+    final options = QueryOptions(
+      document: gql(query),
     );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      final error = result.exception!.linkException ?? result.exception!.graphqlErrors.map((e) => e.message).join('\n');
+      throw Exception(error);
+    }
+
+    final apiSections =  result.data?['sections'] as List;
+
+    return Result.ok(SectionsResponse(data:
+      apiSections.map(
+              (s) => ApiSectionDto
+                  .fromMap(s).toSection())
+          .toList()));
   }
 
   _createFilterArgument(ContentFilterParams params) {
