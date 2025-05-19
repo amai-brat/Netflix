@@ -1,10 +1,10 @@
-import 'package:netflix/data/services/reviews_service_mock.dart';
+import 'package:netflix/data/services/reviews_service.dart';
 import 'package:netflix/domain/models/user_review.dart';
 import 'package:netflix/domain/repositories/reviews_repository.dart';
 import 'package:netflix/utils/result.dart';
 
 class ReviewsRepositoryImpl implements ReviewsRepository {
-  final ReviewsServiceMock service;
+  final ReviewsService service;
 
   ReviewsRepositoryImpl({required this.service});
 

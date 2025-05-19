@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MobileAPI.Types;
 using MobileAPI.Types.Auth;
+using MobileAPI.Types.Reviews;
 using MobileAPI.Types.Subscriptions;
+using MobileAPI.Types.User;
 
 namespace MobileAPI;
 
@@ -16,7 +18,14 @@ public static class DependencyInjection
     {
         services
             .AddGraphQLServer()
+            .ModifyCostOptions(options =>
+            {
+                options.MaxFieldCost = 10_000;
+            })
             .AddAuthorization()
+            .AddFiltering()
+            .AddSorting()
+            .AddProjections()
             .RegisterDbContextFactory<AppDbContext>()
             .AddMutationConventions(new MutationConventionOptions
             {
@@ -36,8 +45,11 @@ public static class DependencyInjection
             })
             .AddQueryType<Query>()
                 .AddTypeExtension<SubscriptionQuery>()
+                .AddTypeExtension<PersonalInfoQuery>()
+                .AddTypeExtension<ReviewsQuery>()
             .AddMutationType()
-                .AddTypeExtension<AuthMutation>();
+                .AddTypeExtension<AuthMutation>()
+                .AddTypeExtension<PersonalInfoMutation>();
 
         return services;
     }
