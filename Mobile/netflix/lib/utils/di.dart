@@ -11,8 +11,8 @@ import 'package:netflix/data/repositories/content_repository_impl.dart';
 import 'package:netflix/data/repositories/content_type_repository_impl.dart';
 import 'package:netflix/data/repositories/genre_repository_impl.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
-import 'package:netflix/data/services/personal_info_service_mock.dart';
-import 'package:netflix/data/services/reviews_service_mock.dart';
+import 'package:netflix/data/services/personal_info_service.dart';
+import 'package:netflix/data/services/reviews_service.dart';
 import 'package:netflix/data/services/subscription_service.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
@@ -72,13 +72,13 @@ void setupLocator() {
   locator.registerLazySingleton<AuthService>(
     () => AuthService(locator<GraphQLClient>()),
   );
+  locator.registerLazySingleton<PersonalInfoService>(
+    () => PersonalInfoService(locator<GraphQLClient>()),
+  );
   locator.registerLazySingleton<SubscriptionService>(
     () => SubscriptionService(locator<GraphQLClient>()),
   );
-  locator.registerLazySingleton<PersonalInfoServiceMock>(
-    () => PersonalInfoServiceMock(),
-  );
-  locator.registerLazySingleton<ReviewsServiceMock>(() => ReviewsServiceMock());
+  locator.registerLazySingleton<ReviewsService>(() => ReviewsService(locator<GraphQLClient>()));
 
   // repos
   locator.registerLazySingleton<AuthRepository>(
@@ -105,10 +105,10 @@ void setupLocator() {
   );
   locator.registerLazySingleton<PersonalInfoRepository>(
     () =>
-        PersonalInfoRepositoryImpl(service: locator<PersonalInfoServiceMock>()),
+        PersonalInfoRepositoryImpl(service: locator<PersonalInfoService>()),
   );
   locator.registerLazySingleton<ReviewsRepository>(
-    () => ReviewsRepositoryImpl(service: locator<ReviewsServiceMock>()),
+    () => ReviewsRepositoryImpl(service: locator<ReviewsService>()),
   );
 
   // use cases

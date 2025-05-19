@@ -102,7 +102,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   if (success != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      success,
+                      "Пароль успешно изменен",
                       style: const TextStyle(color: Colors.green),
                     ),
                   ],

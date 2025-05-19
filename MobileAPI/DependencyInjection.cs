@@ -8,12 +8,15 @@ using MobileAPI.Helpers;
 using MobileAPI.Options;
 using MobileAPI.Types;
 using MobileAPI.Types.Auth;
+using MobileAPI.Types.Reviews;
 using MobileAPI.Types.Content;
 using MobileAPI.Types.ContentType;
 using MobileAPI.Types.FavouriteContent;
 using MobileAPI.Types.Genre;
 using MobileAPI.Types.Section;
+
 using MobileAPI.Types.Subscriptions;
+using MobileAPI.Types.User;
 
 namespace MobileAPI;
 
@@ -24,6 +27,10 @@ public static class DependencyInjection
     {
         services
             .AddGraphQLServer()
+            .ModifyCostOptions(options =>
+            {
+                options.MaxFieldCost = 10_000;
+            })
             .AddAuthorization()
             .AddFiltering()
             .AddSorting()
@@ -51,6 +58,8 @@ public static class DependencyInjection
             })
             .AddQueryType<Query>()
                 .AddTypeExtension<SubscriptionQuery>()
+                .AddTypeExtension<PersonalInfoQuery>()
+                .AddTypeExtension<ReviewsQuery>()
                 .AddTypeExtension<ContentQuery>()
                 .AddTypeExtension<GenreQuery>()
                 .AddTypeExtension<ContentTypeQuery>()
@@ -58,6 +67,7 @@ public static class DependencyInjection
                 .AddTypeExtension<SectionQuery>()
             .AddMutationType()
                 .AddTypeExtension<AuthMutation>()
+                .AddTypeExtension<PersonalInfoMutation>()
                 .AddTypeExtension<SubscriptionMutation>()
                 .AddTypeExtension<FavouriteContentMutation>();
 
