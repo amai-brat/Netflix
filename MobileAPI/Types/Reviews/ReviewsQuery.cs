@@ -6,7 +6,6 @@ using DataAccess;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MediatR;
-using HotChocolate.Data;
 using MobileAPI.Helpers;
 using UserReviewDto = Application.Features.Users.Queries.GetReviews.UserReviewDto;
 
@@ -41,8 +40,7 @@ public class ReviewsQuery
     public IQueryable<UserReviewDto> GetReviews(
         [Service] AppDbContext dbContext,
         [Service] IMapper mapper,
-        [Service] IHttpContextAccessor accessor,
-        [Service] IMediator mediator)
+        [Service] IHttpContextAccessor accessor)
     {
         var userId = accessor.HttpContext!.GetUserId();
 
