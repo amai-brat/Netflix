@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:collection/collection.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:netflix/data/models/content_card_dto.dart';
 import 'package:netflix/domain/models/content/age_ratings.dart';
 import 'package:netflix/domain/models/content/budget.dart';
 import 'package:netflix/domain/models/content/content.dart';
@@ -15,7 +18,11 @@ import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/domain/responses/sections_response.dart';
 import 'package:netflix/utils/result.dart';
 
-class ContentRepositoryMock extends ContentRepository {
+class ContentRepositoryImpl extends ContentRepository {
+  final GraphQLClient _client;
+
+  ContentRepositoryImpl(this._client);
+
   static const description = """
 Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение.
 Проходит немного времени, и вот уже новые друзья лупят друг друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью.
@@ -295,67 +302,36 @@ class ContentRepositoryMock extends ContentRepository {
     int page,
     int perPage,
   ) async {
-    await Future.delayed(Duration(seconds: 1));
-
-    final filteredContent =
-        allContent.where((movie) {
-          if (params.searchQuery.isNotEmpty &&
-              !movie.title.toLowerCase().contains(
-                params.searchQuery.toLowerCase(),
-              )) {
-            return false;
+    const query = r'''
+      query GetContents($filter: FilterInput!, $first: Int, $after: String) {
+        contents(filter: $filter, first: $first, after: $after) {
+          nodes {
+            id
+            name
+            posterUrl
           }
-          if (params.selectedGenres.isNotEmpty &&
-              !params.selectedGenres.every(
-                (genre) =>
-                    movie.genres.any((movieGenre) => movieGenre.id == genre.id),
-              )) {
-            return false;
-          }
-          if (params.selectedTypes.isNotEmpty &&
-              !params.selectedTypes.any((type) => type.id == movie.type.id)) {
-            return false;
-          }
-          if (params.country != null &&
-              movie.country.toLowerCase() != params.country!.toLowerCase()) {
-            return false;
-          }
-          if (params.yearFrom != null && movie.year < params.yearFrom!) {
-            return false;
-          }
-          if (params.yearTo != null && movie.year > params.yearTo!) {
-            return false;
-          }
-          if (params.ratingFrom != null && movie.rating < params.ratingFrom!) {
-            return false;
-          }
-          if (params.ratingTo != null && movie.rating > params.ratingTo!) {
-            return false;
-          }
-          return true;
-        }).toList();
-
-    filteredContent.sort((a, b) {
-      switch (params.sortBy) {
-        case SortBy.ratingDesc:
-          return b.rating.compareTo(a.rating);
-        case SortBy.ratingAsc:
-          return a.rating.compareTo(b.rating);
-        case SortBy.dateDesc:
-          return b.year.compareTo(a.year);
-        case SortBy.dateAsc:
-          return a.year.compareTo(b.year);
-        case SortBy.titleAsc:
-          return a.title.compareTo(b.title);
-        case SortBy.titleDesc:
-          return b.title.compareTo(a.title);
-        default:
-          return 0;
+        }
       }
-    });
-    final takenContent =
-        filteredContent.skip(page * perPage).take(perPage).toList();
-    return takenContent;
+    ''';
+
+    final options = QueryOptions(
+      document: gql(query),
+      variables: {
+        'filter': _createFilterArgument(params),
+        'first': perPage,
+        'after': base64Encode(utf8.encode((page*perPage - 1).toString())),
+      },
+    );
+
+    final result = await _client.query(options);
+
+    if (result.hasException) {
+      final error = result.exception!.linkException ?? result.exception!.graphqlErrors.map((e) => e.message).join('\n');
+      throw Exception(error);
+    }
+
+    final contents = result.data?['contents']['nodes'] ?? [];
+    return (contents as List).map((json) => ContentCardDto.fromMap(json).toContent()).toList();
   }
 
   @override
@@ -389,5 +365,19 @@ class ContentRepositoryMock extends ContentRepository {
                 .toList(),
       ),
     );
+  }
+
+  _createFilterArgument(ContentFilterParams params) {
+    return {
+      'country': params.country,
+      'genres': params.selectedGenres.isEmpty ? null : params.selectedGenres.map((g) => g.id).toList(),
+      'name': params.searchQuery.isEmpty ? null : params.searchQuery,
+      'ratingFrom': params.ratingFrom,
+      'ratingTo': params.ratingTo,
+      'releaseYearFrom': params.yearFrom,
+      'releaseYearTo': params.yearTo,
+      'types': params.selectedTypes.isEmpty ? null : params.selectedTypes.map((t) => t.id).toList(),
+      'sortBy': params.sortBy?.stringValue
+    };
   }
 }

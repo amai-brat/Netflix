@@ -28,5 +28,18 @@ enum FavoritesSortBy {
   dateDesc,
   dateAsc,
   titleAsc,
-  titleDesc,
+  titleDesc;
+
+  String get stringValue => switch (this) {
+    FavoritesSortBy.addedDateDesc => 'ADDED_DATE_DESC',
+    FavoritesSortBy.addedDateAsc => 'ADDED_DATE_ASC',
+    FavoritesSortBy.userRatingDesc => 'USER_RATING_DESC',
+    FavoritesSortBy.userRatingAsc => 'USER_RATING_ASC',
+    FavoritesSortBy.publicRatingDesc => 'PUBLIC_RATING_DESC',
+    FavoritesSortBy.publicRatingAsc => 'PUBLIC_RATING_ASC',
+    FavoritesSortBy.dateDesc => 'DATE_DESC',
+    FavoritesSortBy.dateAsc => 'DATE_ASC',
+    FavoritesSortBy.titleAsc => 'TITLE_ASC',
+    FavoritesSortBy.titleDesc => 'TITLE_DESC',
+  };
 }
