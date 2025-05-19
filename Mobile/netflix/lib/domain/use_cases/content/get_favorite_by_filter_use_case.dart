@@ -9,9 +9,9 @@ class GetFavoriteByFilterUseCase {
   GetFavoriteByFilterUseCase({required FavoriteRepository favoriteRepository})
       : _favoriteRepository = favoriteRepository;
 
-  Future<Result<List<Favorite>>> execute(FavoriteFilterParams params, int page, int perPage) async {
+  Future<Result<List<Favorite>>> execute(FavoriteFilterParams params, int page, int perPage, int removedCount) async {
     try {
-      return Result.ok(await _favoriteRepository.getFavorites(params, page, perPage));
+      return Result.ok(await _favoriteRepository.getFavorites(params, page, perPage, removedCount));
     } catch (e) {
       return Result.error(e.toString());
     }

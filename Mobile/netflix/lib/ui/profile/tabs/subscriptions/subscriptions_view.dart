@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +35,14 @@ class SubscriptionsView extends StatelessWidget {
                 ..add(SubscriptionsPageOpened()),
       child: Scaffold(
         appBar: AppBar(title: const Text('Мои подписки')),
-        body: BlocBuilder<SubscriptionsBloc, SubscriptionsState>(
+        body: BlocConsumer<SubscriptionsBloc, SubscriptionsState>(
+          listener: (context, state) {
+            if (state.error.isNotEmpty) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.error)));
+            }
+          },
           builder: (context, state) {
             if (state.status == SubscriptionsStatus.loading) {
               return Center(child: CircularProgressIndicator());
@@ -51,9 +59,13 @@ class SubscriptionsView extends StatelessWidget {
                     }
 
                     final us = state.userSubscriptions[index];
-                    final sub = state.subscriptions.firstWhere(
+                    final sub = state.subscriptions.firstWhereOrNull(
                       (sub) => sub.id == us.subscriptionId,
                     );
+
+                    if (sub == null) {
+                      return null;
+                    }
 
                     return UserSubscriptionCard(
                       userSubscription: us,

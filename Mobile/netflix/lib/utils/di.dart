@@ -3,21 +3,23 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:netflix/data/repositories/auth_repository_impl.dart';
-import 'package:netflix/data/repositories/favorite_repository_mock.dart';
+import 'package:netflix/data/repositories/favorite_repository_impl.dart';
 import 'package:netflix/data/repositories/personal_info_repository.dart';
 import 'package:netflix/data/repositories/reviews_repository.dart';
-import 'package:netflix/data/repositories/subscription_repository_mock.dart';
-import 'package:netflix/data/repositories/content_repository_mock.dart';
-import 'package:netflix/data/repositories/content_type_repository_mock.dart';
-import 'package:netflix/data/repositories/genre_repository_mock.dart';
+import 'package:netflix/data/repositories/subscription_repository_impl.dart';
+import 'package:netflix/data/repositories/content_repository_impl.dart';
+import 'package:netflix/data/repositories/content_type_repository_impl.dart';
+import 'package:netflix/data/repositories/genre_repository_impl.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
 import 'package:netflix/data/services/personal_info_service.dart';
 import 'package:netflix/data/services/reviews_service.dart';
+import 'package:netflix/data/services/subscription_service.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
 import 'package:netflix/domain/repositories/personal_info_repository.dart';
 import 'package:netflix/domain/repositories/reviews_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
+import 'package:netflix/domain/use_cases/content/remove_from_favorite_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_birthdate_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_email_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_password_use_case.dart';
@@ -73,6 +75,9 @@ void setupLocator() {
   locator.registerLazySingleton<PersonalInfoService>(
     () => PersonalInfoService(locator<GraphQLClient>()),
   );
+  locator.registerLazySingleton<SubscriptionService>(
+    () => SubscriptionService(locator<GraphQLClient>()),
+  );
   locator.registerLazySingleton<ReviewsService>(() => ReviewsService(locator<GraphQLClient>()));
 
   // repos
@@ -83,18 +88,20 @@ void setupLocator() {
     ),
   );
   locator.registerLazySingleton<SubscriptionRepository>(
-    () => SubscriptionRepositoryMock(),
+    () => SubscriptionRepositoryImpl(
+      subscriptionService: locator<SubscriptionService>(),
+    ),
   );
 
   locator.registerLazySingleton<ContentRepository>(
-    () => ContentRepositoryMock(),
+    () => ContentRepositoryImpl(locator<GraphQLClient>()),
   );
-  locator.registerLazySingleton<GenreRepository>(() => GenreRepositoryMock());
+  locator.registerLazySingleton<GenreRepository>(() => GenreRepositoryImpl(locator<GraphQLClient>()));
   locator.registerLazySingleton<ContentTypeRepository>(
-    () => ContentTypeRepositoryMock(),
+    () => ContentTypeRepositoryImpl(locator<GraphQLClient>()),
   );
   locator.registerLazySingleton<FavoriteRepository>(
-    () => FavoriteRepositoryMock(),
+    () => FavoriteRepositoryImpl(locator<GraphQLClient>()),
   );
   locator.registerLazySingleton<PersonalInfoRepository>(
     () =>
@@ -137,6 +144,11 @@ void setupLocator() {
   );
   locator.registerLazySingleton(
     () => GetFavoriteByFilterUseCase(
+      favoriteRepository: locator<FavoriteRepository>(),
+    ),
+  );
+  locator.registerLazySingleton(
+        () => RemoveFromFavoriteUseCase(
       favoriteRepository: locator<FavoriteRepository>(),
     ),
   );

@@ -31,3 +31,8 @@ class ApplyFilters extends FavoriteEvent {
 class ResetFilters extends FavoriteEvent {}
 
 class ResetSort extends FavoriteEvent {}
+
+class RemoveFavorite extends FavoriteEvent {
+  final int contentId;
+  const RemoveFavorite(this.contentId);
+}

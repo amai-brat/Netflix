@@ -1,8 +1,7 @@
-using DataAccess;
 using Domain.Entities;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
-using MobileAPI.Helpers;
+using MobileAPI.Exceptions;
 
 namespace MobileAPI.Types.Subscriptions;
 
@@ -10,12 +9,43 @@ namespace MobileAPI.Types.Subscriptions;
 public class SubscriptionQuery
 {
     [Authorize]
-    public IQueryable<UserSubscription> UserSubscriptions(
-        [Service] AppDbContext dbContext, 
-        [Service] IHttpContextAccessor accessor)
+    public async Task<IEnumerable<UserSubscription>> UserSubscriptions(
+        [Service] ILogger<SubscriptionQuery> logger,
+        [Service] IHttpClientFactory clientFactory)
     {
-        var userId = accessor.HttpContext!.GetUserId();
-        return dbContext.UserSubscriptions
-            .Where(us => us.UserId == userId);
+        try
+        {
+            var client = clientFactory.CreateClient("SubscriptionService");
+            var response = await client.GetAsync("subscription/getCurrentUserSubscriptions");
+            response.EnsureSuccessStatusCode();
+        
+            var result = await response.Content.ReadFromJsonAsync<List<UserSubscription>>();
+            return result!;
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning("Error during query {Query}: {Message}", nameof(UserSubscriptions), e.Message);
+            throw new ServiceUnavailableException("SubscritpionService");
+        }
+    } 
+    
+    public async Task<IEnumerable<Subscription>> Subscriptions(
+        [Service] ILogger<SubscriptionQuery> logger,
+        [Service] IHttpClientFactory clientFactory)
+    {
+        try
+        {
+            var client = clientFactory.CreateClient("SubscriptionService");
+            var response = await client.GetAsync("subscription/getAllSubscriptions");
+            response.EnsureSuccessStatusCode();
+        
+            var result = await response.Content.ReadFromJsonAsync<List<Subscription>>();
+            return result!;
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning("Error during query {Query}: {Message}", nameof(Subscriptions), e.Message);
+            throw new ServiceUnavailableException("SubscritpionService");
+        }
     } 
 }
