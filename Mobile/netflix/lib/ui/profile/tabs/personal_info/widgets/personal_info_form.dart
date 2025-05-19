@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:netflix/ui/profile/tabs/personal_info/bloc/personal_info_bloc.dart';
 import 'package:netflix/ui/profile/tabs/personal_info/widgets/change_password_dialog.dart';
 
@@ -77,11 +78,11 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
                 : IconButton(
               icon: const Icon(Icons.save),
               onPressed: () {
-                final text = _birthDateController.text.trim();
-                final parsed = DateTime.tryParse(text.replaceAll('.', '-'));
-                if (parsed != null) {
+                try{
+                  final text = _birthDateController.text.trim();
+                  final parsed = DateFormat('dd.MM.yyyy').parseStrict(text);
                   context.read<PersonalInfoBloc>().add(ChangeBirthDateEvent(text));
-                } else {
+                } catch (e) {
                   context.read<PersonalInfoBloc>().add(
                     ChangeBirthDateEvent('invalid-date'),
                   );
@@ -181,7 +182,7 @@ class _PersonalInfoFormState extends State<PersonalInfoForm> {
           const Padding(
             padding: EdgeInsets.only(top: 4),
             child: Text(
-              'Email изменен',
+              'Письмо с подтверждением было выслано на почту',
               style: TextStyle(color: Colors.green, fontSize: 12),
             ),
           ),

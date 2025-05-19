@@ -73,7 +73,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(state.copyWith(error: resultUp.error));
         return;
       case Ok<void>():
-        break;
+        emit(state.copyWith(status: UserStatus.signUpSuccess, error: ''));
     }
   }
 

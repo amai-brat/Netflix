@@ -55,5 +55,14 @@ enum SortBy {
   dateDesc,
   dateAsc,
   titleAsc,
-  titleDesc,
+  titleDesc;
+
+  String get stringValue => switch (this) {
+    SortBy.ratingDesc => 'RATING_DESC',
+    SortBy.ratingAsc => 'RATING_ASC',
+    SortBy.dateDesc => 'DATE_DESC',
+    SortBy.dateAsc => 'DATE_ASC',
+    SortBy.titleAsc => 'TITLE_ASC',
+    SortBy.titleDesc => 'TITLE_DESC',
+  };
 }

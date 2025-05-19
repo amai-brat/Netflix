@@ -1,10 +1,10 @@
-import 'package:netflix/data/services/personal_info_service_mock.dart';
+import 'package:netflix/data/services/personal_info_service.dart';
 import 'package:netflix/domain/models/user_info.dart';
 import 'package:netflix/domain/repositories/personal_info_repository.dart';
 import 'package:netflix/utils/result.dart';
 
 class PersonalInfoRepositoryImpl implements PersonalInfoRepository {
-  final PersonalInfoServiceMock service;
+  final PersonalInfoService service;
 
   PersonalInfoRepositoryImpl({required this.service});
 
