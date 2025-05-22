@@ -5,6 +5,7 @@ using Amazon.S3.Transfer;
 using MassTransit;
 using Shared.Consts;
 using StackExchange.Redis;
+using SupportAPI.Services.Abstractions;
 using SupportAPI.Services.MetadataExtractor;
 
 namespace SupportAPI.Services.Implementations;

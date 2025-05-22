@@ -5,7 +5,7 @@ using SupportAPI.Configuration;
 using SupportAPI.Extensions;
 using SupportAPI.Hubs;
 using SupportAPI.Options;
-using SupportAPI.Services;
+using SupportAPI.Services.Abstractions;
 using SupportAPI.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
