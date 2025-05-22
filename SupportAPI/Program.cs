@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using SupportAPI;
 using SupportAPI.Configuration;
 using SupportAPI.Extensions;
-using SupportAPI.Hubs;
 using SupportAPI.Options;
 using SupportAPI.Services.Abstractions;
 using SupportAPI.Services.Implementations;
@@ -12,16 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddOptions(builder.Configuration);
-builder.Services.AddSignalR(s =>
-{
-    s.EnableDetailedErrors = true;
-});
+builder.Services.AddGrpc();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenWithBearer();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddSingleton<ISupportChatSessionManager, SupportChatSessionManager>();
 builder.Services.AddSingleton<AmazonS3Client>(sp =>
 {
     var minioOptions = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
@@ -58,7 +55,9 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHub<SupportHub>("/hub/support");
+app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
+app.MapGrpcService<SupportChatService>();
+
 app.MapControllers();
 
 app.Run();
