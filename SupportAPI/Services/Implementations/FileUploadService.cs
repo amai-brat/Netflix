@@ -7,7 +7,7 @@ using Shared.Consts;
 using StackExchange.Redis;
 using SupportAPI.Services.MetadataExtractor;
 
-namespace SupportAPI.Services.Impl;
+namespace SupportAPI.Services.Implementations;
 
 public class FileUploadService(
     IDatabase redisDatabase,
