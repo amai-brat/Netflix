@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option csharp_namespace = "SupportAPI";
+
+package support_chat;
+
+service SupportChat {
+  rpc Connect (ConnectRequest) returns (ConnectResponse);
+  rpc ConnectToStream (ConnectToStreamRequest) returns (stream SupportChatMessage);
+  rpc SendMessage (SupportChatSendMessage) returns (SupportChatMessageAck);
+  rpc JoinSupportChat (JoinSupportChatRequest) returns (JoinSupportChatResponse);
+  rpc LeaveSupportChat (LeaveSupportChatRequest) returns (LeaveSupportChatResponse);
+}
+
+message ConnectRequest {
+}
+
+message ConnectToStreamRequest {
+  string sessionId = 1;
+}
+
+message ConnectResponse {
+  string sessionId = 1; 
+}
+
+message JoinSupportChatRequest {
+  int64 group_owner_id = 1;
+  string sessionId = 2;
+}
+
+message JoinSupportChatResponse {
+}
+
+message SupportChatMessage {
+  int64 id = 1;
+  string name = 2;
+  SupportChatMessageBase message = 3;
+}
+
+message SupportChatMessageBase {
+  string role = 1;
+  string text = 2;
+  repeated FileInformation files= 3;
+}
+
+message SupportChatSendMessage {
+  int64 group_owner_id = 1; 
+  string sessionId = 2;
+  string message = 3;
+  repeated FileInformation files = 4;
+}
+
+message FileInformation{
+  string type = 1;
+  string src = 2;
+  string name = 3;
+}
+
+message SupportChatMessageAck {
+}
+
+message LeaveSupportChatRequest {
+  int64 group_owner_id = 1;
+  string sessionId = 2;
+}
+
+message LeaveSupportChatResponse {
+}
