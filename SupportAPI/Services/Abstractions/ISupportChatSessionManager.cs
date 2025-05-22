@@ -2,7 +2,7 @@ using Grpc.Core;
 
 namespace SupportAPI.Services.Abstractions;
 
-public interface IChatSessionManager
+public interface ISupportChatSessionManager
 {
     string CreateUserSession(long userId);
     void BindSessionWithStream(string sessionId, IServerStreamWriter<SupportChatMessage> stream);

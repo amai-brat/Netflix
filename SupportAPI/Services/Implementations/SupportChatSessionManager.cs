@@ -5,7 +5,7 @@ using SupportAPI.Services.Abstractions;
 
 namespace SupportAPI.Services.Implementations;
 
-public class ChatSessionManager: IChatSessionManager
+public class SupportChatSessionManager: ISupportChatSessionManager
 {
     private readonly ConcurrentDictionary<long, List<string>> _userSessions = new();
     private readonly ConcurrentDictionary<string, IServerStreamWriter<SupportChatMessage>?> _sessionStreams = new();

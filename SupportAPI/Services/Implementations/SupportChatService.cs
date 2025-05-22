@@ -8,9 +8,9 @@ using SupportAPI.Services.Abstractions;
 namespace SupportAPI.Services.Implementations;
 
 [Authorize]
-public class ChatService(
+public class SupportChatService(
     IBus bus,
-    IChatSessionManager sessionManager
+    ISupportChatSessionManager sessionManager
     ) : SupportChat.SupportChatBase
 {
     public override Task<ConnectResponse> Connect(ConnectRequest request, ServerCallContext context)
