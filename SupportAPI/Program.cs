@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenWithBearer();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
-builder.Services.AddSingleton<ISupportChatSessionManager, SupportChatSessionManager>();
+builder.Services.AddSingleton<ISupportChatSessionManager<SupportChatMessage>, SupportChatSessionManager>();
 builder.Services.AddSingleton<AmazonS3Client>(sp =>
 {
     var minioOptions = sp.GetRequiredService<IOptions<MinioOptions>>().Value;

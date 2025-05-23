@@ -1,14 +1,10 @@
-using Grpc.Core;
+using SupportAPI.Services.Implementations;
 
 namespace SupportAPI.Services.Abstractions;
 
-public interface ISupportChatSessionManager
+public interface ISupportChatSessionManager<T>: IChatSessionManager<T> where T : class
 {
-    string CreateUserSession(long userId);
-    void BindSessionWithStream(string sessionId, IServerStreamWriter<SupportChatMessage> stream);
-    void RemoveUserSession(long userId, string sessionId);
-    void JoinUserSessionGroup(long ownerId, string sessionId);
-    void LeaveUserSessionGroup(long ownerId, string sessionId);
-    bool IsSessionBelongToUser(long userId, string sessionId);
-    Task BroadcastMessageToUserGroupAsync(long ownerId, SupportChatMessage message, List<string>? excludeSessionIds = null);
+    string CreateUserSession(long userId, SupportChatRole role);
+    void RemoveUserSession(long userId, string sessionId, SupportChatRole role);
+    Task NotifyNewMessageSupport(T message);
 }

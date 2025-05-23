@@ -10,14 +10,14 @@ namespace SupportAPI.Services.Implementations;
 [Authorize]
 public class SupportChatService(
     IBus bus,
-    ISupportChatSessionManager sessionManager
+    ISupportChatSessionManager<SupportChatMessage> sessionManager
     ) : SupportChat.SupportChatBase
 {
     public override Task<ConnectResponse> Connect(ConnectRequest request, ServerCallContext context)
     {
         var userId = GetUserId(context);
         
-        var sessionId = sessionManager.CreateUserSession(userId);
+        var sessionId = sessionManager.CreateUserSession(userId, GetUserSupportChatRole(context));
         
         return Task.FromResult(new ConnectResponse() { SessionId = sessionId });
     }
@@ -43,8 +43,17 @@ public class SupportChatService(
         }
         finally
         {
-            sessionManager.RemoveUserSession(userId, request.SessionId);
+            sessionManager.BindSessionWithStream(request.SessionId, null);
         }
+    }
+
+    public override Task<DisconnectResponse> Disconnect(DisconnectRequest request, ServerCallContext context)
+    {
+        var userId = GetUserId(context);
+        
+        sessionManager.RemoveUserSession(userId, request.SessionId, GetUserSupportChatRole(context));
+        
+        return Task.FromResult(new DisconnectResponse());
     }
 
     public override async Task<SupportChatMessageAck> SendMessage(SupportChatSendMessage request, ServerCallContext context)
@@ -63,6 +72,9 @@ public class SupportChatService(
         
         await bus.Publish(chatMessageEvent);
         await sessionManager.BroadcastMessageToUserGroupAsync(request.GroupOwnerId, supportChatMessage,[request.SessionId]);
+        
+        if(!IsInRolesOr(context, "admin", "moderator", "support"))
+            await sessionManager.NotifyNewMessageSupport(supportChatMessage);
         
         return new SupportChatMessageAck();
     }
@@ -145,4 +157,12 @@ public class SupportChatService(
     
     private static string GetUserRole(ServerCallContext context)
         => context.GetHttpContext().User.IsInRole("support") ? "support" : "user";
+
+    private static SupportChatRole GetUserSupportChatRole(ServerCallContext context) =>
+        GetUserRole(context) switch
+        {
+            "support" => SupportChatRole.Support,
+            "user" => SupportChatRole.User,
+            _ => SupportChatRole.User
+        };
 }

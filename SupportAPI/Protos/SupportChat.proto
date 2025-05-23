@@ -10,6 +10,7 @@ service SupportChat {
   rpc SendMessage (SupportChatSendMessage) returns (SupportChatMessageAck);
   rpc JoinSupportChat (JoinSupportChatRequest) returns (JoinSupportChatResponse);
   rpc LeaveSupportChat (LeaveSupportChatRequest) returns (LeaveSupportChatResponse);
+  rpc Disconnect (DisconnectRequest) returns (DisconnectResponse);
 }
 
 message ConnectRequest {
@@ -34,7 +35,13 @@ message JoinSupportChatResponse {
 message SupportChatMessage {
   int64 id = 1;
   string name = 2;
-  SupportChatMessageBase message = 3;
+  MessageType message_type = 3;
+  SupportChatMessageBase message = 4;
+}
+
+enum MessageType {
+  Notification = 0;
+  Message = 1;
 }
 
 message SupportChatMessageBase {
@@ -65,4 +72,11 @@ message LeaveSupportChatRequest {
 }
 
 message LeaveSupportChatResponse {
+}
+
+message DisconnectRequest {
+  string sessionId = 1;
+}
+
+message DisconnectResponse {
 }
