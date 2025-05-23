@@ -41,28 +41,31 @@ public class ChatSessionManager<T>: IChatSessionManager<T> where T: class
         
         value.Remove(sessionId);
         _sessionStreams.TryRemove(sessionId, out _);
-        
+        LeaveUserSessionGroup(userId, sessionId);
+            
         if (!value.IsNullOrEmpty())
             return;
         
         _userSessions.TryRemove(userId, out _);
-        RemoveUserGroup(userId);
     }
 
     public virtual void JoinUserSessionGroup(long ownerId, string sessionId)
     {
-        if (!_userGroups.TryGetValue(ownerId, out var group)) 
-            return;
+        if (!_userGroups.TryGetValue(ownerId, out var _)) 
+            _userGroups.TryAdd(ownerId, []);
             
-        group.Add(sessionId);
+        _userGroups[ownerId].Add(sessionId);
     }
 
     public virtual void LeaveUserSessionGroup(long ownerId, string sessionId)
     {
-        if (_userGroups.TryGetValue(ownerId, out var group))
-        {
-            group.Remove(sessionId);
-        }
+        if (!_userGroups.TryGetValue(ownerId, out var group)) 
+            return;
+        
+        group.Remove(sessionId);
+        
+        if (group.IsNullOrEmpty())
+            RemoveUserGroup(ownerId);
     }
 
     public bool IsSessionBelongToUser(long userId, string sessionId) =>
@@ -99,8 +102,9 @@ public class ChatSessionManager<T>: IChatSessionManager<T> where T: class
     {
         if (!_userGroups.ContainsKey(userId))
         {
-            _userGroups.TryAdd(userId, [sessionId]);
+            _userGroups.TryAdd(userId, []);
         }
+        _userGroups[userId].Add(sessionId);
     }
 
     private void RemoveUserGroup(long userId)
