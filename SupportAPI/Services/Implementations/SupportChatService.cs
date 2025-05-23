@@ -25,10 +25,11 @@ public class SupportChatService(
     public override async Task ConnectToStream(ConnectToStreamRequest request, IServerStreamWriter<SupportChatMessage> responseStream, ServerCallContext context)
     {
         var userId = GetUserId(context);
-        sessionManager.BindSessionWithStream(request.SessionId, responseStream);
         
         if (!sessionManager.IsSessionBelongToUser(userId, request.SessionId))
             return;
+        
+        sessionManager.BindSessionWithStream(request.SessionId, responseStream);
         
         try
         {
