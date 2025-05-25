@@ -86,11 +86,15 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const loadHistory = async (groupId) => {
         try {
             const userId = store.data.chatSession.userId;
-            const history = userId === groupId ? 
+            const {response, data} = userId === groupId ? 
                 await supportService.getUserSupportMessagesHistory() : 
                 await supportService.getSupportUserMessagesHistory(groupId); 
 
-            setHistoryMessages(history);
+            if(!response.ok){
+                errorMessage("Не удалось загрузить историю")
+            }else{
+                setHistoryMessages(data);
+            }
         } catch (err) {
             errorMessage("Не удалось загрузить историю")
         }
