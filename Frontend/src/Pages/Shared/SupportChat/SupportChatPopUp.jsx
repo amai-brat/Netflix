@@ -23,7 +23,7 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
         initHistoryGroupId: user.id
     };
     const chatMessages = {
-        setHistoryMessages: (messages) => {setMessages([messages, ...(messages ?? [])])}, 
+        setHistoryMessages: (history) => {setMessages([history, ...(messages ?? [])])}, 
         setAddedMessage: (message) => {setMessages([...(messages ?? []), message])},
         setIncomingMessage: (message) => {setMessages([...(messages ?? []), message.message])},
         setErrorMessage: (message) => {setMessages([...(messages ?? []), message])}

@@ -23,11 +23,11 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
         initHistoryGroupId: selectedUserId
     };
     const chatMessages = {
-        setHistoryMessages: (messages) => {
+        setHistoryMessages: (history) => {
             setUsersMessages(usersMessages =>
                 usersMessages.map(userMessages =>
                     userMessages.id === selectedUserId
-                        ? { ...userMessages, messages: messages }
+                        ? { ...userMessages, messages: history }
                         : userMessages
                 )
             );
