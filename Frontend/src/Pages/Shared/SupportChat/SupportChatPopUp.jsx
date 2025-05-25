@@ -13,7 +13,6 @@ import {observer} from "mobx-react";
 
 const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
     const endOfMessagesRef = useRef(null);
-    const [messageInput, setMessageInput] = useState("")
     const [messages, setMessages] = useState(undefined)
     const [files, setFiles] = useState([]);
     const user = authenticationService.getUser()
@@ -34,11 +33,7 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
         setPopUpDisplayed(false)
     }
     
-    const onMessageInputChange = (e) => {
-        setMessageInput(e.target.value)
-    }
-    
-    const onSendMessageInputAsync = async () => {
+    const onSendMessageInputAsync = async (messageInput, setMessageInput) => {
         if((messageInput !== null && messageInput.trim() !== "") || files.length > 0){
             await sendMessage(user.id, messageInput, files);
             setMessageInput("")
@@ -79,23 +74,37 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
                         PopUp={({setPopUpDisplayed}) => <SupportChatFileTypesPopUp setFiles={setFiles} setPopUpDisplayed={setPopUpDisplayed}/>}
                         id="support-chat-files-types-pop-up"
                     />
-                    <textarea id="support-chat-message-input"
-                              value={messageInput} 
-                           placeholder="Введите сообщение..." 
-                           onChange={onMessageInputChange} 
-                           onKeyUp={(e) => {
-                               if(e.key === "Enter") {
-                                   onSendMessageInputAsync()
-                               }
-                           }}
-                    />
-                    <button id="support-chat-send-button" onClick={onSendMessageInputAsync}>
-                        <img id="support-chat-send-button-icon" src={sendIcon} alt="Send"/>
-                    </button>
+                    <SupportChatInput onSendMessageInputAsync={onSendMessageInputAsync}/>
                 </div>
             </div>
         </div>
     )
 });
+
+const SupportChatInput = ({onSendMessageInputAsync}) => {
+    const [messageInput, setMessageInput] = useState("")
+    
+    const onMessageInputChange = (e) => {
+        setMessageInput(e.target.value)
+    }
+    
+    return (
+        <>
+            <textarea id="support-chat-message-input"
+                      value={messageInput}
+                      placeholder="Введите сообщение..."
+                      onChange={onMessageInputChange}
+                      onKeyUp={(e) => {
+                          if (e.key === "Enter") {
+                              onSendMessageInputAsync(messageInput, setMessageInput)
+                          }
+                      }}
+            />
+            <button id="support-chat-send-button" onClick={onSendMessageInputAsync}>
+                <img id="support-chat-send-button-icon" src={sendIcon} alt="Send"/>
+            </button>
+        </>
+    )
+}
 
 export default SupportChatPopUp
