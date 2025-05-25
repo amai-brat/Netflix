@@ -7,12 +7,16 @@ class DataStore {
     }
     data = initialState
 
+    setConnection = (connection) => {
+        this.data.connection = connection
+    }
+    
     setChatSession = (session) => {
-        this.data.chatSessions = session;
+        this.data.chatSession = session;
     }
 
     removeSession = () => {
-        this.data.chatSessions = null;
+        this.data.chatSession = null;
     }
 
     setIsSignIn = (isSignIn) => {
