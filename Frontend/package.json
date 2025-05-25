@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "grpc-web-generated": "file:./grpcWebGenerated",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@microsoft/signalr": "^8.0.0",
