@@ -22,7 +22,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     }
     
     const connect = async () => {
-        const metadata = getMetadata();
+        const metadata = await getMetadata();
         try {
             const response = await GrpcSupportChatService.connect(metadata);
             const session = {
@@ -38,7 +38,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
                 message => handleIncomingMessage(message)
             );
             
-            store.setChatSession(userId, session);
+            store.setChatSession(session);
         } catch (error) {
             errorMessage("Не удалось подключиться");
         }
@@ -52,7 +52,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
                     session.stream.cancel();
                 }
 
-                const metadata = store.data.metadata();
+                const metadata = await store.data.metadata();
                 await GrpcSupportChatService.disconnect(session.id, metadata);
 
                 store.removeSession();
@@ -65,7 +65,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const joinChat = async (groupId) => {
         try{
             const session = store.data.chatSession;
-            const metadata = store.data.metadata();
+            const metadata = await store.data.metadata();
             await GrpcSupportChatService.joinSupportChat(session.id, groupId, metadata);
             await loadHistory(groupId);
         }catch{
@@ -76,7 +76,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const leaveChat = async (groupId) => {
         try{
             const session = store.data.chatSession;
-            const metadata = store.data.metadata();
+            const metadata = await store.data.metadata();
             await GrpcSupportChatService.leaveSupportChat(session.id, groupId, metadata);
         }catch{
             errorMessage("Не удалось отключиться")
@@ -100,7 +100,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
         try {
             const uploadedFiles = files.length > 0 ? await uploadFiles(groupId, files) : [];
             const session = store.data.chatSession;
-            const metadata = session.metadata();
+            const metadata = await session.metadata();
 
             if(uploadedFiles === undefined)
                 return;
