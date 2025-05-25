@@ -27,7 +27,7 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
             setUsersMessages(usersMessages =>
                 usersMessages.map(userMessages =>
                     userMessages.id === selectedUserId
-                        ? { ...userMessages, messages: history }
+                        ? { ...userMessages, messages: [...history, ...(userMessages.messages ?? [])] }
                         : userMessages
                 )
             );
