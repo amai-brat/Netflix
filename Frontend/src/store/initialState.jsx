@@ -1,6 +1,5 @@
 const initialState = {
-    connection: null,
-    supportConnection: null,
+    chatSession: null,
     isSignIn: false
 };
 

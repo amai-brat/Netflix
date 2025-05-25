@@ -18,35 +18,11 @@ import {ToastContainer} from "react-toastify";
 import AdminContent from "./Pages/Admin/Content/AdminContent.jsx";
 import {ProtectedRoute} from "./Pages/Shared/Security/ProtectedRoute.jsx";
 import SupportChat from "./Pages/Shared/SupportChat/SupportChat.jsx";
-import {useEffect} from "react";
-import * as signalR from "@microsoft/signalr";
-import {baseSupportHubUrl} from "./httpClient/baseUrl.js";
-import {useDataStore} from "./store/dataStoreProvider.jsx";
 import SupportTabWrapper from "./Pages/PersonalAccount/SupportTab/SupportTabWrapper.jsx";
 import {authenticationService} from "./services/authentication.service.js";
-import {observer} from "mobx-react";
-import {setOnFetchAuth} from "./httpClient/fetchAuth.js";
 
-const App = observer(() => {
-    
+const App = () => {
     const location = useLocation();
-    const store = useDataStore()
-
-    useEffect(() => {
-        setOnFetchAuth(() => {store.setIsSignIn(true)})
-        if(store.data.isSignIn && store.data.supportConnection === null){
-            const supportConnection = new signalR.HubConnectionBuilder()
-                .withUrl(baseSupportHubUrl + "hub/support", {accessTokenFactory:
-                        async () => await authenticationService.refreshTokenIfNotExpired(),
-                })
-                .configureLogging(signalR.LogLevel.Information)
-                .build();
-
-            supportConnection.start().then(() => {
-                store.setSupportConnection(supportConnection)
-            }).catch(err => console.error(err))
-        }
-    }, [store.data.isSignIn]);
     
     return (
         <>
@@ -86,6 +62,6 @@ const App = observer(() => {
             </Routes>
         </>
     )
-})
+}
 
 export default App

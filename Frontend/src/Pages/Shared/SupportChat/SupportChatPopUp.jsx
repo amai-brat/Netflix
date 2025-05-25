@@ -3,20 +3,33 @@ import sendIcon from "/src/assets/SendIcon.svg"
 import cross from "/src/assets/Cross.svg"
 import {useEffect, useRef, useState} from "react";
 import SupportChatMessage from "./SupportChatMessage.jsx";
-import {useDataStore} from "../../../store/dataStoreProvider.jsx";
 import {authenticationService} from "../../../services/authentication.service.js";
-import {supportService} from "../../../services/support.service.js";
 import SupportChatFilesPreview from "./SupportChatFilesPreview.jsx";
 import ComponentWithPopUp from "../PopUpModule/ComponentWithPopUp.jsx";
 import SupportChatUploadFilesButton from "./SupportChatUploadFilesButton.jsx";
 import SupportChatFileTypesPopUp from "./SupportChatFileTypesPopUp.jsx";
+import {useGrpcSupportChat} from "../../../hooks/useGrpcSupportChat.jsx";
+import {observer} from "mobx-react";
 
-const SupportChatPopUp = ({setPopUpDisplayed}) => {
+const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
     const endOfMessagesRef = useRef(null);
     const [messageInput, setMessageInput] = useState("")
     const [messages, setMessages] = useState(undefined)
     const [files, setFiles] = useState([]);
-    const store = useDataStore()
+    const user = authenticationService.getUser()
+    const chatDetails = {
+        userId : user.id,
+        role: "user",
+        initHistoryGroupId: user.id
+    };
+    const chatMessages = {
+        setHistoryMessages: (messages) => {setMessages([messages, ...(messages ?? [])])}, 
+        setAddedMessage: (message) => {setMessages([...(messages ?? []), message])},
+        setIncomingMessage: (message) => {setMessages([...(messages ?? []), message.message])},
+        setErrorMessage: (message) => {setMessages([...(messages ?? []), message])}
+    }
+    const {sendMessage} = useGrpcSupportChat(chatDetails, chatMessages);
+    
     const closePopUp = () => {
         setPopUpDisplayed(false)
     }
@@ -25,74 +38,9 @@ const SupportChatPopUp = ({setPopUpDisplayed}) => {
         setMessageInput(e.target.value)
     }
     
-    const errorMessage = () => {
-        if(messages === null || messages === undefined){
-            setMessages([{text: "Не удалось отправить сообщение", role: "user"}])
-        }else{
-            setMessages([...messages, {text: "Не удалось отправить сообщение", role: "user"}])
-        }
-    }
-
-    useEffect(() => {
-        if (authenticationService.isCurrentUserSupport()){
-            return
-        }
-        let isChatOk = false
-        const getUserSupportMessagesHistoryAsync = async () => {
-            try{
-                const {response, data} = await supportService.getUserSupportMessagesHistory();
-                if(response.ok){
-                    setMessages(data)
-                    isChatOk = true
-                }else{
-                    setMessages(null)
-                }
-            }
-            catch (error){
-                setMessages(null)
-            }
-        }
-
-        getUserSupportMessagesHistoryAsync().then(() => {
-            if(isChatOk && store.data.supportConnection !== null){
-                store.data.supportConnection.on("ReceiveMessage", (supportMessage) => {
-                    setMessages(messages => [...messages, supportMessage.message])
-                });
-            }
-        })
-    }, [store.data.supportConnection]);
-    
     const onSendMessageInputAsync = async () => {
         if((messageInput !== null && messageInput.trim() !== "") || files.length > 0){
-            try {
-                const userId = +authenticationService.getUser()?.id
-                const filesDto = []
-                
-                if(files.length > 0){
-                    const formData = new FormData();
-
-                    files.forEach(file => {
-                        formData.append("files", file);
-                    });
-
-                    const {response, data} = await supportService.uploadChatFiles(userId, formData);
-                    if (response.ok){
-                        data.forEach((url, index) => {
-                            filesDto.push({src: url, type: files[index].type, name: files[index].name})
-                        })
-                    }else{
-                        errorMessage()
-                        return
-                    }
-                }
-                
-                const messageInputToSend = (messageInput !== null && messageInput.trim() !== "") ? messageInput : "";
-
-                await store.data.supportConnection.invoke("SendMessage", userId, messageInputToSend, filesDto)
-                setMessages([...messages, {text: messageInput, files: filesDto, role: "user"}])
-            } catch (e) {
-                errorMessage()
-            }
+            await sendMessage(user.id, messageInput, files);
             setMessageInput("")
             setFiles([])
         }
@@ -148,6 +96,6 @@ const SupportChatPopUp = ({setPopUpDisplayed}) => {
             </div>
         </div>
     )
-}
+});
 
 export default SupportChatPopUp
