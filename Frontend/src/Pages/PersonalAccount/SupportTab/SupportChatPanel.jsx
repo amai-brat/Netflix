@@ -42,9 +42,12 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
             );
         },
         setIncomingMessage: (message) => {
+            const existingMessage = usersMessages.find(userMessages => userMessages.id === message.id);
+            if(existingMessage && message.messageType === "notification") {
+                return;
+            }
+            
             setUsersMessages(prevUsersMessages => {
-                const existingMessage = prevUsersMessages.find(userMessages => userMessages.id === message.id);
-
                 if (!existingMessage) {
                     return [{ id: message.id, name: message.name, isAnswered: false, messages: null }, ...prevUsersMessages];
                 } else {
@@ -84,13 +87,16 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
         if(selectedUserId !== null) {
             joinChat(selectedUserId).then();
         }
-        if (endOfMessagesRef.current) {
-            endOfMessagesRef.current.scrollIntoView({ behavior: 'instant' });
-        }
         return () => {
             leaveChat(selectedUserId).then();
         }
     }, [selectedUserId]);
+    
+    useEffect(() => {
+        if (endOfMessagesRef.current) {
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'instant' });
+        }
+    }, [user.messages]);
     
     return (
         <div id="support-tab-chat-panel">
