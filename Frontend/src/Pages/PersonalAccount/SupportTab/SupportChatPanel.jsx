@@ -22,6 +22,7 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
         role: "support",
         initHistoryGroupId: selectedUserId
     };
+    // noinspection JSUnusedGlobalSymbols
     const chatMessages = {
         setHistoryMessages: (history) => {
             setUsersMessages(usersMessages =>

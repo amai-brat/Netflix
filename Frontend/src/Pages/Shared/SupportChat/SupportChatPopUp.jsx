@@ -21,6 +21,7 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
         role: "user",
         initHistoryGroupId: user.id
     };
+    // noinspection JSUnusedGlobalSymbols
     const chatMessages = {
         setHistoryMessages: (history) => {setMessages(messages => [...history, ...(messages ?? [])])}, 
         setAddedMessage: (message) => {setMessages(messages => [...(messages ?? []), message])},
