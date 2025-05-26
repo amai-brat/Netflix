@@ -68,6 +68,15 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
                         : userMessages
                 )
             );
+        },
+        setLeaveMessages: () => {
+            setUsersMessages(usersMessages =>
+                usersMessages.map(userMessages =>
+                    userMessages.id === selectedUserId
+                        ? { ...userMessages, messages: null }
+                        : userMessages
+                )
+            );
         }
     }
     const {joinChat, leaveChat, sendMessage} = useGrpcSupportChat(chatDetails, chatMessages)

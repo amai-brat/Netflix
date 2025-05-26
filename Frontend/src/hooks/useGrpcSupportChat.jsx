@@ -6,7 +6,7 @@ import {supportService} from "../services/support.service.js";
 
 export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const {userId, role, initHistoryGroupId} = chatDetails;
-    const {setHistoryMessages, setAddedMessage, setIncomingMessage, setErrorMessage} = chatMessages;
+    const {setHistoryMessages, setAddedMessage, setIncomingMessage, setErrorMessage, setLeaveMessages} = chatMessages;
     const store = useDataStore();
     
     const getMetadata = async () => {
@@ -78,6 +78,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
             const session = store.data.chatSession;
             const metadata = await store.data.chatSession.metadata();
             await GrpcSupportChatService.leaveSupportChat(session.id, groupId, metadata);
+            setLeaveMessages();
         }catch (err) {
             errorMessage("Не удалось отключиться")
         }

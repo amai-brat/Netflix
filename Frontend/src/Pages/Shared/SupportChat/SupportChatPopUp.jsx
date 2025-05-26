@@ -26,7 +26,8 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
         setHistoryMessages: (history) => {setMessages(messages => [...history, ...(messages ?? [])])}, 
         setAddedMessage: (message) => {setMessages(messages => [...(messages ?? []), message])},
         setIncomingMessage: (message) => {setMessages(messages => [...(messages ?? []), message.message])},
-        setErrorMessage: (message) => {setMessages(messages => [...(messages ?? []), message])}
+        setErrorMessage: (message) => {setMessages(messages => [...(messages ?? []), message])},
+        setLeaveMessages: () => {setMessages(messages => undefined)}
     }
     const {sendMessage} = useGrpcSupportChat(chatDetails, chatMessages);
     
