@@ -43,12 +43,12 @@ const SupportChatPanel = ({usersMessages, setUsersMessages, wrapObj}) => {
             );
         },
         setIncomingMessage: (message) => {
-            const existingMessage = usersMessages.find(userMessages => userMessages.id === message.id);
-            if(existingMessage && message.messageType === "notification") {
-                return;
-            }
-            
             setUsersMessages(prevUsersMessages => {
+                const existingMessage = prevUsersMessages.find(userMessages => userMessages.id === message.id);
+                if(existingMessage && message.messageType === "notification") {
+                    return prevUsersMessages;
+                }
+                
                 if (!existingMessage) {
                     return [{ id: message.id, name: message.name, isAnswered: false, messages: null }, ...prevUsersMessages];
                 } else {
