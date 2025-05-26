@@ -22,10 +22,10 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
         initHistoryGroupId: user.id
     };
     const chatMessages = {
-        setHistoryMessages: (history) => {setMessages([...history, ...(messages ?? [])])}, 
-        setAddedMessage: (message) => {setMessages([...(messages ?? []), message])},
-        setIncomingMessage: (message) => {setMessages([...(messages ?? []), message.message])},
-        setErrorMessage: (message) => {setMessages([...(messages ?? []), message])}
+        setHistoryMessages: (history) => {setMessages(messages => [...history, ...(messages ?? [])])}, 
+        setAddedMessage: (message) => {setMessages(messages => [...(messages ?? []), message])},
+        setIncomingMessage: (message) => {setMessages(messages => [...(messages ?? []), message.message])},
+        setErrorMessage: (message) => {setMessages(messages => [...(messages ?? []), message])}
     }
     const {sendMessage} = useGrpcSupportChat(chatDetails, chatMessages);
     
