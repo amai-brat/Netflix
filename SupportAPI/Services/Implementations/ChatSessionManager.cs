@@ -38,8 +38,13 @@ public class ChatSessionManager<T>: IChatSessionManager<T> where T: class
         
         value.TryRemove(sessionId, out _);
         _sessionStreams.TryRemove(sessionId, out _);
-        LeaveUserSessionGroup(userId, sessionId);
-            
+        
+        foreach (var group in _userGroups
+                     .Where(g => g.Value.ContainsKey(sessionId)).ToArray())
+        {
+            LeaveUserSessionGroup(group.Key, sessionId);
+        }
+        
         if (!value.IsNullOrEmpty())
             return;
         
