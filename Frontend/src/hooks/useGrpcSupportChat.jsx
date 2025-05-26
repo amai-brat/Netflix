@@ -39,7 +39,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
             );
             
             store.setChatSession(session);
-        } catch (error) {
+        } catch (err) {
             errorMessage("Не удалось подключиться");
         }
     };
@@ -52,12 +52,12 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
                     session.stream.cancel();
                 }
 
-                const metadata = await store.data.metadata();
+                const metadata = await store.data.chatSession.metadata();
                 await GrpcSupportChatService.disconnect(session.id, metadata);
 
                 store.removeSession();
             }
-        } catch {
+        } catch (err) {
             errorMessage("Что-то не так")
         }
     }
@@ -65,10 +65,10 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const joinChat = async (groupId) => {
         try{
             const session = store.data.chatSession;
-            const metadata = await store.data.metadata();
+            const metadata = await store.data.chatSession.metadata();
             await GrpcSupportChatService.joinSupportChat(session.id, groupId, metadata);
             await loadHistory(groupId);
-        }catch{
+        }catch (err) {
             errorMessage("Не удалось подключиться к чату")
         }
     }
@@ -76,9 +76,9 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const leaveChat = async (groupId) => {
         try{
             const session = store.data.chatSession;
-            const metadata = await store.data.metadata();
+            const metadata = await store.data.chatSession.metadata();
             await GrpcSupportChatService.leaveSupportChat(session.id, groupId, metadata);
-        }catch{
+        }catch (err) {
             errorMessage("Не удалось отключиться")
         }
     }

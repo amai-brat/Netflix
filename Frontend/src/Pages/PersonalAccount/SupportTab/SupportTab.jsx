@@ -30,7 +30,7 @@ const SupportTab = observer(({wrapObj}) => {
         }
         getSupportUsersUnansweredMessagesHistory().then();
         
-    }, [store.data.chatSession.id]);
+    }, [store.data.chatSession]);
     
     return(
         <div id="support-tab">
