@@ -45,6 +45,7 @@ public class SupportChatService(
         finally
         {
             sessionManager.BindSessionWithStream(request.SessionId, null);
+            sessionManager.RemoveUserSession(userId, request.SessionId, GetUserSupportChatRole(context));
         }
     }
 
