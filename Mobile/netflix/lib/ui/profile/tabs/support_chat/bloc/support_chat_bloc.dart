@@ -37,6 +37,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     on<FilesSelectedEvent>(_onFilesSelected);
     on<FileRemovedEvent>(_onFileRemoved);
     on<SendMessageEvent>(_onSendMessage);
+    on<IncomingMessageEvent>(_onIncomingMessage);
     on<DisconnectSupportChatEvent>(_onDisconnect);
   }
 
@@ -53,7 +54,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
 
       _streamSubscription = _client
           .connectToStream(_sessionId!, metadata)
-          .listen((message) {_handleIncomingMessage(message, emit);});
+          .listen((message) {add(IncomingMessageEvent(message));});
 
       emit(SupportChatConnected());
       await _loadHistory(emit);
@@ -182,15 +183,16 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     }
   }
 
-  void _handleIncomingMessage(
-      SupportChatMessage message,
-      Emitter<SupportChatState> emit) {
+  Future<void> _onIncomingMessage(
+      IncomingMessageEvent event,
+      Emitter<SupportChatState> emit,
+      ) async {
     if (state is! SupportChatConnected) {
-      emit(SupportChatError('Не удалось отправить сообщение'));
+      emit(SupportChatError('Получение сообщений недоступно'));
       return;
     }
     final connectedState = state as SupportChatConnected;
-    final converted = _convertMessage(message);
+    final converted = _convertMessage(event.message);
     emit(connectedState.copyWith(messages: [...connectedState.messages, converted]));
   }
 
