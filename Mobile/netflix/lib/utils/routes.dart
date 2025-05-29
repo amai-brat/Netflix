@@ -24,4 +24,7 @@ class Routes {
 
   static const profileSubscriptions = '$profile/$profileSubscriptionsRelative';
   static const profileSubscriptionsRelative = 'subscriptions';
+
+  static const profileSupportChat = '$profile/$profileSupportChatRelative';
+  static const profileSupportChatRelative = 'support-chat';
 }

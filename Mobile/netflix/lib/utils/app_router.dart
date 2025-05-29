@@ -10,6 +10,7 @@ import 'package:netflix/ui/profile/tabs/favorites/favorites_view.dart';
 import 'package:netflix/ui/profile/tabs/personal_info/personal_info_view.dart';
 import 'package:netflix/ui/profile/tabs/reviews/reviews_view.dart';
 import 'package:netflix/ui/profile/tabs/subscriptions/subscriptions_view.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/support_chat_view.dart';
 import 'package:netflix/ui/search/search_page.dart';
 import 'package:netflix/ui/subscriptions/subscriptions_page.dart';
 import 'package:netflix/utils/routes.dart';
@@ -76,6 +77,10 @@ class AppRouter {
                     path: Routes.profileSubscriptionsRelative,
                     builder: (context, state) => SubscriptionsView(),
                   ),
+                  GoRoute(
+                    path: Routes.profileSupportChatRelative,
+                    builder: (context, state) => SupportChatView(),
+                  )
                 ],
               ),
             ],
