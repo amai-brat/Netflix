@@ -143,7 +143,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
 
   Future<Map<String, String>> _getMetadata() async {
     final token = await locator<FlutterSecureStorage>().read(key: Consts.accessToken);
-    return {'authorization': 'Bearer $token'};
+    return Map.fromIterables(['authorization'], ['Bearer $token']);
   }
 
   Future<void> _setUserData() async {

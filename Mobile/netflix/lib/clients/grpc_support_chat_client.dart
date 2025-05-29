@@ -6,7 +6,11 @@ class GrpcSupportChatClient {
   final SupportChatClient _client;
 
   GrpcSupportChatClient(String host, int port) :
-        _client = SupportChatClient(ClientChannel(host, port: port, options: const ChannelOptions(credentials: ChannelCredentials.secure())));
+        _client = SupportChatClient(ClientChannel(
+            host,
+            port: port,
+            options: const ChannelOptions(credentials: ChannelCredentials.insecure()))
+        );
 
   Future<ConnectResponse> connect(Map<String, String> metadata) async {
     return _client.connect(
