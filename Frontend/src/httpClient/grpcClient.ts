@@ -14,9 +14,9 @@ import {
     SupportChatMessage, 
     MessageType
 } from "grpc-web-generated/SupportChat_pb";
-import {baseSupportHubUrl} from "./baseUrl.js";
+import {baseSupportChatUrl} from "./baseUrl.js";
 
-const client = new SupportChatClient(baseSupportHubUrl);
+const client = new SupportChatClient(baseSupportChatUrl);
 
 export const GrpcSupportChatService = {
     connect: (metadata: any) : Promise<ConnectResponse> => {
