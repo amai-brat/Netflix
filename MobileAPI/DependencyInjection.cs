@@ -14,8 +14,8 @@ using MobileAPI.Types.ContentType;
 using MobileAPI.Types.FavouriteContent;
 using MobileAPI.Types.Genre;
 using MobileAPI.Types.Section;
-
 using MobileAPI.Types.Subscriptions;
+using MobileAPI.Types.SupportChat;
 using MobileAPI.Types.User;
 
 namespace MobileAPI;
@@ -65,6 +65,7 @@ public static class DependencyInjection
                 .AddTypeExtension<ContentTypeQuery>()
                 .AddTypeExtension<FavouriteContentQuery>()
                 .AddTypeExtension<SectionQuery>()
+                .AddTypeExtension<MessageQuery>()
             .AddMutationType()
                 .AddTypeExtension<AuthMutation>()
                 .AddTypeExtension<PersonalInfoMutation>()
@@ -130,7 +131,11 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri(options.SubscriptionServiceUrl);
         }).AddHttpMessageHandler<JwtTokenHandler>();
-
+        services.AddHttpClient("SupportPersistentApi", client =>
+        {
+            client.BaseAddress = new Uri(options.SupportPersistentApiUrl);
+        }).AddHttpMessageHandler<JwtTokenHandler>();
+        
         return services;
     }
 
