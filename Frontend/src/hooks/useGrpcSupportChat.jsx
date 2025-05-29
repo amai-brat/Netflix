@@ -17,7 +17,7 @@ export const useGrpcSupportChat = (chatDetails, chatMessages) => {
     const errorMessage = (message) => {
         setErrorMessage({
             text: message,
-            role: store.data.chatSession.role
+            role: store.data.chatSession ? store.data.chatSession.role ?? 'user' : 'user'
         });
     }
     
