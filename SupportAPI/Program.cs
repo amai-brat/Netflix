@@ -36,7 +36,7 @@ builder.Services.AddSingleton<AmazonS3Client>(sp =>
 builder.Services.AddRedisCache();
 builder.Services.AddMinio();
 builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddCorsWithFrontendPolicy(builder.Configuration);
+builder.Services.AddCorsWithFrontendPolicy();
 builder.Services.AddMassTransitRabbitMq(
     builder.Configuration.GetSection("RabbitMqConfig").Get<RabbitMqConfig>()!
 );

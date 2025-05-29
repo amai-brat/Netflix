@@ -48,17 +48,16 @@ namespace SupportAPI
             return serviceCollection;
         }
 
-        public static IServiceCollection AddCorsWithFrontendPolicy(this IServiceCollection serviceCollection, IConfiguration configuration)
+        public static IServiceCollection AddCorsWithFrontendPolicy(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddCors(options =>
             {
                 options.AddPolicy(name: "Frontend",
                     policy =>
                     {
-                        policy.WithOrigins(configuration["FrontendConfig:Url"]!)
+                        policy.AllowAnyOrigin()
                             .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
+                            .AllowAnyMethod();
                     });
             });
 
