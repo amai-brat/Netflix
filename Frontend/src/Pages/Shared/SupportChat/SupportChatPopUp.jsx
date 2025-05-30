@@ -27,7 +27,8 @@ const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
         setAddedMessage: (message) => {setMessages(messages => [...(messages ?? []), message])},
         setIncomingMessage: (message) => {setMessages(messages => [...(messages ?? []), message.message])},
         setErrorMessage: (message) => {setMessages(messages => [...(messages ?? []), message])},
-        setLeaveMessages: () => {setMessages(messages => undefined)}
+        setLeaveMessages: () => { // noinspection JSUnusedLocalSymbols
+            setMessages(messages => undefined)}
     }
     const {sendMessage} = useGrpcSupportChat(chatDetails, chatMessages);
     
@@ -102,7 +103,7 @@ const SupportChatInput = ({onSendMessageInputAsync}) => {
                           }
                       }}
             />
-            <button id="support-chat-send-button" onClick={onSendMessageInputAsync}>
+            <button id="support-chat-send-button" onClick={() => onSendMessageInputAsync(messageInput, setMessageInput)}>
                 <img id="support-chat-send-button-icon" src={sendIcon} alt="Send"/>
             </button>
         </>
