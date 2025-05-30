@@ -17,24 +17,34 @@ class _SupportChatMessagesListState extends State<SupportChatMessageList> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        _scrollToBottom(true);
+      });
+    });
   }
 
   @override
   void didUpdateWidget(SupportChatMessageList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.messages.length > oldWidget.messages.length) {
-      _scrollToBottom();
+    final isAtBottom = _scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300;
+    if (widget.messages.length > oldWidget.messages.length && oldWidget.messages.isNotEmpty && isAtBottom) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom(false));
     }
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom(bool init) {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
+      if (init){
+        _scrollController.position.jumpTo(_scrollController.position.maxScrollExtent + 100);
+      }else{
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
     }
   }
 
