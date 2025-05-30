@@ -110,13 +110,21 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
 
     try {
       final connectedState = state as SupportChatConnected;
+      final cleanText = connectedState.messageText.trim()
+          .replaceAll(RegExp(r'\n+$'), '')
+          .replaceAll(RegExp(r'\n+'), '\n');
+
+      if (cleanText.isEmpty) {
+        return;
+      }
+
       final metadata = await _getMetadata();
       final uploadedFiles = await _uploadFiles(connectedState.pickedFiles);
 
-      await _client.sendMessage(_userId!, _sessionId!, connectedState.messageText, uploadedFiles, metadata);
+      await _client.sendMessage(_userId!, _sessionId!, cleanText, uploadedFiles, metadata);
 
       final newMessage = SupportChatMessageBase(
-        text: connectedState.messageText,
+        text: cleanText,
         files: uploadedFiles,
         role: _role,
       );

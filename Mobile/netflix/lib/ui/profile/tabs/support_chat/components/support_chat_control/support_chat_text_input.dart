@@ -21,7 +21,7 @@ class _SupportChatTextInputState extends State<SupportChatTextInput> {
         builder: (context, state) {
           final ctx = context.read<SupportChatBloc>();
           if(state is SupportChatConnected){
-            _controller.text = state.messageText ?? '';
+            _controller.text = state.messageText;
           }
 
           return TextField(
@@ -47,7 +47,7 @@ class _SupportChatTextInputState extends State<SupportChatTextInput> {
               ctx.add(MessageTextChangedEvent(text: text));
             },
             onSubmitted: (text) {
-              if (text.trim().isNotEmpty && state is SupportChatConnected) {
+              if (state is SupportChatConnected) {
                 ctx.add(SendMessageEvent());
               }
             },

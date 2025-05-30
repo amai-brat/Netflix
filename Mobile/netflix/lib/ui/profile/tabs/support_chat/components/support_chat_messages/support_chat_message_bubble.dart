@@ -42,7 +42,9 @@ class SupportChatMessageBubble extends StatelessWidget {
                     ),
                   if (message.text.isNotEmpty)
                     Text(
-                      message.text,
+                      message.text.trim()
+                          .replaceAll(RegExp(r'\n+$'), '')
+                          .replaceAll(RegExp(r'\n+'), '\n'),
                       style: const TextStyle(
                         color: AppColors.textWhite,
                         fontSize: 16,
