@@ -20,6 +20,9 @@ class _SupportChatTextInputState extends State<SupportChatTextInput> {
     return BlocBuilder<SupportChatBloc, SupportChatState>(
         builder: (context, state) {
           final ctx = context.read<SupportChatBloc>();
+          if(state is SupportChatConnected){
+            _controller.text = state.messageText ?? '';
+          }
 
           return TextField(
             controller: _controller,
