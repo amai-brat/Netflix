@@ -35,7 +35,16 @@ class SupportChatMessageBubble extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
                 children: [
+                  if (message.text.isNotEmpty)
+                    Text(
+                      isUserMessage ? 'Вы' : 'Поддержка',
+                      style: const TextStyle(
+                        color: AppColors.textWhite,
+                        fontSize: 14,
+                      ),
+                    ),
                   if (message.files.isNotEmpty)
                     ...message.files.map(
                           (file) => SupportChatMessageFile(fileInformation: file),
@@ -47,7 +56,7 @@ class SupportChatMessageBubble extends StatelessWidget {
                           .replaceAll(RegExp(r'\n+'), '\n'),
                       style: const TextStyle(
                         color: AppColors.textWhite,
-                        fontSize: 16,
+                        fontSize: 18,
                       ),
                     ),
                 ],
