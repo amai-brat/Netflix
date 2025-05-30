@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_event.dart';
-import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_state.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_event.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_state.dart';
