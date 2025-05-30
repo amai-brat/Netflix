@@ -71,52 +71,30 @@ class _SupportChatFileAudioState extends State<SupportChatFileAudio> {
       final mimeType = mime(widget.file.name) ?? 'application/octet-stream';
 
       if (mimeType.contains('audio')) {
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.basicGrey[700],
-            borderRadius: BorderRadius.circular(8),
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: 30,
+            horizontal: 2
           ),
           child: Column(
             spacing: 8,
             children: [
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      _audioPlayerState == PlayerState.playing
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      color: AppColors.textWhite,
-                      size: 32,
-                    ),
-                    onPressed: _playAudio,
+                  Text(
+                    widget.file.name,
+                    style: const TextStyle(color: AppColors.textWhite),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.stop, color: AppColors.textWhite, size: 32),
-                    onPressed: _stopAudio,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4,
-                      children: [
-                        Text(
-                          widget.file.name,
-                          style: const TextStyle(color: AppColors.textWhite),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        LinearProgressIndicator(
-                          value: _audioDuration.inMilliseconds > 0
-                              ? _audioPosition.inMilliseconds / _audioDuration.inMilliseconds
-                              : 0,
-                          backgroundColor: AppColors.basicGrey[600],
-                          color: AppColors.textWhite,
-                        ),
-                      ],
-                    ),
+                  LinearProgressIndicator(
+                    value: _audioDuration.inMilliseconds > 0
+                        ? _audioPosition.inMilliseconds / _audioDuration.inMilliseconds
+                        : 0,
+                    backgroundColor: AppColors.basicGrey[600],
+                    color: AppColors.textWhite,
                   ),
                 ],
               ),
@@ -130,6 +108,25 @@ class _SupportChatFileAudioState extends State<SupportChatFileAudio> {
                   Text(
                     _formatDuration(_audioDuration),
                     style: TextStyle(color: AppColors.basicGrey[400], fontSize: 12),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  IconButton(
+                      icon: Icon(
+                        _audioPlayerState == PlayerState.playing
+                            ? Icons.pause
+                            : Icons.play_arrow,
+                        color: AppColors.textWhite,
+                        size: 20,
+                      ),
+                      onPressed: _playAudio
+                  ),
+                  Expanded(child: const SizedBox()),
+                  IconButton(
+                    icon: const Icon(Icons.stop, color: AppColors.textWhite, size: 20),
+                    onPressed: _stopAudio,
                   ),
                 ],
               ),

@@ -18,8 +18,9 @@ class SupportChatFilesPreview extends StatelessWidget {
         if (files == null || files.isEmpty) return const SizedBox.shrink();
 
         return Container(
-          height: 80,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          height: 200,
+          color: Colors.transparent,
+          padding: const EdgeInsets.all(6),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: files.length,

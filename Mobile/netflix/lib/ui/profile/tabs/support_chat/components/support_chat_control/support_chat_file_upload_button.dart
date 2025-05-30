@@ -26,9 +26,7 @@ class SupportChatFileUploadButton extends StatelessWidget {
 
   Future<void> _selectFiles(SupportChatBloc ctx) async {
     final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'mp4', 'mp3'],
+      allowMultiple: true
     );
 
     if (result != null && result.files.isNotEmpty) {
