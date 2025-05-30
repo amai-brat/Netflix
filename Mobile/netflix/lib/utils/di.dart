@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:netflix/clients/file_upload_client.dart';
+import 'package:netflix/clients/file_client.dart';
 import 'package:netflix/clients/grpc_support_chat_client.dart';
 import 'package:netflix/data/repositories/auth_repository_impl.dart';
 import 'package:netflix/data/repositories/favorite_repository_impl.dart';
@@ -79,7 +79,8 @@ void setupLocator() {
   });
   locator.registerLazySingleton<GrpcSupportChatClient>(() =>
       GrpcSupportChatClient(dotenv.env['GRPC_SUPPORT_CHAT_SERVER_HOST']!, int.parse(dotenv.env['GRPC_SUPPORT_CHAT_SERVER_PORT']!)));
-  locator.registerLazySingleton<FileUploadClient>(() => FileUploadClient(baseUrl: dotenv.env['FILE_UPLOAD_BASE_URL']!));
+  locator.registerLazySingleton<FileClient>(() =>
+      FileClient(baseUrl: dotenv.env['FILE_UPLOAD_BASE_URL']!, downloadHost: dotenv.env['FILE_DOWNLOAD_HOST']!));
   
   locator.registerLazySingleton<AuthServiceMock>(() => AuthServiceMock());
   locator.registerLazySingleton<AuthService>(
@@ -93,7 +94,7 @@ void setupLocator() {
   );
   locator.registerLazySingleton<ReviewsService>(() => ReviewsService(locator<GraphQLClient>()));
   locator.registerLazySingleton<SupportService>(() => SupportService(locator<GraphQLClient>()));
-  locator.registerLazySingleton<FileService>(() => FileService(locator<FileUploadClient>()));
+  locator.registerLazySingleton<FileService>(() => FileService(locator<FileClient>()));
 
   // repos
   locator.registerLazySingleton<AuthRepository>(

@@ -4,19 +4,25 @@ import 'dart:io';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:netflix/utils/consts.dart';
 import 'package:netflix/utils/di.dart';
 import 'package:netflix/utils/jwt_decoder.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
-class FileUploadClient {
+class FileClient {
+  final Map<String, CachedFile> fileCache = {};
   final String baseUrl;
+  final String downloadHost;
   final http.Client _client;
 
-  FileUploadClient({
+  FileClient({
     required this.baseUrl,
+    required this.downloadHost,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
@@ -84,7 +90,68 @@ class FileUploadClient {
     }
   }
 
+  Future<PlatformFile?> downloadFile(String url) async {
+    try {
+      if (fileCache.containsKey(url)) {
+        final cachedFile = fileCache[url]!;
+        return PlatformFile(
+          name: cachedFile.name,
+          path: cachedFile.path,
+          size: cachedFile.size,
+        );
+      }
+
+      final response = await http.get(Uri.parse(url.replaceFirst('localhost', downloadHost)));
+
+      if (response.statusCode == 200) {
+        final directory = await getTemporaryDirectory();
+
+        final mimeType = lookupMimeType('', headerBytes: response.bodyBytes);
+        var extension = mimeType == null ? 'bin': mimeType.split('/').last;
+        final fileName = '${Uuid().v4()}.$extension';
+
+        final filePath = '${directory.path}/$fileName';
+        final file = File(filePath);
+
+        await file.writeAsBytes(response.bodyBytes);
+
+        final fileLength =  await file.length();
+
+        fileCache[url] = CachedFile(
+          url: url,
+          name: fileName,
+          path: file.path,
+          size: fileLength,
+        );
+
+        return PlatformFile(
+          name: fileName,
+          path: file.path,
+          size: fileLength,
+        );
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
   void close() {
     _client.close();
   }
+}
+
+class CachedFile {
+  final String url;
+  final String name;
+  final String path;
+  final int size;
+
+  CachedFile({
+    required this.url,
+    required this.name,
+    required this.path,
+    required this.size,
+  });
 }

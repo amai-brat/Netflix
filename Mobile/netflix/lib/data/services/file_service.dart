@@ -1,8 +1,8 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:netflix/clients/file_upload_client.dart';
+import 'package:netflix/clients/file_client.dart';
 
 class FileService {
-  final FileUploadClient _uploadClient;
+  final FileClient _uploadClient;
 
   FileService(this._uploadClient);
 
