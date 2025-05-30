@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:netflix/utils/app_colors.dart';
-import 'package:video_player/video_player.dart';
 
 class SupportChatFileAudio extends StatefulWidget {
   final PlatformFile file;
