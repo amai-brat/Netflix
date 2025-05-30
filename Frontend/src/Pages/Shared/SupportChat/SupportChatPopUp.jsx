@@ -11,6 +11,7 @@ import SupportChatFileTypesPopUp from "./SupportChatFileTypesPopUp.jsx";
 import {useGrpcSupportChat} from "../../../hooks/useGrpcSupportChat.jsx";
 import {observer} from "mobx-react";
 
+/* eslint-disable no-unused-vars */
 const SupportChatPopUp = observer(({setPopUpDisplayed}) => {
     const endOfMessagesRef = useRef(null);
     const [messages, setMessages] = useState(undefined)
