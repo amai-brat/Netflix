@@ -18,7 +18,7 @@ class SupportChatSendMessageButton extends StatelessWidget {
         return IconButton(
           icon: Icon(
             Icons.send,
-            size: 28,
+            size: 36,
             color: canSend ? AppColors.primaryRed : AppColors.inputGrey,
           ),
           onPressed: canSend

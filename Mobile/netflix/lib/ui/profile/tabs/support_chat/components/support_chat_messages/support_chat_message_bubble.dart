@@ -30,7 +30,9 @@ class SupportChatMessageBubble extends StatelessWidget {
                 horizontal: 16,
               ),
               decoration: BoxDecoration(
-                color: AppColors.inputGrey,
+                color: isUserMessage
+                    ? AppColors.basicGrey[800]
+                    : AppColors.basicGrey[700],
                 borderRadius: BorderRadius.all(const Radius.circular(16)),
               ),
               child: Column(
@@ -40,8 +42,8 @@ class SupportChatMessageBubble extends StatelessWidget {
                   if (message.text.isNotEmpty)
                     Text(
                       isUserMessage ? 'Вы' : 'Поддержка',
-                      style: const TextStyle(
-                        color: AppColors.textWhite,
+                      style: TextStyle(
+                        color: AppColors.basicGrey[400],
                         fontSize: 14,
                       ),
                     ),

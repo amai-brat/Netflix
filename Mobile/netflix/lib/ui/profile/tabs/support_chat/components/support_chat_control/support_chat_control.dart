@@ -15,25 +15,24 @@ class SupportChatControl extends StatelessWidget {
     return BlocBuilder<SupportChatBloc, SupportChatState>(
       builder: (context, state) {
         return Container(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             vertical: 12,
-            horizontal: 16,
+            horizontal: 8,
           ),
           decoration: BoxDecoration(
-            color: AppColors.inputGrey,
+            color: AppColors.basicGrey[800],
             border: Border(
               top: BorderSide(
-                color: AppColors.inputGrey,
-                width: 1,
+                color: AppColors.basicGrey[700]!,
+                width: 2,
               ),
             ),
           ),
           child: Row(
+            spacing: 12,
             children: [
               SupportChatFileUploadButton(),
-              const SizedBox(width: 12),
               Expanded(child: SupportChatTextInput()),
-              const SizedBox(width: 12),
               SupportChatSendMessageButton(),
             ],
           ),

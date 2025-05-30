@@ -16,7 +16,7 @@ class SupportChatFileUploadButton extends StatelessWidget {
       builder: (context, state) {
         final ctx = context.read<SupportChatBloc>();
         return IconButton(
-          icon: const Icon(Icons.attach_file, size: 24),
+          icon: const Icon(Icons.attach_file, size: 36),
           color: AppColors.primaryRed,
           onPressed: () => _selectFiles(ctx),
         );

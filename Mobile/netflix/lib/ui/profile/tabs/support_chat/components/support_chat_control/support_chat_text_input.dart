@@ -26,14 +26,14 @@ class _SupportChatTextInputState extends State<SupportChatTextInput> {
 
           return TextField(
             controller: _controller,
-            style: const TextStyle(color: AppColors.textWhite),
+            style: const TextStyle(color: AppColors.textWhite, height: 2),
             decoration: InputDecoration(
               hintText: 'Введите сообщение...',
-              hintStyle: TextStyle(color: AppColors.inputGrey),
+              hintStyle: TextStyle(color: AppColors.basicGrey),
               filled: true,
               fillColor: AppColors.inputGrey,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
