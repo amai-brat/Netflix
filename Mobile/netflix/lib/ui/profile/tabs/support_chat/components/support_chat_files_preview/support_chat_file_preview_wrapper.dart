@@ -20,8 +20,8 @@ class SupportChatFilePreviewWrapper extends StatelessWidget {
           return Stack(
             children: [
               Container(
-                width: 70,
-                height: 70,
+                width: 120,
+                height: 120,
                 decoration: BoxDecoration(
                   color: AppColors.inputGrey,
                   borderRadius: BorderRadius.circular(8),

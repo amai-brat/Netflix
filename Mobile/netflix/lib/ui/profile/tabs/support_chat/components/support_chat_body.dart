@@ -19,8 +19,8 @@ class SupportChatBody extends StatelessWidget{
         } else if (state is SupportChatConnected) {
           return Column(
             children: [
-              const SupportChatFilesPreview(),
               Expanded(child: SupportChatMessageList(messages: state.messages)),
+              const SupportChatFilesPreview(),
             ],
           );
         }

@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:mime_type/mime_type.dart';
 import 'package:netflix/data/models/file_information_dto.dart';
 import 'package:netflix/data/services/file_service.dart';
 import 'package:netflix/domain/repositories/file_repository.dart';
@@ -15,7 +16,10 @@ class FileRepositoryImpl extends FileRepository {
     return response
         .asMap()
         .map((i, url) =>
-        MapEntry(i, FileInformationDto(src: url, type: files[i].extension!, name: files[i].name)
+        MapEntry(i, FileInformationDto(
+            src: url,
+            type: mime(files[i].name) ?? 'application/octet-stream',
+            name: files[i].name)
             .toFileInformation()))
         .values
         .toList();
