@@ -6,6 +6,7 @@ import 'package:netflix/domain/use_cases/support/upload_files_use_case.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_event.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_body.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/support_chat_control.dart';
 import 'package:netflix/utils/app_colors.dart';
 import 'package:netflix/utils/di.dart';
@@ -15,12 +16,16 @@ class SupportChatView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SupportChatBloc(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => SupportChatBloc(
           client: locator<GrpcSupportChatClient>(),
           getHistoryUseCase: locator<GetHistoryUseCase>(),
           uploadFilesUseCase: locator<UploadFilesUseCase>(),
-      )..add(ConnectSupportChatEvent()),
+          )..add(ConnectSupportChatEvent()),
+        ),
+        BlocProvider(create: (context) => SupportChatControlBloc())
+      ],
       child: Scaffold(
           appBar: AppBar(
             title: const Text('Чат с поддержкой'),

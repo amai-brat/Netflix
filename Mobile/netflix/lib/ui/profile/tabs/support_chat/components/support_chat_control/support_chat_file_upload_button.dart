@@ -1,9 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_bloc.dart';
-import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_event.dart';
-import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_state.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_bloc.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_event.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_state.dart';
 import 'package:netflix/utils/app_colors.dart';
 
 class SupportChatFileUploadButton extends StatelessWidget {
@@ -12,9 +12,9 @@ class SupportChatFileUploadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SupportChatBloc, SupportChatState>(
+    return BlocBuilder<SupportChatControlBloc, SupportChatControlState>(
       builder: (context, state) {
-        final ctx = context.read<SupportChatBloc>();
+        final ctx = context.read<SupportChatControlBloc>();
         return IconButton(
           icon: const Icon(Icons.attach_file, size: 36),
           color: AppColors.primaryRed,
@@ -24,7 +24,7 @@ class SupportChatFileUploadButton extends StatelessWidget {
     );
   }
 
-  Future<void> _selectFiles(SupportChatBloc ctx) async {
+  Future<void> _selectFiles(SupportChatControlBloc ctx) async {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: true
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_bloc.dart';
-import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_state.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_bloc.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_state.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/support_chat_file_upload_button.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/support_chat_send_message_button.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/support_chat_text_input.dart';
@@ -12,7 +12,7 @@ class SupportChatControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SupportChatBloc, SupportChatState>(
+    return BlocBuilder<SupportChatControlBloc, SupportChatControlState>(
       builder: (context, state) {
         return Container(
           padding: EdgeInsets.symmetric(

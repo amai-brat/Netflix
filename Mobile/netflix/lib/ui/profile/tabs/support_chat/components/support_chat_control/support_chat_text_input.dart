@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_bloc.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_event.dart';
 import 'package:netflix/ui/profile/tabs/support_chat/bloc/support_chat_state.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_bloc.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_event.dart';
+import 'package:netflix/ui/profile/tabs/support_chat/components/support_chat_control/bloc/support_chat_control_state.dart';
 import 'package:netflix/utils/app_colors.dart';
 
 class SupportChatTextInput extends StatefulWidget {
@@ -17,10 +20,11 @@ class _SupportChatTextInputState extends State<SupportChatTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SupportChatBloc, SupportChatState>(
+    return BlocBuilder<SupportChatControlBloc, SupportChatControlState>(
         builder: (context, state) {
-          final ctx = context.read<SupportChatBloc>();
-          if(state is SupportChatConnected){
+          final ctxMain = context.read<SupportChatBloc>();
+          final ctx = context.read<SupportChatControlBloc>();
+          if(state is SupportChatControlConnected){
             _controller.text = state.messageText;
           }
 
@@ -47,8 +51,8 @@ class _SupportChatTextInputState extends State<SupportChatTextInput> {
               ctx.add(MessageTextChangedEvent(text: text));
             },
             onSubmitted: (text) {
-              if (state is SupportChatConnected) {
-                ctx.add(SendMessageEvent());
+              if (state is SupportChatControlConnected) {
+                ctxMain.add(SendMessageEvent(state.messageText, state.pickedFiles));
               }
             },
           );

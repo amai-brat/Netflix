@@ -33,9 +33,6 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
         _getHistoryUseCase = getHistoryUseCase,
         super(SupportChatInitial()) {
     on<ConnectSupportChatEvent>(_onConnect);
-    on<MessageTextChangedEvent>(_onMessageTextChanged);
-    on<FilesSelectedEvent>(_onFilesSelected);
-    on<FileRemovedEvent>(_onFileRemoved);
     on<SendMessageEvent>(_onSendMessage);
     on<IncomingMessageEvent>(_onIncomingMessage);
     on<DisconnectSupportChatEvent>(_onDisconnect);
@@ -63,41 +60,6 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     }
   }
 
-  Future<void> _onMessageTextChanged(
-      MessageTextChangedEvent event,
-      Emitter<SupportChatState> emit,
-      ) async {
-    if (state is! SupportChatConnected) {
-      emit(SupportChatError('Отправка сообщений недоступна'));
-      return;
-    }
-    emit((state as SupportChatConnected).copyWith(messageText: event.text));
-  }
-
-  Future<void> _onFilesSelected(
-      FilesSelectedEvent event,
-      Emitter<SupportChatState> emit,
-      ) async {
-    if (state is! SupportChatConnected) {
-      emit(SupportChatError('Отправка сообщений недоступна'));
-      return;
-    }
-    final connectedState = state as SupportChatConnected;
-    emit(connectedState.copyWith(pickedFiles: ([...connectedState.pickedFiles ?? [],...event.files], false)));
-  }
-
-  Future<void> _onFileRemoved(
-      FileRemovedEvent event,
-      Emitter<SupportChatState> emit,
-      ) async {
-    if (state is! SupportChatConnected) {
-      emit(SupportChatError('Отправка сообщений недоступна'));
-      return;
-    }
-    final connectedState = state as SupportChatConnected;
-    emit(connectedState.copyWith(pickedFiles: (connectedState.pickedFiles?.where((file) => file != event.file).toList(), false)));
-  }
-
 
   Future<void> _onSendMessage(
       SendMessageEvent event,
@@ -110,7 +72,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
 
     try {
       final connectedState = state as SupportChatConnected;
-      final cleanText = connectedState.messageText.trim()
+      final cleanText = event.messageText.trim()
           .replaceAll(RegExp(r'\n+$'), '')
           .replaceAll(RegExp(r'\n+'), '\n');
 
@@ -119,7 +81,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
       }
 
       final metadata = await _getMetadata();
-      final uploadedFiles = await _uploadFiles(connectedState.pickedFiles);
+      final uploadedFiles = await _uploadFiles(event.pickedFiles);
 
       await _client.sendMessage(_userId!, _sessionId!, cleanText, uploadedFiles, metadata);
 
@@ -129,11 +91,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
         role: _role,
       );
 
-      emit(connectedState.copyWith(
-        messageText: '',
-        pickedFiles: (null, true),
-        messages: [...connectedState.messages, newMessage]
-      ));
+      emit(connectedState.copyWith(messages:  [...connectedState.messages, newMessage]));
     } catch (e) {
       emit(SupportChatError('Не удалось отправить сообщение'));
     }
@@ -170,7 +128,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     switch(history){
       case Ok():
         final connectedState = state as SupportChatConnected;
-        emit(connectedState.copyWith(messages: [...connectedState.messages, ...history.value]));
+        emit(connectedState.copyWith(messages:  [...connectedState.messages, ...history.value]));
         break;
       default:
         emit(SupportChatError('Не удалось загрузить историю'));
@@ -201,7 +159,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     }
     final connectedState = state as SupportChatConnected;
     final converted = _convertMessage(event.message);
-    emit(connectedState.copyWith(messages: [...connectedState.messages, converted]));
+    emit(connectedState.copyWith(messages:  [...connectedState.messages, converted]));
   }
 
   SupportChatMessageBase _convertMessage(SupportChatMessage message) {
