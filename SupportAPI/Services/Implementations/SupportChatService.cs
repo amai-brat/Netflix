@@ -161,6 +161,7 @@ public class SupportChatService(
         => context.GetHttpContext().User.IsInRole("support") ? "support" : "user";
 
     private static SupportChatRole GetUserSupportChatRole(ServerCallContext context) =>
+        // ReSharper disable once RedundantSwitchExpressionArms
         GetUserRole(context) switch
         {
             "support" => SupportChatRole.Support,

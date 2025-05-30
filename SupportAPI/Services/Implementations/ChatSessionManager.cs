@@ -76,6 +76,7 @@ public class ChatSessionManager<T>: IChatSessionManager<T> where T: class
     {
         if (_userGroups.TryGetValue(ownerId, out var group))
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             foreach (var sessionId in group.ToArray().Where(sId => 
                          excludeSessionIds == null || !excludeSessionIds.Contains(sId.Key)))
             {
