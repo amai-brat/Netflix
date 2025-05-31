@@ -32,15 +32,15 @@ public class FileUploadService(
     public async Task<UploadedFileDto> UploadFileAndSaveMetadataAsync(
         Stream s,
         string contentType,
-        Dictionary<string,string> metadata,
+        Dictionary<string, string> metadata,
         CancellationToken cancellationToken)
     {
         // We'll send this array to permanent s3 storage telling these files are uploaded and ready to be copied
         var guid = NewId.NextGuid();
-        var resp = await s3Client.ListBucketsAsync(new ListBucketsRequest(){Prefix = BucketName}, cancellationToken);
+        var resp = await s3Client.ListBucketsAsync(new ListBucketsRequest() { Prefix = BucketName }, cancellationToken);
         if (resp.Buckets.Count == 0)
         {
-            await s3Client.PutBucketAsync(new PutBucketRequest(){BucketName = BucketName}, cancellationToken);
+            await s3Client.PutBucketAsync(new PutBucketRequest() { BucketName = BucketName }, cancellationToken);
             await s3Client.PutBucketPolicyAsync(new PutBucketPolicyRequest()
             {
                 BucketName = BucketName,
@@ -89,11 +89,9 @@ public class FileUploadService(
         
         var type = resp.Headers.ContentType;
         await resp.WriteResponseStreamToFileAsync(tempFileName, append: false, cancellationToken);
-        
-        var extractor = MetadataExtractorFactory.Create(tempFileName, type);
-        var metadata = extractor.ExtractMetadata();
-        var serialized = JsonSerializer.Serialize(metadata);
-        
+
+        string serialized = GetSerializedMetadata(tempFileName, type);
+
         Directory.Delete(tempDir.FullName, recursive: true);
         
         await redisDatabase.HashSetAsync(RedisKeysConsts.MetadataKey, fieldDto.ToString(), serialized);
@@ -118,5 +116,22 @@ public class FileUploadService(
         }
 
         return Task.WhenAll(deleteFileTasks);
+    }
+
+    private string GetSerializedMetadata(string tempFileName, string type)
+    {
+        try
+        {
+            var extractor = MetadataExtractorFactory.Create(tempFileName, type);
+            var metadata = extractor.ExtractMetadata();
+            var serialized = JsonSerializer.Serialize(metadata);
+            return serialized;
+        }
+        catch (Exception e)
+        {
+            logger.LogInformation("Couldn't extract metadata from {FileName} with {ErrorType}: {Error}", tempFileName, e.GetType().Name, e.Message);
+        }
+
+        return JsonSerializer.Serialize(new Dictionary<string, string>());
     }
 }
