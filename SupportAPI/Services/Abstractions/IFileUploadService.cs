@@ -1,5 +1,5 @@
 ﻿
-namespace SupportAPI.Services;
+namespace SupportAPI.Services.Abstractions;
 
 public interface IFileUploadService
 {

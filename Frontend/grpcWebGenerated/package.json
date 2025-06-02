@@ -1,0 +1,11 @@
+{
+  "name": "grpc-web-generated",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "main": "SupportChat_pb.js",
+  "dependencies": {
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0"
+  }
+}

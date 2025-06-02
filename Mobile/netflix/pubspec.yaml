@@ -26,6 +26,18 @@ dependencies:
   dio_cookie_manager: ^3.2.0
   flutter_secure_storage: ^9.2.4
   provider: ^6.1.5
+  protoc_plugin: ^22.2.0
+  grpc: ^4.0.4
+  protobuf: ^4.1.0
+  fixnum: ^1.1.1
+  file_picker: ^10.1.9
+  http: ^1.4.0
+  http_parser: ^4.1.2
+  mime_type: ^1.0.1
+  video_player: ^2.9.5
+  audioplayers: ^6.4.0
+  uuid: ^4.5.1
+  mime: ^2.0.0
 
 dev_dependencies:
   flutter_test:

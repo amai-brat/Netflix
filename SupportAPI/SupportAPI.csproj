@@ -12,6 +12,8 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.410.5" />
     <PackageReference Include="AWSSDK.Transfer" Version="3.7.402.5" />
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.71.0" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
@@ -29,6 +31,10 @@
 
   <ItemGroup>
     <Folder Include="Models\Abstractions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\SupportChat.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>
