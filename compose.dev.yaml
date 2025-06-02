@@ -92,6 +92,7 @@ services:
       dockerfile: "./SupportAPI/Dockerfile"
     ports:
       - "8090:8090"
+      - "8091:8091"
     depends_on:
       - rabbitmq
       - redis
@@ -106,7 +107,7 @@ services:
       - ProxyMinio:Host=${PROXY_TEMP_MINIO_HOST}
       - JwtOptions:Key=${JWT_SECRET}
       - FrontendConfig:Url=${FRONTEND_URL}
-      - ASPNETCORE_HTTP_PORTS=8090
+      - ASPNETCORE_HTTP_PORTS=8090,8091
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}

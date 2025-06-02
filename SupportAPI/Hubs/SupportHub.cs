@@ -9,6 +9,7 @@ using SupportAPI.Models.Dto;
 namespace SupportAPI.Hubs
 {
     [Authorize]
+    [Obsolete("gRPC support chat")]
     public class SupportHub(IBus bus, ILogger<SupportHub> logger): Hub
     {
         protected internal static readonly ConcurrentDictionary<string, string> UserIdConnection = [];

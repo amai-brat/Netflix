@@ -2,24 +2,35 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:netflix/clients/file_client.dart';
+import 'package:netflix/clients/grpc_support_chat_client.dart';
 import 'package:netflix/data/repositories/auth_repository_impl.dart';
 import 'package:netflix/data/repositories/favorite_repository_impl.dart';
+import 'package:netflix/data/repositories/file_repository_impl.dart';
 import 'package:netflix/data/repositories/personal_info_repository.dart';
 import 'package:netflix/data/repositories/reviews_repository.dart';
 import 'package:netflix/data/repositories/subscription_repository_impl.dart';
 import 'package:netflix/data/repositories/content_repository_impl.dart';
 import 'package:netflix/data/repositories/content_type_repository_impl.dart';
 import 'package:netflix/data/repositories/genre_repository_impl.dart';
+import 'package:netflix/data/repositories/support_repository_impl.dart';
+import 'package:netflix/data/services/auth_service.dart';
 import 'package:netflix/data/services/auth_service_mock.dart';
+import 'package:netflix/data/services/file_service.dart';
 import 'package:netflix/data/services/personal_info_service.dart';
 import 'package:netflix/data/services/reviews_service.dart';
 import 'package:netflix/data/services/subscription_service.dart';
+import 'package:netflix/data/services/support_service.dart';
 import 'package:netflix/domain/repositories/auth_repository.dart';
 import 'package:netflix/domain/repositories/favorite_repository.dart';
+import 'package:netflix/domain/repositories/file_repository.dart';
 import 'package:netflix/domain/repositories/personal_info_repository.dart';
 import 'package:netflix/domain/repositories/reviews_repository.dart';
 import 'package:netflix/domain/repositories/subscription_repository.dart';
+import 'package:netflix/domain/repositories/support_repository.dart';
 import 'package:netflix/domain/use_cases/content/remove_from_favorite_use_case.dart';
+import 'package:netflix/domain/use_cases/support/get_history_use_case.dart';
+import 'package:netflix/domain/use_cases/support/upload_files_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_birthdate_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_email_use_case.dart';
 import 'package:netflix/domain/use_cases/user/change_password_use_case.dart';
@@ -44,8 +55,6 @@ import 'package:netflix/domain/use_cases/auth/signout_use_case.dart';
 import 'package:netflix/domain/use_cases/auth/signup_use_case.dart';
 import 'package:netflix/utils/consts.dart';
 
-import '../data/services/auth_service.dart';
-
 final GetIt locator = GetIt.instance;
 
 void setupLocator() {
@@ -68,6 +77,11 @@ void setupLocator() {
     final Link link = authLink.concat(httpLink);
     return GraphQLClient(cache: GraphQLCache(), link: link);
   });
+  locator.registerLazySingleton<GrpcSupportChatClient>(() =>
+      GrpcSupportChatClient(dotenv.env['GRPC_SUPPORT_CHAT_SERVER_HOST']!, int.parse(dotenv.env['GRPC_SUPPORT_CHAT_SERVER_PORT']!)));
+  locator.registerLazySingleton<FileClient>(() =>
+      FileClient(baseUrl: dotenv.env['FILE_UPLOAD_BASE_URL']!, downloadHost: dotenv.env['FILE_DOWNLOAD_HOST']!));
+  
   locator.registerLazySingleton<AuthServiceMock>(() => AuthServiceMock());
   locator.registerLazySingleton<AuthService>(
     () => AuthService(locator<GraphQLClient>()),
@@ -79,6 +93,8 @@ void setupLocator() {
     () => SubscriptionService(locator<GraphQLClient>()),
   );
   locator.registerLazySingleton<ReviewsService>(() => ReviewsService(locator<GraphQLClient>()));
+  locator.registerLazySingleton<SupportService>(() => SupportService(locator<GraphQLClient>()));
+  locator.registerLazySingleton<FileService>(() => FileService(locator<FileClient>()));
 
   // repos
   locator.registerLazySingleton<AuthRepository>(
@@ -109,6 +125,12 @@ void setupLocator() {
   );
   locator.registerLazySingleton<ReviewsRepository>(
     () => ReviewsRepositoryImpl(service: locator<ReviewsService>()),
+  );
+  locator.registerLazySingleton<SupportRepository>(
+        () => SupportRepositoryImpl(service: locator<SupportService>()),
+  );
+  locator.registerLazySingleton<FileRepository>(
+        () => FileRepositoryImpl(service: locator<FileService>()),
   );
 
   // use cases
@@ -195,5 +217,12 @@ void setupLocator() {
       subscriptionRepository: locator<SubscriptionRepository>(),
       authRepository: locator<AuthRepository>(),
     ),
+  );
+
+  locator.registerLazySingleton(
+        () => GetHistoryUseCase(supportRepository: locator<SupportRepository>()),
+  );
+  locator.registerLazySingleton(
+        () => UploadFilesUseCase(fileRepository: locator<FileRepository>()),
   );
 }

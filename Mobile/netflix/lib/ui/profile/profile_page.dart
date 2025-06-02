@@ -68,6 +68,11 @@ class _ProfilePageState extends State<ProfilePage> {
             leading: const Icon(Icons.subscriptions),
             onTap: () => _goTo(context, Routes.profileSubscriptions),
           ),
+          ListTile(
+            title: const Text('Чат поддержки'),
+            leading: const Icon(Icons.chat),
+            onTap: () => _goTo(context, Routes.profileSupportChat),
+          ),
           const Divider(),
           ListTile(
             title: const Text('Выйти'),

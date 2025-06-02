@@ -6,13 +6,17 @@ class DataStore {
         makeAutoObservable(this)
     }
     data = initialState
-    
+
     setConnection = (connection) => {
         this.data.connection = connection
     }
     
-    setSupportConnection = (connection) => {
-        this.data.supportConnection = connection
+    setChatSession = (session) => {
+        this.data.chatSession = session;
+    }
+
+    removeSession = () => {
+        this.data.chatSession = null;
     }
 
     setIsSignIn = (isSignIn) => {
