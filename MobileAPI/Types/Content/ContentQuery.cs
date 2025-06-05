@@ -29,14 +29,8 @@ public class ContentQuery
     [UseProjection]
     public async Task<IQueryable<ContentBase>> GetContentById(
         [Argument] long id, 
-        [Service] AppDbContext context, 
-        [Service] IBus bus)
+        [Service] AppDbContext context)
     {
-        if (context.ContentBases.Any(x => x.Id == id))
-        {
-            await bus.Publish(new ContentPageOpenedEvent(id));
-        }
-        
         return context.ContentBases
             .Where(x => x.Id == id);
     }
