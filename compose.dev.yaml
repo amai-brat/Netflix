@@ -61,6 +61,11 @@ services:
       - JwtOptions:AccessTokenLifetimeInMinutes=${JWT_ACCESS_LIFETIME_MINUTES}
       - JwtOptions:RefreshTokenLifetimeInDays=${JWT_REFRESH_LIFETIME_DAYS}
         
+#      RabbitMq
+      - RabbitMqOptions:Username=${RABBIT_USER}
+      - RabbitMqOptions:Password=${RABBIT_PASSWORD}
+      - RabbitMqOptions:Hostname=${RABBIT_HOSTNAME}
+
 #      Other
       - FrontendConfig:Url=${FRONTEND_URL}
       - AllowedHosts=${ALLOWED_HOSTS}
@@ -68,6 +73,7 @@ services:
       - database
       - minio
       - redis
+      - rabbitmq
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
@@ -269,15 +275,22 @@ services:
 
 
   rabbitmq:
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3-management-alpine
     ports:
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
- 
+  
+  cassandra:
+    image: cassandra:5.0.4
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cloudinfra
 
 volumes:
     redis-data:

@@ -12,6 +12,7 @@ using Infrastructure.Providers.Implementations;
 using Infrastructure.Providers.ProviderFactory;
 using Infrastructure.Services;
 using Infrastructure.Services.Implementations;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -57,7 +58,9 @@ public static class DependencyInjection
                     .Build();
             })
             .AddScoped<IProfilePicturesProvider, ProfilePicturesProvider>()
-            .AddIdentity(configuration);
+            .AddIdentity(configuration)
+            .AddMassTransitRabbitMq(configuration.GetSection("RabbitMqOptions").Get<RabbitMqOptions>() 
+                                    ?? throw new InvalidOperationException("RabbitMqOptions not found"));
 
         if (environment.IsDevelopment())
         {
@@ -164,5 +167,28 @@ public static class DependencyInjection
         serviceCollection.AddScoped<IMinioCache, MinioRedisCache>();
             
         return serviceCollection;
+    }
+    
+    private static IServiceCollection AddMassTransitRabbitMq(
+        this IServiceCollection services,
+        RabbitMqOptions rabbitMqOptions)
+    {
+        services.AddMassTransit(cfg =>
+        {
+            cfg.SetKebabCaseEndpointNameFormatter();
+
+            cfg.UsingRabbitMq((context, configurator) =>
+            {
+                configurator.Host(new Uri(rabbitMqOptions.Hostname), h =>
+                {
+                    h.Username(rabbitMqOptions.Username);
+                    h.Password(rabbitMqOptions.Password);
+                });
+
+                configurator.ConfigureEndpoints(context);
+            });
+        });
+
+        return services;
     }
 }

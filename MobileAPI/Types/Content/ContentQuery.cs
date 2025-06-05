@@ -3,6 +3,8 @@ using Application.Services.Extensions;
 using DataAccess;
 using Domain.Entities;
 using HotChocolate.Language;
+using MassTransit;
+using Shared.MessageContracts;
 
 namespace MobileAPI.Types.Content;
 
@@ -25,8 +27,16 @@ public class ContentQuery
     }
 
     [UseProjection]
-    public IQueryable<ContentBase> GetContentById([Argument] long id, [Service] AppDbContext context)
+    public async Task<IQueryable<ContentBase>> GetContentById(
+        [Argument] long id, 
+        [Service] AppDbContext context, 
+        [Service] IBus bus)
     {
+        if (context.ContentBases.Any(x => x.Id == id))
+        {
+            await bus.Publish(new ContentPageOpenedEvent(id));
+        }
+        
         return context.ContentBases
             .Where(x => x.Id == id);
     }

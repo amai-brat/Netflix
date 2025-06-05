@@ -5,11 +5,14 @@ using Application.Exceptions.Base;
 using Application.Exceptions.ErrorMessages;
 using Application.Repositories;
 using Domain.Entities;
+using MassTransit;
+using Shared.MessageContracts;
 
 namespace Application.Features.Contents.Queries.GetContent;
 
 // чтобы ничего не сломать в фронте, просто скопировал, что есть в контроллере, а так это бред как будто
 internal class GetContentQueryHandler(
+    IBus bus,
     IContentRepository contentRepository) : IQueryHandler<GetContentQuery, object>
 {
     private readonly JsonSerializerOptions _options = new()
@@ -21,6 +24,11 @@ internal class GetContentQueryHandler(
     public async Task<object> Handle(GetContentQuery request, CancellationToken cancellationToken)
     {
         var content = await contentRepository.GetContentByFilterAsync(x => x.Id == request.ContentId);
+        if (content != null)
+        {
+            await bus.Publish(new ContentPageOpenedEvent(request.ContentId), cancellationToken);
+        }
+        
         switch (content)
         {
             case null:
