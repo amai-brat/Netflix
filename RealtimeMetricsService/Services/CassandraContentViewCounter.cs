@@ -14,7 +14,7 @@ public class CassandraContentViewCounter(
             $"UPDATE {Consts.CountersTableFullName} " +
             $"SET views = views + ? " +
             $"WHERE content_id = ?");
-        var statement = ps.Bind(views, contentId);
+        var statement = ps.Bind((long)views, contentId);
         await session.ExecuteAsync(statement);
     }
 

@@ -17,7 +17,7 @@ public static class DependencyInjection
             UserName = rabbitMqOptions.Username,
             Password = rabbitMqOptions.Password,
             HostName = rabbitMqOptions.Hostname,
-        }.CreateConnectionAsync().Result);
+        }.CreateConnection());
         
         services.AddMassTransit(cfg =>
         {
