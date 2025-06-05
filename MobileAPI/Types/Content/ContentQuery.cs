@@ -3,8 +3,6 @@ using Application.Services.Extensions;
 using DataAccess;
 using Domain.Entities;
 using HotChocolate.Language;
-using MassTransit;
-using Shared.MessageContracts;
 
 namespace MobileAPI.Types.Content;
 
@@ -27,7 +25,7 @@ public class ContentQuery
     }
 
     [UseProjection]
-    public async Task<IQueryable<ContentBase>> GetContentById(
+    public IQueryable<ContentBase> GetContentById(
         [Argument] long id, 
         [Service] AppDbContext context)
     {
