@@ -4,8 +4,8 @@ using Shared.MessageContracts;
 
 namespace RealtimeMetricsService.Consumers;
 
-public class ContentPageOpenedEventConsumer(
-    ILogger<ContentPageOpenedEventConsumer> logger,
+public class ContentPageOpenedConsumer(
+    ILogger<ContentPageOpenedConsumer> logger,
     IContentViewCounter counter) : IConsumer<ContentPageOpenedEvent>
 {
     public async Task Consume(ConsumeContext<ContentPageOpenedEvent> context)

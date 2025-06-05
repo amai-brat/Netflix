@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="CassandraCSharpDriver" Version="3.22.0" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.15"/>
+        <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
@@ -16,6 +19,10 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
 </Project>

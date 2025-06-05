@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService", "PaymentSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAPI", "MobileAPI\MobileAPI.csproj", "{1EEC633B-ECB6-4117-824A-BB7C5CC7A754}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealtimeMetricsService", "RealtimeMetricsService\RealtimeMetricsService.csproj", "{CABE2531-D8A0-41CC-88C6-66F3F03B1681}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,10 @@ Global
 		{1EEC633B-ECB6-4117-824A-BB7C5CC7A754}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EEC633B-ECB6-4117-824A-BB7C5CC7A754}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EEC633B-ECB6-4117-824A-BB7C5CC7A754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CABE2531-D8A0-41CC-88C6-66F3F03B1681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CABE2531-D8A0-41CC-88C6-66F3F03B1681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CABE2531-D8A0-41CC-88C6-66F3F03B1681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CABE2531-D8A0-41CC-88C6-66F3F03B1681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
