@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{5D5EB4
 		compose.dev.yaml = compose.dev.yaml
 		compose.prod.yaml = compose.prod.yaml
 		.env = .env
+		.env.template = .env.template
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MainAPI", "MainAPI", "{52D07355-D23A-4DB2-951F-037BA319A2BB}"

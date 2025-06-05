@@ -64,7 +64,7 @@ services:
 #      RabbitMq
       - RabbitMqOptions:Username=${RABBIT_USER}
       - RabbitMqOptions:Password=${RABBIT_PASSWORD}
-      - RabbitMqOptions:Hostname=${RABBIT_HOSTNAME}
+      - RabbitMqOptions:Hostname=${RABBIT_HOST_URI}
 
 #      Other
       - FrontendConfig:Url=${FRONTEND_URL}
@@ -117,7 +117,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}
-      - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+      - RabbitMqConfig__Hostname=${RABBIT_HOST_URI}
       - Minio__AccessKey=${MINIO_TEMP_ACCESS_KEY}
       - Minio__SecretKey=${MINIO_TEMP_SECRET_KEY}
       - Minio__Port=${MINIO_TEMP_PORT}
@@ -143,7 +143,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMqConfig__Username=${RABBIT_USER}
       - RabbitMqConfig__Password=${RABBIT_PASSWORD}
-      - RabbitMqConfig__Hostname=${RABBIT_HOSTNAME}
+      - RabbitMqConfig__Hostname=${RABBIT_HOST_URI}
       - FrontendConfig:Url=${FRONTEND_URL}
 
   support-permanent-s3-service:
@@ -166,7 +166,7 @@ services:
       - ProxyMinio:Host=${PROXY_MINIO_HOST}
       - RabbitMqConfig:Username=${RABBIT_USER}
       - RabbitMqConfig:Password=${RABBIT_PASSWORD}
-      - RabbitMqConfig:Hostname=${RABBIT_HOSTNAME}
+      - RabbitMqConfig:Hostname=${RABBIT_HOST_URI}
       - Redis:Host=${REDIS_HOST}
       - Redis:Port=${REDIS_PORT}
       - Redis:Password=${REDIS_PASSWORD}
@@ -197,6 +197,24 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings:DATABASE_CONNECTION_STRING_PAYMENT=${DATABASE_CONNECTION_STRING_PAYMENT}
    
+  realtime-metrics-service:
+    build:
+      context: .
+      dockerfile: RealtimeMetricsService/Dockerfile
+    ports:
+      - "5108:5108"
+    depends_on:
+      - cassandra
+    environment:
+      - ASPNETCORE_HTTP_PORTS=5108
+      - RabbitMqOptions:Username=${RABBIT_USER}
+      - RabbitMqOptions:Password=${RABBIT_PASSWORD}
+      - RabbitMqOptions:Hostname=${RABBIT_HOSTNAME}
+      - RabbitMqOptions:HostUri=${RABBIT_HOST_URI}
+      - CassandraOptions:Username=${CASSANDRA_USER}
+      - CassandraOptions:Password=${CASSANDRA_PASSWORD}
+      - CassandraOptions:Hostname=${CASSANDRA_HOSTNAME}
+  
   database:
     image: postgres
     ports:
@@ -289,6 +307,8 @@ services:
     image: cassandra:5.0.4
     ports:
       - "9042:9042"
+    volumes:
+      - cassandra-data:/var/lib/cassandra
     environment:
       - CASSANDRA_CLUSTER_NAME=cloudinfra
 
@@ -297,6 +317,7 @@ volumes:
     db-data:
     node_modules:
     rabbitmq-data:
+    cassandra-data:
     minio-data:
     minio-data-temporary:
     minio-data-permanent:
