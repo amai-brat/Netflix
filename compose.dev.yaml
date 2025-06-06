@@ -233,6 +233,42 @@ services:
       - CassandraOptions:Password=${CASSANDRA_PASSWORD}
       - CassandraOptions:Hostname=${CASSANDRA_HOSTNAME}
   
+  mobile-api:
+    build:
+      context: .
+      dockerfile: MobileAPI/Dockerfile
+    ports:
+      - "5221:5221"
+    depends_on:
+      subscription-service:
+        condition: service_started
+      support-persistent-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_HTTP_PORTS=5221
+      # JWT
+      - JwtOptions:Key=${JWT_SECRET}
+      - JwtOptions:AccessTokenLifetimeInMinutes=${JWT_ACCESS_LIFETIME_MINUTES}
+      - JwtOptions:RefreshTokenLifetimeInDays=${JWT_REFRESH_LIFETIME_DAYS}
+      # Database connection
+      - Database:ConnectionString=${DATABASE_CONNECTION_STRING_GENERAL}
+      - Database:Identity=${DATABASE_CONNECTION_STRING_IDENTITY}
+      # Minio
+      - Minio:ExternalEndpoint=${MINIO_EXTERNAL_ENDPOINT}
+      - Minio:AccessKey=${MINIO_ACCESS_KEY}
+      - Minio:SecretKey=${MINIO_SECRET_KEY}
+      - Minio:Port=${MINIO_PORT}
+      - Minio:Endpoint=${MINIO_ENDPOINT}
+      # RabbitMq
+      - RabbitMqOptions:Username=${RABBIT_USER}
+      - RabbitMqOptions:Password=${RABBIT_PASSWORD}
+      - RabbitMqOptions:Hostname=${RABBIT_HOST_URI}
+      # Services
+      - Services:SubscriptionServiceUrl=http://subscription-service:3000
+      - Services:SupportPersistentApiUrl=http://support-persistent-service:8080
+  
   database:
     image: postgres
     ports:
