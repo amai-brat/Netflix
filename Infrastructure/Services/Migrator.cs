@@ -11,8 +11,6 @@ public static class Migrator
     {
         await using (var scope = serviceProvider.CreateAsyncScope())
         {
-            await Task.Delay(1000);
-    
             var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
             if (dbContext!.Database.IsRelational())
             {

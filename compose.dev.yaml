@@ -70,10 +70,14 @@ services:
       - FrontendConfig:Url=${FRONTEND_URL}
       - AllowedHosts=${ALLOWED_HOSTS}
     depends_on:
-      - database
-      - minio
-      - redis
-      - rabbitmq
+      database:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
@@ -85,7 +89,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     environment:
       - JWT_KEY=${JWT_SECRET}
       - DATABASE_CONNECTION_STRING_GENERAL=${DATABASE_CONNECTION_STRING_GENERAL_NODEJS}
@@ -100,9 +105,12 @@ services:
       - "8090:8090"
       - "8091:8091"
     depends_on:
-      - rabbitmq
-      - redis
-      - minio-temporary
+      rabbitmq:
+        condition: service_healthy
+      redis: 
+        condition: service_started
+      minio-temporary:
+        condition: service_started
     environment:
       - Redis:Host=${REDIS_HOST}
       - Redis:Port=${REDIS_PORT}
@@ -134,8 +142,10 @@ services:
       - "10000:8080"
       - "10001:8081"
     depends_on:
-      - rabbitmq
-      - database
+      rabbitmq:
+        condition: service_healthy
+      database:
+        condition: service_healthy
     environment:
       - JwtOptions:Key=${JWT_SECRET}
       - Database:ConnectionString=${DATABASE_CONNECTION_STRING_SUPPORT}
@@ -154,10 +164,14 @@ services:
       - "10002:8080"
       - "10003:8081"
     depends_on:
-      - rabbitmq
-      - minio-permanent
-      - minio-temporary
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      minio-permanent:
+        condition: service_started
+      minio-temporary:
+        condition: service_started
+      redis: 
+        condition: service_started
     environment:
       - JwtOptions:Key=${JWT_SECRET}
       - ProxyMinio:Scheme=${PROXY_MINIO_SCHEME}
@@ -191,7 +205,8 @@ services:
       - "10004:5228"
       - "10005:5229"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     environment:
       - ASPNETCORE_HTTP_PORTS=5228
       - ASPNETCORE_ENVIRONMENT=Development
@@ -204,7 +219,10 @@ services:
     ports:
       - "5108:5108"
     depends_on:
-      - cassandra
+      cassandra:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - ASPNETCORE_HTTP_PORTS=5108
       - RabbitMqOptions:Username=${RABBIT_USER}
@@ -221,8 +239,14 @@ services:
       - "5434:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGUSER=postgres
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   
   minio:
     image: quay.io/minio/minio
@@ -281,6 +305,11 @@ services:
     depends_on:
       - api
       - subscription-service
+      - support-service
+      - minio
+      - minio-permanent
+      - minio-temporary
+      - support-persistent-service
   
   redis:
     image: redis
@@ -302,6 +331,11 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASSWORD}
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 30s
+      retries: 3
   
   cassandra:
     image: cassandra:5.0.4
@@ -311,6 +345,13 @@ services:
       - cassandra-data:/var/lib/cassandra
     environment:
       - CASSANDRA_CLUSTER_NAME=cloudinfra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh", "-u ${CASSANDRA_USER}", "-p {CASSANDRA_PASSWORD}" ,"-e 'describe keyspaces'"]
+      interval: 2m
+      start_period: 30s
+      start_interval: 5s
+      timeout: 10s
+      retries: 3
 
 volumes:
     redis-data:
