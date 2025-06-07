@@ -1,7 +1,7 @@
 using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MobileAPI.Exceptions;
-using SupportPersistentAPI.Models;
+using MobileAPI.Models;
 
 namespace MobileAPI.Types.SupportChat;
 

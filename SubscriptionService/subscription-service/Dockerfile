@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm i --loglevel verbose
+RUN npm ci --loglevel verbose
 
 COPY . .
 

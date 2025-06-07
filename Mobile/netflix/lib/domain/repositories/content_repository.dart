@@ -4,7 +4,20 @@ import 'package:netflix/domain/responses/sections_response.dart';
 import 'package:netflix/utils/result.dart';
 
 abstract class ContentRepository {
-  Future<List<Content>> getContent(ContentFilterParams params, int page, int perPage);
+  Future<List<Content>> getContent(
+    ContentFilterParams params,
+    int page,
+    int perPage,
+  );
+
   Future<Result<Content>> getContentById({required int contentId});
+
+  Future<({Stream<int> stream, String streamCancellationToken})>
+  getContentViewsById({required int contentId});
+
+  Future<void> stopContentViewsStream(String streamCancellationToken);
+
+  Future<void> sendContentPageOpened({required int contentId});
+
   Future<Result<SectionsResponse>> getSections();
 }

@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["SupportPermanentS3Service/SupportPermanentS3Service.csproj", "SupportPermanentS3Service/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
 RUN dotnet restore "SupportPermanentS3Service/SupportPermanentS3Service.csproj"
 COPY . .
 WORKDIR "/src/SupportPermanentS3Service"
