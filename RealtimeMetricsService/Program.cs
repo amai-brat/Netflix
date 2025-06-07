@@ -15,8 +15,6 @@ builder.Services.AddCassandra(
 builder.Services.AddScoped<IContentViewCounter, CassandraContentViewCounter>();
 builder.Services.AddControllers();
 
-builder.Services.AddHostedService<ContentViewCountBroadcaster>();
-
 var app = builder.Build();
 
 await Database.CreateViewCounterTableIfNotExists(app.Services);

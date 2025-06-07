@@ -6,6 +6,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:netflix/data/models/content_view_count.dart';
 
 class MetricsService {
+  final Map<String, Queue> _contentViewsQueues = {};
+
   late Client _client;
   bool _isConnected = false;
 
@@ -27,12 +29,18 @@ class MetricsService {
     _isConnected = true;
   }
 
-  Future<void> disconnect() async {
-    await _client.close();
-    _isConnected = false;
+  Future<void> disconnect({required String streamCancellationToken}) async {
+    _contentViewsQueues[streamCancellationToken]?.delete();
+    _contentViewsQueues.remove(streamCancellationToken);
+
+    if (_contentViewsQueues.isEmpty) {
+      await _client.close();
+      _isConnected = false;
+    }
   }
 
-  Future<Stream<int>> getContentViews(int contentId) async {
+  Future<({Stream<int> stream, String streamCancellationToken})>
+  getContentViews(int contentId) async {
     await connect();
 
     final channel = await _client.channel();
@@ -67,7 +75,9 @@ class MetricsService {
 
     controller.onListen = onListen;
 
-    return controller.stream;
+    _contentViewsQueues[queue.name] = queue;
+
+    return (stream: controller.stream, streamCancellationToken: queue.name);
   }
 
   Future<void> sendContentViewed({required int contentId}) async {

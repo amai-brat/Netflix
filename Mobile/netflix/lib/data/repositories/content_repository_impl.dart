@@ -178,7 +178,8 @@ class ContentRepositoryImpl extends ContentRepository {
   }
 
   @override
-  Future<Stream<int>> getContentViewsById({required int contentId}) {
+  Future<({Stream<int> stream, String streamCancellationToken})>
+  getContentViewsById({required int contentId}) {
     return _metricsService.getContentViews(contentId);
   }
 
@@ -188,7 +189,7 @@ class ContentRepositoryImpl extends ContentRepository {
   }
 
   @override
-  Future<void> stopContentViewsStream() async {
-    await _metricsService.disconnect();
+  Future<void> stopContentViewsStream(String streamCancellationToken) async {
+    await _metricsService.disconnect(streamCancellationToken: streamCancellationToken);
   }
 }

@@ -16,6 +16,8 @@ class ContentBloc extends Bloc<ContentEvent, ContentState> {
   final SendContentPageOpenedUseCase _sendContentPageOpenedUseCase;
   final ContentRepository _contentRepository;
 
+  late String streamCancellationToken;
+
   ContentBloc({
     required GetContentByIdUseCase getContentByIdUseCase,
     required SendContentPageOpenedUseCase sendContentPageOpenedUseCase,
@@ -49,16 +51,23 @@ class ContentBloc extends Bloc<ContentEvent, ContentState> {
         emit(state.copyWith(isLoading: false, error: result.error));
     }
 
-    await _sendContentPageOpenedUseCase.execute(event.contentId);
     await emit.forEach(
-      await _contentRepository.getContentViewsById(contentId: event.contentId),
+      await _contentRepository
+          .getContentViewsById(contentId: event.contentId)
+          .then((streamWithToken) async {
+            // после подключения отправить, что страница открыта => получить количество просмотров в stream
+            await _sendContentPageOpenedUseCase.execute(event.contentId);
+
+            streamCancellationToken = streamWithToken.streamCancellationToken;
+            return streamWithToken.stream;
+          }),
       onData: (data) => state.copyWith(contentViews: data, error: ''),
     );
   }
 
   @override
   Future<void> close() {
-    _contentRepository.stopContentViewsStream();
+    _contentRepository.stopContentViewsStream(streamCancellationToken);
     return super.close();
   }
 }
