@@ -19,41 +19,11 @@ class ContentRatings extends StatelessWidget {
   };
 
   Widget _buildRatingRow(Image logo, double ratingValue) {
-    return Row(children: [logo, Text(': $ratingValue')]);
+    return Row(children: [logo, Text(': ${ratingValue.toStringAsFixed(2)}')]);
   }
 
   @override
   Widget build(BuildContext context) {
-    // return Container(
-    //   width: double.infinity,
-    //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    //   decoration: BoxDecoration(color: Colors.grey[900]),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Text(
-    //         'Рейтинги',
-    //         style: Theme.of(
-    //           context,
-    //         ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-    //         textAlign: TextAlign.left,
-    //       ),
-    //       const SizedBox(height: 10),
-    //       _buildRatingRow(
-    //         Image.network(logos['kinopoisk']!, height: logoSize, width: logoSize,),
-    //         ratings.kinopoiskRating,
-    //       ),
-    //       _buildRatingRow(
-    //         Image.network(logos['imdb']!, width: logoSize, height: logoSize),
-    //         ratings.imdbRating,
-    //       ),
-    //       _buildRatingRow(
-    //         Image.network(logos['local']!, width: logoSize, height: logoSize),
-    //         ratings.localRating,
-    //       ),
-    //     ],
-    //   ),
-    // );
     return ContentSection(
       title: 'Рейтинги',
       children: [

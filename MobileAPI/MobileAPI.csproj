@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +13,7 @@
       <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.4" />
       <PackageReference Include="HotChocolate.Data.EntityFramework" Version="15.1.4" />
       <PackageReference Include="HotChocolate.Types.OffsetPagination" Version="15.1.4" />
+      <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,7 +22,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\SupportPersistentAPI\SupportPersistentAPI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
