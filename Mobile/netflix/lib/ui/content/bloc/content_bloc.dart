@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:netflix/domain/models/content/content.dart';
+import 'package:netflix/domain/repositories/content_repository.dart';
 import 'package:netflix/domain/use_cases/content/get_content_by_id_use_case.dart';
+import 'package:netflix/domain/use_cases/content/send_content_page_opened_use_case.dart';
 import 'package:netflix/ui/content/bloc/content_event.dart';
 import 'package:netflix/ui/content/bloc/content_state.dart';
 import 'package:netflix/utils/result.dart';
@@ -11,15 +13,28 @@ import '../../../utils/di.dart';
 
 class ContentBloc extends Bloc<ContentEvent, ContentState> {
   final GetContentByIdUseCase _getContentByIdUseCase;
+  final SendContentPageOpenedUseCase _sendContentPageOpenedUseCase;
+  final ContentRepository _contentRepository;
 
-  ContentBloc({required GetContentByIdUseCase getContentByIdUseCase})
-    : _getContentByIdUseCase = getContentByIdUseCase,
-      super(ContentState.initial()) {
+  late String streamCancellationToken;
+
+  ContentBloc({
+    required GetContentByIdUseCase getContentByIdUseCase,
+    required SendContentPageOpenedUseCase sendContentPageOpenedUseCase,
+    required ContentRepository contentRepository,
+  }) : _getContentByIdUseCase = getContentByIdUseCase,
+       _sendContentPageOpenedUseCase = sendContentPageOpenedUseCase,
+       _contentRepository = contentRepository,
+       super(ContentState.initial()) {
     on<ContentPageOpened>(_onContentPageOpened);
   }
 
   factory ContentBloc.createViaLocator() {
-    return ContentBloc(getContentByIdUseCase: locator<GetContentByIdUseCase>());
+    return ContentBloc(
+      getContentByIdUseCase: locator<GetContentByIdUseCase>(),
+      sendContentPageOpenedUseCase: locator<SendContentPageOpenedUseCase>(),
+      contentRepository: locator<ContentRepository>(),
+    );
   }
 
   FutureOr<void> _onContentPageOpened(
@@ -35,5 +50,24 @@ class ContentBloc extends Bloc<ContentEvent, ContentState> {
       case Error<Content>():
         emit(state.copyWith(isLoading: false, error: result.error));
     }
+
+    await emit.forEach(
+      await _contentRepository
+          .getContentViewsById(contentId: event.contentId)
+          .then((streamWithToken) async {
+            // после подключения отправить, что страница открыта => получить количество просмотров в stream
+            await _sendContentPageOpenedUseCase.execute(event.contentId);
+
+            streamCancellationToken = streamWithToken.streamCancellationToken;
+            return streamWithToken.stream;
+          }),
+      onData: (data) => state.copyWith(contentViews: data, error: ''),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _contentRepository.stopContentViewsStream(streamCancellationToken);
+    return super.close();
   }
 }

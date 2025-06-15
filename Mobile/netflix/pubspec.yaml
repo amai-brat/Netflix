@@ -38,6 +38,16 @@ dependencies:
   audioplayers: ^6.4.0
   uuid: ^4.5.1
   mime: ^2.0.0
+  dart_amqp: ^0.3.1
+  crypto: ^3.0.6
+
+dependency_overrides:
+  flutter_secure_storage_linux:
+    git:
+      url: https://github.com/m-berto/flutter_secure_storage.git
+      ref: patch-2
+      path: flutter_secure_storage_linux
+  flutter_secure_storage_platform_interface: 2.0.0
 
 dev_dependencies:
   flutter_test:
