@@ -25,7 +25,9 @@ public class ContentQuery
     }
 
     [UseProjection]
-    public IQueryable<ContentBase> GetContentById([Argument] long id, [Service] AppDbContext context)
+    public IQueryable<ContentBase> GetContentById(
+        [Argument] long id, 
+        [Service] AppDbContext context)
     {
         return context.ContentBases
             .Where(x => x.Id == id);

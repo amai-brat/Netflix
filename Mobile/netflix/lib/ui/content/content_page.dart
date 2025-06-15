@@ -4,6 +4,7 @@ import 'package:netflix/ui/content/bloc/content_bloc.dart';
 import 'package:netflix/ui/content/bloc/content_event.dart';
 import 'package:netflix/ui/content/bloc/content_state.dart';
 import 'package:netflix/ui/content/widgets/content_description.dart';
+import 'package:netflix/ui/content/widgets/content_metrics.dart';
 import 'package:netflix/ui/content/widgets/content_persons.dart';
 import 'package:netflix/ui/content/widgets/content_ratings.dart';
 import 'package:netflix/ui/content/widgets/content_short_summary.dart';
@@ -56,6 +57,7 @@ class ContentPage extends StatelessWidget {
                     ContentPersons(
                       personsInContent: state.content!.personsInContent,
                     ),
+                    ContentMetrics(views: state.contentViews)
                   ],
                 ),
               ),
